@@ -1,7 +1,27 @@
 import { Link } from "react-router-dom";
 import { User, Mail, Phone, Lock, CheckCircle } from "lucide-react";
+import { useState } from "react";
+import InputWithIcon from "../../components/ui/Input";
 
 const UserRegisterPage = () => {
+
+    const[form,setForm]=useState({
+        name:"",
+        email:"",
+        phone:"",
+        password:"",
+        confirmPassword:"",
+    });
+
+
+    const handleChange=
+    (field:"name" | "email" | "phone" | "password" | "confirmPassword")=>
+    (e:React.ChangeEvent<HTMLInputElement>)=>{
+        setForm((prev)=>({
+            ...prev,
+            [field]:e.target.value,
+        }));
+    };
 
 
     return (
@@ -39,55 +59,51 @@ const UserRegisterPage = () => {
 
                         <form className="space-y-4">
                           
-                            <div className="flex items-center gap-3 bg-[#19245a] rounded-full px-5 py-3 shadow-md shadow-black/30">
-                                <User size={20} className="text-indigo-200" />
-                                <input
-                                    type="text"
-                                    placeholder="Name"
-                                    className="w-full bg-transparent outline-none text-sm text-slate-100 placeholder:text-slate-300"
-                                />
-                            </div>
-
+                          {/* Name  */}
+                           
+                        
+                        <InputWithIcon
+                            icon={<User size={20} className="text-indigo-200"/>}
+                            type="text"
+                            placeholder="Name"
+                            value={form.name}
+                            onChange={handleChange("name")}
+                        
+                        />
                      
-                            <div className="flex items-center gap-3 bg-[#19245a] rounded-full px-5 py-3 shadow-md shadow-black/30">
-                                <Mail size={20} className="text-indigo-200" />
-                                <input
-                                    type="email"
-                                    placeholder="Email"
-                                    className="w-full bg-transparent outline-none text-sm text-slate-100 placeholder:text-slate-300"
-                                />
-                            </div>
+                        <InputWithIcon
+                        icon={<Mail size={20} className="text-indigo-200"/>}
+                        type="email"
+                        placeholder="Email"
+                        value={form.email}
+                        onChange={handleChange("email")}
+                        />
 
-                          
-                            <div className="flex items-center gap-3 bg-[#19245a] rounded-full px-5 py-3 shadow-md shadow-black/30">
-                                <Phone size={20} className="text-indigo-200" />
-                                <input
-                                    type="tel"
-                                    placeholder="Phone"
-                                    className="w-full bg-transparent outline-none text-sm text-slate-100 placeholder:text-slate-300"
-                                />
-                            </div>
-
+                        
+                          <InputWithIcon
+                          icon={<Phone size={20} className="text-indigo-200"/>}
+                          type="tel"
+                          placeholder="Phone"
+                          value={form.phone}
+                          onChange={handleChange("phone")}
+                          />
                             
-                            <div className="flex items-center gap-3 bg-[#19245a] rounded-full px-5 py-3 shadow-md shadow-black/30">
-                                <Lock size={20} className="text-indigo-200" />
-                                <input
-                                    type="password"
-                                    placeholder="Password"
-                                    className="w-full bg-transparent outline-none text-sm text-slate-100 placeholder:text-slate-300"
-                                />
-                            </div>
-
+                            <InputWithIcon
+                            icon={<Lock size={20} className="text-indigo-200"/>}
+                            type="password"
+                            placeholder="Password"
+                            value={form.password}
+                            onChange={handleChange("password")}
+                            />
+                            <InputWithIcon
+                            icon={<CheckCircle size={20} className="text-indigo-200"/>}
+                            type="password"
+                            placeholder="Confirm Password"
+                            value={form.password}
+                            onChange={handleChange("confirmPassword")}
+                            />
                             
-                            <div className="flex items-center gap-3 bg-[#19245a] rounded-full px-5 py-3 shadow-md shadow-black/30">
-                                <CheckCircle size={20} className="text-indigo-200" />
-                                <input
-                                    type="password"
-                                    placeholder="Confirm Password"
-                                    className="w-full bg-transparent outline-none text-sm text-slate-100 placeholder:text-slate-300"
-                                />
-                            </div>
-
+                           
                          
                             <button
                                 type="submit"
@@ -97,7 +113,7 @@ const UserRegisterPage = () => {
                             </button>
                         </form>
 
-                        {/* Divider */}
+                      
                         <div className="flex items-center gap-4 my-6">
                             <div className="h-px flex-1 bg-slate-600" />
                             <span className="text-xs uppercase tracking-[0.2em] text-slate-300">
