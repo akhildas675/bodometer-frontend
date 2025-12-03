@@ -1,7 +1,8 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Home from "../pages/user/Home";
-import UserRegisterPage from "../pages/user/UserRegisterPage";
 import MainLayouts from "../components/layouts/MainLayouts";
+import RegisterPage from "../pages/user/RegisterPage";
+import HomePage from "../pages/user/HomePage";
+
 
 
 const UserRoutes = () => {
@@ -10,11 +11,12 @@ const UserRoutes = () => {
       <Routes>
         {/* Routes with layout (Navbar + Footer) */}
         <Route element={<MainLayouts/>}>
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<HomePage/>} />
         </Route>
 
         {/* Routes WITHOUT layout */}
-        <Route path="/register" element={<UserRegisterPage />} />
+        <Route path="/register" element={<RegisterPage/>} />
+       
       </Routes>
     </BrowserRouter>
   );

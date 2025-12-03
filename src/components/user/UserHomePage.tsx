@@ -1,6 +1,6 @@
 
 
-const Home = () => {
+const UserHomePage = () => {
   return (
     <div
       className="min-h-screen w-full"
@@ -58,4 +58,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default UserHomePage

@@ -1,9 +1,12 @@
 import { Link } from "react-router-dom";
 import { User, Mail, Phone, Lock, CheckCircle } from "lucide-react";
 import { useState } from "react";
-import InputWithIcon from "../../components/ui/Input";
+import InputWithIcon from "../ui/Input";
+import AuthService from "../../services/authServices/auth.service";
 
 const UserRegisterPage = () => {
+
+   
 
     const [form, setForm] = useState({
         name: "",
@@ -12,6 +15,8 @@ const UserRegisterPage = () => {
         password: "",
         confirmPassword: "",
     });
+
+    // const [loading,setLoading]=useState(false)
 
     const handleChange =
         (field: "name" | "email" | "phone" | "password" | "confirmPassword") =>
@@ -22,6 +27,37 @@ const UserRegisterPage = () => {
                 }));
             };
 
+
+    const handleSubmit = async (e:React.FormEvent)=>{
+        e.preventDefault();
+
+        const payload={
+            name:form.name,
+            email:form.email,
+            phone:form.phone,
+            password:form.password,
+            confirmPassword:form.confirmPassword
+        }
+        try {
+            // setLoading(true);
+
+            const result = await AuthService.registerUser(payload)
+
+            if(result.success){
+                alert("success register")
+            }else{
+                alert("Error register")
+            }
+
+
+            console.log("data form frontend",payload)
+        } catch (error) {
+            console.log(error)
+            alert('error')
+        }
+
+
+    }
 
     return (
         <div className="min-h-screen w-full bg-linear-to-b from-[#03000D] to-[#190473] flex items-center justify-center">
@@ -56,7 +92,7 @@ const UserRegisterPage = () => {
                             SIGN UP
                         </h1>
 
-                        <form className="space-y-4">
+                        <form className="space-y-4" onSubmit={handleSubmit}>
 
                             {/* Name  */}
 
@@ -98,7 +134,7 @@ const UserRegisterPage = () => {
                                 icon={<CheckCircle size={20} className="text-indigo-200" />}
                                 type="password"
                                 placeholder="Confirm Password"
-                                value={form.password}
+                                value={form.confirmPassword}
                                 onChange={handleChange("confirmPassword")}
                             />
 
