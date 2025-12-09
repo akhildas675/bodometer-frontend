@@ -2,7 +2,7 @@
 export interface RegisterPayload{
     name:string,
     email:string,
-    phone:string,
+    phoneNumber:string,
     password:string,
     confirmPassword:string
 }

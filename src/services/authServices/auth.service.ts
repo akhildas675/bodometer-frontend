@@ -1,16 +1,11 @@
 import { userInstance } from "../../api/axiosInstance";
+import type { ApiResponse } from "../../Interface/apiResponseInterface";
 import type { RegisterSuccessData, RegisterPayload } from "../../Interface/userInterface";
-
-export interface ApiResponse<T = unknown>{
-    success:boolean;
-    message:string;
-    data?:T;
-    error?:string;
-}
 
 //SRP
 class AuthService{
-    async registerUser(data:RegisterPayload):Promise<ApiResponse>{
+    async registerUser(data:RegisterPayload):Promise<ApiResponse<RegisterSuccessData>>{
+        console.log('Register payload in auth.services frontend...',data)
         const response = await userInstance.post<ApiResponse<RegisterSuccessData>>("/auth/register",data);
         return response.data
     }
