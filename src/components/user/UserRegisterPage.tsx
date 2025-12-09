@@ -38,15 +38,15 @@ const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
 
   // Basic frontend validation
-  if (
-    !form.name.trim() ||
-    !form.email.trim() ||
-    !form.phoneNumber.trim() ||
-    !form.password.trim()
-  ) {
-    toast.error("All fields are required");
-    return;
-  }
+  // if (
+  //   !form.name.trim() ||
+  //   !form.email.trim() ||
+  //   !form.phoneNumber.trim() ||
+  //   !form.password.trim()
+  // ) {
+  //   toast.error("All fields are required");
+  //   return;
+  // }
 
   if (form.password !== form.confirmPassword) {
     toast.error("Passwords do not match");
