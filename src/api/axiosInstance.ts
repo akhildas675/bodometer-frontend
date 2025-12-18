@@ -1,54 +1,59 @@
-import axios, { type AxiosInstance } from "axios";
+import axios from "axios";
 import { baseUrl } from "./baseUrl";
+import { useAuthStore } from "../stores/authStore";
 
+export const userInstance = axios.create({
+  baseURL: `${baseUrl}/api/user`,
+  withCredentials: true,
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
 
+// Attach access token
+userInstance.interceptors.request.use((config) => {
+  const token = useAuthStore.getState().accessToken;
 
-export type Role = "user" 
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
 
-const roleToTokenKey:Record<Role,string>={
-    user:"userAccessToken"
-}
+  return config;
+});
 
-const roleToRedirectPath:Record<Role,string>={
-    user: "/user/login",
-}
+// Handle refresh token
+userInstance.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
 
+    if (
+      error.response?.status === 401 &&
+      !originalRequest._retry
+    ) {
+      originalRequest._retry = true;
 
+      try {
+        const refreshRes = await axios.post(
+          `${baseUrl}/api/user/auth/refresh`,
+          {},
+          { withCredentials: true }
+        );
 
-//custom axios clients with specific config per role
+        const newAccessToken = refreshRes.data.accessToken;
 
-export function createAxiosInstance(role:Role):AxiosInstance{
-    const instance = axios.create({
-        baseURL:`${baseUrl}/api/${role}`,
-        withCredentials:true,
-        headers:{
-            "Content-Type":"application/json"
-        },
-    });
+        const store = useAuthStore.getState();
+        store.setAuth(newAccessToken, store.user!);
 
-    instance.interceptors.request.use((config)=>{
-        const tokenKey = roleToTokenKey[role];
-        const token = localStorage.getItem(tokenKey);
+        originalRequest.headers.Authorization =
+          `Bearer ${newAccessToken}`;
 
-        if(token){
-            config.headers = config.headers || {};
-            config.headers["Authorization"]=`Bearer ${token}`;
-        }
-        return config;
-    },
-    (error)=>Promise.reject(error)
-);
-
-
-instance.interceptors.response.use((response)=>response,(error)=>{
-    if(error.response?.status===401){
-        window.location.href=roleToRedirectPath[role];
+        return userInstance(originalRequest);
+      } catch {
+        useAuthStore.getState().clearAuth();
+      }
     }
+
     return Promise.reject(error);
-})
-
-return instance
-
-}
-
-export const userInstance = createAxiosInstance("user")
+  }
+);

@@ -1,16 +1,43 @@
-import { FaPaperPlane, FaBell, FaUserCircle } from 'react-icons/fa';
+import { FaPaperPlane, FaBell, FaUserCircle } from "react-icons/fa";
+
+import { useNavigate } from "react-router-dom";
+
+import authService from "../services/authServices/auth.service";
+import { useAuthStore } from "../stores/authStore";
 
 const Navbar = () => {
+  const { isAuthenticated, clearAuth } = useAuthStore();
+  const navigate = useNavigate();
+
+  const handleUserClick = async () => {
+    if (isAuthenticated) {
+      try {
+        await authService.logoutUser()
+        clearAuth();
+        navigate("/");
+      } catch (err) {
+        console.error("Logout failed", err);
+      }
+    } else {
+      navigate("/user-login");
+    }
+  };
+
   return (
     <nav
-      className="fixed top-6 left-8 right-8 z-50 max-w-6xl mx-auto flex items-center justify-between bg-linear-to-r from-[#a5a7ff98] to-[#45308F] rounded-full py-4 px-10 shadow-md"
-      style={{ background: 'rgba(60, 60, 150, 0.6)' }}
+      className="fixed top-6 left-8 right-8 z-50 max-w-6xl mx-auto flex items-center justify-between rounded-full py-4 px-10 shadow-md"
+      style={{ background: "rgba(60, 60, 150, 0.6)" }}
     >
-     
+      {/* Logo */}
       <div className="flex items-center space-x-2">
-        <img src="../../../public/Bodometer Logo corrected 1.png" alt="bodometer logo" className="h-8 mr-2" />
+        <img
+          src="/Bodometer Logo corrected 1.png"
+          alt="bodometer logo"
+          className="h-8 mr-2"
+        />
       </div>
-    
+
+      {/* Menu */}
       <div className="flex space-x-10 text-[#E1E1E1] text-lg">
         <span className="cursor-pointer hover:text-white">Home</span>
         <span className="cursor-pointer hover:text-white">Trainers</span>
@@ -18,10 +45,16 @@ const Navbar = () => {
         <span className="cursor-pointer hover:text-white">Subscription</span>
       </div>
 
+      {/* Icons */}
       <div className="flex items-center space-x-6">
         <FaPaperPlane className="text-[#268AFF] text-2xl cursor-pointer" />
         <FaBell className="text-[#268AFF] text-2xl cursor-pointer" />
-        <FaUserCircle className="text-[#268AFF] text-2xl cursor-pointer" />
+
+        {/* USER ICON */}
+        <FaUserCircle
+          className="text-[#268AFF] text-2xl cursor-pointer"
+          onClick={handleUserClick}
+        />
       </div>
     </nav>
   );

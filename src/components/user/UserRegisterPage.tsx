@@ -5,8 +5,9 @@ import InputWithIcon from "../ui/Input";
 import AuthService from "../../services/authServices/auth.service";
 import { toast } from "sonner";
 import axios, { AxiosError } from "axios";
-import type { ApiResponse } from "../../Interface/apiResponseInterface";
-import type { RegisterPayload, RegisterSuccessData } from "../../Interface/userInterface";
+import type { ApiResponse } from "../../interface/apiResponseInterface";
+import type { RegisterPayload, RegisterSuccessData } from "../../interface/userInterface";
+import PrimaryButton from "../ui/PrimaryButton";
 
 
 
@@ -19,7 +20,7 @@ const UserRegisterPage = () => {
     confirmPassword: "",
   });
 
-  const navigate=useNavigate()
+  const navigate = useNavigate()
 
   const [loading, setLoading] = useState(false);
 
@@ -27,86 +28,86 @@ const UserRegisterPage = () => {
     (
       field: keyof RegisterPayload
     ) =>
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      setForm((prev) => ({
-        ...prev,
-        [field]: e.target.value,
-      }));
+      (e: React.ChangeEvent<HTMLInputElement>) => {
+        setForm((prev) => ({
+          ...prev,
+          [field]: e.target.value,
+        }));
+      };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // Basic frontend validation
+    // if (
+    //   !form.name.trim() ||
+    //   !form.email.trim() ||
+    //   !form.phoneNumber.trim() ||
+    //   !form.password.trim()
+    // ) {
+    //   toast.error("All fields are required");
+    //   return;
+    // }
+
+    if (form.password !== form.confirmPassword) {
+      toast.error("Passwords do not match");
+      return;
+    }
+
+
+    const payload = {
+      name: form.name,
+      email: form.email,
+      phoneNumber: form.phoneNumber,
+      password: form.password,
+      confirmPassword: form.confirmPassword
     };
 
-const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
+    console.log("Register user payload........", payload);
 
-  // Basic frontend validation
-  // if (
-  //   !form.name.trim() ||
-  //   !form.email.trim() ||
-  //   !form.phoneNumber.trim() ||
-  //   !form.password.trim()
-  // ) {
-  //   toast.error("All fields are required");
-  //   return;
-  // }
+    try {
+      setLoading(true);
 
-  if (form.password !== form.confirmPassword) {
-    toast.error("Passwords do not match");
-    return;
-  }
+      const result: ApiResponse<RegisterSuccessData> =
+        await AuthService.registerUser(payload);
 
-
-  const payload = {
-    name: form.name,
-    email: form.email,
-    phoneNumber: form.phoneNumber,
-    password: form.password,
-    confirmPassword:form.confirmPassword
-  };
-
-  console.log("Register user payload........", payload);
-
-  try {
-    setLoading(true);
-
-    const result: ApiResponse<RegisterSuccessData> =
-      await AuthService.registerUser(payload);
-
-    if (result.success && result.data) {
+      if (result.success && result.data) {
         navigate('/')
-      toast.success(result.message || "Registered successfully");
-      setForm({
-        name: "",
-        email: "",
-        phoneNumber: "",
-        password: "",
-        confirmPassword: "",
-      });
+        toast.success(result.message || "Registered successfully");
+        setForm({
+          name: "",
+          email: "",
+          phoneNumber: "",
+          password: "",
+          confirmPassword: "",
+        });
 
-    } else {
-      toast.error(result.message || "Registration failed");
+      } else {
+        toast.error(result.message || "Registration failed");
+      }
+    } catch (err: unknown) {
+      console.error(err);
+
+      let message = "Request failed";
+
+
+      if (axios.isAxiosError<ApiResponse<RegisterSuccessData>>(err)) {
+        const axiosErr = err as AxiosError<ApiResponse<RegisterSuccessData>>;
+
+        const data = axiosErr.response?.data;
+
+        message =
+          data?.message ||
+          data?.errors ||
+          axiosErr.message ||
+          message;
+      }
+
+      toast.error(message);
+    } finally {
+      setLoading(false);
     }
-  } catch (err: unknown) {
-    console.error(err);
-
-    let message = "Request failed";
-
- 
-    if (axios.isAxiosError<ApiResponse<RegisterSuccessData>>(err)) {
-      const axiosErr = err as AxiosError<ApiResponse<RegisterSuccessData>>;
-
-      const data = axiosErr.response?.data;
-
-      message =
-        data?.message ||
-        data?.errors || 
-        axiosErr.message ||
-        message;
-    }
-
-    toast.error(message);
-  } finally {
-    setLoading(false);
-  }
-};
+  };
   return (
     <div className="min-h-screen w-full bg-linear-to-b from-[#03000D] to-[#190473] flex items-center justify-center">
       <div className="w-full max-w-6xl h-[600px] rounded-3xl overflow-hidden shadow-2xl flex bg-linear-to-b from-[#03000D] to-[#190473]">
@@ -177,15 +178,8 @@ const handleSubmit = async (e: React.FormEvent) => {
                 onChange={handleChange("confirmPassword")}
               />
 
-              <button
-                type="submit"
-                disabled={loading}
-                className={`w-full mt-2 rounded-full bg-linear-to-r from-[#7c3aed] to-[#a855f7] py-3 text-sm font-semibold text-white shadow-lg shadow-purple-900/50 hover:scale-[1.02] transition-transform ${
-                  loading ? "opacity-70 cursor-not-allowed" : ""
-                }`}
-              >
-                {loading ? "Registering..." : "Register"}
-              </button>
+              <PrimaryButton text="Register" type="submit" loading={loading} />
+
             </form>
 
             <div className="flex items-center gap-4 my-6">
