@@ -131,12 +131,12 @@ const UserLoginPage = () => {
                         </div>
 
                         <p className="text-center text-xs sm:text-sm text-slate-200">
-                            If already you have an account, please{" "}
+                            If you don't have an account, please{" "}
                             <Link
-                                to="/login"
+                                to="/user-register"
                                 className="font-semibold text-indigo-400 hover:underline"
                             >
-                                Login
+                                Register
                             </Link>
                         </p>
                     </div>

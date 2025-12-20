@@ -24,6 +24,12 @@ export interface LoginPayload {
   password: string;
 }
 
+export interface VerifyOtpPayload{
+  email:string | null,
+  otp:string | null;
+  userData:RegisterPayload | null;
+}
+
 /* -------- Responses -------- */
 
 export interface RegisterSuccessData {
@@ -43,3 +49,13 @@ export interface LoginSuccessData {
     profilePic?: string | null;
   };
 }
+
+
+export interface ResendOtpResponse {
+  success: boolean;
+  message: string;
+}
+
+
+
+

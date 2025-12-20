@@ -5,6 +5,7 @@ import HomePage from "../pages/user/HomePage";
 import LoginPage from "../pages/user/LoginPage";
 import ProtectedRoute from "./ProtectedRoute";
 import Dashboard from "../pages/user/Dashboard";
+import OtpVerifyPage from "../pages/user/OtpVerifyPage";
 
 
 const UserRoutes = () => {
@@ -18,6 +19,7 @@ const UserRoutes = () => {
         </Route>
 
         {/* AUTH PAGES (PUBLIC) */}
+          <Route path="/user-otp" element={<OtpVerifyPage/>} />
         <Route path="/user-login" element={<LoginPage />} />
         <Route path="/user-register" element={<RegisterPage />} />
 

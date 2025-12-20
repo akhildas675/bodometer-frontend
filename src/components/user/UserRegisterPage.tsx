@@ -8,6 +8,7 @@ import axios, { AxiosError } from "axios";
 import type { ApiResponse } from "../../interface/apiResponseInterface";
 import type { RegisterPayload, RegisterSuccessData } from "../../interface/userInterface";
 import PrimaryButton from "../ui/PrimaryButton";
+import { useOtpStore } from "../../stores/otpStore";
 
 
 
@@ -21,6 +22,8 @@ const UserRegisterPage = () => {
   });
 
   const navigate = useNavigate()
+  const { setOtpSession } = useOtpStore();
+
 
   const [loading, setLoading] = useState(false);
 
@@ -72,7 +75,8 @@ const UserRegisterPage = () => {
         await AuthService.registerUser(payload);
 
       if (result.success && result.data) {
-        navigate('/')
+        setOtpSession(form.email, payload);
+        navigate('/user-otp')
         toast.success(result.message || "Registered successfully");
         setForm({
           name: "",
@@ -193,7 +197,7 @@ const UserRegisterPage = () => {
             <p className="text-center text-xs sm:text-sm text-slate-200">
               If already you have an account, please{" "}
               <Link
-                to="/login"
+                to="/user-login"
                 className="font-semibold text-indigo-400 hover:underline"
               >
                 Login
