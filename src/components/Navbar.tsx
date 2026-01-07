@@ -2,8 +2,9 @@ import { FaPaperPlane, FaBell, FaUserCircle } from "react-icons/fa";
 
 import { useNavigate } from "react-router-dom";
 
-import authService from "../services/authServices/auth.service";
-import { useAuthStore } from "../stores/authStore";
+
+import { useAuthStore } from "../stores/auth.store";
+import { toast } from "sonner";
 
 const Navbar = () => {
   const { isAuthenticated, clearAuth } = useAuthStore();
@@ -12,14 +13,15 @@ const Navbar = () => {
   const handleUserClick = async () => {
     if (isAuthenticated) {
       try {
-        await authService.logoutUser()
+
+        toast.message('User logout successfully')
         clearAuth();
         navigate("/");
-      } catch (err) {
-        console.error("Logout failed", err);
+      } catch  {
+        toast.error("Logout failed");
       }
     } else {
-      navigate("/user-login");
+      navigate("/login");
     }
   };
 

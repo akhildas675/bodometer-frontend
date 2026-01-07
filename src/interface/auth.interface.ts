@@ -1,0 +1,73 @@
+import type { Role } from "../constants/role";
+
+
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  role:Role
+  profilePic: string | null;
+}
+
+export interface RegisterPayload{
+    name:string,
+    email:string,
+    phoneNumber:string,
+    password:string,
+    confirmPassword:string,
+}
+
+
+
+export interface RegisterResponse {
+  id: string;
+  name: string;
+  email: string;
+  role: Role
+}
+
+
+export interface LoginPayload{
+    email:string,
+    password:string
+}
+
+
+export interface LoginResponseData {
+  user: User;
+  accessToken: string;
+}
+
+
+export interface AuthRegisterPageProps {
+  role: Exclude<Role, "admin">;
+}
+
+export interface AuthOtpPageProps{
+  role:Exclude<Role,"admin">
+}
+
+
+export interface ForgotPasswordPayload{
+  email:string;
+}
+
+export interface ForgotPasswordResponse {
+  role: "user" | "trainer";
+  success: true;
+  message: string;
+  data: {
+    role: Exclude<Role,"admin"> | null;
+  };
+}
+
+export interface ResetPasswordPayload {
+  email: string;
+  password: string;
+  purpose: "FORGET_PASSWORD";
+}
+
+export interface ResetPasswordResponse {
+  success: boolean;
+  message: string;
+}
