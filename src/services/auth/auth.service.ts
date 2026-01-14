@@ -1,6 +1,6 @@
 import { authInstance } from "../../api/auth.instance";
 import type { ApiResponse } from "../../interface/api-response.interface";
-import type { LoginResponseData, LoginPayload, RegisterPayload, RegisterResponse, ForgotPasswordPayload, ForgotPasswordResponse, ResetPasswordPayload, ResetPasswordResponse } from "../../interface/auth.interface";
+import type { LoginResponseData, LoginPayload, RegisterPayload, RegisterResponse, ForgotPasswordPayload, ForgotPasswordResponse, ResetPasswordPayload, ResetPasswordResponse,GoogleLoginPayload, GoogleLoginResponse } from "../../interface/auth.interface";
 import { type Role } from "../../constants/role";
 import type { OtpResendPayload, OtpVerifyPayload, OtpVerifyResponse } from "../../interface/otp.interface";
 
@@ -39,6 +39,12 @@ class AuthService {
 
     async resetPassword(data: ResetPasswordPayload) {
         const response = await authInstance.post<ApiResponse<ResetPasswordResponse>>("/reset-password", data);
+        return response.data;
+    }
+
+    async googleLogin(data:GoogleLoginPayload){
+        const response = await authInstance.
+        post<ApiResponse<GoogleLoginResponse>>("/google-login", data)
         return response.data;
     }
 }

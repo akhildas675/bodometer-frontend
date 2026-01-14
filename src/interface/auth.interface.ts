@@ -53,7 +53,7 @@ export interface ForgotPasswordPayload{
 }
 
 export interface ForgotPasswordResponse {
-  role: "user" | "trainer";
+  role: Role
   success: true;
   message: string;
   data: {
@@ -70,4 +70,18 @@ export interface ResetPasswordPayload {
 export interface ResetPasswordResponse {
   success: boolean;
   message: string;
+}
+
+export interface GoogleLoginPayload {
+  idToken: string;
+}
+
+export interface GoogleLoginResponse {
+  user: {
+    id: string;
+    name: string;
+    email: string;
+    role: Role;
+  };
+  accessToken: string;
 }
