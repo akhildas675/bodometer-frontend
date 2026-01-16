@@ -7,7 +7,7 @@ import authService from "../../services/auth/auth.service";
 import PrimaryButton from "../ui/primary.button";
 import { useAuthStore } from "../../stores/auth.store";
 import { Mail, Lock } from "lucide-react";
-import { GoogleLogin } from "@react-oauth/google"
+import { GoogleLogin } from "@react-oauth/google";
 
 const AuthLoginPage = () => {
   const [loading, setLoading] = useState(false);
@@ -71,30 +71,26 @@ const AuthLoginPage = () => {
   };
 
   const handleGoogleSuccess = async (credential: string) => {
-    console.log("creeeedentia",credential)
-  try {
-    const result = await authService.googleLogin({
-      idToken: credential, 
-    });
+    try {
+      const result = await authService.googleLogin({
+        idToken: credential,
+      });
 
-    const { user, accessToken } = result.data;
+      const { user, accessToken } = result.data;
 
-    useAuthStore.getState().setAuth({ user, accessToken });
+      useAuthStore.getState().setAuth({ user, accessToken });
 
-    if (user.role === "trainer") {
-      navigate("/trainer/dashboard", { replace: true });
-    } else if (user.role === "admin") {
-      navigate("/admin/dashboard", { replace: true });
-    } else {
-      navigate("/", { replace: true });
+      if (user.role === "trainer") {
+        navigate("/trainer/dashboard", { replace: true });
+      } else if (user.role === "admin") {
+        navigate("/admin/dashboard", { replace: true });
+      } else {
+        navigate("/", { replace: true });
+      }
+    } catch {
+      toast.error("Google login failed");
     }
-  } catch {
-    toast.error("Google login failed");
-  }
-};
-
-
-  
+  };
 
   return (
     <div className="min-h-screen w-full bg-linear-to-b from-[#03000D] to-[#190473] flex items-center justify-center">
@@ -161,17 +157,17 @@ const AuthLoginPage = () => {
             </div>
 
             <div className="mt-4 flex justify-center">
-  <GoogleLogin
-    onSuccess={(res) => {
-      if (!res.credential) {
-        toast.error("Google login failed");
-        return;
-      }
-      handleGoogleSuccess(res.credential);
-    }}
-    onError={() => toast.error("Google login failed")}
-  />
-</div>
+              <GoogleLogin
+                onSuccess={(res) => {
+                  if (!res.credential) {
+                    toast.error("Google login failed");
+                    return;
+                  }
+                  handleGoogleSuccess(res.credential);
+                }}
+                onError={() => toast.error("Google login failed")}
+              />
+            </div>
 
             <div className="flex items-center gap-4 my-6">
               <div className="h-px flex-1 bg-slate-600" />
