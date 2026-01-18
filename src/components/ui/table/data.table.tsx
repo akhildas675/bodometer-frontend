@@ -40,10 +40,9 @@ export default function DataTable<T>({
             >
               {columns.map((col) => (
                 <td key={String(col.key)} className="px-4 py-3">
-                  {col.render
-                    ? col.render(row)
-                    : String((row as unknown)[col.key])}
-                </td>
+  {col.render ? col.render(row) : String(row[col.key])}
+</td>
+
               ))}
 
               {actions && (

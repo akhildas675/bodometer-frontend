@@ -3,9 +3,9 @@ import type { AdminGetUsersResponse } from "../../interface/admin.interface";
 import type { ApiResponse } from "../../interface/api-response.interface";
 
 class AdminService {
-    async getUsers(): Promise<ApiResponse<AdminGetUsersResponse>> {
+    async getUsers(): Promise<ApiResponse<AdminGetUsersResponse[]>> {
         const response = await adminApi.
-            get<ApiResponse<AdminGetUsersResponse>>("/get-users");
+            get<ApiResponse<AdminGetUsersResponse[]>>("/get-users");
         return response.data
     }
 
