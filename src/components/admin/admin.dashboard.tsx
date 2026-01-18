@@ -1,63 +1,18 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
+
 import { useAuthStore } from "../../stores/auth.store";
+import SidebarLayout from "../ui/app.sidebar/sidebar.layout";
 
 const AdminDashboard = () => {
-  const navigate = useNavigate();
-  const clearAuth = useAuthStore((state) => state.clearAuth);
+  const role = useAuthStore((state) => state.user?.role);
 
-  const handleLogout = () => {
-    clearAuth(); 
-    navigate("/", { replace: true }); 
-  };
+  if (!role) return null; 
+
+
+
+
   return (
-    <div className="min-h-screen bg-[#050017] flex">
-      {/* SIDEBAR */}
-      <aside className="w-64 bg-gradient-to-b from-[#1a0b3a] to-[#12062a] rounded-r-[40px] p-6 text-white flex flex-col justify-between">
-        <div>
-          {/* Logo */}
-          <div className="text-2xl font-bold text-sky-400 mb-10">
-            bodo<span className="text-blue-500">meter</span>
-          </div>
-
-          {/* Admin Info */}
-          <div className="flex flex-col items-center mb-10">
-            <div className="h-20 w-20 rounded-full bg-purple-600 flex items-center justify-center text-2xl font-bold">
-              A
-            </div>
-            <h3 className="mt-3 font-semibold">Admin</h3>
-            <p className="text-xs text-slate-300">admin@bodometer.com</p>
-          </div>
-
-          {/* MENU */}
-          <nav className="space-y-4 text-sm">
-            {[
-              "Users",
-              "Trainers",
-            ].map((item) => (
-              <div
-                key={item}
-                className={`px-4 py-2 rounded-lg cursor-pointer ${
-                  item === "Dashboard" ? "bg-purple-600" : "hover:bg-white/10"
-                }`}
-              >
-                {item}
-              </div>
-            ))}
-          </nav>
-        </div>
-
-        {/* LOGOUT */}
-        <button
-          onClick={handleLogout}
-          className="mt-6 w-full py-2 rounded-lg bg-red-600/80 hover:bg-red-600 transition text-sm font-semibold"
-        >
-          Logout
-        </button>
-      </aside>
-
-      {/* MAIN CONTENT */}
-      <main className="flex-1 p-10 text-white">
+    <SidebarLayout role={role}>
+      <div className="text-white">
         {/* HEADER */}
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-2xl font-semibold">Admin Dashboard</h1>
@@ -140,8 +95,8 @@ const AdminDashboard = () => {
             </table>
           </div>
         </div>
-      </main>
-    </div>
+      </div>
+    </SidebarLayout>
   );
 };
 

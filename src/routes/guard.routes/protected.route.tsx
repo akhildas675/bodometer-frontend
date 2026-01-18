@@ -14,11 +14,18 @@ const ProtectedRoute = ({ allowedRoles }: Props) => {
   }
 
   if (!allowedRoles.includes(user.role)) {
-    return <Navigate to="/" replace />;
+   
+    switch (user.role) {
+      case "admin":
+        return <Navigate to="/admin/dashboard" replace />;
+      case "trainer":
+        return <Navigate to="/trainer/dashboard" replace />;
+      default:
+        return <Navigate to="/" replace />;
+    }
   }
 
   return <Outlet />;
 };
-
 
 export default ProtectedRoute;

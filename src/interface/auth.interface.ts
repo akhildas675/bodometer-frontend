@@ -2,6 +2,8 @@ import type { Role } from "../constants/role";
 
 
 export interface User {
+  createdAt: string | number | Date;
+  isActive: boolean;
   id: string;
   name: string;
   email: string;

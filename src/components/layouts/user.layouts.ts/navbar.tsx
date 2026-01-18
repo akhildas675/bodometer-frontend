@@ -3,8 +3,8 @@ import { FaPaperPlane, FaBell, FaUserCircle } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
 
-import { useAuthStore } from "../stores/auth.store";
 import { toast } from "sonner";
+import { useAuthStore } from "../../../stores/auth.store";
 
 const Navbar = () => {
   const { isAuthenticated, clearAuth } = useAuthStore();

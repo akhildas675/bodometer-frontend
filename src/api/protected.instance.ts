@@ -20,6 +20,7 @@ export function createProtectedAxios(role: Role): AxiosInstance {
 
   instance.interceptors.request.use((config) => {
     const { accessToken } = useAuthStore.getState();
+    console.log("Access token from protected.instance....",accessToken)
 
     if (accessToken) {
       config.headers = config.headers ?? {};

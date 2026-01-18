@@ -1,34 +1,23 @@
-import { BrowserRouter } from 'react-router-dom';
-import { Toaster } from 'sonner';
-import AuthRoute from './auth/auth.route';
-import TrainerRoute from './trainer/trainer.route';
-import UserRoute from './user/user.route';
-import PublicRoutes from './public/public.routes';
-import AdminRoute from './admin/admin.route';
+import { BrowserRouter, Routes } from "react-router-dom";
+import { authRoutes } from "./auth/auth.route";
+import { adminRoutes } from "./admin/admin.route";
+import { trainerRoutes } from "./trainer/trainer.route";
+import { userRoutes } from "./user/user.route";
+import { publicRoutes } from "./public/public.routes";
+
 
 const AppRoutes = () => {
-    return (
-       <BrowserRouter>
-      <Toaster
-        position="top-right"
-        toastOptions={{
-          style: {
-            backgroundColor: "#03000D",
-            color: "#fff",
-            border: "1px solid #190473",
-          },
-        }}
-      />
-
-      <AuthRoute/>
-      <TrainerRoute/>
-      <UserRoute/>
-      <PublicRoutes/>
-      <AdminRoute/>
-      
-   
+  return (
+    <BrowserRouter>
+      <Routes>
+        {authRoutes}
+        {adminRoutes}
+        {trainerRoutes}
+        {userRoutes}
+        {publicRoutes}
+      </Routes>
     </BrowserRouter>
-    );
-}
+  );
+};
 
 export default AppRoutes;

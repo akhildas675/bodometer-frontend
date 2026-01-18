@@ -1,18 +1,13 @@
-import { Routes, Route } from "react-router-dom";
+import { Route } from "react-router-dom";
 import MainLayouts from "../../../components/layouts/MainLayouts";
 import UserHomePage from "../../../pages/user/user-home.page";
-import RoleRedirectRoute from "../../guard.routes/role-redirect.route";
+import PublicGuard from "../../guard.routes/public-guard.routes";
 
-const PublicRoutes = () => {
-  return (
-    <Routes>
-      <Route element={<RoleRedirectRoute />}>
-        <Route element={<MainLayouts />}>
-          <Route path="/" element={<UserHomePage />} />
-        </Route>
-      </Route>
-    </Routes>
-  );
-};
 
-export default PublicRoutes;
+export const publicRoutes = (
+  <Route element={<PublicGuard />}>
+    <Route element={<MainLayouts />}>
+      <Route path="/" element={<UserHomePage />} />
+    </Route>
+  </Route>
+);
