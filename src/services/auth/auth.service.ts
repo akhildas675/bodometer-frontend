@@ -1,8 +1,9 @@
 import { authInstance } from "../../api/auth.instance";
 import type { ApiResponse } from "../../interface/api-response.interface";
-import type { LoginResponseData, LoginPayload, RegisterPayload, RegisterResponse, ForgotPasswordPayload, ForgotPasswordResponse, ResetPasswordPayload, ResetPasswordResponse,GoogleLoginPayload, GoogleLoginResponse } from "../../interface/auth.interface";
+import type { LoginResponseData, LoginPayload, RegisterPayload, RegisterResponse, ForgotPasswordPayload, ForgotPasswordResponse, ResetPasswordPayload, ResetPasswordResponse, GoogleLoginPayload, GoogleLoginResponse } from "../../interface/auth.interface";
 import { type Role } from "../../constants/role";
 import type { OtpResendPayload, OtpVerifyPayload, OtpVerifyResponse } from "../../interface/otp.interface";
+import { useAuthStore } from "../../stores/auth.store";
 
 //SRP
 class AuthService {
@@ -24,6 +25,11 @@ class AuthService {
 
     async login(data: LoginPayload): Promise<ApiResponse<LoginResponseData>> {
         const response = await authInstance.post<ApiResponse<LoginResponseData>>("/login", data);
+        if (response.data.success && response.data.data) {
+            const { accessToken, user } = response.data.data;
+            useAuthStore.getState().setAuth({ accessToken, user });
+        }
+
         return response.data;
     }
 
@@ -42,9 +48,12 @@ class AuthService {
         return response.data;
     }
 
-    async googleLogin(data:GoogleLoginPayload){
-        const response = await authInstance.
-        post<ApiResponse<GoogleLoginResponse>>("/google-login", data)
+    async googleLogin(data: GoogleLoginPayload) {
+        const response = await authInstance.post<ApiResponse<GoogleLoginResponse>>("/google-login", data)
+        if (response.data.success && response.data.data) {
+            const { accessToken, user } = response.data.data;
+            useAuthStore.getState().setAuth({ accessToken, user });
+        }
         return response.data;
     }
 }

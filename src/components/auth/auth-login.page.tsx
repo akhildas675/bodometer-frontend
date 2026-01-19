@@ -30,68 +30,73 @@ const AuthLoginPage = () => {
     password: form.password,
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (loading) return;
+ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  e.preventDefault();
+  if (loading) return;
 
-    if (!form.email) return toast.error("Email is required");
-    if (!form.password) return toast.error("Password is required");
+  if (!form.email) return toast.error("Email is required");
+  if (!form.password) return toast.error("Password is required");
 
-    setLoading(true);
+  setLoading(true);
 
-    try {
-      const result = await authService.login(payload);
+  try {
+    const result = await authService.login(payload);
 
-      const { user, accessToken } = result.data;
+    const { user, accessToken } = result.data;
 
-      useAuthStore.getState().setAuth({
-        user,
-        accessToken,
-      });
+    useAuthStore.getState().setAuth({
+      user,
+      accessToken,
+    });
 
-      let redirectPath = "/";
+    // Personalized success toast
+    toast.success(`Welcome back, ${user.name || 'User'}! `);
 
-      if (user.role === "trainer") {
-        redirectPath = "/trainer/dashboard";
-      } else if (user.role === "admin") {
-        redirectPath = "/admin/dashboard";
-      } else if (user.role === "user") {
-        redirectPath = "/";
-      } else {
-        toast.error("Unknown role");
-        return;
-      }
+    let redirectPath = "/";
 
-      navigate(redirectPath, { replace: true });
-    } catch {
-      toast.error("Login failed");
-    } finally {
-      setLoading(false);
+    if (user.role === "trainer") {
+      redirectPath = "/trainer/dashboard";
+    } else if (user.role === "admin") {
+      redirectPath = "/admin/dashboard";
+    } else if (user.role === "user") {
+      redirectPath = "/";
+    } else {
+      toast.error("Unknown role");
+      return;
     }
-  };
 
-  const handleGoogleSuccess = async (credential: string) => {
-    try {
-      const result = await authService.googleLogin({
-        idToken: credential,
-      });
+    navigate(redirectPath, { replace: true });
+  } catch{
+    toast.error("Login failed. Please check your credentials.");
+  } finally {
+    setLoading(false);
+  }
+};
 
-      const { user, accessToken } = result.data;
+const handleGoogleSuccess = async (credential: string) => {
+  try {
+    const result = await authService.googleLogin({
+      idToken: credential,
+    });
 
-      useAuthStore.getState().setAuth({ user, accessToken });
+    const { user, accessToken } = result.data;
 
-      if (user.role === "trainer") {
-        navigate("/trainer/dashboard", { replace: true });
-      } else if (user.role === "admin") {
-        navigate("/admin/dashboard", { replace: true });
-      } else {
-        navigate("/", { replace: true });
-      }
-    } catch {
-      toast.error("Google login failed");
+    useAuthStore.getState().setAuth({ user, accessToken });
+
+    // Personalized success toast
+    toast.success(`Welcome back, ${user.name || 'User'}!`);
+
+    if (user.role === "trainer") {
+      navigate("/trainer/dashboard", { replace: true });
+    } else if (user.role === "admin") {
+      navigate("/admin/dashboard", { replace: true });
+    } else {
+      navigate("/", { replace: true });
     }
-  };
-
+  } catch {
+    toast.error("Google login failed. Please try again.");
+  }
+};
   return (
     <div className="min-h-screen w-full bg-linear-to-b from-[#03000D] to-[#190473] flex items-center justify-center">
       <div className="w-full max-w-6xl h-[600px] rounded-3xl overflow-hidden shadow-2xl flex bg-linear-to-b from-[#03000D] to-[#190473]">

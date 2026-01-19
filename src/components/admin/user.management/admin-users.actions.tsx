@@ -13,7 +13,7 @@ export const useUserActions = (
       visible: (user) => !user.isBlocked,
       onClick: async (user) => {
         try {
-          console.log("Blocking user id 👉", user.id);
+          console.log("Blocking user id...", user.id);
           await adminServices.blockUser(user.id);
           toast.success("User blocked");
           refreshUsers();
@@ -27,7 +27,7 @@ export const useUserActions = (
       visible: (user) => user.isBlocked,
       onClick: async (user) => {
         try {
-          console.log("Unblocking user id 👉", user.id);
+          console.log("Unblocking user id....", user.id);
           await adminServices.unblockUser(user.id);
           toast.success("User unblocked");
           refreshUsers();

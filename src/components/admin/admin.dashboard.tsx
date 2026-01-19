@@ -16,7 +16,7 @@ const AdminDashboard = () => {
         {/* HEADER */}
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-2xl font-semibold">Admin Dashboard</h1>
-          <span className="text-sm text-green-400">System Healthy</span>
+    
         </div>
 
         {/* KPI CARDS */}
