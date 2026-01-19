@@ -1,12 +1,11 @@
 import { useEffect, useState, useCallback } from "react";
 import SidebarLayout from "../../ui/app.sidebar/sidebar.layout";
 import { useAuthStore } from "../../../stores/auth.store";
-
-import { userColumns } from "./admin-users.columns";
 import { useUserActions } from "./admin-users.actions";
 import adminServices from "../../../services/admin/admin.services";
 import type { AdminGetUsersResponse } from "../../../interface/admin.interface";
 import DataTable from "../../ui/table/data.table";
+import { tableColumns } from "../../ui/table/table.columns";
 
 const AdminUsersManagement = () => {
   const user = useAuthStore((state) => state.user);
@@ -45,7 +44,7 @@ const AdminUsersManagement = () => {
           <p>Loading users...</p>
         ) : (
           <DataTable<AdminGetUsersResponse>
-            columns={userColumns}
+            columns={tableColumns}
             data={users}
             actions={actions}
           />

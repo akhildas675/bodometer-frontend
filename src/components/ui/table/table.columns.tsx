@@ -2,7 +2,7 @@
 import type { TableColumn } from "../../ui/table/table.types";
 import type { AdminGetUsersResponse } from "../../../interface/admin.interface";
 
-export const userColumns: TableColumn<AdminGetUsersResponse>[] = [
+export const tableColumns: TableColumn<AdminGetUsersResponse>[] = [
   { key: "name", label: "Name" },
   { key: "email", label: "Email" },
   { key: "role", label: "Role" },
