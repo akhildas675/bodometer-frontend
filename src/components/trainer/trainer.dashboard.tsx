@@ -1,13 +1,43 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../../stores/auth.store";
+import { toast } from "sonner";
+import authInitService from "../../services/auth/auth-init.service";
 
 const TrainerDashboard = () => {
-  const navigate = useNavigate();
-  const clearAuth = useAuthStore((state) => state.clearAuth);
-  const handleLogout = () => {
-    clearAuth(); 
-    navigate("/", { replace: true }); 
+  const navigator = useNavigate();
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+ const handleLogout = async () => {
+    try {
+      setIsLoggingOut(true);
+      
+      
+      const loadingToast = toast.loading("Logging out...");
+
+      await authInitService.logout();
+
+   
+      toast.dismiss(loadingToast);
+      toast.success("Logged out successfully!");
+      setTimeout(() => {
+        navigator("/login", { replace: true });
+      }, 500);
+    } catch (error) {
+      console.error("Logout error:", error);
+      
+      
+      useAuthStore.getState().clearAuth();
+      
+      toast.error("Logout failed, but you've been signed out locally");
+      
+      setTimeout(() => {
+        navigator("/login", { replace: true });
+      }, 500);
+    } finally {
+      setIsLoggingOut(false);
+      
+    }
   };
   return (
     <div className="min-h-screen bg-[#050017] flex">
@@ -57,6 +87,7 @@ const TrainerDashboard = () => {
         <button
           onClick={handleLogout}
           className="mt-6 w-full py-2 rounded-lg bg-red-600/80 hover:bg-red-600 transition text-sm font-semibold"
+          disabled={isLoggingOut}
         >
           Logout
         </button>

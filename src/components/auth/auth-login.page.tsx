@@ -8,6 +8,8 @@ import PrimaryButton from "../ui/primary.button";
 import { useAuthStore } from "../../stores/auth.store";
 import { Mail, Lock } from "lucide-react";
 import { GoogleLogin } from "@react-oauth/google";
+import axios from "axios";
+
 
 const AuthLoginPage = () => {
   const [loading, setLoading] = useState(false);
@@ -41,6 +43,7 @@ const AuthLoginPage = () => {
 
   try {
     const result = await authService.login(payload);
+    console.log("Result of login",result)
 
     const { user, accessToken } = result.data;
 
@@ -66,8 +69,25 @@ const AuthLoginPage = () => {
     }
 
     navigate(redirectPath, { replace: true });
-  } catch{
-    toast.error("Login failed. Please check your credentials.");
+  } catch (error){
+   if (axios.isAxiosError(error) && error.response) {
+        const errorMessage = error.response.data?.message || "Login failed";
+        
+      
+        if (error.response.status === 403) {
+          toast.error(errorMessage, {
+            duration: 5000,
+            style: {
+              background: "#ef4444",
+              color: "#fff",
+            },
+          });
+        } else {
+          toast.error(errorMessage);
+        }
+      } else {
+        toast.error("Login failed. Please check your credentials.");
+      }
   } finally {
     setLoading(false);
   }
@@ -83,7 +103,7 @@ const handleGoogleSuccess = async (credential: string) => {
 
     useAuthStore.getState().setAuth({ user, accessToken });
 
-    // Personalized success toast
+    
     toast.success(`Welcome back, ${user.name || 'User'}!`);
 
     if (user.role === "trainer") {
@@ -93,8 +113,28 @@ const handleGoogleSuccess = async (credential: string) => {
     } else {
       navigate("/", { replace: true });
     }
-  } catch {
-    toast.error("Google login failed. Please try again.");
+  } catch (error) {
+    
+    if (axios.isAxiosError(error) && error.response) {
+        const errorMessage = error.response.data?.message || "Login failed";
+        
+      
+        if (error.response.status === 403) {
+          toast.error(errorMessage, {
+            duration: 5000,
+            style: {
+              background: "#ef4444",
+              color: "#fff",
+            },
+          });
+        } else {
+          toast.error(errorMessage);
+        }
+      } else {
+        toast.error("Login failed. Please check your credentials.");
+      }
+  } finally {
+    setLoading(false);
   }
 };
   return (
