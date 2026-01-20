@@ -1,5 +1,5 @@
 import { adminApi } from "../../api/api.instance";
-import type { AdminGetUsersResponse } from "../../interface/admin.interface";
+import type { AdminGetTrainersResponse, AdminGetUsersResponse } from "../../interface/admin.interface";
 import type { ApiResponse } from "../../interface/api-response.interface";
 
 class AdminService {
@@ -22,8 +22,34 @@ class AdminService {
         const response = await adminApi.patch<ApiResponse<null>>(
             `/users/${userId}/unblock`
         );
+        console.log(response.data)
         return response.data;
     }
+
+    async getTrainers():Promise<ApiResponse<AdminGetTrainersResponse[]>>{
+        const response = await adminApi.get<ApiResponse<AdminGetTrainersResponse[]>>("/get-trainers");
+        return response.data
+    }
+
+    async blockTrainer(trainerId:string):Promise<ApiResponse<null>>{
+        console.log("trainer id... frontend",trainerId)
+        const response = await adminApi.patch<ApiResponse<null>>(
+            `/trainer/${trainerId}/block`
+        );
+        console.log(response.data)
+        return response.data
+    }
+
+    async unblockTrainer(trainerId:string):Promise<ApiResponse<null>>{
+        console.log("trainer id...frontend",trainerId)
+        const response = await adminApi.patch<ApiResponse<null>>(
+            `trainer/${trainerId}/unblock`
+        );
+        console.log(response.data)
+        return response.data
+    }
+
+
 }
 
 

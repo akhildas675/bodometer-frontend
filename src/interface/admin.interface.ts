@@ -17,3 +17,11 @@ export interface AdminGetUsersResponse{
   isBlocked: boolean; 
   createdAt: string
 }
+
+export interface AdminGetTrainersRequest extends AdminGetUsersRequest {
+  role?: "trainer";
+}
+
+export interface AdminGetTrainersResponse extends AdminGetUsersResponse {
+  role: "trainer";
+}
