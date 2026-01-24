@@ -5,18 +5,21 @@ import { useUserActions } from "./admin-users.actions";
 import adminServices from "../../../services/admin/admin.services";
 import type { AdminGetUsersResponse } from "../../../interface/admin.interface";
 import DataTable from "../../ui/table/data.table";
-import { useFetch } from "../../../hooks/userFetch";
+import { useTableFetch } from "../../../hooks/useTableFetch";
+
+
 
 const AdminUsersManagement = () => {
   const user = useAuthStore((state) => state.user);
 
-  const {
-    data: users,
-    loading,
-    refetch,
-  } = useFetch<AdminGetUsersResponse[]>(() =>
-    adminServices.getUsers().then((res) => res.data),
-  );
+ const {
+  data: users,
+  loading,
+  refetch,
+} = useTableFetch<AdminGetUsersResponse[]>(
+  () => adminServices.getUsers().then(res => res.data)
+);
+
   const actions = useUserActions(refetch);
 
   if (!user) {

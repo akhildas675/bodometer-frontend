@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState, useRef } from "react";
 
 type FetchFn<T> = () => Promise<T>
 
-export function useFetch<T>(fetchFn: FetchFn<T>, auto = true) {
+export function useTableFetch<T>(fetchFn: FetchFn<T>, auto = true) {
     const [data, setData] = useState<T>([] as T);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<unknown>(null);

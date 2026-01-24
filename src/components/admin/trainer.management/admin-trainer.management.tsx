@@ -1,11 +1,11 @@
 import { useAuthStore } from "../../../stores/auth.store";
 import type { AdminGetTrainersResponse } from "../../../interface/admin.interface";
-import { useFetch } from "../../../hooks/userFetch";
 import adminServices from "../../../services/admin/admin.services";
 import SidebarLayout from "../../ui/app.sidebar/sidebar.layout";
 import DataTable from "../../ui/table/data.table";
 import { useTrainerActions } from "./admin-trainer.actions";
 import { trainerColumns } from "./admin-trainer.columns";
+import { useTableFetch } from "../../../hooks/useTableFetch";
 
 const AdminTrainerManagement = () => {
   const user = useAuthStore((state) => state.user);
@@ -14,8 +14,8 @@ const AdminTrainerManagement = () => {
     data: users,
     loading,
     refetch,
-  } = useFetch<AdminGetTrainersResponse[]>(() =>
-    adminServices.getTrainers().then((res) => res.data),
+  } = useTableFetch<AdminGetTrainersResponse[]>(() =>
+    adminServices.getTrainers().then((res) => res.data)
   );
   const actions = useTrainerActions(refetch);
 

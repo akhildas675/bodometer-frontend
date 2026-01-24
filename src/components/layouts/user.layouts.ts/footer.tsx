@@ -3,7 +3,7 @@ import { FaFacebook, FaInstagram, FaQuestionCircle } from 'react-icons/fa';
 
 const Footer = () => {
   return (
-    <footer className="w-full bg-[#010629]/90 py-14 px-10">
+    <footer className="w-full bg-[#050017] py-14 px-10">
       <div className="max-w-7xl mx-auto relative flex flex-row items-start">
         {/* Logo - move only the image further left */}
         <div className="absolute left-0 top-0 flex flex-col">

@@ -158,7 +158,7 @@ const handleGoogleSuccess = async (credential: string) => {
         </div>
 
         {/* Right form section */}
-        <div className="flex-1 relative flex items-center justify-center px-6 sm:px-10 py-10 bg-gradient-to-b from-[#03000D] to-[#190473]">
+        <div className="flex-1 relative flex items-center justify-center px-6 sm:px-10 py-10 bg-linear-to-b from-[#03000D] to-[#190473]">
           {/* Glow effects */}
           <div className="pointer-events-none absolute -top-32 -right-20 h-72 w-72 rounded-full bg-[#3a1b7a] opacity-40 blur-2xl" />
           <div className="pointer-events-none absolute bottom-[-120px] -left-10 h-80 w-80 rounded-full bg-[#24116b] opacity-40 blur-2xl" />
