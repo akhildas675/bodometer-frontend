@@ -358,7 +358,7 @@ const UserProfile = () => {
                         }));
                       }}
                       disabled={!isEditing}
-                      required
+                    
                     />
                   </div>
 
