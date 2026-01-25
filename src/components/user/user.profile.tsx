@@ -6,7 +6,8 @@ import type { Gender } from "../../constants/identity";
 import { useFetch } from "../../hooks/useFetch";
 import { useState, useRef, useEffect } from "react";
 import { toast } from "sonner";
-import { PenIcon} from "lucide-react";
+import axios from "axios";
+import { PenIcon } from "lucide-react";
 
 const UserProfile = () => {
   const user = useAuthStore((state) => state.user);
@@ -136,8 +137,8 @@ const UserProfile = () => {
 
         const uploadResponse = await userServices.uploadProfilePicture(formData);
 
-        if (uploadResponse.success && uploadResponse.data.data.url) {
-          uploadedImageUrl = uploadResponse.data.data.url;
+        if (uploadResponse.success && uploadResponse.data.url) {
+          uploadedImageUrl = uploadResponse.data.url;
           toast.loading("Image uploaded. Saving profile...", { id: loadingToast });
         } else {
           throw new Error("Failed to upload image");
@@ -166,11 +167,36 @@ const UserProfile = () => {
       } else {
         throw new Error("Failed to update profile");
       }
-    } catch (err) {
-      console.error("Failed to update profile:", err);
-      const errorMessage =
-        err instanceof Error ? err.message : "Failed to update profile. Please try again.";
-      toast.error(errorMessage, { id: loadingToast });
+    } catch (error) {
+      console.error("Profile update error:", error);
+      
+      if (axios.isAxiosError(error) && error.response) {
+        const errorMessage = error.response.data?.message || "Failed to update profile";
+        const statusCode = error.response.status;
+
+        if (statusCode === 403) {
+          toast.error(errorMessage, {
+            id: loadingToast,
+            duration: 5000,
+            style: {
+              background: "#ef4444",
+              color: "#fff",
+            },
+          });
+        } else if (statusCode === 400) {
+          toast.error(errorMessage, { id: loadingToast });
+        } else if (statusCode === 401) {
+          toast.error("Session expired. Please login again.", { id: loadingToast });
+        } else if (statusCode === 409) {
+          toast.error(errorMessage, { id: loadingToast });
+        } else {
+          toast.error(errorMessage, { id: loadingToast });
+        }
+      } else if (error instanceof Error) {
+        toast.error(error.message, { id: loadingToast });
+      } else {
+        toast.error("An unexpected error occurred. Please try again.", { id: loadingToast });
+      }
     } finally {
       setIsSaving(false);
     }
@@ -358,7 +384,7 @@ const UserProfile = () => {
                         }));
                       }}
                       disabled={!isEditing}
-                    
+                      required
                     />
                   </div>
 

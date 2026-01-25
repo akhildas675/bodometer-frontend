@@ -27,9 +27,5 @@ export interface UpdateProfileResponse {
 }
 
 export interface UploadProfilePictureResponse {
-  success: boolean;
-  message: string;
-  data: {
-    url: string;
-  };
+  url: string;
 }

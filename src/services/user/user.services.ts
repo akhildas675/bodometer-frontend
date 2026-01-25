@@ -13,7 +13,7 @@ const userServices = {
   },
 
   async updateUserProfile(data: ProfileUpdatePayload): Promise<ApiResponse<UserProfileInterface>> {
-    const response = await userApi.put<ApiResponse<UserProfileInterface>>("/user-profile", data);
+    const response = await userApi.put<ApiResponse<UserProfileInterface>>("/profile", data);
     return response.data;
   },
 
