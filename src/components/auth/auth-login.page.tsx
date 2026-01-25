@@ -58,7 +58,7 @@ const AuthLoginPage = () => {
     let redirectPath = "/";
 
     if (user.role === "trainer") {
-      redirectPath = "/trainer/dashboard";
+      redirectPath = "/trainer/onboarding-skill";
     } else if (user.role === "admin") {
       redirectPath = "/admin/dashboard";
     } else if (user.role === "user") {
@@ -107,7 +107,7 @@ const handleGoogleSuccess = async (credential: string) => {
     toast.success(`Welcome back, ${user.name || 'User'}!`);
 
     if (user.role === "trainer") {
-      navigate("/trainer/dashboard", { replace: true });
+      navigate("/trainer/onboarding-skill", { replace: true });
     } else if (user.role === "admin") {
       navigate("/admin/dashboard", { replace: true });
     } else {
