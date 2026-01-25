@@ -32,6 +32,7 @@ const iconMap: Record<string, React.ReactNode> = {
   "/admin/dashboard": <LayoutDashboard size={20} />,
   "/admin/users": <Users size={20} />,
   "/admin/trainers": <UserCheck size={20} />,
+  "/admin/workouts": <Dumbbell size={20} />,
   
   // Trainer
   "/trainer/dashboard": <LayoutDashboard size={20} />,

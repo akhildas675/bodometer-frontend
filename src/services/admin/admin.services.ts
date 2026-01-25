@@ -1,5 +1,5 @@
 import { adminApi } from "../../api/api.instance";
-import type { AdminGetTrainersResponse, AdminGetUsersResponse } from "../../interface/admin.interface";
+import type {AdminGetTrainersResponse, AdminGetUsersResponse, Workout } from "../../interface/admin.interface";
 import type { ApiResponse } from "../../interface/api-response.interface";
 
 class AdminService {
@@ -48,6 +48,25 @@ class AdminService {
         console.log(response.data)
         return response.data
     }
+
+
+    //workouts
+
+    async getWorkouts():Promise<ApiResponse<Workout[]>>{
+        const response = await adminApi.
+        get<ApiResponse<Workout[]>>("/get-workouts");
+        return response.data
+    }
+
+    async addWorkouts(data:FormData):Promise<ApiResponse<Workout>>{
+        const response = await adminApi.post("/add-workout",data,{
+            headers:{
+                "Content-Type":"multipart/form-data"
+            }
+        });
+        return response.data
+    }
+
 
 
 }

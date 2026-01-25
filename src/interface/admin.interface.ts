@@ -2,19 +2,19 @@ import type { Role } from "../constants/role";
 
 
 export interface AdminGetUsersRequest {
-    page?: number;
-    limit?: number;
-    search?: string;
-    role?: Exclude<Role,"admin">;
-    status?: "active" | "blocked";
+  page?: number;
+  limit?: number;
+  search?: string;
+  role?: Exclude<Role, "admin">;
+  status?: "active" | "blocked";
 }
 
-export interface AdminGetUsersResponse{
-   id: string;
+export interface AdminGetUsersResponse {
+  id: string;
   name: string;
   email: string;
   role: Role;
-  isBlocked: boolean; 
+  isBlocked: boolean;
   createdAt: string
 }
 
@@ -24,4 +24,33 @@ export interface AdminGetTrainersRequest extends AdminGetUsersRequest {
 
 export interface AdminGetTrainersResponse extends AdminGetUsersResponse {
   role: "trainer";
+}
+
+
+export interface AddWorkoutForm {
+  workoutName: string;
+  workoutDescription: string;
+  workoutImage: File | null;
+}
+
+
+export interface AddWorkoutPayload {
+  workoutName: string;
+  workoutDescription: string;
+  workoutImage: File;
+}
+
+export interface UpdateWorkoutPayload {
+  workoutName: string;
+  workoutDescription: string;
+  workoutImage?: File;
+  oldImageUrl?: string;
+}
+
+export interface Workout {
+  id: number;
+  workoutName: string;
+  workoutDescription: string;
+  workoutImage: string;
+  active: boolean;
 }

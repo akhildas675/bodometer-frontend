@@ -3,6 +3,7 @@ import ProtectedRoute from "../../guard.routes/protected.route";
 import AdminDashboardPage from "../../../pages/admin/admin-dashboard.page";
 import AdminUsersPage from "../../../pages/admin/admin-users.page";
 import AdminTrainersPage from "../../../pages/admin/admin-trainers.page";
+import AdminWorkoutsManagement from "../../../pages/admin/admin-workouts.management";
 
 
 export const adminRoutes = (
@@ -10,5 +11,6 @@ export const adminRoutes = (
     <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
     <Route path="/admin/users" element={<AdminUsersPage />} />
     <Route path="/admin/trainers" element={<AdminTrainersPage/>}/>
+    <Route path="/admin/workouts" element={<AdminWorkoutsManagement/>}/>
   </Route>
 );
