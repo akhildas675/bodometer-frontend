@@ -32,7 +32,7 @@ const AuthLoginPage = () => {
     password: form.password,
   };
 
- const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
   e.preventDefault();
   if (loading) return;
 
@@ -43,51 +43,88 @@ const AuthLoginPage = () => {
 
   try {
     const result = await authService.login(payload);
-    console.log("Result of login",result)
 
-    const { user, accessToken } = result.data;
+    console.log("FULL API RESPONSE:", result.data);
 
+    const { user, accessToken, trainerStatus } = result.data;
+
+    console.log("trainerStatus:", trainerStatus);
+
+    // ✅ Set auth state FIRST
     useAuthStore.getState().setAuth({
       user,
       accessToken,
     });
 
-    // Personalized success toast
-    toast.success(`Welcome back, ${user.name || 'User'}! `);
+    toast.success(`Welcome back, ${user.name || "User"}!`);
 
-    let redirectPath = "/";
-
+    // ✅ Handle trainer logic
     if (user.role === "trainer") {
-      redirectPath = "/trainer/onboarding-skill";
-    } else if (user.role === "admin") {
-      redirectPath = "/admin/dashboard";
-    } else if (user.role === "user") {
-      redirectPath = "/";
-    } else {
-      toast.error("Unknown role");
+      console.log("Hit here....");
+      
+   
+      if (!trainerStatus) {
+        console.error("Trainer status missing - redirecting to onboarding");
+        navigate("/trainer/onboarding/experience", { replace: true });
+        return;
+      }
+
+      console.log("profileExists:", trainerStatus.profileExists);
+      console.log("verificationStatus:", trainerStatus.verificationStatus);
+
+      // ✅ FIRST: Check if profile doesn't exist
+      if (trainerStatus.profileExists === false) {
+        console.log("REDIRECT → onboarding experience (profile does not exist)");
+        navigate("/trainer/onboarding/experience", { replace: true });
+        return;
+      }
+
+      // ✅ SECOND: Check verification status (only if profile exists)
+      if (trainerStatus.verificationStatus === "PENDING") {
+        console.log("REDIRECT → pending approval");
+        toast("Please wait for admin approval");
+        navigate("/trainer/pending", { replace: true });
+        return;
+      }
+
+      if (trainerStatus.verificationStatus === "APPROVED") {
+        console.log("REDIRECT → dashboard (approved)");
+        navigate("/trainer/dashboard", { replace: true });
+        return;
+      }
+
+      if (trainerStatus.verificationStatus === "REJECTED") {
+        console.log("REDIRECT → rejected");
+        navigate("/trainer/rejected", { replace: true });
+        return;
+      }
+
+      // ✅ If we reach here, something unexpected happened
+      console.error("Unknown trainer state", trainerStatus);
+      toast.error("Unexpected trainer status");
       return;
     }
 
-    navigate(redirectPath, { replace: true });
-  } catch (error){
-   if (axios.isAxiosError(error) && error.response) {
-        const errorMessage = error.response.data?.message || "Login failed";
-        
-      
-        if (error.response.status === 403) {
-          toast.error(errorMessage, {
-            duration: 5000,
-            style: {
-              background: "#ef4444",
-              color: "#fff",
-            },
-          });
-        } else {
-          toast.error(errorMessage);
-        }
-      } else {
-        toast.error("Login failed. Please check your credentials.");
-      }
+    // ✅ Handle admin role
+    if (user.role === "admin") {
+      navigate("/admin/dashboard", { replace: true });
+      return;
+    }
+
+    // ✅ Handle user role
+    if (user.role === "user") {
+      navigate("/", { replace: true });
+      return;
+    }
+
+    // ✅ Unknown role
+    toast.error("Unknown role");
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response) {
+      toast.error(error.response.data?.message || "Login failed");
+    } else {
+      toast.error("Login failed");
+    }
   } finally {
     setLoading(false);
   }
