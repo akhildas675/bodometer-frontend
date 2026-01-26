@@ -26,7 +26,7 @@ const TrainerOnboardingSkills = () => {
     refetch()
   },[])
 
-  console.log(workoutList)
+  console.log("Workout list",workoutList)
   if(!loading) return null
 
 

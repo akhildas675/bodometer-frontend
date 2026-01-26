@@ -1,4 +1,4 @@
-// export interface WorkoutList{
-//     id:string,
-//     workoutName:string
-// }
+export interface WorkoutList{
+    id:string,
+    workoutName:string
+}
