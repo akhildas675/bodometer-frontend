@@ -1,4 +1,5 @@
 import type { Role } from "../constants/role";
+import type { VerificationStatus } from "../constants/verification.status";
 
 
 export interface User {
@@ -34,11 +35,19 @@ export interface LoginPayload{
     password:string
 }
 
+export interface TrainerStatus {
+  profileExists: boolean;
+  verificationStatus?: VerificationStatus;
+  rejectionReason?: string | null;
+}
 
 export interface LoginResponseData {
-  user: User;
   accessToken: string;
+  user: User;
+  trainerStatus?: TrainerStatus;
 }
+
+
 
 
 export interface AuthRegisterPageProps {
