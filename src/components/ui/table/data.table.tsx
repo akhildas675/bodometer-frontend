@@ -25,9 +25,7 @@ export default function DataTable<T>({
                 {col.label}
               </th>
             ))}
-            {actions && (
-              <th className="px-4 py-3 font-semibold">Actions</th>
-            )}
+            {actions && <th className="px-4 py-3 font-semibold">Actions</th>}
           </tr>
         </thead>
 
@@ -40,9 +38,8 @@ export default function DataTable<T>({
             >
               {columns.map((col) => (
                 <td key={String(col.key)} className="px-4 py-3">
-  {col.render ? col.render(row) : String(row[col.key])}
-</td>
-
+                  {col.render ? col.render(row) : String(row[col.key])}
+                </td>
               ))}
 
               {actions && (

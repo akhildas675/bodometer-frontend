@@ -20,7 +20,7 @@ const AdminTrainerOnboardingManagement = () => {
     try {
       setLoading(true);
       const response = await adminServices.getTrainerAppointments();
-      console.log("backend response....", response);
+    //   console.log("backend response....", response);
       setTrainers(response.data);
     } catch (error) {
       toast.error("Failed to fetch trainers");
@@ -35,8 +35,7 @@ const AdminTrainerOnboardingManagement = () => {
   }, []);
 
   const handleViewDetails = (trainer: TrainerWithProfile) => {
-    // ✅ Use profileId instead of userId for better security
-    navigate(`/admin/trainers/${trainer.profile._id}`);
+    navigate(`/admin/appointment-details/${trainer.profile._id}`);
   };
 
   const trainerActions = useTrainerOnboardingActions(handleViewDetails);

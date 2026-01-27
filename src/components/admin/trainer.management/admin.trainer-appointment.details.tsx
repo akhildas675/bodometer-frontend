@@ -18,6 +18,7 @@ const AdminTrainerAppointmentDetails = () => {
   const [loading, setLoading] = useState(true);
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
+  console.log('trainer appointment details')
 
   const fetchTrainerDetails = async () => {
     if (!profileId) return;
