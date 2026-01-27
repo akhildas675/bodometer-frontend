@@ -10,7 +10,6 @@ import { Mail, Lock } from "lucide-react";
 import { GoogleLogin } from "@react-oauth/google";
 import axios from "axios";
 
-
 const AuthLoginPage = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -32,105 +31,137 @@ const AuthLoginPage = () => {
     password: form.password,
   };
 
-const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-  e.preventDefault();
-  if (loading) return;
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (loading) return;
 
-  if (!form.email) return toast.error("Email is required");
-  if (!form.password) return toast.error("Password is required");
+    if (!form.email) return toast.error("Email is required");
+    if (!form.password) return toast.error("Password is required");
 
-  setLoading(true);
+    setLoading(true);
 
-  try {
-    const result = await authService.login(payload);
+    try {
+      const result = await authService.login(payload);
 
-    console.log("FULL API RESPONSE:", result.data);
+      console.log("=== LOGIN DEBUG START ===");
+      console.log("FULL API RESPONSE:", result.data);
 
-    const { user, accessToken, trainerStatus } = result.data;
+      const { user, accessToken, trainerStatus } = result.data;
 
-    console.log("trainerStatus:", trainerStatus);
+      console.log("User role:", user.role);
+      console.log("Trainer Status Object:", trainerStatus);
 
-    // ✅ Set auth state FIRST
-    useAuthStore.getState().setAuth({
-      user,
-      accessToken,
-    });
+      // ✅ Set auth state FIRST
+      useAuthStore.getState().setAuth({
+        user,
+        accessToken,
+      });
 
-    toast.success(`Welcome back, ${user.name || "User"}!`);
+      toast.success(`Welcome back, ${user.name || "User"}!`);
 
-    // ✅ Handle trainer logic
-    if (user.role === "trainer") {
-      console.log("Hit here....");
-      
-   
-      if (!trainerStatus) {
-        console.error("Trainer status missing - redirecting to onboarding");
-        navigate("/trainer/onboarding/experience", { replace: true });
+      // ✅ Handle TRAINER logic
+      if (user.role === "trainer") {
+        console.log("✅ User is a trainer");
+
+        // Check if trainerStatus exists
+        if (!trainerStatus) {
+          console.log("❌ No trainer status - redirecting to onboarding");
+          setTimeout(() => {
+            navigate("/trainer/onboarding/experience", { replace: true });
+          }, 100);
+          return;
+        }
+
+        console.log("profileExists:", trainerStatus.profileExists);
+        console.log("profileExists type:", typeof trainerStatus.profileExists);
+        console.log("verificationStatus:", trainerStatus.verificationStatus);
+
+        // ✅ CRITICAL: Check if profile doesn't exist (FIRST PRIORITY)
+        if (
+          trainerStatus.profileExists === false ||
+          trainerStatus.profileExists === undefined ||
+          trainerStatus.profileExists === null
+        ) {
+          console.log(
+            "🔴 PROFILE DOES NOT EXIST - REDIRECTING TO ONBOARDING EXPERIENCE"
+          );
+          setTimeout(() => {
+            navigate("/trainer/onboarding-experience", { replace: true });
+          }, 100);
+          return;
+        }
+
+        console.log("✅ Profile exists, checking verification status...");
+
+        // ✅ Check verification status (ONLY if profile exists)
+        if (trainerStatus.verificationStatus === "PENDING") {
+          console.log("⏳ REDIRECT → pending approval");
+          toast.info("Please wait for admin approval");
+          setTimeout(() => {
+            navigate("/trainer/pending", { replace: true });
+          }, 100);
+          return;
+        }
+
+        if (trainerStatus.verificationStatus === "APPROVED") {
+          console.log("✅ REDIRECT → dashboard (approved)");
+          setTimeout(() => {
+            navigate("/trainer/dashboard", { replace: true });
+          }, 100);
+          return;
+        }
+
+        if (trainerStatus.verificationStatus === "REJECTED") {
+          console.log("❌ REDIRECT → rejected");
+          toast.error("Your profile has been rejected");
+          setTimeout(() => {
+            navigate("/trainer/rejected", { replace: true });
+          }, 100);
+          return;
+        }
+
+        // ✅ Unknown state
+        console.error("⚠️ Unknown trainer state", trainerStatus);
+        toast.error("Unexpected trainer status. Please contact support.");
+        console.log("=== LOGIN DEBUG END ===");
         return;
       }
 
-      console.log("profileExists:", trainerStatus.profileExists);
-      console.log("verificationStatus:", trainerStatus.verificationStatus);
-
-      // ✅ FIRST: Check if profile doesn't exist
-      if (trainerStatus.profileExists === false) {
-        console.log("REDIRECT → onboarding experience (profile does not exist)");
-        navigate("/trainer/onboarding/experience", { replace: true });
+      // ✅ Handle ADMIN role
+      if (user.role === "admin") {
+        console.log("✅ User is admin - redirecting to admin dashboard");
+        setTimeout(() => {
+          navigate("/admin/dashboard", { replace: true });
+        }, 100);
         return;
       }
 
-      // ✅ SECOND: Check verification status (only if profile exists)
-      if (trainerStatus.verificationStatus === "PENDING") {
-        console.log("REDIRECT → pending approval");
-        toast("Please wait for admin approval");
-        navigate("/trainer/pending", { replace: true });
+      // ✅ Handle USER role
+      if (user.role === "user") {
+        console.log("✅ User is regular user - redirecting to home");
+        setTimeout(() => {
+          navigate("/", { replace: true });
+        }, 100);
         return;
       }
 
-      if (trainerStatus.verificationStatus === "APPROVED") {
-        console.log("REDIRECT → dashboard (approved)");
-        navigate("/trainer/dashboard", { replace: true });
-        return;
+      // ✅ Unknown role
+      console.error("⚠️ Unknown role:", user.role);
+      toast.error("Unknown role. Please contact support.");
+      console.log("=== LOGIN DEBUG END ===");
+    } catch (error) {
+      console.error("Login error:", error);
+      if (axios.isAxiosError(error) && error.response) {
+        toast.error(error.response.data?.message || "Login failed");
+      } else {
+        toast.error("Login failed. Please try again.");
       }
-
-      if (trainerStatus.verificationStatus === "REJECTED") {
-        console.log("REDIRECT → rejected");
-        navigate("/trainer/rejected", { replace: true });
-        return;
-      }
-
-      // ✅ If we reach here, something unexpected happened
-      console.error("Unknown trainer state", trainerStatus);
-      toast.error("Unexpected trainer status");
-      return;
+    } finally {
+      setLoading(false);
     }
+  };
 
-    // ✅ Handle admin role
-    if (user.role === "admin") {
-      navigate("/admin/dashboard", { replace: true });
-      return;
-    }
-
-    // ✅ Handle user role
-    if (user.role === "user") {
-      navigate("/", { replace: true });
-      return;
-    }
-
-    // ✅ Unknown role
-    toast.error("Unknown role");
-  } catch (error) {
-    if (axios.isAxiosError(error) && error.response) {
-      toast.error(error.response.data?.message || "Login failed");
-    } else {
-      toast.error("Login failed");
-    }
-  } finally {
-    setLoading(false);
-  }
-};
-
-const handleGoogleSuccess = async (credential: string) => {
+  const handleGoogleSuccess = async (credential: string) => {
   try {
     const result = await authService.googleLogin({
       idToken: credential,
@@ -174,9 +205,10 @@ const handleGoogleSuccess = async (credential: string) => {
     setLoading(false);
   }
 };
+
   return (
-    <div className="min-h-screen w-full bg-linear-to-b from-[#03000D] to-[#190473] flex items-center justify-center">
-      <div className="w-full max-w-6xl h-[600px] rounded-3xl overflow-hidden shadow-2xl flex bg-linear-to-b from-[#03000D] to-[#190473]">
+    <div className="min-h-screen w-full bg-gradient-to-b from-[#03000D] to-[#190473] flex items-center justify-center">
+      <div className="w-full max-w-6xl h-[600px] rounded-3xl overflow-hidden shadow-2xl flex bg-gradient-to-b from-[#03000D] to-[#190473]">
         {/* Left image section */}
         <div className="w-1/2 hidden md:block relative">
           <img
@@ -195,7 +227,7 @@ const handleGoogleSuccess = async (credential: string) => {
         </div>
 
         {/* Right form section */}
-        <div className="flex-1 relative flex items-center justify-center px-6 sm:px-10 py-10 bg-linear-to-b from-[#03000D] to-[#190473]">
+        <div className="flex-1 relative flex items-center justify-center px-6 sm:px-10 py-10 bg-gradient-to-b from-[#03000D] to-[#190473]">
           {/* Glow effects */}
           <div className="pointer-events-none absolute -top-32 -right-20 h-72 w-72 rounded-full bg-[#3a1b7a] opacity-40 blur-2xl" />
           <div className="pointer-events-none absolute bottom-[-120px] -left-10 h-80 w-80 rounded-full bg-[#24116b] opacity-40 blur-2xl" />
@@ -223,13 +255,13 @@ const handleGoogleSuccess = async (credential: string) => {
               />
 
               <PrimaryButton
-                text={loading ? "Login..." : "Login"}
+                text={loading ? "Logging in..." : "Login"}
                 type="submit"
                 loading={loading}
               />
             </form>
 
-            <div className="text-right">
+            <div className="text-right mt-4">
               <Link
                 to="/forgot-password"
                 className="text-xs text-indigo-400 hover:underline"

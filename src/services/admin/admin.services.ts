@@ -1,4 +1,5 @@
 import { adminApi } from "../../api/api.instance";
+import type { TrainerWithProfile } from "../../components/ui/table/table.types";
 import type {AdminGetTrainersResponse, AdminGetUsersResponse, Workout } from "../../interface/admin.interface";
 import type { ApiResponse } from "../../interface/api-response.interface";
 
@@ -64,6 +65,11 @@ class AdminService {
                 "Content-Type":"multipart/form-data"
             }
         });
+        return response.data
+    }
+
+    async  getTrainerAppointments():Promise<ApiResponse<TrainerWithProfile>>{
+        const response = await adminApi.post<ApiResponse<TrainerWithProfile>>("/get-trainer-appointments");
         return response.data
     }
 

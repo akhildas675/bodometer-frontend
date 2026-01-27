@@ -12,7 +12,7 @@ class TrainerService {
         formData: FormData
     ): Promise<ApiResponse<TrainerOnboardingResponse>> {
         const response = await trainerApi.post<ApiResponse<TrainerOnboardingResponse>>(
-            "/trainer/profile",
+            "/submit-profile-data",
             formData,
             {
                 headers: {

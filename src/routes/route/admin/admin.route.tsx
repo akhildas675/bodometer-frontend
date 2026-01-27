@@ -4,6 +4,7 @@ import AdminDashboardPage from "../../../pages/admin/admin-dashboard.page";
 import AdminUsersPage from "../../../pages/admin/admin-users.page";
 import AdminTrainersPage from "../../../pages/admin/admin-trainers.page";
 import AdminWorkoutsManagement from "../../../pages/admin/admin-workouts.management";
+import AdminTrainerOnboardingPage from "../../../pages/admin/admin-trainer-onboarding.page";
 
 
 export const adminRoutes = (
@@ -12,5 +13,6 @@ export const adminRoutes = (
     <Route path="/admin/users" element={<AdminUsersPage />} />
     <Route path="/admin/trainers" element={<AdminTrainersPage/>}/>
     <Route path="/admin/workouts" element={<AdminWorkoutsManagement/>}/>
+    <Route path="/admin/trainer-appointment-list" element={<AdminTrainerOnboardingPage/>} />
   </Route>
 );
