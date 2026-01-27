@@ -2,27 +2,27 @@ import type { TableColumn, TrainerWithProfile } from "../../ui/table/table.types
 
 export const trainerOnboardingColumns: TableColumn<TrainerWithProfile>[] = [
   {
-    key: "user.name", // Changed from "user"
+    key: "user.name",
     label: "Name",
     render: (trainer) => trainer.user.name,
   },
   {
-    key: "user.email", // Changed from "user"
+    key: "user.email", 
     label: "Email",
     render: (trainer) => trainer.user.email,
   },
   {
-    key: "user.phoneNumber", // Changed from "user"
+    key: "user.phoneNumber", 
     label: "Phone",
     render: (trainer) => trainer.user.phoneNumber,
   },
   {
-    key: "profile.experienceInYears", // Changed from "profile"
+    key: "profile.experienceInYears",
     label: "Experience",
     render: (trainer) => `${trainer.profile.experienceInYears} years`,
   },
   {
-    key: "profile.verificationStatus", // Changed from "profile"
+    key: "profile.verificationStatus",
     label: "Status",
     render: (trainer) => {
       const status = trainer.profile.verificationStatus;
@@ -40,7 +40,7 @@ export const trainerOnboardingColumns: TableColumn<TrainerWithProfile>[] = [
     },
   },
   {
-    key: "profile.createdAt", // Changed from "profile"
+    key: "profile.createdAt",
     label: "Submitted",
     render: (trainer) => new Date(trainer.profile.createdAt).toLocaleDateString(),
   },
