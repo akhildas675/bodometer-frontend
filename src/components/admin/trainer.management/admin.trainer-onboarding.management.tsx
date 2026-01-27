@@ -16,12 +16,12 @@ const AdminTrainerOnboardingManagement = () => {
   const navigate = useNavigate();
   const user = useAuthStore((state) => state.user);
 
-  const fetchTrainers = async  () => {
+  const fetchTrainers = async () => {
     try {
       setLoading(true);
       const response = await adminServices.getTrainerAppointments();
-      console.log("backend response....",response)
-      setTrainers(response);
+      console.log("backend response....", response);
+      setTrainers(response.data);
     } catch (error) {
       toast.error("Failed to fetch trainers");
       console.error(error);
@@ -35,7 +35,8 @@ const AdminTrainerOnboardingManagement = () => {
   }, []);
 
   const handleViewDetails = (trainer: TrainerWithProfile) => {
-    navigate(`/admin/trainers/${trainer.user._id}`);
+    // ✅ Use profileId instead of userId for better security
+    navigate(`/admin/trainers/${trainer.profile._id}`);
   };
 
   const trainerActions = useTrainerOnboardingActions(handleViewDetails);
@@ -72,7 +73,6 @@ const AdminTrainerOnboardingManagement = () => {
 
   return (
     <SidebarLayout role={user.role}>
-      {/* Remove extra div wrapper and padding */}
       <div className="max-w-7xl mx-auto py-8 px-8">
         {/* Header */}
         <div className="mb-8">
@@ -122,7 +122,6 @@ const AdminTrainerOnboardingManagement = () => {
   );
 };
 
-// Stats Card Component
 const StatCard = ({ label, value, color }: { label: string; value: number; color: string }) => {
   const colors = {
     blue: "from-blue-600/20 to-blue-600/5 border-blue-600/30",

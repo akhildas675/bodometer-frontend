@@ -1,81 +1,118 @@
 import { adminApi } from "../../api/api.instance";
 import type { TrainerWithProfile } from "../../components/ui/table/table.types";
-import type {AdminGetTrainersResponse, AdminGetUsersResponse, Workout } from "../../interface/admin.interface";
+import type {
+  AdminGetTrainersResponse,
+  AdminGetUsersResponse,
+  Workout,
+} from "../../interface/admin.interface";
 import type { ApiResponse } from "../../interface/api-response.interface";
 
 class AdminService {
-    async getUsers(): Promise<ApiResponse<AdminGetUsersResponse[]>> {
-        const response = await adminApi.
-            get<ApiResponse<AdminGetUsersResponse[]>>("/get-users");
-        return response.data
-    }
+  // User Management
+  async getUsers(): Promise<ApiResponse<AdminGetUsersResponse[]>> {
+    const response = await adminApi.get<ApiResponse<AdminGetUsersResponse[]>>(
+      "/get-users"
+    );
+    return response.data;
+  }
 
-    async blockUser(userId: string): Promise<ApiResponse<null>> {
-        console.log("frontend userid....", userId)
-        const response = await adminApi.patch<ApiResponse<null>>(
-            `/users/${userId}/block`
-        );
-        return response.data;
-    }
+  async blockUser(userId: string): Promise<ApiResponse<null>> {
+    console.log("frontend userid....", userId);
+    const response = await adminApi.patch<ApiResponse<null>>(
+      `/users/${userId}/block`
+    );
+    return response.data;
+  }
 
-    async unblockUser(userId: string): Promise<ApiResponse<null>> {
-        console.log("frontend userid....", userId)
-        const response = await adminApi.patch<ApiResponse<null>>(
-            `/users/${userId}/unblock`
-        );
-        console.log(response.data)
-        return response.data;
-    }
+  async unblockUser(userId: string): Promise<ApiResponse<null>> {
+    console.log("frontend userid....", userId);
+    const response = await adminApi.patch<ApiResponse<null>>(
+      `/users/${userId}/unblock`
+    );
+    console.log(response.data);
+    return response.data;
+  }
 
-    async getTrainers():Promise<ApiResponse<AdminGetTrainersResponse[]>>{
-        const response = await adminApi.get<ApiResponse<AdminGetTrainersResponse[]>>("/get-trainers");
-        return response.data
-    }
+  // Trainer Block/Unblock Management
+  async getTrainers(): Promise<ApiResponse<AdminGetTrainersResponse[]>> {
+    const response = await adminApi.get<ApiResponse<AdminGetTrainersResponse[]>>(
+      "/get-trainers"
+    );
+    return response.data;
+  }
 
-    async blockTrainer(trainerId:string):Promise<ApiResponse<null>>{
-        console.log("trainer id... frontend",trainerId)
-        const response = await adminApi.patch<ApiResponse<null>>(
-            `/trainer/${trainerId}/block`
-        );
-        console.log(response.data)
-        return response.data
-    }
+  async blockTrainer(trainerId: string): Promise<ApiResponse<null>> {
+    console.log("trainer id... frontend", trainerId);
+    const response = await adminApi.patch<ApiResponse<null>>(
+      `/trainer/${trainerId}/block`
+    );
+    console.log(response.data);
+    return response.data;
+  }
 
-    async unblockTrainer(trainerId:string):Promise<ApiResponse<null>>{
-        console.log("trainer id...frontend",trainerId)
-        const response = await adminApi.patch<ApiResponse<null>>(
-            `trainer/${trainerId}/unblock`
-        );
-        console.log(response.data)
-        return response.data
-    }
+  async unblockTrainer(trainerId: string): Promise<ApiResponse<null>> {
+    console.log("trainer id...frontend", trainerId);
+    const response = await adminApi.patch<ApiResponse<null>>(
+      `/trainer/${trainerId}/unblock`
+    );
+    console.log(response.data);
+    return response.data;
+  }
 
+  // Workouts
+  async getWorkouts(): Promise<ApiResponse<Workout[]>> {
+    const response = await adminApi.get<ApiResponse<Workout[]>>("/get-workouts");
+    return response.data;
+  }
 
-    //workouts
+  async addWorkouts(data: FormData): Promise<ApiResponse<Workout>> {
+    const response = await adminApi.post("/add-workout", data, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return response.data;
+  }
 
-    async getWorkouts():Promise<ApiResponse<Workout[]>>{
-        const response = await adminApi.
-        get<ApiResponse<Workout[]>>("/get-workouts");
-        return response.data
-    }
+  // Get all trainer appointments
+  async getTrainerAppointments(): Promise<ApiResponse<TrainerWithProfile[]>> {
+    const response = await adminApi.post<ApiResponse<TrainerWithProfile[]>>(
+      "/get-trainer-appointments"
+    );
+    return response.data;
+  }
 
-    async addWorkouts(data:FormData):Promise<ApiResponse<Workout>>{
-        const response = await adminApi.post("/add-workout",data,{
-            headers:{
-                "Content-Type":"multipart/form-data"
-            }
-        });
-        return response.data
-    }
+  // get trainer by profileId 
+  async getTrainerByProfileId(
+    profileId: string
+  ): Promise<ApiResponse<TrainerWithProfile>> {
+    const response = await adminApi.get<ApiResponse<TrainerWithProfile>>(
+      `/trainers/profile/${profileId}`
+    );
+    return response.data;
+  }
 
-    async  getTrainerAppointments():Promise<ApiResponse<TrainerWithProfile>>{
-        const response = await adminApi.post<ApiResponse<TrainerWithProfile>>("/get-trainer-appointments");
-        return response.data
-    }
+  //approve trainer
+  async approveTrainer(
+    profileId: string
+  ): Promise<ApiResponse<{ message: string }>> {
+    const response = await adminApi.patch<ApiResponse<{ message: string }>>(
+      `/trainers/${profileId}/approve`
+    );
+    return response.data;
+  }
 
-
-
+  //reject trainer
+  async rejectTrainer(
+    profileId: string,
+    reason: string
+  ): Promise<ApiResponse<{ message: string }>> {
+    const response = await adminApi.patch<ApiResponse<{ message: string }>>(
+      `/trainers/${profileId}/reject`,
+      { reason }
+    );
+    return response.data;
+  }
 }
 
-
-export default new AdminService()
+export default new AdminService();

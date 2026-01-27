@@ -51,7 +51,7 @@ const AuthLoginPage = () => {
       console.log("User role:", user.role);
       console.log("Trainer Status Object:", trainerStatus);
 
-      // ✅ Set auth state FIRST
+      //Set auth state 
       useAuthStore.getState().setAuth({
         user,
         accessToken,
@@ -59,9 +59,9 @@ const AuthLoginPage = () => {
 
       toast.success(`Welcome back, ${user.name || "User"}!`);
 
-      // ✅ Handle TRAINER logic
+      // Handle TRAINER logic
       if (user.role === "trainer") {
-        console.log("✅ User is a trainer");
+        console.log(" User is a trainer");
 
         // Check if trainerStatus exists
         if (!trainerStatus) {
@@ -76,14 +76,14 @@ const AuthLoginPage = () => {
         console.log("profileExists type:", typeof trainerStatus.profileExists);
         console.log("verificationStatus:", trainerStatus.verificationStatus);
 
-        // ✅ CRITICAL: Check if profile doesn't exist (FIRST PRIORITY)
+        // CRITICAL: Check if profile doesn't exist (FIRST PRIORITY)
         if (
           trainerStatus.profileExists === false ||
           trainerStatus.profileExists === undefined ||
           trainerStatus.profileExists === null
         ) {
           console.log(
-            "🔴 PROFILE DOES NOT EXIST - REDIRECTING TO ONBOARDING EXPERIENCE"
+            "PROFILE DOES NOT EXIST - REDIRECTING TO ONBOARDING EXPERIENCE"
           );
           setTimeout(() => {
             navigate("/trainer/onboarding-experience", { replace: true });
@@ -91,11 +91,11 @@ const AuthLoginPage = () => {
           return;
         }
 
-        console.log("✅ Profile exists, checking verification status...");
+        console.log(" Profile exists, checking verification status...");
 
-        // ✅ Check verification status (ONLY if profile exists)
+        // Check verification status (ONLY if profile exists)
         if (trainerStatus.verificationStatus === "PENDING") {
-          console.log("⏳ REDIRECT → pending approval");
+          console.log("REDIRECT → pending approval");
           toast.info("Please wait for admin approval");
           setTimeout(() => {
             navigate("/trainer/pending", { replace: true });
@@ -104,7 +104,7 @@ const AuthLoginPage = () => {
         }
 
         if (trainerStatus.verificationStatus === "APPROVED") {
-          console.log("✅ REDIRECT → dashboard (approved)");
+          console.log("REDIRECT → dashboard (approved)");
           setTimeout(() => {
             navigate("/trainer/dashboard", { replace: true });
           }, 100);
@@ -112,7 +112,7 @@ const AuthLoginPage = () => {
         }
 
         if (trainerStatus.verificationStatus === "REJECTED") {
-          console.log("❌ REDIRECT → rejected");
+          console.log("REDIRECT → rejected");
           toast.error("Your profile has been rejected");
           setTimeout(() => {
             navigate("/trainer/rejected", { replace: true });
@@ -120,33 +120,33 @@ const AuthLoginPage = () => {
           return;
         }
 
-        // ✅ Unknown state
-        console.error("⚠️ Unknown trainer state", trainerStatus);
+        // Unknown state
+        console.error(" Unknown trainer state", trainerStatus);
         toast.error("Unexpected trainer status. Please contact support.");
         console.log("=== LOGIN DEBUG END ===");
         return;
       }
 
-      // ✅ Handle ADMIN role
+      // Handle ADMIN role
       if (user.role === "admin") {
-        console.log("✅ User is admin - redirecting to admin dashboard");
+        console.log("User is admin - redirecting to admin dashboard");
         setTimeout(() => {
           navigate("/admin/dashboard", { replace: true });
         }, 100);
         return;
       }
 
-      // ✅ Handle USER role
+      // Handle USER role
       if (user.role === "user") {
-        console.log("✅ User is regular user - redirecting to home");
+        console.log(" User is regular user - redirecting to home");
         setTimeout(() => {
           navigate("/", { replace: true });
         }, 100);
         return;
       }
 
-      // ✅ Unknown role
-      console.error("⚠️ Unknown role:", user.role);
+      //  Unknown role
+      console.error(" Unknown role:", user.role);
       toast.error("Unknown role. Please contact support.");
       console.log("=== LOGIN DEBUG END ===");
     } catch (error) {
