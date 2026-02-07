@@ -43,7 +43,6 @@ const AuthLoginPage = () => {
     try {
       const result = await authService.login(payload);
 
-      console.log("=== LOGIN DEBUG START ===");
       console.log("FULL API RESPONSE:", result.data);
 
       const { user, accessToken, trainerStatus } = result.data;
@@ -65,7 +64,7 @@ const AuthLoginPage = () => {
 
         // Check if trainerStatus exists
         if (!trainerStatus) {
-          console.log("❌ No trainer status - redirecting to onboarding");
+          console.log("No trainer status - redirecting to onboarding");
           setTimeout(() => {
             navigate("/trainer/onboarding/experience", { replace: true });
           }, 100);

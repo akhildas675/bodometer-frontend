@@ -1,154 +1,419 @@
-import React from "react";
+import { useAuthStore } from "../../stores/auth.store";
+import SidebarLayout from "../ui/app.sidebar/sidebar.layout";
+import type { ProfileUpdatePayload, TrainerProfileInterface } from "../../interface/trainer.interface";
+import type { Gender } from "../../constants/identity";
+import { useFetch } from "../../hooks/useFetch";
+import { useState, useRef, useEffect } from "react";
+import { toast } from "sonner";
+import axios from "axios";
+import { PenIcon } from "lucide-react";
 
 const TrainerProfile = () => {
+  const trainer = useAuthStore((state) => state.user);
+  const [isEditing, setIsEditing] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string>("");
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  const {
+    data: profileResponse,
+    loading,
+    error,
+    refetch,
+  } = useFetch<{ success: boolean; data: TrainerProfileInterface }>(
+    trainerServices.getTrainerProfile,
+    true
+  );
+
+  const profile = profileResponse?.data;
+
+  const [form, setForm] = useState<ProfileUpdatePayload>({
+    name: "",
+    userName: "",
+    phoneNumber: null,
+    gender: "prefer_not_say" as Gender,
+    dateOfBirth: null,
+  });
+
+  useEffect(() => {
+    if (profile) {
+      setForm({
+        name: profile.name || "",
+        userName: profile.userName || "",
+        phoneNumber: profile.phoneNumber || null,
+        gender: profile.gender || "prefer_not_say",
+        dateOfBirth: profile.dateOfBirth || null,
+      });
+      setPreviewUrl(profile.profilePic || "");
+    }
+  }, [profile]);
+
+  const handleChange = (field: keyof ProfileUpdatePayload) => (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    const value = e.target.value;
+    setForm((prev) => ({
+      ...prev,
+      [field]: field === "phoneNumber" && value === "" ? null : value,
+    }));
+  };
+
+  const handleEdit = () => {
+    setIsEditing(true);
+  };
+
+  const handleCancel = () => {
+    if (profile) {
+      setForm({
+        name: profile.name || "",
+        userName: profile.userName || "",
+        phoneNumber: profile.phoneNumber || null,
+        gender: profile.gender || "prefer_not_say",
+        dateOfBirth: profile.dateOfBirth || null,
+      });
+      setPreviewUrl(profile.profilePic || "");
+    }
+    setSelectedImage(null);
+    setIsEditing(false);
+  };
+
+  const handleProfilePicClick = () => {
+    if (isEditing && fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
+  const handleProfilePicChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please select an image file");
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Image size should be less than 5MB");
+      return;
+    }
+
+    setSelectedImage(file);
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setPreviewUrl(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+
+    toast.success("Image selected. Click Save to upload.");
+  };
+
+  const handleUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!form.gender || form.gender === "prefer_not_say") {
+      toast.error("Please select your gender before updating profile");
+      return;
+    }
+
+    if (!form.dateOfBirth) {
+      toast.error("Please enter your date of birth before updating profile");
+      return;
+    }
+
+    setIsSaving(true);
+    const loadingToast = toast.loading("Updating profile...");
+
+    try {
+      let uploadedImageUrl: string | undefined;
+
+      if (selectedImage) {
+        toast.loading("Uploading image...", { id: loadingToast });
+
+        const formData = new FormData();
+        formData.append("file", selectedImage);
+
+        const uploadResponse = await trainerServices.uploadProfilePicture(formData);
+
+        if (uploadResponse.success && uploadResponse.data.url) {
+          uploadedImageUrl = uploadResponse.data.url;
+          toast.loading("Image uploaded. Saving profile...", { id: loadingToast });
+        } else {
+          throw new Error("Failed to upload image");
+        }
+      }
+
+      const updatePayload: ProfileUpdatePayload = {
+        name: form.name,
+        userName: form.userName,
+        phoneNumber: form.phoneNumber,
+        gender: form.gender,
+        dateOfBirth: form.dateOfBirth,
+      };
+
+      if (uploadedImageUrl) {
+        updatePayload.profilePic = uploadedImageUrl;
+      }
+
+      const updateResponse = await trainerServices.updateTrainerProfile(updatePayload);
+
+      if (updateResponse.success) {
+        await refetch();
+        setSelectedImage(null);
+        setIsEditing(false);
+        toast.success("Profile updated successfully!", { id: loadingToast });
+      } else {
+        throw new Error("Failed to update profile");
+      }
+    } catch (error) {
+      console.error("Profile update error:", error);
+      
+      if (axios.isAxiosError(error) && error.response) {
+        const errorMessage = error.response.data?.message || "Failed to update profile";
+        const statusCode = error.response.status;
+
+        if (statusCode === 403) {
+          toast.error(errorMessage, {
+            id: loadingToast,
+            duration: 5000,
+            style: {
+              background: "#ef4444",
+              color: "#fff",
+            },
+          });
+        } else if (statusCode === 400) {
+          toast.error(errorMessage, { id: loadingToast });
+        } else if (statusCode === 401) {
+          toast.error("Session expired. Please login again.", { id: loadingToast });
+        } else if (statusCode === 409) {
+          toast.error(errorMessage, { id: loadingToast });
+        } else {
+          toast.error(errorMessage, { id: loadingToast });
+        }
+      } else if (error instanceof Error) {
+        toast.error(error.message, { id: loadingToast });
+      } else {
+        toast.error("An unexpected error occurred. Please try again.", { id: loadingToast });
+      }
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <SidebarLayout role="trainer">
+        <div className="min-h-screen bg-[#050017] text-white pt-24 pb-10 flex items-center justify-center">
+          <p>Loading profile...</p>
+        </div>
+      </SidebarLayout>
+    );
+  }
+
+  if (error) {
+    return (
+      <SidebarLayout role="trainer">
+        <div className="min-h-screen bg-[#050017] text-white pt-24 pb-10 flex items-center justify-center">
+          <p className="text-red-500">Error loading profile</p>
+        </div>
+      </SidebarLayout>
+    );
+  }
+
+  if (!profile || !trainer) {
+    return (
+      <SidebarLayout role="trainer">
+        <div className="min-h-screen bg-[#050017] text-white pt-24 pb-10 flex items-center justify-center">
+          <p>No profile data found</p>
+        </div>
+      </SidebarLayout>
+    );
+  }
+
+  const formatDateForInput = (date: Date | string | null | undefined) => {
+    if (!date) return "";
+    const d = new Date(date);
+    if (isNaN(d.getTime())) return "";
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
+
+  const displayImage = previewUrl || "https://images.unsplash.com/photo-1599058917212-d750089bc07a";
+
   return (
-    <div className="min-h-screen bg-[#050017] flex">
-      {/* SIDEBAR */}
-      <aside className="w-64 bg-gradient-to-b from-[#1a0b3a] to-[#12062a] rounded-r-[40px] p-6 text-white">
-        {/* Logo */}
-        <div className="text-2xl font-bold text-sky-400 mb-10">
-          bodo<span className="text-blue-500">meter</span>
-        </div>
+    <SidebarLayout role="trainer">
+      <div className="min-h-screen bg-[#050017] text-white pt-24 pb-10">
+        <div className="flex flex-1 max-w-7xl mx-auto">
+          <main className="flex-1 px-10">
+            <h1 className="text-lg text-slate-300 mb-6">
+              WELCOME <span className="text-indigo-400 font-semibold">{profile.name}</span>
+            </h1>
 
-        {/* Profile Card */}
-        <div className="flex flex-col items-center mb-10">
-          <img
-            src="https://images.unsplash.com/photo-1544005313-94ddf0286df2"
-            className="h-20 w-20 rounded-full object-cover border-4 border-purple-500"
-            alt="profile"
-          />
-          <h3 className="mt-3 font-semibold">Madison Smith</h3>
-          <p className="text-xs text-slate-300">madisons@gmail.com</p>
-          <p className="text-xs text-slate-400">Birthday: April 1st</p>
-        </div>
+            <div className="relative bg-linear-to-br from-[#140b3a] to-[#0a0624] rounded-3xl p-8 shadow-xl">
+              <div className="flex justify-between items-center mb-8">
+                <div className="flex items-center gap-4">
+                  <div className="relative">
+                    <img
+                      src={displayImage}
+                      className={`h-14 w-14 rounded-full object-cover border-2 border-purple-500 ${
+                        isEditing ? "cursor-pointer hover:opacity-80" : ""
+                      } ${isSaving ? "opacity-50" : ""}`}
+                      alt="trainer"
+                      onClick={handleProfilePicClick}
+                    />
+                    {isEditing && (
+                      <div
+                        className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40 rounded-full cursor-pointer hover:bg-opacity-50 transition"
+                        onClick={handleProfilePicClick}
+                      >
+                        <span className="text-white text-xs">{isSaving ? "..." : <PenIcon/>}</span>
+                      </div>
+                    )}
+                    <input
+                      type="file"
+                      ref={fileInputRef}
+                      onChange={handleProfilePicChange}
+                      accept="image/*"
+                      className="hidden"
+                      disabled={!isEditing || isSaving}
+                    />
+                  </div>
+                  <div>
+                    <h2 className="font-semibold">{form.name}</h2>
+                    <p className="text-xs text-slate-400">{profile.email}</p>
+                  </div>
+                </div>
 
-        {/* MENU */}
-        <nav className="space-y-4 text-sm">
-          {[
-            "Dashboard",
-            "Sessions",
-            "Clients",
-            "Messages",
-            "Slots",
-            "Earnings",
-            "Profile",
-            "Logout",
-          ].map((item) => (
-            <div
-              key={item}
-              className={`px-4 py-2 rounded-lg cursor-pointer ${
-                item === "Profile"
-                  ? "bg-purple-600"
-                  : "hover:bg-white/10"
-              }`}
-            >
-              {item}
-            </div>
-          ))}
-        </nav>
-      </aside>
-
-      {/* MAIN CONTENT */}
-      <main className="flex-1 p-10">
-        <h1 className="text-2xl font-semibold text-white mb-6">Profile</h1>
-
-        {/* PROFILE CARD */}
-        <div className="relative bg-gradient-to-br from-[#140b3a] to-[#0a0624] rounded-3xl p-8 text-white shadow-xl">
-          <span className="absolute top-6 right-6 text-green-400 text-sm">
-            Active
-          </span>
-
-          <div className="flex gap-10">
-            {/* LEFT */}
-            <div className="w-1/3">
-              <div className="relative w-40 h-40 mx-auto">
-                <img
-                  src="https://images.unsplash.com/photo-1599058917212-d750089bc07a"
-                  alt="trainer"
-                  className="w-full h-full rounded-full object-cover border-4 border-green-500"
-                />
-              </div>
-
-              <h2 className="mt-4 text-center text-lg font-semibold">
-                Alexa Rawles
-              </h2>
-              <p className="text-center text-xs text-slate-300">
-                alexarawles@gmail.com
-              </p>
-              <p className="text-center text-xs text-green-400 mt-1">
-                Certified
-              </p>
-
-              <div className="mt-6 space-y-3">
-                <select className="w-full bg-[#1c1550] rounded-lg px-4 py-2 text-sm">
-                  <option>Female</option>
-                </select>
-
-                <input
-                  type="text"
-                  value="08/05/1998"
-                  readOnly
-                  className="w-full bg-[#1c1550] rounded-lg px-4 py-2 text-sm"
-                />
-              </div>
-            </div>
-
-            {/* RIGHT */}
-            <div className="flex-1 grid grid-cols-2 gap-6">
-              <input
-                type="text"
-                value="7896541230"
-                readOnly
-                className="bg-[#1c1550] rounded-lg px-4 py-2 text-sm"
-              />
-
-              <select className="bg-[#1c1550] rounded-lg px-4 py-2 text-sm">
-                <option>5 Years Experience</option>
-              </select>
-
-              <select className="bg-[#1c1550] rounded-lg px-4 py-2 text-sm col-span-2">
-                <option>Specialization</option>
-              </select>
-
-              {/* Tags */}
-              <div className="flex gap-3 col-span-2">
-                {["Strength Training", "Functional Fitness", "Cardio"].map(
-                  (tag) => (
-                    <div
-                      key={tag}
-                      className="flex items-center gap-2 bg-[#1c1550] px-4 py-2 rounded-full text-sm"
+                <div className="flex gap-2">
+                  {isEditing ? (
+                    <>
+                      <button
+                        type="button"
+                        onClick={handleCancel}
+                        className="px-4 py-1 rounded-full bg-gray-600 hover:bg-gray-700 transition text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                        disabled={isSaving}
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="submit"
+                        form="profile-form"
+                        className="px-4 py-1 rounded-full bg-purple-600 hover:bg-purple-700 transition text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                        disabled={isSaving}
+                      >
+                        {isSaving ? "Saving..." : "Save"}
+                      </button>
+                    </>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={handleEdit}
+                      className="px-4 py-1 rounded-full bg-purple-600 hover:bg-purple-700 transition text-sm"
                     >
-                      {tag}
-                      <span className="h-4 w-4 bg-purple-500 rounded-full flex items-center justify-center text-xs">
-                        ✓
-                      </span>
-                    </div>
-                  )
-                )}
-              </div>
-
-              {/* BIO */}
-              <textarea
-                readOnly
-                rows={4}
-                className="col-span-2 bg-[#1c1550] rounded-lg px-4 py-3 text-sm resize-none"
-                value="Hi, I'm Natasha, a certified personal trainer passionate about sustainable, real-world fitness..."
-              />
-
-              {/* STATS */}
-              <div className="flex items-center gap-6 col-span-2">
-                <div className="flex items-center gap-2 text-sm">
-                  ⭐ <span className="font-semibold">4.9</span>
-                </div>
-                <div className="text-sm text-slate-300">
-                  250+ Session Conducted
+                      Edit
+                    </button>
+                  )}
                 </div>
               </div>
+
+              <form id="profile-form" className="space-y-4" onSubmit={handleUpdate}>
+                <div className="grid grid-cols-2 gap-8 text-sm">
+                  <div className="flex flex-col gap-1">
+                    <label className="text-xs text-slate-400">Name</label>
+                    <input
+                      className="bg-[#1c1550] px-4 py-3 rounded-lg outline-none disabled:opacity-60 disabled:cursor-not-allowed"
+                      value={form.name}
+                      onChange={handleChange("name")}
+                      disabled={!isEditing}
+                      placeholder="Enter name"
+                      required
+                    />
+                  </div>
+
+                  <div className="flex flex-col gap-1">
+                    <label className="text-xs text-slate-400">Username</label>
+                    <input
+                      className="bg-[#1c1550] px-4 py-3 rounded-lg outline-none disabled:opacity-60 disabled:cursor-not-allowed"
+                      value={form.userName}
+                      onChange={handleChange("userName")}
+                      disabled={!isEditing}
+                      placeholder="Enter username"
+                      required
+                    />
+                  </div>
+
+                  <div className="flex flex-col gap-1">
+                    <label className="text-xs text-slate-400">Email</label>
+                    <input
+                      type="email"
+                      className="bg-[#1c1550] px-4 py-3 rounded-lg outline-none opacity-60 cursor-not-allowed"
+                      value={profile.email}
+                      disabled
+                      title="Email cannot be changed"
+                    />
+                  </div>
+
+                  <div className="flex flex-col gap-1">
+                    <label className="text-xs text-slate-400">Phone</label>
+                    <input
+                      type="tel"
+                      className="bg-[#1c1550] px-4 py-3 rounded-lg outline-none disabled:opacity-60 disabled:cursor-not-allowed"
+                      value={form.phoneNumber || ""}
+                      onChange={handleChange("phoneNumber")}
+                      disabled={!isEditing}
+                      placeholder="Enter phone number"
+                    />
+                  </div>
+
+                  <div className="flex flex-col gap-1">
+                    <label className="text-xs text-slate-400">
+                      Date of Birth <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="date"
+                      className="bg-[#1c1550] px-4 py-3 rounded-lg outline-none border-2 border-transparent disabled:opacity-60 disabled:cursor-not-allowed"
+                      value={formatDateForInput(form.dateOfBirth)}
+                      onChange={(e) => {
+                        setForm((prev) => ({
+                          ...prev,
+                          dateOfBirth: e.target.value ? new Date(e.target.value) : null,
+                        }));
+                      }}
+                      disabled={!isEditing}
+                      required
+                    />
+                  </div>
+
+                  <div className="flex flex-col gap-1">
+                    <label className="text-xs text-slate-400">
+                      Gender <span className="text-red-500">*</span>
+                    </label>
+                    <select
+                      className="bg-[#1c1550] px-4 py-3 rounded-lg outline-none disabled:opacity-60 disabled:cursor-not-allowed"
+                      value={form.gender}
+                      onChange={handleChange("gender")}
+                      disabled={!isEditing}
+                      required
+                    >
+                      <option value="prefer_not_say">Select Gender</option>
+                      <option value="male">Male</option>
+                      <option value="female">Female</option>
+                    </select>
+                  </div>
+                </div>
+              </form>
+
+              <p className="mt-6 text-xs text-indigo-400 cursor-pointer hover:text-indigo-300 transition">
+                Course history
+              </p>
             </div>
-          </div>
+          </main>
         </div>
-      </main>
-    </div>
+      </div>
+    </SidebarLayout>
   );
 };
 

@@ -1,7 +1,7 @@
 import React from "react";
 
 export interface TableColumn<T> {
-  key: keyof T;
+  key: string;
   label: string;
   render?: (row: T) => React.ReactNode;
 }

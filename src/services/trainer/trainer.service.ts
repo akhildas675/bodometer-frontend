@@ -24,6 +24,8 @@ class TrainerService {
         return response.data;
     }
 
+    
+
 }
 
 export default new TrainerService()
