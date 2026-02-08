@@ -1,17 +1,18 @@
 import React from "react";
 
+
 export interface TableColumn<T> {
-  key: string;
+  key: keyof T;
   label: string;
-  render?: (row: T) => React.ReactNode;
+  render?: (item: T) => React.ReactNode;
+  sortable?: boolean; 
 }
 
 export interface TableAction<T> {
   label: string;
-  variant?: "primary" | "danger";
-  onClick: (row: T) => void;
-  visible?: (row: T) => boolean;
-  disabled?: (row: T) => boolean;
+  variant?: "danger" | "primary";
+  visible?: (item: T) => boolean;
+  onClick: (item: T) => void;
 }
 
 

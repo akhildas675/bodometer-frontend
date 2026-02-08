@@ -7,6 +7,8 @@ export interface AdminGetUsersRequest {
   search?: string;
   role?: Exclude<Role, "admin">;
   status?: "active" | "blocked";
+  sortBy?: string;
+  sortOrder?: "asc" | "desc";
 }
 
 export interface AdminGetUsersResponse {
@@ -15,7 +17,19 @@ export interface AdminGetUsersResponse {
   email: string;
   role: Role;
   isBlocked: boolean;
-  createdAt: string
+  createdAt: string;
+}
+
+export interface PaginatedResponse<T> {
+  data: T[];
+  pagination: {
+    currentPage: number;
+    totalPages: number;
+    totalItems: number;
+    itemsPerPage: number;
+    hasNextPage: boolean;
+    hasPreviousPage: boolean;
+  };
 }
 
 export interface AdminGetTrainersRequest extends AdminGetUsersRequest {

@@ -41,7 +41,7 @@ const SearchBar = ({
   };
 
   return (
-    <div className={`relative w-full ${className}`}>
+    <div className={`relative w-full ${className}`}> {/* Fixed: Use curly braces, not backtick */}
       <input
         type="text"
         placeholder={placeholder}

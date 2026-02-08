@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useAuthStore } from "../../../stores/auth.store";
 import type { AdminGetTrainersResponse } from "../../../interface/admin.interface";
 import adminServices from "../../../services/admin/admin.services";
@@ -9,17 +9,31 @@ import { useTableFetch } from "../../../hooks/useTableFetch";
 import { useTrainerActions } from "./admin-trainer.actions";
 import ConfirmationModal from "../../ui/confirm.dialog";
 import SearchBar from "../../controls/search/search";
+import SortDropdown, {type SortConfig} from "../../controls/sort/sort";
+import { extractSortOptions } from "../../controls/sort/sort.label"; 
 
 const AdminTrainerManagement = () => {
   const user = useAuthStore((state) => state.user);
   const [searchQuery, setSearchQuery] = useState("");
+  const [sortConfig, setSortConfig] = useState<SortConfig<keyof AdminGetTrainersResponse>>({
+    field: '' as keyof AdminGetTrainersResponse,
+    order: 'asc',
+  });
 
   const {
     data: users,
     loading,
     refetch,
-  } = useTableFetch<AdminGetTrainersResponse[]>(() =>
-    adminServices.getTrainers(searchQuery).then((res) => res.data)
+  } = useTableFetch<AdminGetTrainersResponse[]>(
+    () =>
+      adminServices
+        .getTrainers(
+          searchQuery,
+          sortConfig.field ? String(sortConfig.field) : undefined,
+          sortConfig.order
+        )
+        .then((res) => res.data),
+    false
   );
 
   const [modalConfig, setModalConfig] = useState<{
@@ -37,9 +51,21 @@ const AdminTrainerManagement = () => {
 
   const actions = useTrainerActions(refetch, setModalConfig);
 
-  const handleSearch = (value: string) => {
+  const handleSearch = useCallback((value: string) => {
     setSearchQuery(value);
-  };
+  }, []);
+
+  const handleSortChange = useCallback((sort: SortConfig<keyof AdminGetTrainersResponse>) => {
+    setSortConfig(sort);
+  }, []);
+
+  // Refetch when searchQuery or sortConfig changes
+  useEffect(() => {
+    refetch();
+  }, [searchQuery, sortConfig, refetch]);
+
+  // Dynamically extract sort options from columns
+  const sortOptions = extractSortOptions(trainerColumns);
 
   if (!user) {
     return <div className="text-white p-6">Loading...</div>;
@@ -49,15 +75,24 @@ const AdminTrainerManagement = () => {
     <SidebarLayout role={user.role}>
       <div className="text-white">
         <h1 className="text-2xl font-semibold mb-6">Trainer Management</h1>
-        
-        {/* Search Bar */}
-        <div className="mb-4">
+
+        {/* Search and Sort Bar */}
+        <div className="mb-4 flex gap-4">
           <SearchBar
             value={searchQuery}
             onSearch={handleSearch}
             placeholder="Search trainers by name or email..."
             disabled={loading}
-            className="max-w-md"
+            className="flex-1 max-w-md"
+          />
+          
+          <SortDropdown<keyof AdminGetTrainersResponse>
+            options={sortOptions}
+            value={sortConfig}
+            onSortChange={handleSortChange}
+            disabled={loading}
+            className="w-64"
+            placeholder="Sort by..."
           />
         </div>
 
@@ -71,15 +106,13 @@ const AdminTrainerManagement = () => {
           />
         )}
       </div>
-      
+
       <ConfirmationModal
         isOpen={modalConfig.isOpen}
         title={modalConfig.title}
         message={modalConfig.message}
         variant={modalConfig.variant}
-        onClose={() =>
-          setModalConfig((prev) => ({ ...prev, isOpen: false }))
-        }
+        onClose={() => setModalConfig((prev) => ({ ...prev, isOpen: false }))}
         onConfirm={modalConfig.onConfirm}
       />
     </SidebarLayout>

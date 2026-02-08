@@ -34,8 +34,17 @@ class AdminService {
   }
 
   // Trainer Block/Unblock Management
-  async getTrainers(search?: string): Promise<ApiResponse<AdminGetTrainersResponse[]>> {
-  const params = search ? { search } : {};
+ async getTrainers(
+  search?: string,
+  sortBy?: string,
+  sortOrder?: 'asc' | 'desc'
+): Promise<ApiResponse<AdminGetTrainersResponse[]>> {
+  const params: Record<string, string> = {};
+  
+  if (search) params.search = search;
+  if (sortBy) params.sortBy = sortBy;
+  if (sortOrder) params.sortOrder = sortOrder;
+
   const response = await adminApi.get<ApiResponse<AdminGetTrainersResponse[]>>(
     "/get-trainers",
     { params }
