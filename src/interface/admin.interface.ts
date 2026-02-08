@@ -1,6 +1,5 @@
 import type { Role } from "../constants/role";
 
-
 export interface AdminGetUsersRequest {
   page?: number;
   limit?: number;
@@ -11,6 +10,7 @@ export interface AdminGetUsersRequest {
   sortOrder?: "asc" | "desc";
 }
 
+
 export interface AdminGetUsersResponse {
   id: string;
   name: string;
@@ -18,18 +18,6 @@ export interface AdminGetUsersResponse {
   role: Role;
   isBlocked: boolean;
   createdAt: string;
-}
-
-export interface PaginatedResponse<T> {
-  data: T[];
-  pagination: {
-    currentPage: number;
-    totalPages: number;
-    totalItems: number;
-    itemsPerPage: number;
-    hasNextPage: boolean;
-    hasPreviousPage: boolean;
-  };
 }
 
 export interface AdminGetTrainersRequest extends AdminGetUsersRequest {
@@ -40,6 +28,21 @@ export interface AdminGetTrainersResponse extends AdminGetUsersResponse {
   role: "trainer";
 }
 
+
+export interface PaginationMeta {
+  currentPage: number;
+  totalPages: number;
+  totalItems: number;
+  itemsPerPage: number;
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
+}
+
+
+export interface PaginatedResponse<T> {
+  data: T[];
+  pagination: PaginationMeta;
+}
 
 export interface AddWorkoutForm {
   workoutName: string;

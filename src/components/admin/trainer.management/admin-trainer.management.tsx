@@ -1,6 +1,9 @@
 import { useState, useEffect, useCallback } from "react";
 import { useAuthStore } from "../../../stores/auth.store";
-import type { AdminGetTrainersResponse } from "../../../interface/admin.interface";
+import type {
+  AdminGetTrainersResponse,
+  PaginatedResponse,
+} from "../../../interface/admin.interface";
 import adminServices from "../../../services/admin/admin.services";
 import SidebarLayout from "../../ui/app.sidebar/sidebar.layout";
 import DataTable from "../../ui/table/data.table";
@@ -10,31 +13,36 @@ import { useTrainerActions } from "./admin-trainer.actions";
 import ConfirmationModal from "../../ui/confirm.dialog";
 import SearchBar from "../../controls/search/search";
 import SortDropdown, {type SortConfig} from "../../controls/sort/sort";
-import { extractSortOptions } from "../../controls/sort/sort.label"; 
+import Pagination from "../../controls/pagination/pagination";
+import { extractSortOptions } from "../../controls/sort/sort.label";
 
 const AdminTrainerManagement = () => {
-  const user = useAuthStore((state) => state.user);
+ const user = useAuthStore((state) => state.user);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortConfig, setSortConfig] = useState<SortConfig<keyof AdminGetTrainersResponse>>({
-    field: '' as keyof AdminGetTrainersResponse,
-    order: 'asc',
+    field: "" as keyof AdminGetTrainersResponse,
+    order: "asc",
   });
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   const {
-    data: users,
+    data: response,
     loading,
     refetch,
-  } = useTableFetch<AdminGetTrainersResponse[]>(
+  } = useTableFetch<PaginatedResponse<AdminGetTrainersResponse>>(
     () =>
-      adminServices
-        .getTrainers(
-          searchQuery,
-          sortConfig.field ? String(sortConfig.field) : undefined,
-          sortConfig.order
-        )
-        .then((res) => res.data),
+      adminServices.getTrainers(
+        searchQuery,
+        sortConfig.field ? String(sortConfig.field) : undefined,
+        sortConfig.order,
+        currentPage,
+        itemsPerPage
+      ),
     false
   );
+  
+  console.log("response data", response);
 
   const [modalConfig, setModalConfig] = useState<{
     isOpen: boolean;
@@ -53,18 +61,30 @@ const AdminTrainerManagement = () => {
 
   const handleSearch = useCallback((value: string) => {
     setSearchQuery(value);
+    setCurrentPage(1);
   }, []);
 
-  const handleSortChange = useCallback((sort: SortConfig<keyof AdminGetTrainersResponse>) => {
-    setSortConfig(sort);
+  const handleSortChange = useCallback(
+    (sort: SortConfig<keyof AdminGetTrainersResponse>) => {
+      setSortConfig(sort);
+      setCurrentPage(1);
+    },
+    []
+  );
+
+  const handlePageChange = useCallback((page: number) => {
+    setCurrentPage(page);
   }, []);
 
-  // Refetch when searchQuery or sortConfig changes
+  const handleItemsPerPageChange = useCallback((items: number) => {
+    setItemsPerPage(items);
+    setCurrentPage(1);
+  }, []);
+
   useEffect(() => {
     refetch();
-  }, [searchQuery, sortConfig, refetch]);
+  }, [searchQuery, sortConfig, currentPage, itemsPerPage, refetch]);
 
-  // Dynamically extract sort options from columns
   const sortOptions = extractSortOptions(trainerColumns);
 
   if (!user) {
@@ -76,7 +96,6 @@ const AdminTrainerManagement = () => {
       <div className="text-white">
         <h1 className="text-2xl font-semibold mb-6">Trainer Management</h1>
 
-        {/* Search and Sort Bar */}
         <div className="mb-4 flex gap-4">
           <SearchBar
             value={searchQuery}
@@ -85,7 +104,7 @@ const AdminTrainerManagement = () => {
             disabled={loading}
             className="flex-1 max-w-md"
           />
-          
+
           <SortDropdown<keyof AdminGetTrainersResponse>
             options={sortOptions}
             value={sortConfig}
@@ -99,11 +118,27 @@ const AdminTrainerManagement = () => {
         {loading ? (
           <p>Loading trainers....</p>
         ) : (
-          <DataTable<AdminGetTrainersResponse>
-            columns={trainerColumns}
-            data={users}
-            actions={actions}
-          />
+          <>
+            <DataTable<AdminGetTrainersResponse>
+              columns={trainerColumns}
+              data={response?.data || []}
+              actions={actions}
+            />
+
+            {response?.pagination && (
+              <div className="mt-6">
+                <Pagination
+                  currentPage={response.pagination.currentPage}
+                  totalPages={response.pagination.totalPages}
+                  totalItems={response.pagination.totalItems}
+                  itemsPerPage={response.pagination.itemsPerPage}
+                  onPageChange={handlePageChange}
+                  onItemsPerPageChange={handleItemsPerPageChange}
+                  disabled={loading}
+                />
+              </div>
+            )}
+          </>
         )}
       </div>
 

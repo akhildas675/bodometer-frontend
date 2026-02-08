@@ -6,6 +6,8 @@ import type {
   Workout,
 } from "../../interface/admin.interface";
 import type { ApiResponse } from "../../interface/api-response.interface";
+import type { PaginatedResponse } from "../../interface/admin.interface";
+import type { PaginationMeta } from "../../interface/admin.interface";
 
 class AdminService {
   // User Management
@@ -34,22 +36,35 @@ class AdminService {
   }
 
   // Trainer Block/Unblock Management
- async getTrainers(
+
+async getTrainers(
   search?: string,
   sortBy?: string,
-  sortOrder?: 'asc' | 'desc'
-): Promise<ApiResponse<AdminGetTrainersResponse[]>> {
-  const params: Record<string, string> = {};
+  sortOrder?: 'asc' | 'desc',
+  page?: number,
+  limit?: number
+): Promise<PaginatedResponse<AdminGetTrainersResponse>> {
+  const params: Record<string, string | number> = {};
   
   if (search) params.search = search;
   if (sortBy) params.sortBy = sortBy;
   if (sortOrder) params.sortOrder = sortOrder;
+  if (page) params.page = page;
+  if (limit) params.limit = limit;
 
-  const response = await adminApi.get<ApiResponse<AdminGetTrainersResponse[]>>(
-    "/get-trainers",
-    { params }
-  );
-  return response.data;
+  const response = await adminApi.get<{
+    success: boolean;
+    data: AdminGetTrainersResponse[];
+    pagination: PaginationMeta;
+  }>("/get-trainers", { params });
+  
+  console.log("API Response:", response.data);
+  
+  // Return in the format expected by frontend
+  return {
+    data: response.data.data,
+    pagination: response.data.pagination,
+  };
 }
 
   async blockTrainer(trainerId: string): Promise<ApiResponse<null>> {
