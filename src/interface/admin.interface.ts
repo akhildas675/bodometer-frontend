@@ -22,16 +22,10 @@ export interface AdminGetTrainersRequest extends AdminGetUsersRequest {
   role?: "trainer";
 }
 
-export interface AdminGetTrainersResponse {
-  id: string;
-  name: string;
-  email: string;
-  role: string;
-  isBlocked: boolean;
-  isVerified: boolean;
-  createdAt: string;
-  profilePic?: string | null;
+export interface AdminGetTrainersResponse extends AdminGetUsersResponse {
+  role: "trainer";
 }
+
 
 export interface AddWorkoutForm {
   workoutName: string;
@@ -60,5 +54,3 @@ export interface Workout {
   workoutImage: string;
   active: boolean;
 }
-
-
