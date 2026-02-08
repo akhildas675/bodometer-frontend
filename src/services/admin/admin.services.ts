@@ -6,6 +6,8 @@ import type {
   Workout,
 } from "../../interface/admin.interface";
 import type { ApiResponse } from "../../interface/api-response.interface";
+import type { QueryParams } from "../../interface/common.interface";
+import type { PaginatedResponse } from "../../interface/common.interface";
 
 class AdminService {
   // User Management
@@ -34,13 +36,13 @@ class AdminService {
   }
 
   // Trainer Block/Unblock Management
-  async getTrainers(): Promise<ApiResponse<AdminGetTrainersResponse[]>> {
-    const response = await adminApi.get<ApiResponse<AdminGetTrainersResponse[]>>(
-      "/get-trainers"
+   async getTrainers(params?: QueryParams): Promise<ApiResponse<PaginatedResponse<AdminGetTrainersResponse>>> {
+    const response = await adminApi.get<ApiResponse<PaginatedResponse<AdminGetTrainersResponse>>>(
+      "/get-trainers",
+      { params }
     );
     return response.data;
   }
-
   async blockTrainer(trainerId: string): Promise<ApiResponse<null>> {
     console.log("trainer id... frontend", trainerId);
     const response = await adminApi.patch<ApiResponse<null>>(
