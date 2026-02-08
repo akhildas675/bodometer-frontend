@@ -34,12 +34,14 @@ class AdminService {
   }
 
   // Trainer Block/Unblock Management
-  async getTrainers(): Promise<ApiResponse<AdminGetTrainersResponse[]>> {
-    const response = await adminApi.get<ApiResponse<AdminGetTrainersResponse[]>>(
-      "/get-trainers"
-    );
-    return response.data;
-  }
+  async getTrainers(search?: string): Promise<ApiResponse<AdminGetTrainersResponse[]>> {
+  const params = search ? { search } : {};
+  const response = await adminApi.get<ApiResponse<AdminGetTrainersResponse[]>>(
+    "/get-trainers",
+    { params }
+  );
+  return response.data;
+}
 
   async blockTrainer(trainerId: string): Promise<ApiResponse<null>> {
     console.log("trainer id... frontend", trainerId);
