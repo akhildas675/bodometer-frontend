@@ -3,36 +3,37 @@ import type { AdminGetTrainersResponse } from "../../../interface/admin.interfac
 import adminServices from "../../../services/admin/admin.services";
 import type { TableAction } from "../../ui/table/table.types";
 
-export interface ConfirmationState {
+export type TrainerModalConfig = {
   isOpen: boolean;
   title: string;
   message: string;
-  variant: "danger" | "primary";
   onConfirm: () => void;
-}
+  variant?: "danger" | "primary";
+};
+
 
 export const useTrainerActions = (
   refreshTrainers: () => void,
-  setConfirmation: (state: ConfirmationState | null) => void,
+  setModalConfig: React.Dispatch<React.SetStateAction<TrainerModalConfig>>,
 ): TableAction<AdminGetTrainersResponse>[] => {
   return [
     {
       label: "Block",
       variant: "danger",
       visible: (trainer) => !trainer.isBlocked,
-      onClick: async (trainer) => {
-        setConfirmation({
+      onClick: (trainer) => {
+        setModalConfig({
           isOpen: true,
           title: "Block Trainer",
-          message: `Are you sure you want to block ${trainer.name}? They will not be able to access their account.`,
+          message: `Are you sure you want to block ${trainer.name}?`,
           variant: "danger",
           onConfirm: async () => {
             try {
               await adminServices.blockTrainer(trainer.id);
-              toast.success(`${trainer.name} has been blocked`);
+              toast.success("Trainer blocked");
               refreshTrainers();
             } catch {
-              toast.error("Failed to block trainer");
+              toast.error("Failed to block user");
             }
           },
         });
@@ -41,19 +42,19 @@ export const useTrainerActions = (
     {
       label: "Unblock",
       visible: (trainer) => trainer.isBlocked,
-      onClick: async (trainer) => {
-        setConfirmation({
+      onClick: (trainer) => {
+        setModalConfig({
           isOpen: true,
           title: "Unblock Trainer",
-          message: `Are you sure you want to unblock ${trainer.name}? They will regain access to their account.`,
+          message: `Are you sure you want to unblock ${trainer.name}?`,
           variant: "primary",
           onConfirm: async () => {
             try {
               await adminServices.unblockTrainer(trainer.id);
-              toast.success(`${trainer.name} has been unblocked`);
+              toast.success("Trainer unblocked");
               refreshTrainers();
             } catch {
-              toast.error("Failed to unblock trainer");
+              toast.error("Failed to unblock user");
             }
           },
         });
