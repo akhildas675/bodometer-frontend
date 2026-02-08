@@ -13,8 +13,8 @@ import { useTrainerActions } from "./admin-trainer.actions";
 import ConfirmationModal from "../../ui/confirm.dialog";
 import SearchBar from "../../controls/search/search";
 import SortDropdown, {type SortConfig} from "../../controls/sort/sort";
-import Pagination from "../../controls/pagination/pagination";
 import { extractSortOptions } from "../../controls/sort/sort.label";
+import Pagination from "../../controls/pagination/pagination";
 
 const AdminTrainerManagement = () => {
  const user = useAuthStore((state) => state.user);
