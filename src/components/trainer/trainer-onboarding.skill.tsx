@@ -26,7 +26,7 @@ const TrainerOnboardingSkills = () => {
 
   console.log("Workout list", workoutList);
 
-  // ✅ Show loading state when loading AND no data
+
   if (loading && !workoutList) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-[#03000D] to-[#190473] flex items-center justify-center">
@@ -35,7 +35,7 @@ const TrainerOnboardingSkills = () => {
     );
   }
 
-  // ✅ Show message if no workouts available
+
   if (!workoutList || workoutList.length === 0) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-[#03000D] to-[#190473] flex items-center justify-center">

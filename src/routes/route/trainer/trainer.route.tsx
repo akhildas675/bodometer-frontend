@@ -5,6 +5,7 @@ import TrainerOnboardingSkillPage from "../../../pages/trainer/trainer.onboardin
 import TrainerOnboardingAboutPage from "../../../pages/trainer/trainer.onboarding-about.page";
 import TrainerOnboardingExperiencePage from "../../../pages/trainer/trainer.onboarding-experience.page";
 import TrainerPending from "../../../components/trainer/trainer.pending";
+import TrainerProfilePage from "../../../pages/trainer/trainer-profile.page";
 
 export const trainerRoutes = (
   <Route element={<ProtectedRoute allowedRoles={["trainer"]} />}>
@@ -13,5 +14,6 @@ export const trainerRoutes = (
     <Route path="/trainer/onboarding-skill" element={<TrainerOnboardingSkillPage/>}/>
     <Route path="/trainer/onboarding-experience" element={<TrainerOnboardingExperiencePage/>}/>
     <Route path="/trainer/pending" element={<TrainerPending/>}/>
+    <Route path="/trainer/profile" element={<TrainerProfilePage/>}/>
   </Route>
 );

@@ -33,8 +33,8 @@ export interface ProfileUpdatePayload {
   userName: string;
   phoneNumber: string | null;
   gender: Gender;
-  dateOfBirth: Date | null;
   profilePic?: string;
+  dateOfBirth: Date | null;
 }
 
 export interface UploadProfilePictureResponse {
