@@ -1,4 +1,5 @@
 import { trainerApi } from "../../api/api.instance";
+import { TRAINER_API_ROUTES } from "../../constants/constant-routes/api-routes/trainer-constant.routes";
 import type { ApiResponse } from "../../interface/api-response.interface";
 import type { 
   ProfileUpdatePayload, 
@@ -10,18 +11,18 @@ import type {
 
 class TrainerService {
   async getTrainerProfile(): Promise<ApiResponse<TrainerProfileInterface>> {
-    const response = await trainerApi.get<ApiResponse<TrainerProfileInterface>>("/trainer-profile");
+    const response = await trainerApi.get<ApiResponse<TrainerProfileInterface>>(TRAINER_API_ROUTES.TRAINER_PROFILE);
     return response.data;
   }
 
   async updateTrainerProfile(data: ProfileUpdatePayload): Promise<ApiResponse<TrainerProfileInterface>> {
-    const response = await trainerApi.put<ApiResponse<TrainerProfileInterface>>("/trainer-profile-update", data);
+    const response = await trainerApi.put<ApiResponse<TrainerProfileInterface>>(TRAINER_API_ROUTES.TRAINER_PROFILE_UPDATE, data);
     return response.data;
   }
 
   async uploadProfilePicture(data: FormData): Promise<ApiResponse<UploadProfilePictureResponse>> {
     const response = await trainerApi.post<ApiResponse<UploadProfilePictureResponse>>(
-      "/trainer-profile-picture",
+      TRAINER_API_ROUTES.TRAINER_PROFILE_PICTURE,
       data,
       {
         headers: {
@@ -33,13 +34,13 @@ class TrainerService {
   }
 
   async workoutList(): Promise<ApiResponse<WorkoutList[]>> {
-    const response = await trainerApi.get<ApiResponse<WorkoutList[]>>("/get-workout-list");
+    const response = await trainerApi.get<ApiResponse<WorkoutList[]>>(TRAINER_API_ROUTES.GET_WORKOUT_LIST);
     return response.data;
   }
 
   async submitTrainerProfile(formData: FormData): Promise<ApiResponse<TrainerOnboardingResponse>> {
     const response = await trainerApi.post<ApiResponse<TrainerOnboardingResponse>>(
-      "/submit-profile-data",
+      TRAINER_API_ROUTES.SUBMIT_PROFILE_DATA,
       formData,
       {
         headers: {

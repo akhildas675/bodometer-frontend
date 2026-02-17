@@ -8,6 +8,7 @@ import type {
 import type { ApiResponse } from "../../interface/api-response.interface";
 import type { PaginatedResponse } from "../../interface/admin.interface";
 import type { PaginationMeta } from "../../interface/admin.interface";
+import { ADMIN_API_ROUTES } from "../../constants/constant-routes/api-routes/admin-constant.routes";
 
 class AdminService {
   // User Management
@@ -28,11 +29,11 @@ class AdminService {
       success: boolean;
       data: AdminGetUsersResponse[];
       pagination: PaginationMeta;
-    }>("/get-users", { params });
+    }>(ADMIN_API_ROUTES.GET_USERS, { params });
 
     console.log("API Response:", response.data);
 
-    // Return in the format expected by frontend
+    
     return {
       data: response.data.data,
       pagination: response.data.pagination,
@@ -42,7 +43,7 @@ class AdminService {
   async blockUser(userId: string): Promise<ApiResponse<null>> {
     console.log("frontend userid....", userId);
     const response = await adminApi.patch<ApiResponse<null>>(
-      `/users/${userId}/block`
+      ADMIN_API_ROUTES.BLOCK_USER(userId)
     );
     return response.data;
   }
@@ -50,7 +51,7 @@ class AdminService {
   async unblockUser(userId: string): Promise<ApiResponse<null>> {
     console.log("frontend userid....", userId);
     const response = await adminApi.patch<ApiResponse<null>>(
-      `/users/${userId}/unblock`
+      ADMIN_API_ROUTES.UNBLOCK_USER(userId)
     );
     console.log(response.data);
     return response.data;
@@ -77,11 +78,11 @@ class AdminService {
       success: boolean;
       data: AdminGetTrainersResponse[];
       pagination: PaginationMeta;
-    }>("/get-trainers", { params });
+    }>(ADMIN_API_ROUTES.GET_TRAINERS, { params });
 
     console.log("API Response:", response.data);
 
-    // Return in the format expected by frontend
+    
     return {
       data: response.data.data,
       pagination: response.data.pagination,
@@ -91,7 +92,7 @@ class AdminService {
   async blockTrainer(trainerId: string): Promise<ApiResponse<null>> {
     console.log("trainer id... frontend", trainerId);
     const response = await adminApi.patch<ApiResponse<null>>(
-      `/trainer/${trainerId}/block`
+      ADMIN_API_ROUTES.BLOCK_TRAINER(trainerId)
     );
     console.log(response.data);
     return response.data;
@@ -100,7 +101,7 @@ class AdminService {
   async unblockTrainer(trainerId: string): Promise<ApiResponse<null>> {
     console.log("trainer id...frontend", trainerId);
     const response = await adminApi.patch<ApiResponse<null>>(
-      `/trainer/${trainerId}/unblock`
+      ADMIN_API_ROUTES.UNBLOCK_TRAINER(trainerId)
     );
     console.log(response.data);
     return response.data;
@@ -108,12 +109,12 @@ class AdminService {
 
   // Workouts
   async getWorkouts(): Promise<ApiResponse<Workout[]>> {
-    const response = await adminApi.get<ApiResponse<Workout[]>>("/get-workouts");
+    const response = await adminApi.get<ApiResponse<Workout[]>>(ADMIN_API_ROUTES.GET_WORKOUTS);
     return response.data;
   }
 
   async addWorkouts(data: FormData): Promise<ApiResponse<Workout>> {
-    const response = await adminApi.post("/add-workout", data, {
+    const response = await adminApi.post(ADMIN_API_ROUTES.ADD_WORKOUT, data, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
@@ -124,7 +125,7 @@ class AdminService {
   // Get all trainer appointments
   async getTrainerAppointments(): Promise<ApiResponse<TrainerWithProfile[]>> {
     const response = await adminApi.post<ApiResponse<TrainerWithProfile[]>>(
-      "/get-trainer-appointments"
+      ADMIN_API_ROUTES.GET_TRAINER_APPOINTMENTS
     );
     return response.data;
   }
@@ -134,7 +135,7 @@ class AdminService {
     profileId: string
   ): Promise<ApiResponse<TrainerWithProfile>> {
     const response = await adminApi.get<ApiResponse<TrainerWithProfile>>(
-      `/trainers/profile/${profileId}`
+      ADMIN_API_ROUTES.GET_TRAINER_BY_PROFILE_ID(profileId)
     );
     return response.data;
   }
@@ -144,7 +145,7 @@ class AdminService {
     profileId: string
   ): Promise<ApiResponse<{ message: string }>> {
     const response = await adminApi.patch<ApiResponse<{ message: string }>>(
-      `/trainers/${profileId}/approve`
+      ADMIN_API_ROUTES.APPROVE_TRAINER(profileId)
     );
     return response.data;
   }
@@ -155,7 +156,7 @@ class AdminService {
     reason: string
   ): Promise<ApiResponse<{ message: string }>> {
     const response = await adminApi.patch<ApiResponse<{ message: string }>>(
-      `/trainers/${profileId}/reject`,
+      ADMIN_API_ROUTES.REJECT_TRAINER(profileId),
       { reason }
     );
     return response.data;
