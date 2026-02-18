@@ -6,6 +6,7 @@ import PrimaryButton from "../ui/primary.button";
 import { toast } from "sonner";
 import { useOtpStore } from "../../stores/otp.store";
 import authService from "../../services/auth/auth.service";
+import axios from "axios";
 
 const ResetPassword = () => {
   const [password, setPassword] = useState("");
@@ -45,8 +46,25 @@ const ResetPassword = () => {
     toast.success("Password reset successful");
     useOtpStore.getState().clearOtpContext();
     navigate("/login", { replace: true });
-  } catch {
-    toast.error("Failed to reset password");
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response) {
+        const errorMessage = error.response.data?.message || "Reset password failed";
+        
+      
+        if (error.response.status === 403) {
+          toast.error(errorMessage, {
+            duration: 5000,
+            style: {
+              background: "#ef4444",
+              color: "#fff",
+            },
+          });
+        } else {
+          toast.error(errorMessage);
+        }
+      } else {
+        toast.error("Reset password failed. Please check your credentials.");
+      }
   } finally {
     setLoading(false);
   }

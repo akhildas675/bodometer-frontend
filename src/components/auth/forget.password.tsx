@@ -28,6 +28,7 @@ const ForgetPassword = () => {
     email: form.email,
   };
 
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (loading) return;
@@ -37,6 +38,7 @@ const ForgetPassword = () => {
 
     try {
       const result = await authService.forgotPassword(payload);
+      console.log("forget password payload",payload)
       if (result.success) {
         const role = result.data.role
 
@@ -49,7 +51,7 @@ const ForgetPassword = () => {
         navigate(`/${role}-otp`, { replace: true });
       }
     } catch (error) {
-      console.log(error);
+      console.log("Error submitting email",error);
     }
   };
 
@@ -99,7 +101,8 @@ const ForgetPassword = () => {
                 onChange={handleChange("email")}
               />
 
-              <PrimaryButton text="Send Reset Code" type="submit" />
+              <PrimaryButton  text={loading ? "Sending Reset Code" : "Send Reset Code"} type="submit"
+              loading={loading} />
             </form>
 
             <p className="text-center text-xs sm:text-sm text-slate-200 mt-6">

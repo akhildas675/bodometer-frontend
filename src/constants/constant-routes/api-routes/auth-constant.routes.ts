@@ -4,7 +4,7 @@ export const  AUTH_API_ROUTES={
     OTP_RESEND:"/otp-resend",
     LOGIN:"/login",
     COMPLETE_REGISTER:"/register/complete",
-    FORGET_PASSWORD:"/forgot/password",
+    FORGET_PASSWORD:"/forgot-password",
     RESET_PASSWORD:"/reset-password",
     GOOGLE_LOGIN:"/google-login"
 } as const

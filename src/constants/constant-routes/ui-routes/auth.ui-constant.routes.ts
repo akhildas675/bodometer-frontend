@@ -4,6 +4,6 @@ export const AUTH_UI_ROUTES={
     TRAINER_REGISTER_PAGE:"/trainer-register",
     USER_OTP_PAGE:"/user-otp",
     TRAINER_OTP_PAGE:"/trainer-otp",
-    FORGET_PASSWORD_PAGE:"/forget-password",
+    FORGET_PASSWORD_PAGE:"/forgot-password",
     RESET_PASSWORD_PAGE:"/reset-password",
 } as const
