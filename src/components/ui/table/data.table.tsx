@@ -11,6 +11,7 @@ export default function DataTable<T>({
   data,
   actions,
 }: DataTableProps<T>) {
+
   return (
     <div className="overflow-x-auto rounded-xl border border-white/10">
       <table className="w-full border-collapse text-sm text-white">

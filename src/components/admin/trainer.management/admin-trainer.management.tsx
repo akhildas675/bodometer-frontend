@@ -24,7 +24,7 @@ const AdminTrainerManagement = () => {
     order: "asc",
   });
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [itemsPerPage, setItemsPerPage] = useState(3);
 
   const {
     data: response,
@@ -42,7 +42,7 @@ const AdminTrainerManagement = () => {
     false
   );
   
-  console.log("response data", response);
+  console.log("response data", response.data);
 
   const [modalConfig, setModalConfig] = useState<{
     isOpen: boolean;
@@ -128,10 +128,10 @@ const AdminTrainerManagement = () => {
             {response?.pagination && (
               <div className="mt-6">
                 <Pagination
-                  currentPage={response.pagination.currentPage}
-                  totalPages={response.pagination.totalPages}
-                  totalItems={response.pagination.totalItems}
-                  itemsPerPage={response.pagination.itemsPerPage}
+                  currentPage={Number(response.pagination.currentPage)}
+                  totalPages={Number(response.pagination.totalPages)}
+                  totalItems={Number(response.pagination.totalItems)}
+                  itemsPerPage={Number(response.pagination.itemsPerPage)}
                   onPageChange={handlePageChange}
                   onItemsPerPageChange={handleItemsPerPageChange}
                   disabled={loading}

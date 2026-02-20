@@ -31,7 +31,7 @@ class AdminService {
       pagination: PaginationMeta;
     }>(ADMIN_API_ROUTES.GET_USERS, { params });
 
-    console.log("API Response:", response.data);
+    console.log("API Response Users:", response.data);
 
     
     return {
@@ -45,6 +45,7 @@ class AdminService {
     const response = await adminApi.patch<ApiResponse<null>>(
       ADMIN_API_ROUTES.BLOCK_USER(userId)
     );
+ 
     return response.data;
   }
 
@@ -80,7 +81,7 @@ class AdminService {
       pagination: PaginationMeta;
     }>(ADMIN_API_ROUTES.GET_TRAINERS, { params });
 
-    console.log("API Response:", response.data);
+    console.log("API Response trainers:", response.data);
 
     
     return {

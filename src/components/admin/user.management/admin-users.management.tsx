@@ -43,6 +43,8 @@ const {
     false
   );
 
+  console.log("response data", response.data);
+
   const [modalConfig, setModalConfig] = useState<{
       isOpen: boolean;
       title: string;
@@ -128,11 +130,11 @@ const {
 
             {response?.pagination && (
               <div className="mt-6">
-                <Pagination
-                  currentPage={response.pagination.currentPage}
-                  totalPages={response.pagination.totalPages}
-                  totalItems={response.pagination.totalItems}
-                  itemsPerPage={response.pagination.itemsPerPage}
+               <Pagination
+                  currentPage={Number(response.pagination.currentPage)}
+                  totalPages={Number(response.pagination.totalPages)}
+                  totalItems={Number(response.pagination.totalItems)}
+                  itemsPerPage={Number(response.pagination.itemsPerPage)}
                   onPageChange={handlePageChange}
                   onItemsPerPageChange={handleItemsPerPageChange}
                   disabled={loading}

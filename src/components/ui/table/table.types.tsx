@@ -12,8 +12,10 @@ export interface TableAction<T> {
   label: string;
   variant?: "danger" | "primary";
   visible?: (item: T) => boolean;
+  disabled?: (row: T) => boolean;
   onClick: (item: T) => void;
 }
+
 
 
 
