@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import trainerService from '../../services/trainer/trainer.service';
 import authInitService from '../../services/auth/auth-init.service';
 
-const TrainerStatusRoute = () => {
+const TrainerOnboardingRoute = () => {
   const user = useAuthStore((state) => state.user);
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const [checking, setChecking] = useState(true);
@@ -22,19 +22,18 @@ const TrainerStatusRoute = () => {
       try {
         const result = await trainerService.getTrainerProfileStatus();
         const status = result?.data?.verificationStatus;
+        // const profileExists = result?.data?.profileExists;
 
         if (status === VERIFICATION_STATUS.APPROVED) {
-         
           try { await authInitService.logout(); } catch (e) { console.error(e); }
           useAuthStore.getState().clearAuth();
           setRedirect("/login");
-        } else if (!status) {
-        
-          setRedirect("/trainer/onboarding-experience");
-        } else {
-       
+        } else if (status === VERIFICATION_STATUS.PENDING) {
+          
           useAuthStore.getState().setVerificationStatus(status);
+          setRedirect("/trainer/status");
         }
+       
       } catch (e) {
         console.error(e);
       } finally {
@@ -52,6 +51,10 @@ const TrainerStatusRoute = () => {
     return <Navigate to="/trainer/dashboard" replace />;
   }
 
+  if (user.verificationStatus === VERIFICATION_STATUS.PENDING) {
+    return <Navigate to="/trainer/status" replace />;
+  }
+
   if (checking) {
     return (
       <div className="min-h-screen bg-[#050017] flex items-center justify-center">
@@ -62,7 +65,8 @@ const TrainerStatusRoute = () => {
 
   if (redirect) return <Navigate to={redirect} replace />;
 
+  
   return <Outlet />;
 };
 
-export default TrainerStatusRoute;
+export default TrainerOnboardingRoute;

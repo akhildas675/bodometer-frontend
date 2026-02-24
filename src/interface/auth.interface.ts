@@ -95,4 +95,5 @@ export interface GoogleLoginResponse {
     role: Role;
   };
   accessToken: string;
+  trainerStatus?: TrainerStatus;
 }

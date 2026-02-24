@@ -7,16 +7,19 @@ const ApprovedTrainerRoute = () => {
   const user = useAuthStore((state) => state.user);
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
 
-  if (!isAuthenticated || !user) {
-    return <Navigate to="/login" replace />;
+  if (!isAuthenticated || !user) return <Navigate to="/login" replace />;
+  if (user.role !== ROLES.TRAINER) return <Navigate to="/" replace />;
+
+
+  if (!user.verificationStatus) {
+    return <Navigate to="/trainer/onboarding-experience" replace />;
   }
-  if (user.role !== ROLES.TRAINER) {
-    return <Navigate to="/" replace />;
-  }
+
   if (user.verificationStatus !== VERIFICATION_STATUS.APPROVED) {
     return <Navigate to="/trainer/status" replace />;
   }
 
+  
   return <Outlet />;
 };
 

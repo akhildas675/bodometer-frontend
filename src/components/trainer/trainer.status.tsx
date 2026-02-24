@@ -46,9 +46,28 @@ const TrainerStatus = () => {
     true
   );
 
-  useEffect(() => {
-    refetch();
-  }, []);
+
+useEffect(() => {
+  const interval = setInterval(refetch, 30000);
+  return () => clearInterval(interval);
+}, []);
+
+
+useEffect(() => {
+  const status = trainerProfileStatus?.data?.verificationStatus;
+  if (status === "approved") {
+    toast.success(" Your profile has been approved! Please log in again.", {
+      duration: 4000,
+    });
+    setTimeout(async () => {
+      try { await authInitService.logout(); } catch (e) { console.error(e); }
+      finally {
+        useAuthStore.getState().clearAuth();
+        navigate("/login", { replace: true });
+      }
+    }, 2000);
+  }
+}, [trainerProfileStatus]);
 
   const status = trainerProfileStatus?.data?.verificationStatus;
   const trainerName = trainerProfileStatus?.data?.name;
@@ -57,7 +76,6 @@ const TrainerStatus = () => {
   const isRejected = status === "rejected";
   const isPending = status === "pending" || !status;
 
-  // ── Loading state ──────────────────────────────────────────────
   if (loading) {
     return (
       <div className="min-h-screen w-full bg-[#050017] flex items-center justify-center">
@@ -69,7 +87,6 @@ const TrainerStatus = () => {
     );
   }
 
-  // ── Error state ────────────────────────────────────────────────
   if (error) {
     return (
       <div className="min-h-screen w-full bg-[#050017] flex items-center justify-center p-4">
@@ -102,9 +119,7 @@ const TrainerStatus = () => {
           disabled={isLoggingOut}
           type="button"
           className={`absolute top-6 right-6 z-50 flex items-center gap-2 px-4 py-2 rounded-full bg-red-600/20 hover:bg-red-600/30 text-red-400 hover:text-red-300 transition-all border border-red-600/50 ${
-            isLoggingOut
-              ? "opacity-50 cursor-not-allowed"
-              : "cursor-pointer hover:scale-105"
+            isLoggingOut ? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:scale-105"
           }`}
         >
           <LogOut size={18} className={isLoggingOut ? "animate-spin" : ""} />
@@ -113,10 +128,9 @@ const TrainerStatus = () => {
           </span>
         </button>
 
-        {/* Main content */}
         <div className="flex flex-col items-center justify-center px-10 py-16 text-white relative z-10">
 
-          {/* ── ICON — changes based on status ── */}
+          {/* ── ICON ── */}
           <div className="mb-8 relative">
             {isRejected ? (
               <>
@@ -135,15 +149,12 @@ const TrainerStatus = () => {
             )}
           </div>
 
-          {/* ── TRAINER NAME ── */}
           {trainerName && (
             <p className="text-slate-400 text-sm mb-2">
-              Hi,{" "}
-              <span className="text-white font-semibold">{trainerName}</span>
+              Hi, <span className="text-white font-semibold">{trainerName}</span>
             </p>
           )}
 
-          {/* ── TITLE — changes based on status ── */}
           <h1
             className={`text-3xl font-bold text-center mb-4 bg-clip-text text-transparent ${
               isRejected
@@ -154,12 +165,11 @@ const TrainerStatus = () => {
             {isRejected ? "Profile Rejected" : "Profile Under Review"}
           </h1>
 
-          {/* ── DESCRIPTION — changes based on status ── */}
           <div className="max-w-md text-center space-y-3 mb-8">
             {isRejected ? (
               <p className="text-slate-300 text-base leading-relaxed">
-                Unfortunately, your trainer profile was not approved by our
-                admin team. Please review the reason below and resubmit.
+                Unfortunately, your trainer profile was not approved. Please
+                review the reason below and resubmit.
               </p>
             ) : (
               <>
@@ -171,11 +181,15 @@ const TrainerStatus = () => {
                   This process typically takes 24–48 hours. You'll receive an
                   email notification once your profile has been reviewed.
                 </p>
+               
+                <p className="text-purple-400 text-xs flex items-center justify-center gap-1">
+                  <RefreshCw size={10} className="animate-spin" />
+                  Auto-checking approval status every 30 seconds...
+                </p>
               </>
             )}
           </div>
 
-          
           <div
             className={`flex items-center gap-2 px-6 py-3 rounded-full border ${
               isRejected
@@ -197,7 +211,6 @@ const TrainerStatus = () => {
             </span>
           </div>
 
-          {/* ── REJECTION REASON BOX — only shows when rejected ── */}
           {isRejected && rejectionReason && (
             <div className="mt-8 w-full max-w-md p-5 rounded-2xl bg-red-900/20 border border-red-700/40">
               <h3 className="text-sm font-semibold text-red-300 mb-2 flex items-center gap-2">
@@ -209,6 +222,7 @@ const TrainerStatus = () => {
               </p>
             </div>
           )}
+
           {isRejected && (
             <button
               onClick={() => navigate("/trainer/onboarding-experience")}
@@ -219,7 +233,6 @@ const TrainerStatus = () => {
             </button>
           )}
 
-       
           {isPending && (
             <div className="mt-12 p-6 rounded-2xl bg-purple-900/20 border border-purple-700/30 max-w-md">
               <h3 className="text-sm font-semibold text-purple-300 mb-2">
@@ -236,7 +249,7 @@ const TrainerStatus = () => {
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-purple-400 mt-0.5">•</span>
-                  <span>Once approved, you can access your trainer dashboard</span>
+                  <span>Once approved, you'll be automatically redirected to your dashboard</span>
                 </li>
               </ul>
             </div>

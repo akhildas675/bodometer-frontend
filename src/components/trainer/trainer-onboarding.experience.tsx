@@ -52,33 +52,34 @@ const TrainerOnboardingExperience = () => {
     return true;
   };
   const handleSubmit = async () => {
-    if (isSubmitting) return;
-    if (!validateForm()) return;
+  if (isSubmitting) return;
+  if (!validateForm()) return;
 
-    try {
-      setIsSubmitting(true);
+  try {
+    setIsSubmitting(true);
 
-      const formData = new FormData();
-      formData.append("experienceInYears", String(experience));
-      formData.append("bio", bio);
-      formData.append("certificate", certificate!);
+    const formData = new FormData();
+    formData.append("experienceInYears", String(experience));
+    formData.append("bio", bio);
+    formData.append("certificate", certificate!);
 
-      await trainerService.submitTrainerProfile(formData);
+    await trainerService.submitTrainerProfile(formData);
 
-      toast.success("Profile submitted. Awaiting admin approval.");
-      navigate("/trainer/status", { replace: true });
-    } catch (error) {
-      console.error("Login error:", error);
-      if (axios.isAxiosError(error) && error.response) {
-        toast.error(error.response.data?.message || "Login failed");
-      } else {
-        toast.error("Login failed. Please try again.");
-      }
-    } finally {
-      setIsSubmitting(false);
+    
+    useAuthStore.getState().setVerificationStatus("pending");
+
+    toast.success("Profile resubmitted! Awaiting admin approval.");
+    navigate("/trainer/status", { replace: true });
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response) {
+      toast.error(error.response.data?.message || "Submission failed");
+    } else {
+      toast.error("Submission failed. Please try again.");
     }
-  };
-
+  } finally {
+    setIsSubmitting(false);
+  }
+};
   return (
     <div className="min-h-screen bg-[#050017] flex items-center justify-center">
       <div className="relative w-full max-w-6xl h-[600px] rounded-3xl overflow-hidden flex bg-gradient-to-br from-[#04001a] via-[#07002a] to-[#12043b]">

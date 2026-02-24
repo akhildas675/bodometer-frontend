@@ -20,125 +20,84 @@ const AuthLoginPage = () => {
   });
 
   const handleChange =
-    (field: keyof LoginPayload) => (e: React.ChangeEvent<HTMLInputElement>) => {
-      setForm((prev) => ({
-        ...prev,
-        [field]: e.target.value,
-      }));
+    (field: keyof LoginPayload) =>
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setForm((prev) => ({ ...prev, [field]: e.target.value }));
     };
-
-  const payload = {
-    email: form.email,
-    password: form.password,
-  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (loading) return;
-
     if (!form.email) return toast.error("Email is required");
     if (!form.password) return toast.error("Password is required");
 
     setLoading(true);
 
     try {
-      const result = await authService.login(payload);
-
-      console.log("FULL API RESPONSE:", result.data);
+      const result = await authService.login({
+        email: form.email,
+        password: form.password,
+      });
 
       const { user, accessToken, trainerStatus } = result.data;
 
-      console.log("User role:", user.role);
-      console.log("Trainer Status Object:", trainerStatus);
-
-      //Set auth state 
-      useAuthStore.getState().setAuth({
-        user,
-        accessToken,
-      });
+    
+      useAuthStore.getState().setAuth({ user, accessToken, trainerStatus });
 
       toast.success(`Welcome back, ${user.name || "User"}!`);
 
-      // Handle TRAINER logic
+      console.log("Trainer status..........",trainerStatus)
+
+     
       if (user.role === "trainer") {
-        console.log(" User is a trainer");
-
-        // Check if trainerStatus exists
-        if (!trainerStatus) {
-          console.log("No trainer status - redirecting to onboarding");
-            navigate("/trainer/onboarding/experience", { replace: true });
-          return;
-        }
-
-        console.log("profileExists:", trainerStatus.profileExists);
-        console.log("profileExists type:", typeof trainerStatus.profileExists);
-        console.log("verificationStatus:", trainerStatus.verificationStatus);
-
-        // CRITICAL: Check if profile doesn't exist (FIRST PRIORITY)
-        if (
+        
+        // No profile yet → go to onboarding
+        const noProfile =
+          !trainerStatus ||
           trainerStatus.profileExists === false ||
           trainerStatus.profileExists === undefined ||
-          trainerStatus.profileExists === null
-        ) {
-          console.log(
-            "PROFILE DOES NOT EXIST - REDIRECTING TO ONBOARDING EXPERIENCE"
-          );
-            navigate("/trainer/onboarding-experience", { replace: true });
+          trainerStatus.profileExists === null;
+
+        if (noProfile) {
+          navigate("/trainer/onboarding-experience", { replace: true }); 
           return;
         }
 
-        console.log(" Profile exists, checking verification status...");
-
-        // Check verification status (ONLY if profile exists)
-        if (trainerStatus.verificationStatus === VERIFICATION_STATUS.PENDING) {
-          console.log("REDIRECT → pending approval");
-          toast.info("Please wait for admin approval");
-            navigate("/trainer/status", { replace: true });
-          return;
-        }
-
-        if (trainerStatus.verificationStatus === VERIFICATION_STATUS.APPROVED) {
-          console.log("REDIRECT → dashboard (approved)");
+        // Profile exists route by verification status
+        switch (trainerStatus.verificationStatus) {
+          case VERIFICATION_STATUS.APPROVED:
             navigate("/trainer/dashboard", { replace: true });
-          return;
-        }
+            return;
 
-        if (trainerStatus.verificationStatus === VERIFICATION_STATUS.REJECTED) {
-          console.log("REDIRECT → rejected");
+          case VERIFICATION_STATUS.PENDING:
+            toast.info("Please wait for admin approval");
             navigate("/trainer/status", { replace: true });
-          return;
+            return;
+
+          case VERIFICATION_STATUS.REJECTED:
+            navigate("/trainer/status", { replace: true });
+            return;
+
+          default:
+            toast.error("Unexpected trainer status. Please contact support.");
+            return;
         }
-
-        // Unknown state
-        console.error(" Unknown trainer state", trainerStatus);
-        toast.error("Unexpected trainer status. Please contact support.");
-        console.log("=== LOGIN DEBUG END ===");
-        return;
       }
 
-      // Handle ADMIN role
+      
       if (user.role === "admin") {
-        console.log("User is admin - redirecting to admin dashboard");
-      
-          navigate("/admin/dashboard", { replace: true });
-        
+        navigate("/admin/dashboard", { replace: true });
         return;
       }
 
-      // Handle USER role
+      // ── USER ──────────────────────────────────────────────────
       if (user.role === "user") {
-        console.log(" User is regular user - redirecting to home");
-          navigate("/", { replace: true });
-      
+        navigate("/", { replace: true });
         return;
       }
 
-      //  Unknown role
-      console.error(" Unknown role:", user.role);
       toast.error("Unknown role. Please contact support.");
-      console.log("=== LOGIN DEBUG END ===");
     } catch (error) {
-      console.error("Login error:", error);
       if (axios.isAxiosError(error) && error.response) {
         toast.error(error.response.data?.message || "Login failed");
       } else {
@@ -150,61 +109,64 @@ const AuthLoginPage = () => {
   };
 
   const handleGoogleSuccess = async (credential: string) => {
-  try {
-    const result = await authService.googleLogin({
-      idToken: credential,
-    });
+    try {
+      const result = await authService.googleLogin({ idToken: credential });
+      const { user, accessToken, trainerStatus } = result.data;
 
-    const { user, accessToken } = result.data;
+      useAuthStore.getState().setAuth({ user, accessToken, trainerStatus }); 
 
-    useAuthStore.getState().setAuth({ user, accessToken });
+      toast.success(`Welcome back, ${user.name || "User"}!`);
 
-    
-    toast.success(`Welcome back, ${user.name || 'User'}!`);
+      if (user.role === "trainer") {
+        // Google login trainers
+        const noProfile =
+          !trainerStatus ||
+          trainerStatus.profileExists === false ||
+          trainerStatus.profileExists === undefined ||
+          trainerStatus.profileExists === null;
 
-    if (user.role === "trainer") {
-      navigate("/trainer/onboarding-skill", { replace: true });
-    } else if (user.role === "admin") {
-      navigate("/admin/dashboard", { replace: true });
-    } else {
-      navigate("/", { replace: true });
-    }
-  } catch (error) {
-    
-    if (axios.isAxiosError(error) && error.response) {
-        const errorMessage = error.response.data?.message || "Login failed";
-        
-      
-        if (error.response.status === 403) {
-          toast.error(errorMessage, {
-            duration: 5000,
-            style: {
-              background: "#ef4444",
-              color: "#fff",
-            },
-          });
-        } else {
-          toast.error(errorMessage);
+        if (noProfile) {
+          navigate("/trainer/onboarding-experience", { replace: true });
+          return;
         }
+
+        if (trainerStatus.verificationStatus === VERIFICATION_STATUS.APPROVED) {
+          navigate("/trainer/dashboard", { replace: true });
+        } else {
+          navigate("/trainer/status", { replace: true });
+        }
+      } else if (user.role === "admin") {
+        navigate("/admin/dashboard", { replace: true });
+      } else {
+        navigate("/", { replace: true });
+      }
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response) {
+        const errorMessage = error.response.data?.message || "Login failed";
+        toast.error(errorMessage, {
+          duration: error.response.status === 403 ? 5000 : 3000,
+          style: error.response.status === 403
+            ? { background: "#ef4444", color: "#fff" }
+            : undefined,
+        });
       } else {
         toast.error("Login failed. Please check your credentials.");
       }
-  } finally {
-    setLoading(false);
-  }
-};
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen w-full bg-gradient-to-b from-[#03000D] to-[#190473] flex items-center justify-center">
       <div className="w-full max-w-6xl h-[600px] rounded-3xl overflow-hidden shadow-2xl flex bg-gradient-to-b from-[#03000D] to-[#190473]">
-        {/* Left image section */}
+        {/* Left image */}
         <div className="w-1/2 hidden md:block relative">
           <img
             src="https://bodometer-assets.s3.eu-north-1.amazonaws.com/bodometer_register_page_img.jpg"
             alt="Bodometer login"
             className="h-full w-full object-cover"
           />
-
           <div className="absolute top-6 left-6">
             <img
               src="/public/Bodometer Logo corrected 1.png"
@@ -214,9 +176,8 @@ const AuthLoginPage = () => {
           </div>
         </div>
 
-        {/* Right form section */}
+        {/* Right form */}
         <div className="flex-1 relative flex items-center justify-center px-6 sm:px-10 py-10 bg-gradient-to-b from-[#03000D] to-[#190473]">
-          {/* Glow effects */}
           <div className="pointer-events-none absolute -top-32 -right-20 h-72 w-72 rounded-full bg-[#3a1b7a] opacity-40 blur-2xl" />
           <div className="pointer-events-none absolute bottom-[-120px] -left-10 h-80 w-80 rounded-full bg-[#24116b] opacity-40 blur-2xl" />
 
@@ -233,7 +194,6 @@ const AuthLoginPage = () => {
                 value={form.email}
                 onChange={handleChange("email")}
               />
-
               <InputWithIcon
                 icon={<Lock size={20} className="text-indigo-200" />}
                 type="password"
@@ -241,7 +201,6 @@ const AuthLoginPage = () => {
                 value={form.password}
                 onChange={handleChange("password")}
               />
-
               <PrimaryButton
                 text={loading ? "Logging in..." : "Login"}
                 type="submit"
@@ -250,10 +209,7 @@ const AuthLoginPage = () => {
             </form>
 
             <div className="text-right mt-4">
-              <Link
-                to="/forgot-password"
-                className="text-xs text-indigo-400 hover:underline"
-              >
+              <Link to="/forgot-password" className="text-xs text-indigo-400 hover:underline">
                 Forgot password?
               </Link>
             </div>
@@ -261,10 +217,7 @@ const AuthLoginPage = () => {
             <div className="mt-4 flex justify-center">
               <GoogleLogin
                 onSuccess={(res) => {
-                  if (!res.credential) {
-                    toast.error("Google login failed");
-                    return;
-                  }
+                  if (!res.credential) return toast.error("Google login failed");
                   handleGoogleSuccess(res.credential);
                 }}
                 onError={() => toast.error("Google login failed")}
@@ -273,25 +226,17 @@ const AuthLoginPage = () => {
 
             <div className="flex items-center gap-4 my-6">
               <div className="h-px flex-1 bg-slate-600" />
-              <span className="text-xs uppercase tracking-[0.2em] text-slate-300">
-                or
-              </span>
+              <span className="text-xs uppercase tracking-[0.2em] text-slate-300">or</span>
               <div className="h-px flex-1 bg-slate-600" />
             </div>
 
             <p className="text-center text-xs sm:text-sm text-slate-200">
               If you don't have an account, please{" "}
-              <Link
-                to="/user-register"
-                className="font-semibold text-indigo-400 hover:underline"
-              >
+              <Link to="/user-register" className="font-semibold text-indigo-400 hover:underline">
                 Register as User
               </Link>{" "}
               or{" "}
-              <Link
-                to="/trainer-register"
-                className="font-semibold text-indigo-400 hover:underline"
-              >
+              <Link to="/trainer-register" className="font-semibold text-indigo-400 hover:underline">
                 Register as Trainer
               </Link>
             </p>
