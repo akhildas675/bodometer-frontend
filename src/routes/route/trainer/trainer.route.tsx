@@ -15,19 +15,19 @@ import { TRAiNER_UI_ROUTES } from "../../../constants/constant-routes/ui-routes/
 export const trainerRoutes = (
   <Route element={<ProtectedRoute allowedRoles={["trainer"]} />}>
 
-    {/* 🔴 No profile → onboarding only */}
+    {/* No profile → onboarding only */}
     <Route element={<TrainerOnboardingRoute />}>
       <Route path={TRAiNER_UI_ROUTES.TRAINER_ONBOARDING_EXPERIENCE} element={<TrainerOnboardingExperiencePage />} />
       <Route path={TRAiNER_UI_ROUTES.TRAINER_ONBOARDING_ABOUT}      element={<TrainerOnboardingAboutPage />} />
       <Route path={TRAiNER_UI_ROUTES.TRAINER_ONBOARDING_SKILL}      element={<TrainerOnboardingSkillPage />} />
     </Route>
 
-    {/* 🟡 Pending or Rejected → status page only */}
+    {/* Pending or Rejected */}
     <Route element={<TrainerStatusRoute />}>
       <Route path={TRAiNER_UI_ROUTES.TRAINER_PENDING} element={<TrainerStatusPage />} />
     </Route>
 
-    {/* 🟢 Approved → dashboard, profile, etc. */}
+    {/*Approved */}
     <Route element={<ApprovedTrainerRoute />}>
       <Route path={TRAiNER_UI_ROUTES.TRAINER_DASHBOARD} element={<TrainerDashboardPage />} />
       <Route path={TRAiNER_UI_ROUTES.TRAINER_PROFILE}   element={<TrainerProfilePage />} />
