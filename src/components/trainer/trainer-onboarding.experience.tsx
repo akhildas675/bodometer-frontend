@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import trainerService from "../../services/trainer/trainer.service";
 import authInitService from "../../services/auth/auth-init.service";
 import { useAuthStore } from "../../stores/auth.store";
+import axios from "axios";
 
 const TrainerOnboardingExperience = () => {
   const navigate = useNavigate();
@@ -13,7 +14,6 @@ const TrainerOnboardingExperience = () => {
   const [bio, setBio] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
-
 
   const handleLogout = async () => {
     try {
@@ -66,9 +66,14 @@ const TrainerOnboardingExperience = () => {
       await trainerService.submitTrainerProfile(formData);
 
       toast.success("Profile submitted. Awaiting admin approval.");
-      navigate("/trainer/pending", { replace: true });
-    } catch {
-      toast.error("Failed to submit profile. Try again.");
+      navigate("/trainer/status", { replace: true });
+    } catch (error) {
+      console.error("Login error:", error);
+      if (axios.isAxiosError(error) && error.response) {
+        toast.error(error.response.data?.message || "Login failed");
+      } else {
+        toast.error("Login failed. Please try again.");
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -77,7 +82,6 @@ const TrainerOnboardingExperience = () => {
   return (
     <div className="min-h-screen bg-[#050017] flex items-center justify-center">
       <div className="relative w-full max-w-6xl h-[600px] rounded-3xl overflow-hidden flex bg-gradient-to-br from-[#04001a] via-[#07002a] to-[#12043b]">
-
         {/* LEFT */}
         <div className="w-1/2 hidden md:flex items-center justify-center relative">
           <div className="absolute w-[520px] h-[520px] rounded-full bg-[#0e0235]" />
@@ -102,7 +106,6 @@ const TrainerOnboardingExperience = () => {
         {/* RIGHT */}
         <div className="flex-1 relative flex items-center justify-center px-12 text-white">
           <div className="relative z-10 w-full max-w-xl">
-
             <h1 className="text-center text-xl font-semibold tracking-widest mb-14">
               TELL US ABOUT YOUR PROFESSIONAL INFO
             </h1>
@@ -161,7 +164,6 @@ const TrainerOnboardingExperience = () => {
             >
               {isSubmitting ? "Submitting..." : "Submit Profile"}
             </button>
-
           </div>
         </div>
       </div>

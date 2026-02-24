@@ -9,6 +9,7 @@ import { useAuthStore } from "../../stores/auth.store";
 import { Mail, Lock } from "lucide-react";
 import { GoogleLogin } from "@react-oauth/google";
 import axios from "axios";
+import { VERIFICATION_STATUS } from "../../constants/verification.status";
 
 const AuthLoginPage = () => {
   const [loading, setLoading] = useState(false);
@@ -65,9 +66,7 @@ const AuthLoginPage = () => {
         // Check if trainerStatus exists
         if (!trainerStatus) {
           console.log("No trainer status - redirecting to onboarding");
-          setTimeout(() => {
             navigate("/trainer/onboarding/experience", { replace: true });
-          }, 100);
           return;
         }
 
@@ -84,38 +83,29 @@ const AuthLoginPage = () => {
           console.log(
             "PROFILE DOES NOT EXIST - REDIRECTING TO ONBOARDING EXPERIENCE"
           );
-          setTimeout(() => {
             navigate("/trainer/onboarding-experience", { replace: true });
-          }, 100);
           return;
         }
 
         console.log(" Profile exists, checking verification status...");
 
         // Check verification status (ONLY if profile exists)
-        if (trainerStatus.verificationStatus === "PENDING") {
+        if (trainerStatus.verificationStatus === VERIFICATION_STATUS.PENDING) {
           console.log("REDIRECT → pending approval");
           toast.info("Please wait for admin approval");
-          setTimeout(() => {
-            navigate("/trainer/pending", { replace: true });
-          }, 100);
+            navigate("/trainer/status", { replace: true });
           return;
         }
 
-        if (trainerStatus.verificationStatus === "APPROVED") {
+        if (trainerStatus.verificationStatus === VERIFICATION_STATUS.APPROVED) {
           console.log("REDIRECT → dashboard (approved)");
-          setTimeout(() => {
             navigate("/trainer/dashboard", { replace: true });
-          }, 100);
           return;
         }
 
-        if (trainerStatus.verificationStatus === "REJECTED") {
+        if (trainerStatus.verificationStatus === VERIFICATION_STATUS.REJECTED) {
           console.log("REDIRECT → rejected");
-          toast.error("Your profile has been rejected");
-          setTimeout(() => {
-            navigate("/trainer/rejected", { replace: true });
-          }, 100);
+            navigate("/trainer/status", { replace: true });
           return;
         }
 
@@ -129,18 +119,17 @@ const AuthLoginPage = () => {
       // Handle ADMIN role
       if (user.role === "admin") {
         console.log("User is admin - redirecting to admin dashboard");
-        setTimeout(() => {
+      
           navigate("/admin/dashboard", { replace: true });
-        }, 100);
+        
         return;
       }
 
       // Handle USER role
       if (user.role === "user") {
         console.log(" User is regular user - redirecting to home");
-        setTimeout(() => {
           navigate("/", { replace: true });
-        }, 100);
+      
         return;
       }
 

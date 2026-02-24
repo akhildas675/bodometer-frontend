@@ -1,7 +1,7 @@
 export const VERIFICATION_STATUS = {
-  PENDING: "PENDING",
-  APPROVED: "APPROVED",
-  REJECTED: "REJECTED",
+  PENDING: "pending",
+  APPROVED: "approved",
+  REJECTED: "rejected",
 } as const;
 
 export type VerificationStatus =

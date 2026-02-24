@@ -5,6 +5,7 @@ import type {
   ProfileUpdatePayload, 
   TrainerOnboardingResponse, 
   TrainerProfileInterface, 
+  TrainerProfileStatus, 
   UploadProfilePictureResponse, 
   WorkoutList 
 } from "../../interface/trainer.interface";
@@ -49,6 +50,11 @@ class TrainerService {
       }
     );
     return response.data;
+  }
+
+  async getTrainerProfileStatus():Promise<ApiResponse<TrainerProfileStatus>>{
+    const response = await trainerApi.get<ApiResponse<TrainerProfileStatus>>("/profile/status");
+    return response.data
   }
 }
 

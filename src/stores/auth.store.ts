@@ -1,28 +1,31 @@
 import { create } from "zustand";
 import type { Role } from "../constants/role";
+import type { VerificationStatus } from "../constants/verification.status";
 
 interface AuthUser {
   id: string;
   email: string;
   role: Role;
+  verificationStatus?: VerificationStatus | null;
 }
 
 interface AuthState {
   accessToken: string | null;
   user: AuthUser | null;
   isAuthenticated: boolean;
-  isInitialized: boolean; // NEW: Track if auth state is loaded
+  isInitialized: boolean; 
 
   setAuth: (payload: { accessToken: string; user: AuthUser }) => void;
   clearAuth: () => void;
-  setInitialized: (value: boolean) => void; // NEW
+  setInitialized: (value: boolean) => void; 
+  setVerificationStatus: (status: VerificationStatus) => void;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
   accessToken: null,
   user: null,
   isAuthenticated: false,
-  isInitialized: false, // Start as false
+  isInitialized: false,
 
   setAuth: ({ accessToken, user }) =>
     set({
@@ -44,4 +47,11 @@ export const useAuthStore = create<AuthState>((set) => ({
     set({
       isInitialized: value,
     }),
+    
+    setVerificationStatus: (status) =>
+    set((state) => ({
+      user: state.user
+        ? { ...state.user, verificationStatus: status }
+        : null,
+    })),
 }));
