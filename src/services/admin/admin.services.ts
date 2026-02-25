@@ -124,12 +124,33 @@ class AdminService {
   }
 
   // Get all trainer appointments
-  async getTrainerAppointments(): Promise<ApiResponse<TrainerWithProfile[]>> {
-    const response = await adminApi.post<ApiResponse<TrainerWithProfile[]>>(
-      ADMIN_API_ROUTES.GET_TRAINER_APPOINTMENTS
-    );
-    return response.data;
-  }
+  async getTrainerAppointments(
+  search?: string,
+  sortBy?: string,
+  sortOrder?: 'asc' | 'desc',
+  page?: number,
+  limit?: number,
+  status?: string          
+): Promise<PaginatedResponse<TrainerWithProfile>> {
+  const params: Record<string, string | number> = {};
+  if (search) params.search = search;
+  if (sortBy) params.sortBy = sortBy;
+  if (sortOrder) params.sortOrder = sortOrder;
+  if (page) params.page = page;
+  if (limit) params.limit = limit;
+  if (status) params.status = status;   
+
+  const response = await adminApi.get<{
+    success: boolean;
+    data: TrainerWithProfile[];
+    pagination: PaginationMeta;
+  }>(ADMIN_API_ROUTES.GET_TRAINER_APPOINTMENTS, { params });
+
+  return {
+    data: response.data.data,
+    pagination: response.data.pagination,
+  };
+}
 
   // get trainer by profileId 
   async getTrainerByProfileId(
