@@ -2,7 +2,7 @@ import React from "react";
 
 
 export interface TableColumn<T> {
-  key: keyof T;
+  key: string;
   label: string;
   render?: (item: T) => React.ReactNode;
   sortable?: boolean; 

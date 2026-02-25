@@ -27,7 +27,7 @@ const PrimaryButton: React.FC<PrimaryButtonProps> = ({
       onClick={onClick}
       disabled={loading}
       className={`
-        w-full mt-2 rounded-full bg-gradient-to-r from-[#7c3aed] to-[#a855f7]
+        w-full mt-2 rounded-full bg-linear-to-r from-[#7c3aed] to-[#a855f7]
         font-semibold text-white shadow-lg shadow-purple-900/50
         hover:scale-[1.02] transition-transform
         ${sizeClasses[size]}     // 👈 DYNAMIC SIZE HERE

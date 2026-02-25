@@ -1,14 +1,17 @@
-import { trainerApi } from "../../api/api.instance";
-import { TRAINER_API_ROUTES } from "../../constants/constant-routes/api-routes/trainer-constant.routes";
-import type { ApiResponse } from "../../interface/api-response.interface";
-import type { 
-  ProfileUpdatePayload, 
-  TrainerOnboardingResponse, 
-  TrainerProfileInterface, 
-  TrainerProfileStatus, 
-  UploadProfilePictureResponse, 
-  WorkoutList 
-} from "../../interface/trainer.interface";
+import { trainerApi } from "@/api/api.instance";
+
+import { TRAINER_API_ROUTES } from "@/constants/constant-routes/api-routes/trainer-constant.routes";
+
+import type { ApiResponse } from "@/interface/api-response.interface";
+
+import type {
+  ProfileUpdatePayload,
+  TrainerOnboardingResponse,
+  TrainerProfileInterface,
+  TrainerProfileStatus,
+  UploadProfilePictureResponse,
+  WorkoutList,
+} from "@/interface/trainer.interface";
 
 class TrainerService {
   async getTrainerProfile(): Promise<ApiResponse<TrainerProfileInterface>> {

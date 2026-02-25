@@ -1,4 +1,4 @@
-import type { Role } from "../constants/role";
+import type { Role } from "@/constants/role";
 
 export type SidebarItem = {
   label: string;

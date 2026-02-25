@@ -1,5 +1,4 @@
-import React from 'react';
-import TrainerDashboard from '../../components/trainer/trainer.dashboard';
+import TrainerDashboard from '@/components/trainer/trainer.dashboard';
 
 const TrainerDashboardPage = () => {
     return (

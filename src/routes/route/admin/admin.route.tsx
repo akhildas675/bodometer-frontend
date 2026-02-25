@@ -1,13 +1,15 @@
 import { Route } from "react-router-dom";
-import ProtectedRoute from "../../guard.routes/protected.route";
-import AdminDashboardPage from "../../../pages/admin/admin-dashboard.page";
-import AdminUsersPage from "../../../pages/admin/admin-users.page";
-import AdminTrainersPage from "../../../pages/admin/admin-trainers.page";
-import AdminWorkoutsManagement from "../../../pages/admin/admin-workouts.management";
-import AdminTrainerOnboardingPage from "../../../pages/admin/admin-trainer-onboarding.page";
-import AdminAppointmentDetailsPage from "../../../pages/admin/admin.appointment-details.page";
-import { ADMIN_UI_ROUTES } from "../../../constants/constant-routes/ui-routes/admin.ui-constant-routes";
 
+import ProtectedRoute from "@/routes/guard.routes/protected.route";
+
+import AdminDashboardPage from "@/pages/admin/admin-dashboard.page";
+import AdminUsersPage from "@/pages/admin/admin-users.page";
+import AdminTrainersPage from "@/pages/admin/admin-trainers.page";
+import AdminWorkoutsManagement from "@/pages/admin/admin-workouts.management";
+import AdminTrainerOnboardingPage from "@/pages/admin/admin-trainer-onboarding.page";
+import AdminAppointmentDetailsPage from "@/pages/admin/admin.appointment-details.page";
+
+import { ADMIN_UI_ROUTES } from "@/constants/constant-routes/ui-routes/admin.ui-constant-routes";
 
 export const adminRoutes = (
   <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>

@@ -1,16 +1,20 @@
-import SidebarLayout from "../ui/app.sidebar/sidebar.layout";
 import { useEffect, useState, useRef } from "react";
 import { PenIcon } from "lucide-react";
-import { useAuthStore } from "../../stores/auth.store";
 import { toast } from "sonner";
 import axios from "axios";
-import type { Gender } from "../../constants/identity";
-import { useFetch } from "../../hooks/useFetch";
+
+import SidebarLayout from "@/components/ui/app.sidebar/sidebar.layout";
+
+import { useAuthStore } from "@/stores/auth.store";
+import { useFetch } from "@/hooks/useFetch";
+
+import type { Gender } from "@/constants/identity";
 import type {
   ProfileUpdatePayload,
   TrainerProfileInterface,
-} from "../../interface/trainer.interface";
-import trainerService from "../../services/trainer/trainer.service";
+} from "@/interface/trainer.interface";
+
+import trainerService from "@/services/trainer/trainer.service";
 
 const TrainerProfile = () => {
   const [isEditing, setIsEditing] = useState(false);
@@ -267,7 +271,7 @@ const TrainerProfile = () => {
               </span>
             </h1>
 
-            <div className="relative bg-gradient-to-br from-[#140b3a] to-[#0a0624] rounded-3xl p-8 shadow-xl">
+            <div className="relative bg-linear-to-br from-[#140b3a] to-[#0a0624] rounded-3xl p-8 shadow-xl">
               <div className="flex justify-between items-center mb-8">
                 <div className="flex items-center gap-4">
                   <div className="relative">

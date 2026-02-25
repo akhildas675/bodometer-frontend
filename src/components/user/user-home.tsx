@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { useAuthStore } from "../../stores/auth.store";
+import { useAuthStore } from "@/stores/auth.store";
 
 const UserHome = () => {
   const { isAuthenticated, user } = useAuthStore();

@@ -19,7 +19,7 @@ const RejectionModal: React.FC<RejectionModalProps> = ({ onClose, onSubmit, load
 
   return (
     <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-      <div className="bg-gradient-to-br from-[#05001a] via-[#07002a] to-[#12043b] rounded-2xl max-w-md w-full p-6 border border-white/10 relative">
+      <div className="bg-linear-to-br from-[#05001a] via-[#07002a] to-[#12043b] rounded-2xl max-w-md w-full p-6 border border-white/10 relative">
         <button
           onClick={onClose}
           className="absolute top-4 right-4 text-slate-400 hover:text-white transition"

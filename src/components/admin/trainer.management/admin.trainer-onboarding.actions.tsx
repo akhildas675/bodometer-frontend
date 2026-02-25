@@ -1,4 +1,4 @@
-import type { TableAction, TrainerWithProfile } from "../../ui/table/table.types";
+import type { TableAction, TrainerWithProfile } from "@/components/ui/table/table.types";
 
 export const useTrainerOnboardingActions = (
   onViewDetails: (trainer: TrainerWithProfile) => void

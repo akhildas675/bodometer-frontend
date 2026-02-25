@@ -1,6 +1,6 @@
 import { create } from "zustand";
-import type { Role } from "../constants/role";
-import type { RegisterPayload } from "../interface/auth.interface";
+import type { Role } from "@/constants/role";
+import type { RegisterPayload } from "@/interface/auth.interface";
 
 type OtpPurpose = "USER_REGISTER" | "TRAINER_REGISTER" | "FORGET_PASSWORD";
 

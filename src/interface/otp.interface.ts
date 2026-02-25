@@ -1,4 +1,4 @@
-import type { OtpPurpose } from "../constants/otp";
+import type { OtpPurpose } from "@/constants/otp";
 
 export interface OtpVerifyPayload{
   email:string;

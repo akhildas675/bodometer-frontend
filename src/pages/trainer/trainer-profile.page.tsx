@@ -1,5 +1,5 @@
-import React from 'react';
-import TrainerProfile from '../../components/trainer/trainer.profile';
+
+import TrainerProfile from '@/components/trainer/trainer.profile';
 
 const TrainerProfilePage = () => {
     return (

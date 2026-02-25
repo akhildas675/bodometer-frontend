@@ -1,6 +1,5 @@
-import type { AdminGetTrainersResponse } from "../../../interface/admin.interface";
-import type { TableColumn } from "../../ui/table/table.types";
-
+import type { AdminGetTrainersResponse } from "@/interface/admin.interface";
+import type { TableColumn } from "@/components/ui/table/table.types";
 export const trainerColumns: TableColumn<AdminGetTrainersResponse>[] = [
   { key: "name", label: "Name", sortable: true },
   { key: "email", label: "Email", sortable: true },

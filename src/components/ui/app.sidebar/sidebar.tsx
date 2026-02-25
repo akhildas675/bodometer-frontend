@@ -1,7 +1,7 @@
 import { NavLink, useNavigate } from "react-router-dom";
-import { sidebarConfig, type SidebarRole } from "../../../config/sidebar.config";
-import { useAuthStore } from "../../../stores/auth.store";
-import authInitService from "../../../services/auth/auth-init.service";
+import { sidebarConfig, type SidebarRole } from "@/config/sidebar.config";
+import { useAuthStore } from "@/stores/auth.store";
+import authInitService from "@/services/auth/auth-init.service";
 import { useState } from "react";
 import { toast } from "sonner";
 import {

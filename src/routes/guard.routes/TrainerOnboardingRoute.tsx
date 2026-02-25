@@ -1,10 +1,10 @@
-import { Navigate, Outlet } from 'react-router-dom';
-import { useAuthStore } from '../../stores/auth.store';
-import { ROLES } from '../../constants/role';
-import { VERIFICATION_STATUS } from '../../constants/verification.status';
 import { useEffect, useState } from 'react';
-import trainerService from '../../services/trainer/trainer.service';
-import authInitService from '../../services/auth/auth-init.service';
+import { Navigate, Outlet } from 'react-router-dom';
+import { useAuthStore } from '@/stores/auth.store';
+import { ROLES } from '@/constants/role';
+import { VERIFICATION_STATUS } from '@/constants/verification.status';
+import trainerService from '@/services/trainer/trainer.service';
+import authInitService from '@/services/auth/auth-init.service';
 
 const TrainerOnboardingRoute = () => {
   const user = useAuthStore((state) => state.user);

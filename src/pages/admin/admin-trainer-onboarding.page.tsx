@@ -1,5 +1,5 @@
-import React from 'react';
-import AdminTrainerOnboardingManagement from '../../components/admin/trainer.management/admin.trainer-onboarding.management';
+
+import AdminTrainerOnboardingManagement from '@/components/admin/trainer.management/admin.trainer-onboarding.management';
 
 const AdminTrainerOnboardingPage = () => {
     return (

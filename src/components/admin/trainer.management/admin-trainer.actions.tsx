@@ -1,7 +1,7 @@
 import { toast } from "sonner";
-import type { AdminGetTrainersResponse } from "../../../interface/admin.interface";
-import adminServices from "../../../services/admin/admin.services";
-import type { TableAction } from "../../ui/table/table.types";
+import type { AdminGetTrainersResponse } from "@/interface/admin.interface";
+import adminServices from "@/services/admin/admin.services";
+import type { TableAction } from "@/components/ui/table/table.types";
 
 export type TrainerModalConfig = {
   isOpen: boolean;

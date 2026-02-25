@@ -1,4 +1,4 @@
-import type { Role } from "../constants/role";
+import type { Role } from "@/constants/role";
 
 export interface AdminGetUsersRequest {
   page?: number;

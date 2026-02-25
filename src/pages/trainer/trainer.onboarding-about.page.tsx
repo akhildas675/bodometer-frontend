@@ -1,4 +1,4 @@
-import TrainerOnboardingAbout from '../../components/trainer/trainer-onboarding.about';
+import TrainerOnboardingAbout from '@/components/trainer/trainer-onboarding.about';
 
 const TrainerOnboardingAboutPage = () => {
     return (

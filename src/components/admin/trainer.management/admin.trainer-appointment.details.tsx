@@ -1,13 +1,17 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import adminServices from "../../../services/admin/admin.services";
 import { toast } from "sonner";
-import { useAuthStore } from "../../../stores/auth.store";
-import type { TrainerWithProfile } from "../../ui/table/table.types";
-import SidebarLayout from "../../ui/app.sidebar/sidebar.layout";
 import { ArrowLeft, CheckCircle, FileText, XCircle } from "lucide-react";
-import RejectionModal from "./trainer.appointment-rejection.modal";
 
+import adminServices from "@/services/admin/admin.services";
+import { useAuthStore } from "@/stores/auth.store";
+
+import type { TrainerWithProfile } from "@/components/ui/table/table.types";
+
+import SidebarLayout from "@/components/ui/app.sidebar/sidebar.layout";
+
+import RejectionModal from "./trainer.appointment-rejection.modal";
+import { VerificationStatus } from "@/constants/verification.status";
 
 
 const AdminTrainerAppointmentDetails = () => {
@@ -221,7 +225,7 @@ const AdminTrainerAppointmentDetails = () => {
 };
 
 // Helper Components
-const StatusBadge = ({ status }: { status: string }) => {
+const StatusBadge = ({ status }: { status: VerificationStatus }) => {
   const colors = {
     pending: "text-yellow-400 bg-yellow-400/10 border-yellow-400/30",
     approved: "text-green-400 bg-green-400/10 border-green-400/30",

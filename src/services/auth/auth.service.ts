@@ -1,11 +1,29 @@
-import { authInstance } from "../../api/auth.instance";
-import type { ApiResponse } from "../../interface/api-response.interface";
-import type { LoginResponseData, LoginPayload, RegisterPayload, RegisterResponse, ForgotPasswordPayload, ForgotPasswordResponse, ResetPasswordPayload, ResetPasswordResponse, GoogleLoginPayload, GoogleLoginResponse } from "../../interface/auth.interface";
-import { type Role } from "../../constants/role";
-import type { OtpResendPayload, OtpVerifyPayload, OtpVerifyResponse } from "../../interface/otp.interface";
-import { useAuthStore } from "../../stores/auth.store";
-import { AUTH_API_ROUTES } from "../../constants/constant-routes/api-routes/auth-constant.routes";
+import { authInstance } from "@/api/auth.instance";
+import { useAuthStore } from "@/stores/auth.store";
 
+import type { ApiResponse } from "@/interface/api-response.interface";
+import type {
+    LoginResponseData,
+    LoginPayload,
+    RegisterPayload,
+    RegisterResponse,
+    ForgotPasswordPayload,
+    ForgotPasswordResponse,
+    ResetPasswordPayload,
+    ResetPasswordResponse,
+    GoogleLoginPayload,
+    GoogleLoginResponse,
+} from "@/interface/auth.interface";
+
+import type {
+    OtpResendPayload,
+    OtpVerifyPayload,
+    OtpVerifyResponse,
+} from "@/interface/otp.interface";
+
+import type { Role } from "@/constants/role";
+
+import { AUTH_API_ROUTES } from "@/constants/constant-routes/api-routes/auth-constant.routes";
 //SRP
 class AuthService {
 
@@ -31,7 +49,7 @@ class AuthService {
             useAuthStore.getState().setAuth({ accessToken, user });
         }
 
-        console.log("Login Response from backend",response.data)
+        console.log("Login Response from backend", response.data)
 
         return response.data;
     }

@@ -1,4 +1,4 @@
-import type { TableColumn, TrainerWithProfile } from "../../ui/table/table.types";
+import type { TableColumn, TrainerWithProfile } from "@/components/ui/table/table.types";
 
 export const trainerOnboardingColumns: TableColumn<TrainerWithProfile>[] = [
   {

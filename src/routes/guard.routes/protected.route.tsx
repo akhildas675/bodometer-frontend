@@ -1,6 +1,6 @@
 import { Navigate, Outlet } from "react-router-dom";
-import { useAuthStore } from "../../stores/auth.store";
-import type { Role } from "../../constants/role";
+import { useAuthStore } from "@/stores/auth.store";
+import type { Role } from "@/constants/role";
 
 interface Props {
   allowedRoles: Role[];
@@ -9,9 +9,9 @@ interface Props {
 const ProtectedRoute = ({ allowedRoles }: Props) => {
   const { isAuthenticated, user, isInitialized } = useAuthStore();
 
-  // Wait for auth to initialize
+ 
   if (!isInitialized) {
-    return null; // AuthProvider handles loading state
+    return null;
   }
 
   if (!isAuthenticated || !user) {
@@ -19,7 +19,6 @@ const ProtectedRoute = ({ allowedRoles }: Props) => {
   }
 
   if (!allowedRoles.includes(user.role)) {
-    // Redirect to their appropriate dashboard
     switch (user.role) {
       case "admin":
         return <Navigate to="/admin/dashboard" replace />;

@@ -1,7 +1,8 @@
-import { Navigate, Outlet } from 'react-router-dom';
-import { useAuthStore } from '../../stores/auth.store';
-import { ROLES } from '../../constants/role';
-import { VERIFICATION_STATUS } from '../../constants/verification.status';
+import { Navigate, Outlet } from "react-router-dom";
+
+import { useAuthStore } from "@/stores/auth.store";
+import { ROLES } from "@/constants/role";
+import { VERIFICATION_STATUS } from "@/constants/verification.status";
 
 const ApprovedTrainerRoute = () => {
   const user = useAuthStore((state) => state.user);

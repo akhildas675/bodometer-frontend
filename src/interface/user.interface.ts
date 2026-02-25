@@ -1,4 +1,4 @@
-import type { Gender } from "../constants/identity";
+import type { Gender } from "@/constants/identity";
 
 export interface UserProfileInterface {
   id: string;

@@ -1,4 +1,3 @@
-import React from "react";
 import { useNavigate } from "react-router-dom";
 
 const TrainerOnboardingAbout = () => {
@@ -6,7 +5,7 @@ const TrainerOnboardingAbout = () => {
   
   return (
     <div className="min-h-screen bg-[#050017] flex items-center justify-center">
-      <div className="relative w-full max-w-6xl h-[600px] rounded-3xl overflow-hidden flex bg-gradient-to-br from-[#04001a] via-[#07002a] to-[#12043b]">
+      <div className="relative w-full max-w-6xl h-[600px] rounded-3xl overflow-hidden flex bg-linear-to-br from-[#04001a] via-[#07002a] to-[#12043b]">
 
         {/* LEFT IMAGE SECTION */}
         <div className="w-1/2 hidden md:flex items-center justify-center relative">
@@ -61,7 +60,7 @@ const TrainerOnboardingAbout = () => {
             </div>
 
             {/* UPDATE BUTTON */}
-            <button className="w-full mb-8 rounded-lg bg-gradient-to-r from-[#7c3aed] to-[#a855f7] py-3 text-sm font-semibold shadow-lg shadow-purple-900/50">
+            <button className="w-full mb-8 rounded-lg bg-linear-to-r from-[#7c3aed] to-[#a855f7] py-3 text-sm font-semibold shadow-lg shadow-purple-900/50">
               Update
             </button>
 

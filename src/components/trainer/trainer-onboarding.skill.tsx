@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from "react";
-import { useFetch } from "../../hooks/useFetch";
-import type { WorkoutList } from "../../interface/trainer.interface";
-import trainerService from "../../services/trainer/trainer.service";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+
+import { useFetch } from "@/hooks/useFetch";
+import type { WorkoutList } from "@/interface/trainer.interface";
+import trainerService from "@/services/trainer/trainer.service";
 
 const TrainerOnboardingSkills = () => {
   const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
@@ -29,7 +30,7 @@ const TrainerOnboardingSkills = () => {
 
   if (loading && !workoutList) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-[#03000D] to-[#190473] flex items-center justify-center">
+      <div className="min-h-screen bg-linear-to-b from-[#03000D] to-[#190473] flex items-center justify-center">
         <div className="text-white text-xl">Loading workouts...</div>
       </div>
     );
@@ -38,7 +39,7 @@ const TrainerOnboardingSkills = () => {
 
   if (!workoutList || workoutList.length === 0) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-[#03000D] to-[#190473] flex items-center justify-center">
+      <div className="min-h-screen bg-linear-to-b from-[#03000D] to-[#190473] flex items-center justify-center">
         <div className="text-white text-xl">No workouts available</div>
       </div>
     );
@@ -50,8 +51,8 @@ const TrainerOnboardingSkills = () => {
   const rightColumn = workoutList.slice(midPoint);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#03000D] to-[#190473] flex items-center justify-center p-8">
-      <div className="max-w-6xl w-full bg-gradient-to-b from-[#03000D] to-[#190473] rounded-3xl p-12 relative overflow-hidden">
+    <div className="min-h-screen bg-linear-to-b from-[#03000D] to-[#190473] flex items-center justify-center p-8">
+      <div className="max-w-6xl w-full bg-linear-to-b from-[#03000D] to-[#190473] rounded-3xl p-12 relative overflow-hidden">
         {/* Background circles */}
         <div className="absolute top-0 left-0 w-96 h-96 bg-purple-600/10 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
         <div className="absolute bottom-0 right-0 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl translate-x-1/2 translate-y-1/2"></div>
@@ -59,7 +60,7 @@ const TrainerOnboardingSkills = () => {
         <div className="flex items-center gap-16 relative z-10">
           {/* LEFT IMAGE */}
           {/* <div className="flex-shrink-0 relative">
-            <div className="w-80 h-80 bg-gradient-to-br from-purple-900/30 to-blue-900/30 rounded-full flex items-end justify-center overflow-hidden">
+            <div className="w-80 h-80 bg-linear-to-br from-purple-900/30 to-blue-900/30 rounded-full flex items-end justify-center overflow-hidden">
               <img 
                 src="/api/placeholder/320/400" 
                 alt="Trainers"

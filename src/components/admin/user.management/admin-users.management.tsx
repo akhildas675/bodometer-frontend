@@ -1,20 +1,26 @@
-import { useState,useCallback,useEffect } from "react";
-import SidebarLayout from "../../ui/app.sidebar/sidebar.layout";
-import { useAuthStore } from "../../../stores/auth.store";
+import { useState, useCallback, useEffect } from "react";
+
+import SidebarLayout from "@/components/ui/app.sidebar/sidebar.layout";
+import DataTable from "@/components/ui/table/data.table";
+import ConfirmationModal from "@/components/ui/confirm.dialog";
+
+import SearchBar from "@/components/controls/search/search";
+import SortDropdown, { type SortConfig } from "@/components/controls/sort/sort";
+import { extractSortOptions } from "@/components/controls/sort/sort.label";
+import Pagination from "@/components/controls/pagination/pagination";
+
+import { useAuthStore } from "@/stores/auth.store";
+import { useTableFetch } from "@/hooks/useTableFetch";
+
+import adminServices from "@/services/admin/admin.services";
+
+import type {
+  AdminGetUsersResponse,
+  PaginatedResponse,
+} from "@/interface/admin.interface";
+
 import { userColumns } from "./admin-users.columns";
 import { useUserActions } from "./admin-users.actions";
-import adminServices from "../../../services/admin/admin.services";
-import type { AdminGetUsersResponse } from "../../../interface/admin.interface";
-import DataTable from "../../ui/table/data.table";
-import { useTableFetch } from "../../../hooks/useTableFetch";
-import ConfirmationModal from "../../ui/confirm.dialog";
-import SearchBar from "../../controls/search/search";
-import type { PaginatedResponse } from "../../../interface/admin.interface";
-import SortDropdown, {type SortConfig} from "../../controls/sort/sort";
-import { extractSortOptions } from "../../controls/sort/sort.label";
-import Pagination from "../../controls/pagination/pagination";
-
-
 
 
 const AdminUsersManagement = () => {

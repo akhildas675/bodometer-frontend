@@ -1,11 +1,14 @@
-import { userApi } from "../../api/api.instance";
-import { USER_API_ROUTES } from "../../constants/constant-routes/api-routes/user-constant.routes";
-import type { ApiResponse } from "../../interface/api-response.interface";
+import { userApi } from "@/api/api.instance";
+
+import { USER_API_ROUTES } from "@/constants/constant-routes/api-routes/user-constant.routes";
+
+import type { ApiResponse } from "@/interface/api-response.interface";
+
 import type {
   ProfileUpdatePayload,
   UploadProfilePictureResponse,
   UserProfileInterface,
-} from "../../interface/user.interface";
+} from "@/interface/user.interface";
 
 const userServices = {
   async getUserProfile(): Promise<ApiResponse<UserProfileInterface>> {

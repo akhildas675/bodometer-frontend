@@ -1,4 +1,4 @@
-import type { SidebarRole } from "../../../config/sidebar.config";
+import type { SidebarRole } from "@/config/sidebar.config";
 import Sidebar from "./sidebar";
 
 type Props = {

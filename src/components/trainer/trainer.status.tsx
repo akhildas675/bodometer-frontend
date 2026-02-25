@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuthStore } from "../../stores/auth.store";
+import { useAuthStore } from "@/stores/auth.store";
 import { toast } from "sonner";
 import { Clock, LogOut, XCircle, RefreshCw, AlertTriangle } from "lucide-react";
-import authInitService from "../../services/auth/auth-init.service";
-import { useFetch } from "../../hooks/useFetch";
-import type { TrainerProfileStatus } from "../../interface/trainer.interface";
-import trainerService from "../../services/trainer/trainer.service";
+import authInitService from "@/services/auth/auth-init.service";
+import { useFetch } from "@/hooks/useFetch";
+import type { TrainerProfileStatus } from "@/interface/trainer.interface";
+import trainerService from "@/services/trainer/trainer.service";
 
 const TrainerStatus = () => {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -67,7 +67,7 @@ useEffect(() => {
       }
     }, 2000);
   }
-}, [trainerProfileStatus]);
+}, [navigate, trainerProfileStatus]);
 
   const status = trainerProfileStatus?.data?.verificationStatus;
   const trainerName = trainerProfileStatus?.data?.name;
@@ -109,8 +109,8 @@ useEffect(() => {
       <div
         className={`w-full max-w-2xl rounded-3xl overflow-hidden shadow-2xl relative transition-all duration-500 ${
           isRejected
-            ? "bg-gradient-to-br from-[#1a0505] via-[#1f0808] to-[#2a0a0a]"
-            : "bg-gradient-to-br from-[#05001a] via-[#07002a] to-[#12043b]"
+            ? "bg-linear-to-br from-[#1a0505] via-[#1f0808] to-[#2a0a0a]"
+            : "bg-linear-to-br from-[#05001a] via-[#07002a] to-[#12043b]"
         }`}
       >
         {/* Logout button */}
@@ -135,14 +135,14 @@ useEffect(() => {
             {isRejected ? (
               <>
                 <div className="absolute inset-0 bg-red-500/20 rounded-full blur-2xl animate-pulse" />
-                <div className="relative bg-gradient-to-br from-red-500/30 to-rose-600/30 p-8 rounded-full border-2 border-red-500/50">
+                <div className="relative bg-linear-to-br from-red-500/30 to-rose-600/30 p-8 rounded-full border-2 border-red-500/50">
                   <XCircle size={80} className="text-red-400" />
                 </div>
               </>
             ) : (
               <>
                 <div className="absolute inset-0 bg-yellow-500/20 rounded-full blur-2xl animate-pulse" />
-                <div className="relative bg-gradient-to-br from-yellow-500/30 to-orange-500/30 p-8 rounded-full border-2 border-yellow-500/50">
+                <div className="relative bg-linear-to-br from-yellow-500/30 to-orange-500/30 p-8 rounded-full border-2 border-yellow-500/50">
                   <Clock size={80} className="text-yellow-400 animate-pulse" />
                 </div>
               </>
@@ -158,8 +158,8 @@ useEffect(() => {
           <h1
             className={`text-3xl font-bold text-center mb-4 bg-clip-text text-transparent ${
               isRejected
-                ? "bg-gradient-to-r from-red-400 to-rose-400"
-                : "bg-gradient-to-r from-yellow-400 to-orange-400"
+                ? "bg-linear-to-r from-red-400 to-rose-400"
+                : "bg-linear-to-r from-yellow-400 to-orange-400"
             }`}
           >
             {isRejected ? "Profile Rejected" : "Profile Under Review"}
@@ -226,7 +226,7 @@ useEffect(() => {
           {isRejected && (
             <button
               onClick={() => navigate("/trainer/onboarding-experience")}
-              className="mt-8 flex items-center gap-2 px-8 py-3 rounded-full bg-gradient-to-r from-red-600/80 to-rose-600/80 hover:from-red-600 hover:to-rose-600 text-white font-semibold text-sm transition-all hover:scale-105 shadow-lg shadow-red-900/30 border border-red-500/30"
+              className="mt-8 flex items-center gap-2 px-8 py-3 rounded-full bg-linear-to-r from-red-600/80 to-rose-600/80 hover:from-red-600 hover:to-rose-600 text-white font-semibold text-sm transition-all hover:scale-105 shadow-lg shadow-red-900/30 border border-red-500/30"
             >
               <RefreshCw size={16} />
               Reapply Now

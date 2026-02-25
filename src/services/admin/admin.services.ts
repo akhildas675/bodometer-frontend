@@ -1,14 +1,18 @@
-import { adminApi } from "../../api/api.instance";
-import type { TrainerWithProfile } from "../../components/ui/table/table.types";
+import { adminApi } from "@/api/api.instance";
+
+import type { TrainerWithProfile } from "@/components/ui/table/table.types";
+
 import type {
   AdminGetTrainersResponse,
   AdminGetUsersResponse,
   Workout,
-} from "../../interface/admin.interface";
-import type { ApiResponse } from "../../interface/api-response.interface";
-import type { PaginatedResponse } from "../../interface/admin.interface";
-import type { PaginationMeta } from "../../interface/admin.interface";
-import { ADMIN_API_ROUTES } from "../../constants/constant-routes/api-routes/admin-constant.routes";
+  PaginatedResponse,
+  PaginationMeta,
+} from "@/interface/admin.interface";
+
+import type { ApiResponse } from "@/interface/api-response.interface";
+
+import { ADMIN_API_ROUTES } from "@/constants/constant-routes/api-routes/admin-constant.routes";
 
 class AdminService {
   // User Management

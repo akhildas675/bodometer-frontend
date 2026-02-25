@@ -1,15 +1,17 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import InputWithIcon from "../ui/input.box";
-import type { LoginPayload } from "../../interface/auth.interface";
 import { toast } from "sonner";
-import authService from "../../services/auth/auth.service";
-import PrimaryButton from "../ui/primary.button";
-import { useAuthStore } from "../../stores/auth.store";
 import { Mail, Lock } from "lucide-react";
 import { GoogleLogin } from "@react-oauth/google";
 import axios from "axios";
-import { VERIFICATION_STATUS } from "../../constants/verification.status";
+
+import InputWithIcon from "@/components/ui/input.box";
+import PrimaryButton from "@/components/ui/primary.button";
+
+import type { LoginPayload } from "@/interface/auth.interface";
+import authService from "@/services/auth/auth.service";
+import { useAuthStore } from "@/stores/auth.store";
+import { VERIFICATION_STATUS } from "@/constants/verification.status";
 
 const AuthLoginPage = () => {
   const [loading, setLoading] = useState(false);

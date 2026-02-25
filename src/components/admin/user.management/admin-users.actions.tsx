@@ -1,6 +1,6 @@
-import adminServices from "../../../services/admin/admin.services";
-import type { TableAction } from "../../ui/table/table.types";
-import type { AdminGetUsersResponse } from "../../../interface/admin.interface";
+import adminServices from "@/services/admin/admin.services";
+import type { TableAction } from "@/components/ui/table/table.types";
+import type { AdminGetUsersResponse } from "@/interface/admin.interface";
 import { toast } from "sonner";
 
 export type UserModalConfig = {

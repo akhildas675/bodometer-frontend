@@ -1,10 +1,10 @@
 import axios, { type AxiosInstance, type InternalAxiosRequestConfig } from "axios";
 import { baseUrl } from "./base.url";
-import { useAuthStore } from "../stores/auth.store";
-import { ROLES, type Role } from "../constants/role";
+import { useAuthStore } from "@/stores/auth.store";
+import { ROLES, type Role } from "@/constants/role";
 import { authInstance } from "./auth.instance";
-import type { ApiResponse } from "../interface/api-response.interface";
-import type { LoginResponseData } from "../interface/auth.interface";
+import type { ApiResponse } from "@/interface/api-response.interface";
+import type { LoginResponseData } from "@/interface/auth.interface";
 
 const roleToRedirectPath: Record<Role, string> = {
   [ROLES.ADMIN]: "/admin/login",

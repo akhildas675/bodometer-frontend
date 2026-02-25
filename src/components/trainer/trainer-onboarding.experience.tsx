@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
-import trainerService from "../../services/trainer/trainer.service";
-import authInitService from "../../services/auth/auth-init.service";
-import { useAuthStore } from "../../stores/auth.store";
 import axios from "axios";
+
+import trainerService from "@/services/trainer/trainer.service";
+import authInitService from "@/services/auth/auth-init.service";
+import { useAuthStore } from "@/stores/auth.store";
 
 const TrainerOnboardingExperience = () => {
   const navigate = useNavigate();
@@ -82,7 +83,7 @@ const TrainerOnboardingExperience = () => {
 };
   return (
     <div className="min-h-screen bg-[#050017] flex items-center justify-center">
-      <div className="relative w-full max-w-6xl h-[600px] rounded-3xl overflow-hidden flex bg-gradient-to-br from-[#04001a] via-[#07002a] to-[#12043b]">
+      <div className="relative w-full max-w-6xl h-[600px] rounded-3xl overflow-hidden flex bg-linear-to-br from-[#04001a] via-[#07002a] to-[#12043b]">
         {/* LEFT */}
         <div className="w-1/2 hidden md:flex items-center justify-center relative">
           <div className="absolute w-[520px] h-[520px] rounded-full bg-[#0e0235]" />

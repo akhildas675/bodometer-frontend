@@ -1,9 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import PrimaryButton from "../ui/primary.button";
-import { useOtpStore } from "../../stores/otp.store";
 import { toast } from "sonner";
-import authService from "../../services/auth/auth.service";
+
+import PrimaryButton from "@/components/ui/primary.button";
+import { useOtpStore } from "@/stores/otp.store";
+import authService from "@/services/auth/auth.service";
 
 const OTP_LENGTH = 6;
 

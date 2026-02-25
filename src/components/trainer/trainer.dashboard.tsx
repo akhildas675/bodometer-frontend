@@ -1,7 +1,4 @@
-
-
-
-import SidebarLayout from "../ui/app.sidebar/sidebar.layout";
+import SidebarLayout from "@/components/ui/app.sidebar/sidebar.layout";
 
 const TrainerDashboard = () => {
 

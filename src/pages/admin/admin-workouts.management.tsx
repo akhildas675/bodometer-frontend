@@ -1,5 +1,5 @@
-import React from 'react';
-import WorkoutsManagement from '../../components/admin/workout.management/workouts.management';
+
+import WorkoutsManagement from '@/components/admin/workout.management/workouts.management';
 
 const AdminWorkoutsManagement = () => {
     return (

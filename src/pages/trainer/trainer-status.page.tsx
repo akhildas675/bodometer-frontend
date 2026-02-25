@@ -1,5 +1,5 @@
-import React from 'react';
-import TrainerStatus from '../../components/trainer/trainer.status';
+
+import TrainerStatus from '@/components/trainer/trainer.status';
 
 const TrainerStatusPage = () => {
     return (

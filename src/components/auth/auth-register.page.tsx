@@ -1,15 +1,17 @@
 import { Link, useNavigate } from "react-router-dom";
 import { User, Mail, Phone, Lock, CheckCircle } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
+
 import type {
   AuthRegisterPageProps,
   RegisterPayload,
-} from "../../interface/auth.interface";
-import { toast } from "sonner";
-import PrimaryButton from "../ui/primary.button";
-import InputWithIcon from "../ui/input.box";
-import authService from "../../services/auth/auth.service";
-import { useOtpStore } from "../../stores/otp.store";
+} from "@/interface/auth.interface";
+
+import PrimaryButton from "@/components/ui/primary.button";
+import InputWithIcon from "@/components/ui/input.box";
+import authService from "@/services/auth/auth.service";
+import { useOtpStore } from "@/stores/otp.store";
 
 const AuthRegisterPage: React.FC<AuthRegisterPageProps> = ({ role }) => {
   const navigate = useNavigate();

@@ -1,6 +1,5 @@
-
-import type { TableColumn } from "../../ui/table/table.types";
-import type { AdminGetUsersResponse } from "../../../interface/admin.interface";
+import type { TableColumn } from "@/components/ui/table/table.types";
+import type { AdminGetUsersResponse } from "@/interface/admin.interface";
 
 export const userColumns: TableColumn<AdminGetUsersResponse>[] = [
   { key: "name", label: "Name" },

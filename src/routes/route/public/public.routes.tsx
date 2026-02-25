@@ -1,6 +1,6 @@
 import { Route } from "react-router-dom";
-import MainLayouts from "../../../components/layouts/MainLayouts";
-import UserHomePage from "../../../pages/user/user-home.page";
+import MainLayouts from "@/components/layouts/MainLayouts";
+import UserHomePage from "@/pages/user/user-home.page";
 import PublicGuard from "../../guard.routes/public-guard.routes";
 
 

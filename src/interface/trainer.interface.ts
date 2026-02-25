@@ -1,5 +1,5 @@
-import type { Gender } from "../constants/identity";
-import type { VerificationStatus } from "../constants/verification.status";
+import type { Gender } from "@/constants/identity";
+import type { VerificationStatus } from "@/constants/verification.status";
 
 export interface WorkoutList{
     id:string,

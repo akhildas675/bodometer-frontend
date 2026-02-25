@@ -1,9 +1,9 @@
-import { useAuthStore } from "../../stores/auth.store";
-import SidebarLayout from "../ui/app.sidebar/sidebar.layout";
-import userServices from "../../services/user/user.services";
-import type { ProfileUpdatePayload, UserProfileInterface } from "../../interface/user.interface";
-import type { Gender } from "../../constants/identity";
-import { useFetch } from "../../hooks/useFetch";
+import { useAuthStore } from "@/stores/auth.store";
+import SidebarLayout from "@/components/ui/app.sidebar/sidebar.layout";
+import userServices from "@/services/user/user.services";
+import type { ProfileUpdatePayload, UserProfileInterface } from "@/interface/user.interface";
+import type { Gender } from "@/constants/identity";
+import { useFetch } from "@/hooks/useFetch";
 import { useState, useRef, useEffect } from "react";
 import { toast } from "sonner";
 import axios from "axios";

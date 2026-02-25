@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Lock } from "lucide-react";
-import InputWithIcon from "../ui/input.box";
-import PrimaryButton from "../ui/primary.button";
 import { toast } from "sonner";
-import { useOtpStore } from "../../stores/otp.store";
-import authService from "../../services/auth/auth.service";
 import axios from "axios";
+
+import InputWithIcon from "@/components/ui/input.box";
+import PrimaryButton from "@/components/ui/primary.button";
+import { useOtpStore } from "@/stores/otp.store";
+import authService from "@/services/auth/auth.service";
 
 const ResetPassword = () => {
   const [password, setPassword] = useState("");

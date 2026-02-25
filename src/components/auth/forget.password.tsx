@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Mail } from "lucide-react";
-import InputWithIcon from "../ui/input.box";
-import PrimaryButton from "../ui/primary.button";
-import type { ForgotPasswordPayload } from "../../interface/auth.interface";
 import { toast } from "sonner";
-import authService from "../../services/auth/auth.service";
-import { useOtpStore } from "../../stores/otp.store";
+
+import InputWithIcon from "@/components/ui/input.box";
+import PrimaryButton from "@/components/ui/primary.button";
+
+import type { ForgotPasswordPayload } from "@/interface/auth.interface";
+import authService from "@/services/auth/auth.service";
+import { useOtpStore } from "@/stores/otp.store";
 
 const ForgetPassword = () => {
   const [loading, setLoading] = useState(false);

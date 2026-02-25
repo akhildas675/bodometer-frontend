@@ -1,12 +1,12 @@
 import { Navigate, Outlet } from "react-router-dom";
-import { useAuthStore } from "../../stores/auth.store";
+import { useAuthStore } from "@/stores/auth.store";
 
 const GuestRoute = () => {
   const { isAuthenticated, user, isInitialized } = useAuthStore();
 
-  // Wait for auth to initialize
+
   if (!isInitialized) {
-    return null; // AuthProvider handles loading state
+    return null; 
   }
 
   if (isAuthenticated && user) {

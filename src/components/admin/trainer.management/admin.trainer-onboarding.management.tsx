@@ -1,19 +1,23 @@
-import React, { useState, useCallback, useEffect } from 'react';
-import { useTrainerOnboardingActions } from './admin.trainer-onboarding.actions';
-import type { TrainerWithProfile } from '../../ui/table/table.types';
-import { useNavigate } from 'react-router-dom';
-import adminServices from '../../../services/admin/admin.services';
-import { trainerOnboardingColumns } from './admin.trainer-onboarding.columns';
-import DataTable from '../../ui/table/data.table';
-import SidebarLayout from '../../ui/app.sidebar/sidebar.layout';
-import { useAuthStore } from '../../../stores/auth.store';
-import { useTableFetch } from '../../../hooks/useTableFetch';
-import type { PaginatedResponse } from '../../../interface/admin.interface';
-import SearchBar from '../../controls/search/search';
-import SortDropdown, { type SortConfig } from '../../controls/sort/sort';
-import { extractSortOptions } from '../../controls/sort/sort.label';
-import Pagination from '../../controls/pagination/pagination';
+import React, { useState, useCallback, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
+import { useTrainerOnboardingActions } from "./admin.trainer-onboarding.actions";
+import { trainerOnboardingColumns } from "./admin.trainer-onboarding.columns";
+
+import type { TrainerWithProfile } from "@/components/ui/table/table.types";
+import type { PaginatedResponse } from "@/interface/admin.interface";
+
+import adminServices from "@/services/admin/admin.services";
+import { useAuthStore } from "@/stores/auth.store";
+import { useTableFetch } from "@/hooks/useTableFetch";
+
+import SidebarLayout from "@/components/ui/app.sidebar/sidebar.layout";
+import DataTable from "@/components/ui/table/data.table";
+
+import SearchBar from "@/components/controls/search/search";
+import SortDropdown, { type SortConfig } from "@/components/controls/sort/sort";
+import { extractSortOptions } from "@/components/controls/sort/sort.label";
+import Pagination from "@/components/controls/pagination/pagination";
 type FilterStatus = 'all' | 'pending' | 'approved' | 'rejected';
 
 const AdminTrainerOnboardingManagement = () => {

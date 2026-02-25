@@ -1,4 +1,4 @@
-import type { TableColumn } from "../../ui/table/table.types";
+import type { TableColumn } from "@/ui/table/table.types";
 import type { SortOption } from "./sort";
 export function extractSortOptions<T>(
   columns: TableColumn<T>[]

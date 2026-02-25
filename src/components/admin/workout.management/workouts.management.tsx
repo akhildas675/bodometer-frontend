@@ -1,10 +1,10 @@
 import { useState } from "react";
-import SidebarLayout from "../../ui/app.sidebar/sidebar.layout";
+import SidebarLayout from "@/components/ui/app.sidebar/sidebar.layout";
 import { Upload } from "lucide-react";
-import type { AddWorkoutForm, Workout } from "../../../interface/admin.interface";
+import type { AddWorkoutForm, Workout } from "@/interface/admin.interface";
 import { toast } from "sonner";
-import adminService from "../../../services/admin/admin.services";
-import { useFetch } from "../../../hooks/useFetch";
+import adminService from "@/services/admin/admin.services";
+import { useFetch } from "@/hooks/useFetch";
 
 const WorkoutsManagement = () => {
   const [loading, setLoading] = useState(false);

@@ -8,7 +8,7 @@ const Footer = () => {
         {/* Logo - move only the image further left */}
         <div className="absolute left-0 top-0 flex flex-col">
           <img
-            src="../../../public/Bodometer Logo corrected 1.png" // Adjust path as needed
+            src="@/public/Bodometer Logo corrected 1.png" // Adjust path as needed
             alt="bodometer logo"
             className="h-8 mb-2 ml-2" // smaller, some left margin for breathing room
           />

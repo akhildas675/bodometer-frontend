@@ -1,5 +1,5 @@
-import React from 'react';
-import TrainerOnboardingSkills from '../../components/trainer/trainer-onboarding.skill';
+
+import TrainerOnboardingSkills from '@/components/trainer/trainer-onboarding.skill';
 
 const TrainerOnboardingSkillPage = () => {
     return (

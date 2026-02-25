@@ -1,6 +1,5 @@
-
-import { useAuthStore } from "../../stores/auth.store";
-import SidebarLayout from "../ui/app.sidebar/sidebar.layout";
+import { useAuthStore } from "@/stores/auth.store";
+import SidebarLayout from "@/components/ui/app.sidebar/sidebar.layout";
 
 const AdminDashboard = () => {
   const role = useAuthStore((state) => state.user?.role);

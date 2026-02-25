@@ -1,4 +1,4 @@
-import TrainerOnboardingExperience from "../../components/trainer/trainer-onboarding.experience";
+import TrainerOnboardingExperience from "@/components/trainer/trainer-onboarding.experience";
 
 const TrainerOnboardingExperiencePage = () => {
     return (

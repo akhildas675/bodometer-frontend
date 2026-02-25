@@ -1,7 +1,8 @@
-import { authInstance } from "../../api/auth.instance";
-import { useAuthStore } from "../../stores/auth.store";
-import type { ApiResponse } from "../../interface/api-response.interface";
-import type { LoginResponseData } from "../../interface/auth.interface";
+import { authInstance } from "@/api/auth.instance";
+import { useAuthStore } from "@/stores/auth.store";
+
+import type { ApiResponse } from "@/interface/api-response.interface";
+import type { LoginResponseData } from "@/interface/auth.interface";
 
 class AuthInitService {
 
