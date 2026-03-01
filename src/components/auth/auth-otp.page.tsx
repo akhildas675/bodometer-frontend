@@ -81,7 +81,7 @@ const handleVerifyOtp = async () => {
 
     if (!registerData || !role) {
       toast.error("Registration session expired. Please register again.");
-      navigate(role === "trainer" ? "/trainer-register" : "/user-register", {
+      navigate(role === "trainer" ? "/register/trainer" : "/register", {
         replace: true,
       });
       return;

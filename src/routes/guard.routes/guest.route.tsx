@@ -12,9 +12,9 @@ const GuestRoute = () => {
   if (isAuthenticated && user) {
     switch (user.role) {
       case "trainer":
-        return <Navigate to="/trainer/dashboard" replace />;
+        return <Navigate to="/trainer" replace />;
       case "admin":
-        return <Navigate to="/admin/dashboard" replace />;
+        return <Navigate to="/admin" replace />;
       case "user":
       default:
         return <Navigate to="/" replace />;

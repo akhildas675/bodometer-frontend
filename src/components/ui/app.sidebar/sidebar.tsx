@@ -29,13 +29,13 @@ type Props = {
 // Icon mapping for each route
 const iconMap: Record<string, React.ReactNode> = {
   // Admin
-  "/admin/dashboard": <LayoutDashboard size={20} />,
+  "/admin": <LayoutDashboard size={20} />,
   "/admin/users": <Users size={20} />,
   "/admin/trainers": <UserCheck size={20} />,
   "/admin/workouts": <Dumbbell size={20} />,
   
   // Trainer
-  "/trainer/dashboard": <LayoutDashboard size={20} />,
+  "/trainer": <LayoutDashboard size={20} />,
   "/trainer/sessions": <Calendar size={20} />,
   "/trainer/clients": <Users size={20} />,
   "/trainer/messages": <MessageSquare size={20} />,

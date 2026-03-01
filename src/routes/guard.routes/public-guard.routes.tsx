@@ -7,11 +7,11 @@ const PublicGuard = () => {
  
   if (isAuthenticated && user) {
     if (user.role === "admin") {
-      return <Navigate to="/admin/dashboard" replace />;
+      return <Navigate to="/admin" replace />;
     }
 
     if (user.role === "trainer") {
-      return <Navigate to="/trainer/dashboard" replace />;
+      return <Navigate to="/trainer" replace />;
     }
   }
 

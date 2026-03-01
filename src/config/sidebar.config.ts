@@ -8,15 +8,15 @@ export type SidebarItem = {
 export type SidebarRole = Role
 export const sidebarConfig: Record<SidebarRole, SidebarItem[]> = {
   admin: [
-    { label: "Dashboard", path: "/admin/dashboard" },
+    { label: "Dashboard", path: "/admin" },
     { label: "Users", path: "/admin/users" },
     { label: "Trainers", path: "/admin/trainers" },
-    { label: "Trainer Appointment", path: "/admin/trainer-appointment-list" },
+    { label: "Trainer Appointment", path: "/admin/appointments" },
     { label: "Manage Workouts", path: "/admin/workouts" },
   ],
 
   trainer: [
-    { label: "Dashboard", path: "/trainer/dashboard" },
+    { label: "Dashboard", path: "/trainer" },
     { label: "Sessions", path: "/trainer/sessions" },
     { label: "Clients", path: "/trainer/clients" },
     { label: "Messages", path: "/trainer/messages" },

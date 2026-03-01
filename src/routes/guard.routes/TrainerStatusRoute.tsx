@@ -49,7 +49,7 @@ const TrainerStatusRoute = () => {
   if (user.role !== ROLES.TRAINER) return <Navigate to="/" replace />;
 
   if (user.verificationStatus === VERIFICATION_STATUS.APPROVED) {
-    return <Navigate to="/trainer/dashboard" replace />;
+    return <Navigate to="/trainer" replace />;
   }
 
   if (checking) {

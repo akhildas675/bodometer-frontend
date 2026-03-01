@@ -68,7 +68,7 @@ const AuthLoginPage = () => {
         // Profile exists route by verification status
         switch (trainerStatus.verificationStatus) {
           case VERIFICATION_STATUS.APPROVED:
-            navigate("/trainer/dashboard", { replace: true });
+            navigate("/trainer", { replace: true });
             return;
 
           case VERIFICATION_STATUS.PENDING:
@@ -88,7 +88,7 @@ const AuthLoginPage = () => {
 
       
       if (user.role === "admin") {
-        navigate("/admin/dashboard", { replace: true });
+        navigate("/admin", { replace: true });
         return;
       }
 
@@ -133,12 +133,12 @@ const AuthLoginPage = () => {
         }
 
         if (trainerStatus.verificationStatus === VERIFICATION_STATUS.APPROVED) {
-          navigate("/trainer/dashboard", { replace: true });
+          navigate("/trainer", { replace: true });
         } else {
           navigate("/trainer/status", { replace: true });
         }
       } else if (user.role === "admin") {
-        navigate("/admin/dashboard", { replace: true });
+        navigate("/admin", { replace: true });
       } else {
         navigate("/", { replace: true });
       }
@@ -234,11 +234,11 @@ const AuthLoginPage = () => {
 
             <p className="text-center text-xs sm:text-sm text-slate-200">
               If you don't have an account, please{" "}
-              <Link to="/user-register" className="font-semibold text-indigo-400 hover:underline">
+              <Link to="/register" className="font-semibold text-indigo-400 hover:underline">
                 Register as User
               </Link>{" "}
               or{" "}
-              <Link to="/trainer-register" className="font-semibold text-indigo-400 hover:underline">
+              <Link to="/register/trainer" className="font-semibold text-indigo-400 hover:underline">
                 Register as Trainer
               </Link>
             </p>

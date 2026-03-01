@@ -7,7 +7,6 @@ import ApprovedTrainerRoute from "@/routes/guard.routes/ApprovedTrainerRoute";
 
 import TrainerDashboardPage from "@/pages/trainer/trainer-dashboard.page";
 import TrainerOnboardingSkillPage from "@/pages/trainer/trainer.onboarding-skill.page";
-import TrainerOnboardingAboutPage from "@/pages/trainer/trainer.onboarding-about.page";
 import TrainerOnboardingExperiencePage from "@/pages/trainer/trainer.onboarding-experience.page";
 import TrainerProfilePage from "@/pages/trainer/trainer-profile.page";
 import TrainerStatusPage from "@/pages/trainer/trainer-status.page";
@@ -20,7 +19,6 @@ export const trainerRoutes = (
     {/* No profile → onboarding only */}
     <Route element={<TrainerOnboardingRoute />}>
       <Route path={TRAiNER_UI_ROUTES.TRAINER_ONBOARDING_EXPERIENCE} element={<TrainerOnboardingExperiencePage />} />
-      <Route path={TRAiNER_UI_ROUTES.TRAINER_ONBOARDING_ABOUT}      element={<TrainerOnboardingAboutPage />} />
       <Route path={TRAiNER_UI_ROUTES.TRAINER_ONBOARDING_SKILL}      element={<TrainerOnboardingSkillPage />} />
     </Route>
 

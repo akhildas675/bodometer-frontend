@@ -21,9 +21,9 @@ const ProtectedRoute = ({ allowedRoles }: Props) => {
   if (!allowedRoles.includes(user.role)) {
     switch (user.role) {
       case "admin":
-        return <Navigate to="/admin/dashboard" replace />;
+        return <Navigate to="/admin" replace />;
       case "trainer":
-        return <Navigate to="/trainer/dashboard" replace />;
+        return <Navigate to="/trainer" replace />;
       default:
         return <Navigate to="/" replace />;
     }

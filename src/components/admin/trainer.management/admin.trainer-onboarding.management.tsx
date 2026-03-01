@@ -51,7 +51,7 @@ const AdminTrainerOnboardingManagement = () => {
   }, [searchQuery, sortConfig, currentPage, itemsPerPage, filter, refetch]);
 
   const handleViewDetails = (trainer: TrainerWithProfile) => {
-    navigate(`/admin/appointment-details/${trainer.profile._id}`);
+    navigate(`/admin/appointments/${trainer.profile._id}`);
   };
 
   const trainerActions = useTrainerOnboardingActions(handleViewDetails);
