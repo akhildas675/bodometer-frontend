@@ -6,10 +6,13 @@ export interface WorkoutList{
     workoutName:string
 }
 
-export interface TrainerOnboardingPayload {
-  experienceInYears: number;
+export interface TrainerProfileForm {
+  experience: number | ""
+  gender: Gender;
+  dateOfBirth: string;
   bio: string;
-  certificate: File;
+  certificate: File | null;
+  profileImage: File | null;
 }
 
 export interface TrainerOnboardingResponse {

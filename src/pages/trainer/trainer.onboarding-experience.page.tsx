@@ -1,11 +1,11 @@
-import TrainerOnboardingExperience from "@/components/trainer/trainer-onboarding.experience";
+import TrainerOnboardingProfile from "@/components/trainer/trainer-onboarding.profile";
 
-const TrainerOnboardingExperiencePage = () => {
+const TrainerOnboardingProfilePage = () => {
     return (
         <div>
-            <TrainerOnboardingExperience/>
+            <TrainerOnboardingProfile/>
         </div>
     );
 }
 
-export default TrainerOnboardingExperiencePage;
+export default TrainerOnboardingProfilePage;

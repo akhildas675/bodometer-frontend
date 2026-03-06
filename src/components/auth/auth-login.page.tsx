@@ -128,7 +128,7 @@ const AuthLoginPage = () => {
           trainerStatus.profileExists === null;
 
         if (noProfile) {
-          navigate("/trainer/onboarding-experience", { replace: true });
+          navigate("//trainer/onboarding/workouts", { replace: true });
           return;
         }
 

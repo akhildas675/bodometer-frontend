@@ -67,7 +67,7 @@ const AuthRegisterPage: React.FC<AuthRegisterPageProps> = ({ role }) => {
           registerData: payload,
         });
 
-        navigate(`/${role}-otp`);
+        navigate(`/otp/${role}`);
       }
     } catch {
       toast.error("Registration Failed");

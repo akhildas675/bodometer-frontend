@@ -13,7 +13,7 @@ const ApprovedTrainerRoute = () => {
 
 
   if (!user.verificationStatus) {
-    return <Navigate to="/trainer/onboarding-experience" replace />;
+    return <Navigate to="//trainer/onboarding/workouts" replace />;
   }
 
   if (user.verificationStatus !== VERIFICATION_STATUS.APPROVED) {

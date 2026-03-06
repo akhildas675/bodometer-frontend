@@ -96,7 +96,7 @@ const Sidebar = ({ role }: Props) => {
         <div className="mb-8 flex items-center justify-center h-12">
           {isExpanded ? (
             <img
-              src="/Bodometer Logo corrected 1.png"
+              src="https://bodometer-assets.s3.eu-north-1.amazonaws.com/Bodometer+Icon.png"
               alt="Bodometer Logo"
               className="h-8 w-auto object-contain drop-shadow-lg transition-opacity duration-300"
             />
