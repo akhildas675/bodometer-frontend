@@ -42,17 +42,16 @@ class TrainerService {
     return response.data;
   }
 
-  async submitTrainerProfile(
-    formData: FormData
-  ): Promise<ApiResponse<TrainerOnboardingResponse>> {
-    const response = await trainerApi.post<ApiResponse<TrainerOnboardingResponse>>(
-      TRAINER_API_ROUTES.SUBMIT_PROFILE_DATA,
-      formData
-    );
+async submitTrainerProfile(
+  formData: FormData
+): Promise<ApiResponse<TrainerOnboardingResponse>> {
+  const response = await trainerApi.post<ApiResponse<TrainerOnboardingResponse>>(
+    TRAINER_API_ROUTES.SUBMIT_PROFILE_DATA,
+    formData
+  );
 
-    return response.data;
-  }
-
+  return response.data;
+}
   async getTrainerProfileStatus(): Promise<ApiResponse<TrainerProfileStatus>> {
     const response = await trainerApi.get<ApiResponse<TrainerProfileStatus>>("/profile/status");
     return response.data

@@ -3,7 +3,6 @@ import trainerService from "@/services/trainer/trainer.service";
 import { useAuthStore } from "@/stores/auth.store";
 import { useTrainerOnboardingStore } from "@/stores/trainer-onboarding.store";
 
-
 import axios from "axios";
 
 import { useState } from "react";
@@ -34,6 +33,10 @@ const TrainerOnboardingProfile = () => {
       const file = e.target.files?.[0] ?? null;
 
       if (field === "profileImage") {
+        if (profilePreview) {
+          URL.revokeObjectURL(profilePreview);
+        }
+
         setProfileImageFile(file);
         setProfilePreview(file ? URL.createObjectURL(file) : null);
       }
@@ -60,7 +63,10 @@ const TrainerOnboardingProfile = () => {
       return false;
     }
 
-    if (!form.profile.experienceInYears || form.profile.experienceInYears <= 0) {
+    if (
+      !form.profile.experienceInYears ||
+      form.profile.experienceInYears <= 0
+    ) {
       toast.error("Experience must be greater than 0");
       return false;
     }
@@ -85,6 +91,15 @@ const TrainerOnboardingProfile = () => {
     try {
       setIsSubmitting(true);
 
+      console.log(
+        "profileImageFile instanceof File:",
+        profileImageFile instanceof File,
+      );
+      console.log(
+        "certificateFile instanceof File:",
+        certificateFile instanceof File,
+      );
+
       const formData = new FormData();
 
       formData.append("profileImage", profileImageFile!);
@@ -97,6 +112,10 @@ const TrainerOnboardingProfile = () => {
       form.workout.specializationIds.forEach((id) => {
         formData.append("specializationIds", id);
       });
+
+      for (const [key, value] of formData.entries()) {
+        console.log("FormData entry:", key, value);
+      }
 
       await trainerService.submitTrainerProfile(formData);
 
@@ -124,7 +143,12 @@ const TrainerOnboardingProfile = () => {
           className="h-10 object-contain"
         />
         <button className="flex items-center gap-2 text-sm text-white/60 hover:text-white transition-all">
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -211,7 +235,13 @@ const TrainerOnboardingProfile = () => {
 
             {/* Certificate Upload */}
             <label className="w-full px-6 py-3 rounded-full bg-purple-900/30 text-white border border-purple-700/50 text-sm font-medium flex items-center justify-between cursor-pointer hover:border-purple-400 transition-all">
-              <span className={certFileName ? "text-white truncate max-w-[80%]" : "text-white/60"}>
+              <span
+                className={
+                  certFileName
+                    ? "text-white truncate max-w-[80%]"
+                    : "text-white/60"
+                }
+              >
                 {certFileName ?? "Upload Document"}
               </span>
               <span className="text-white/60 text-xs shrink-0">

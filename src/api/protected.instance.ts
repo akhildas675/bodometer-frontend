@@ -32,12 +32,9 @@ const processQueue = (error: Error | null = null) => {
 
 export function createProtectedAxios(role: Role): AxiosInstance {
   const instance = axios.create({
-    baseURL: `${baseUrl}/api/${role}`,
-    withCredentials: true,
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
+  baseURL: `${baseUrl}/api/${role}`,
+  withCredentials: true,
+});
 
   // Request interceptor
   instance.interceptors.request.use((config: InternalAxiosRequestConfig) => {
@@ -47,7 +44,6 @@ export function createProtectedAxios(role: Role): AxiosInstance {
       config.headers = config.headers ?? {};
       config.headers.Authorization = `Bearer ${accessToken}`;
     }
-
     return config;
   });
 

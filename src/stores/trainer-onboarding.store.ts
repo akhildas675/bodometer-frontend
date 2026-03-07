@@ -38,12 +38,15 @@ export const useTrainerOnboardingStore =
       },
     },
     setWorkouts: (ids) =>
-      set((state) => ({
-        form: {
-          ...state.form,
-          workout: { specializationIds: ids },
-        },
-      })),
+  set((state) => ({
+    form: {
+      ...state.form,
+      workout: {
+        ...state.form.workout,
+        specializationIds: ids,
+      },
+    },
+  })),
     updateProfile: (data) =>
       set((state) => ({
         form: {
