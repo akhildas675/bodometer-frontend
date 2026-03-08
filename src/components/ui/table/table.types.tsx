@@ -22,14 +22,17 @@ export interface TableAction<T> {
 export interface TrainerProfile {
   _id: string;
   userId: string;
+  specializationIds: { _id: string; workoutName: string }[];  
   experienceInYears: number;
   certifications: string[];
   bio: string;
   verificationStatus: "pending" | "approved" | "rejected";
   rejectionReason: string | null;
+  applyCount: number;  
   createdAt: string;
   updatedAt: string;
 }
+
 
 export interface TrainerUser {
   _id: string;

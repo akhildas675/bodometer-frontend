@@ -113,9 +113,9 @@ const TrainerOnboardingProfile = () => {
         formData.append("specializationIds", id);
       });
 
-      for (const [key, value] of formData.entries()) {
-        console.log("FormData entry:", key, value);
-      }
+       for (const pair of formData.entries()) {
+       console.log("Trainer service.........kikik",pair[0], pair[1]);
+     }
 
       await trainerService.submitTrainerProfile(formData);
 

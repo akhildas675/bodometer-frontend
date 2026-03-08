@@ -15,13 +15,13 @@ const TrainerOnboardingSkills = () => {
 
   const selectedSkills = form.workout.specializationIds;
 
- const toggleSkill = (skillId: string) => {
-  const updated = selectedSkills.includes(skillId)
-    ? selectedSkills.filter((s) => s !== skillId)
-    : [...selectedSkills, skillId];
+  const toggleSkill = (skillId: string) => {
+    const updated = selectedSkills.includes(skillId)
+      ? selectedSkills.filter((s) => s !== skillId)
+      : [...selectedSkills, skillId];
 
-  setWorkouts([...updated]);
-};
+    setWorkouts([...updated]);
+  };
   const navigate = useNavigate();
 
   const {

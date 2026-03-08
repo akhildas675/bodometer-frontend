@@ -45,6 +45,7 @@ class TrainerService {
 async submitTrainerProfile(
   formData: FormData
 ): Promise<ApiResponse<TrainerOnboardingResponse>> {
+
   const response = await trainerApi.post<ApiResponse<TrainerOnboardingResponse>>(
     TRAINER_API_ROUTES.SUBMIT_PROFILE_DATA,
     formData

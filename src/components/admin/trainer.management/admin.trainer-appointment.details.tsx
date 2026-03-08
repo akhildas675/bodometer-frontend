@@ -13,7 +13,6 @@ import SidebarLayout from "@/components/ui/app.sidebar/sidebar.layout";
 import RejectionModal from "./trainer.appointment-rejection.modal";
 import { VerificationStatus } from "@/constants/verification.status";
 
-
 const AdminTrainerAppointmentDetails = () => {
   const { profileId } = useParams<{ profileId: string }>();
   const navigate = useNavigate();
@@ -22,7 +21,7 @@ const AdminTrainerAppointmentDetails = () => {
   const [loading, setLoading] = useState(true);
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
-  console.log('trainer appointment details')
+  console.log("trainer appointment details");
 
   const fetchTrainerDetails = async () => {
     if (!profileId) return;
@@ -30,6 +29,7 @@ const AdminTrainerAppointmentDetails = () => {
     try {
       setLoading(true);
       const response = await adminServices.getTrainerByProfileId(profileId);
+      
       setTrainer(response.data);
     } catch (error) {
       toast.error("Failed to fetch trainer details");
@@ -120,13 +120,19 @@ const AdminTrainerAppointmentDetails = () => {
           <div className="flex items-start justify-between">
             <div className="flex gap-4">
               <img
-                src={trainer.user.profilePic || "https://via.placeholder.com/100"}
+                src={
+                  trainer.user.profilePic || "https://via.placeholder.com/100"
+                }
                 alt={trainer.user.name}
                 className="w-20 h-20 rounded-full object-cover border-2 border-indigo-500"
               />
               <div>
-                <h1 className="text-2xl font-bold text-white mb-1">{trainer.user.name}</h1>
-                <p className="text-slate-400 text-sm mb-2">@{trainer.user.userName}</p>
+                <h1 className="text-2xl font-bold text-white mb-1">
+                  {trainer.user.name}
+                </h1>
+                <p className="text-slate-400 text-sm mb-2">
+                  @{trainer.user.userName}
+                </p>
                 <StatusBadge status={trainer.profile.verificationStatus} />
               </div>
             </div>
@@ -157,27 +163,40 @@ const AdminTrainerAppointmentDetails = () => {
 
         {/* User Information */}
         <div className="bg-white/5 rounded-xl p-6 mb-6 border border-white/10">
-          <h2 className="text-xl font-semibold text-white mb-4">Contact Information</h2>
+          <h2 className="text-xl font-semibold text-white mb-4">
+            Contact Information
+          </h2>
           <div className="grid grid-cols-2 gap-4">
             <InfoItem label="Email" value={trainer.user.email} />
             <InfoItem label="Phone" value={trainer.user.phoneNumber} />
             <InfoItem label="Gender" value={trainer.user.gender} />
             <InfoItem
               label="Date of Birth"
-              value={trainer.user.dateOfBirth ? new Date(trainer.user.dateOfBirth).toLocaleDateString() : "N/A"}
+              value={
+                trainer.user.dateOfBirth
+                  ? new Date(trainer.user.dateOfBirth).toLocaleDateString()
+                  : "N/A"
+              }
             />
           </div>
         </div>
 
         {/* Professional Information */}
         <div className="bg-white/5 rounded-xl p-6 mb-6 border border-white/10">
-          <h2 className="text-xl font-semibold text-white mb-4">Professional Information</h2>
+          <h2 className="text-xl font-semibold text-white mb-4">
+            Professional Information
+          </h2>
           <div className="space-y-4">
-            <InfoItem label="Experience" value={`${trainer.profile.experienceInYears} years`} />
+            <InfoItem
+              label="Experience"
+              value={`${trainer.profile.experienceInYears} years`}
+            />
 
             <div>
               <p className="text-slate-400 text-sm mb-2">Bio</p>
-              <p className="text-white bg-white/5 p-4 rounded-lg">{trainer.profile.bio || "No bio provided"}</p>
+              <p className="text-white bg-white/5 p-4 rounded-lg">
+                {trainer.profile.bio || "No bio provided"}
+              </p>
             </div>
 
             <div>
@@ -192,24 +211,53 @@ const AdminTrainerAppointmentDetails = () => {
                     >
                       <FileText size={18} className="text-indigo-400" />
                       <span>Certificate {index + 1}</span>
-                      <span className="ml-auto text-xs text-indigo-400">View PDF</span>
+                      <span className="ml-auto text-xs text-indigo-400">
+                        View PDF
+                      </span>
                     </button>
                   ))}
                 </div>
               ) : (
-                <p className="text-slate-500 text-sm">No certifications uploaded</p>
+                <p className="text-slate-500 text-sm">
+                  No certifications uploaded
+                </p>
+              )}
+            </div>
+
+            <div>
+              <p className="text-slate-400 text-sm mb-2">Specializations</p>
+              {trainer.profile.specializationIds.length > 0 ? (
+                <div className="flex flex-wrap gap-2">
+                  {trainer.profile.specializationIds.map((spec) => (
+                    <span
+                      key={spec._id}
+                      className="px-3 py-1 bg-indigo-500/20 border border-indigo-500/30 text-indigo-300 rounded-full text-sm"
+                    >
+                      {spec.workoutName}
+                    </span>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-slate-500 text-sm">
+                  No specializations added
+                </p>
               )}
             </div>
           </div>
         </div>
 
         {/* Rejection Reason (if rejected) */}
-        {trainer.profile.verificationStatus === "rejected" && trainer.profile.rejectionReason && (
-          <div className="bg-red-600/10 border border-red-600/30 rounded-xl p-6">
-            <h2 className="text-xl font-semibold text-red-400 mb-2">Rejection Reason</h2>
-            <p className="text-slate-300">{trainer.profile.rejectionReason}</p>
-          </div>
-        )}
+        {trainer.profile.verificationStatus === "rejected" &&
+          trainer.profile.rejectionReason && (
+            <div className="bg-red-600/10 border border-red-600/30 rounded-xl p-6">
+              <h2 className="text-xl font-semibold text-red-400 mb-2">
+                Rejection Reason
+              </h2>
+              <p className="text-slate-300">
+                {trainer.profile.rejectionReason}
+              </p>
+            </div>
+          )}
       </div>
 
       {/* Rejection Modal */}
@@ -233,7 +281,9 @@ const StatusBadge = ({ status }: { status: VerificationStatus }) => {
   };
 
   return (
-    <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium border ${colors[status]}`}>
+    <span
+      className={`inline-block px-3 py-1 rounded-full text-xs font-medium border ${colors[status]}`}
+    >
       {status.toUpperCase()}
     </span>
   );
