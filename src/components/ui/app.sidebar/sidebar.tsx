@@ -20,6 +20,7 @@ import {
   LogOut,
   ChevronRight,
   ChevronLeft,
+  SubscriptIcon,
 } from "lucide-react";
 
 type Props = {
@@ -33,6 +34,7 @@ const iconMap: Record<string, React.ReactNode> = {
   "/admin/users": <Users size={20} />,
   "/admin/trainers": <UserCheck size={20} />,
   "/admin/workouts": <Dumbbell size={20} />,
+  "/admin/subscriptions": <SubscriptIcon size={20} />,
   
   // Trainer
   "/trainer": <LayoutDashboard size={20} />,

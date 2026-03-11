@@ -13,7 +13,7 @@ export interface TableAction<T> {
   variant?: "danger" | "primary";
   visible?: (item: T) => boolean;
   disabled?: (row: T) => boolean;
-  onClick: (item: T) => void;
+  onClick: (item: T) => void | Promise<void>;
 }
 
 
@@ -53,4 +53,15 @@ export interface TrainerUser {
 export interface TrainerWithProfile {
   user: TrainerUser;
   profile: TrainerProfile;
+}
+
+export interface AdminGetSubscriptionResponse {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  durationInDays: number;
+  features: string[];
+  isActive: boolean;
+  createdAt: string;
 }

@@ -1,6 +1,6 @@
 import { adminApi } from "@/api/api.instance";
 
-import type { TrainerWithProfile } from "@/components/ui/table/table.types";
+import type {TrainerWithProfile } from "@/components/ui/table/table.types";
 
 import type {
   AdminGetTrainersResponse,
@@ -13,6 +13,7 @@ import type {
 import type { ApiResponse } from "@/interface/api-response.interface";
 
 import { ADMIN_API_ROUTES } from "@/constants/constant-routes/api-routes/admin-constant.routes";
+import { AdminGetSubscriptionResponse, SubscriptionFormData } from "@/interface/subscription.interface";
 
 class AdminService {
   // User Management
@@ -184,6 +185,61 @@ class AdminService {
     const response = await adminApi.patch<ApiResponse<{ message: string }>>(
       ADMIN_API_ROUTES.REJECT_TRAINER(profileId),
       { reason }
+    );
+    return response.data;
+  }
+
+
+  //subscription
+    async createSubscription(
+    data: SubscriptionFormData
+  ): Promise<ApiResponse<AdminGetSubscriptionResponse>> {
+    const response = await adminApi.post<ApiResponse<AdminGetSubscriptionResponse>>(
+      ADMIN_API_ROUTES.ADD_SUBSCRIPTION,
+      { data }
+    );
+    return response.data;
+  }
+
+  async getAllSubscriptions(): Promise<ApiResponse<AdminGetSubscriptionResponse[]>> {
+    const response = await adminApi.get<ApiResponse<AdminGetSubscriptionResponse[]>>(
+      ADMIN_API_ROUTES.GET_ALL_SUBSCRIPTIONS
+    );
+    return response.data;
+  }
+
+  async getSubscriptionById(
+    id: string
+  ): Promise<ApiResponse<AdminGetSubscriptionResponse>> {
+    const response = await adminApi.get<ApiResponse<AdminGetSubscriptionResponse>>(
+      ADMIN_API_ROUTES.GET_SUBSCRIPTION_BY_ID(id)
+    );
+    return response.data;
+  }
+
+  async updateSubscription(
+    id: string,
+    data: Partial<SubscriptionFormData>
+  ): Promise<ApiResponse<AdminGetSubscriptionResponse>> {
+    const response = await adminApi.put<ApiResponse<AdminGetSubscriptionResponse>>(
+      ADMIN_API_ROUTES.UPDATE_SUBSCRIPTION(id),
+      { data }
+    );
+    return response.data;
+  }
+
+  async deleteSubscription(id: string): Promise<ApiResponse<null>> {
+    const response = await adminApi.delete<ApiResponse<null>>(
+      ADMIN_API_ROUTES.DELETE_SUBSCRIPTION(id)
+    );
+    return response.data;
+  }
+
+  async toggleSubscriptionStatus(
+    id: string
+  ): Promise<ApiResponse<AdminGetSubscriptionResponse>> {
+    const response = await adminApi.patch<ApiResponse<AdminGetSubscriptionResponse>>(
+      ADMIN_API_ROUTES.TOGGLE_SUBSCRIPTION_STATUS(id)
     );
     return response.data;
   }

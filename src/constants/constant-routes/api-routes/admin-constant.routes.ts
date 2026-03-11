@@ -18,4 +18,13 @@ export const ADMIN_API_ROUTES = {
   GET_TRAINER_BY_PROFILE_ID: (profileId: string) => `/trainers/profile/${profileId}`,
   APPROVE_TRAINER: (profileId: string) => `/trainers/${profileId}/approve`,
   REJECT_TRAINER: (profileId: string) => `/trainers/${profileId}/reject`,
+
+  //subscription
+
+  ADD_SUBSCRIPTION:"/add-subscription",
+  GET_ALL_SUBSCRIPTIONS: "/subscriptions",
+  GET_SUBSCRIPTION_BY_ID: (id: string) => `/subscriptions/${id}`,
+  UPDATE_SUBSCRIPTION: (id: string) => `/subscriptions/${id}`,
+  DELETE_SUBSCRIPTION: (id: string) => `/subscriptions/${id}`,
+  TOGGLE_SUBSCRIPTION_STATUS: (id: string) => `/subscriptions/${id}/toggle`,
 } as const;
