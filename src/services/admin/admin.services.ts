@@ -114,11 +114,41 @@ class AdminService {
   }
 
   // Workouts
-  async getWorkouts(): Promise<ApiResponse<Workout[]>> {
-    const response = await adminApi.get<ApiResponse<Workout[]>>(ADMIN_API_ROUTES.GET_WORKOUTS);
-    return response.data;
-  }
+async getWorkouts(
+  page?: number,
+  limit?: number,
+  search?: string,
+  sortBy?: string,
+  sortOrder?: "asc" | "desc",
+): Promise<ApiResponse<Workout[]> & { pagination: PaginationMeta }> {
+  const params = new URLSearchParams();
+  if (page) params.append("page", String(page));
+  if (limit) params.append("limit", String(limit));
+  if (search) params.append("search", search);
+  if (sortBy) params.append("sortBy", sortBy);
+  if (sortOrder) params.append("sortOrder", sortOrder);
 
+  const response = await adminApi.get<ApiResponse<Workout[]> & { pagination: PaginationMeta }>(
+    `${ADMIN_API_ROUTES.GET_WORKOUTS}?${params.toString()}`
+  );
+  return response.data;
+}
+
+async updateWorkout(id: string, formData: FormData): Promise<ApiResponse<Workout>> {
+  const response = await adminApi.patch(
+    ADMIN_API_ROUTES.UPDATE_WORKOUT(id), 
+    formData,
+    { headers: { "Content-Type": "multipart/form-data" } }
+  );
+  return response.data;
+}
+
+async toggleWorkoutStatus(id: string): Promise<ApiResponse<Workout>> {
+  const response = await adminApi.patch(
+    ADMIN_API_ROUTES.TOGGLE_WORKOUT_STATUS(id)
+  );
+  return response.data;
+}
   async addWorkouts(data: FormData): Promise<ApiResponse<Workout>> {
     const response = await adminApi.post(ADMIN_API_ROUTES.ADD_WORKOUT, data, {
       headers: {

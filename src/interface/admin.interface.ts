@@ -65,9 +65,9 @@ export interface UpdateWorkoutPayload {
 }
 
 export interface Workout {
-  id: number;
+  id: string;
   workoutName: string;
   workoutDescription: string;
   workoutImage: string;
-  active: boolean;
+  isActive: boolean;
 }
