@@ -1,5 +1,5 @@
 import { FaPaperPlane, FaBell, FaUserCircle } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 const Navbar = () => {
   const navigator = useNavigate();
 
@@ -21,11 +21,50 @@ const Navbar = () => {
 
       {/* Menu */}
       <div className="flex space-x-10 text-[#E1E1E1] text-lg">
-        <span className="cursor-pointer hover:text-white">Home</span>
-        <span className="cursor-pointer hover:text-white">Trainers</span>
-        <span className="cursor-pointer hover:text-white">Workouts</span>
-        <span className="cursor-pointer hover:text-white">Subscription</span>
-      </div>
+  <NavLink
+    to="/"
+    className={({ isActive }) =>
+      `cursor-pointer hover:text-white ${
+        isActive ? "text-white font-semibold" : ""
+      }`
+    }
+  >
+    Home
+  </NavLink>
+
+  <NavLink
+    to="/trainers"
+    className={({ isActive }) =>
+      `cursor-pointer hover:text-white ${
+        isActive ? "text-white font-semibold" : ""
+      }`
+    }
+  >
+    Trainers
+  </NavLink>
+
+  <NavLink
+    to="/workouts"
+    className={({ isActive }) =>
+      `cursor-pointer hover:text-white ${
+        isActive ? "text-white font-semibold" : ""
+      }`
+    }
+  >
+    Workouts
+  </NavLink>
+
+  <NavLink
+    to="/subscriptions"
+    className={({ isActive }) =>
+      `cursor-pointer hover:text-white ${
+        isActive ? "text-white font-semibold" : ""
+      }`
+    }
+  >
+    Subscription
+  </NavLink>
+</div>
 
       {/* Icons */}
       <div className="flex items-center space-x-6 relative">
