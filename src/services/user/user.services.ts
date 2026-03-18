@@ -40,6 +40,14 @@ const userServices = {
     return response.data;
   },
 
+  async changePassword(data: {
+    currentPassword: string;
+    newPassword: string;
+  }): Promise<ApiResponse<null>> {
+    const response = await userApi.patch(USER_API_ROUTES.CHANGE_PASSWORD, data);
+    return response.data;
+  },
+
   async getWorkouts(
     page = 1,
     limit = 6,
@@ -81,25 +89,25 @@ const userServices = {
   },
 
   async getTrainers(
-  page = 1,
-  limit = 9,
-  search?: string,
-  sortBy?: string,
-  sortOrder?: "asc" | "desc",
-  specializationId?: string,
-): Promise<ApiResponse<TrainerListItem[]> & { pagination: PaginationMeta }> {
-  const params = new URLSearchParams();
-  params.append("page", String(page));
-  params.append("limit", String(limit));
-  if (search) params.append("search", search);
-  if (sortBy) params.append("sortBy", sortBy);
-  if (sortOrder) params.append("sortOrder", sortOrder);
-  if (specializationId) params.append("specializationId", specializationId);
-  const response = await userApi.get(
-    `${USER_API_ROUTES.GET_TRAINERS}?${params.toString()}`
-  );
-  return response.data;
-},
+    page = 1,
+    limit = 9,
+    search?: string,
+    sortBy?: string,
+    sortOrder?: "asc" | "desc",
+    specializationId?: string,
+  ): Promise<ApiResponse<TrainerListItem[]> & { pagination: PaginationMeta }> {
+    const params = new URLSearchParams();
+    params.append("page", String(page));
+    params.append("limit", String(limit));
+    if (search) params.append("search", search);
+    if (sortBy) params.append("sortBy", sortBy);
+    if (sortOrder) params.append("sortOrder", sortOrder);
+    if (specializationId) params.append("specializationId", specializationId);
+    const response = await userApi.get(
+      `${USER_API_ROUTES.GET_TRAINERS}?${params.toString()}`
+    );
+    return response.data;
+  },
 };
 
 export default userServices;

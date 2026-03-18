@@ -75,7 +75,7 @@ const Navbar = () => {
         <div className="relative">
           <FaUserCircle
             className="text-[#268AFF] text-2xl cursor-pointer hover:text-[#1a6fd6] transition"
-            onClick={() => navigator('/user-profile')}
+            onClick={() => navigator('/profile')}
           />
         </div>
       </div>

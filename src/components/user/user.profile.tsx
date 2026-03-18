@@ -1,13 +1,17 @@
 import { useAuthStore } from "@/stores/auth.store";
 import SidebarLayout from "@/components/ui/app.sidebar/sidebar.layout";
 import userServices from "@/services/user/user.services";
-import type { ProfileUpdatePayload, UserProfileInterface } from "@/interface/user.interface";
+import type {
+  ProfileUpdatePayload,
+  UserProfileInterface,
+} from "@/interface/user.interface";
 import type { Gender } from "@/constants/identity";
 import { useFetch } from "@/hooks/useFetch";
 import { useState, useRef, useEffect } from "react";
 import { toast } from "sonner";
 import axios from "axios";
 import { PenIcon } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const UserProfile = () => {
   const user = useAuthStore((state) => state.user);
@@ -16,6 +20,7 @@ const UserProfile = () => {
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string>("");
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const navigate = useNavigate();
 
   const {
     data: profileResponse,
@@ -24,7 +29,7 @@ const UserProfile = () => {
     refetch,
   } = useFetch<{ success: boolean; data: UserProfileInterface }>(
     userServices.getUserProfile,
-    true
+    true,
   );
 
   const profile = profileResponse?.data;
@@ -50,15 +55,15 @@ const UserProfile = () => {
     }
   }, [profile]);
 
-  const handleChange = (field: keyof ProfileUpdatePayload) => (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    const value = e.target.value;
-    setForm((prev) => ({
-      ...prev,
-      [field]: field === "phoneNumber" && value === "" ? null : value,
-    }));
-  };
+  const handleChange =
+    (field: keyof ProfileUpdatePayload) =>
+    (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+      const value = e.target.value;
+      setForm((prev) => ({
+        ...prev,
+        [field]: field === "phoneNumber" && value === "" ? null : value,
+      }));
+    };
 
   const handleEdit = () => {
     setIsEditing(true);
@@ -135,11 +140,14 @@ const UserProfile = () => {
         const formData = new FormData();
         formData.append("file", selectedImage);
 
-        const uploadResponse = await userServices.uploadProfilePicture(formData);
+        const uploadResponse =
+          await userServices.uploadProfilePicture(formData);
 
         if (uploadResponse.success && uploadResponse.data.url) {
           uploadedImageUrl = uploadResponse.data.url;
-          toast.loading("Image uploaded. Saving profile...", { id: loadingToast });
+          toast.loading("Image uploaded. Saving profile...", {
+            id: loadingToast,
+          });
         } else {
           throw new Error("Failed to upload image");
         }
@@ -157,7 +165,8 @@ const UserProfile = () => {
         updatePayload.profilePic = uploadedImageUrl;
       }
 
-      const updateResponse = await userServices.updateUserProfile(updatePayload);
+      const updateResponse =
+        await userServices.updateUserProfile(updatePayload);
 
       if (updateResponse.success) {
         await refetch();
@@ -169,9 +178,10 @@ const UserProfile = () => {
       }
     } catch (error) {
       console.error("Profile update error:", error);
-      
+
       if (axios.isAxiosError(error) && error.response) {
-        const errorMessage = error.response.data?.message || "Failed to update profile";
+        const errorMessage =
+          error.response.data?.message || "Failed to update profile";
         const statusCode = error.response.status;
 
         if (statusCode === 403) {
@@ -186,7 +196,9 @@ const UserProfile = () => {
         } else if (statusCode === 400) {
           toast.error(errorMessage, { id: loadingToast });
         } else if (statusCode === 401) {
-          toast.error("Session expired. Please login again.", { id: loadingToast });
+          toast.error("Session expired. Please login again.", {
+            id: loadingToast,
+          });
         } else if (statusCode === 409) {
           toast.error(errorMessage, { id: loadingToast });
         } else {
@@ -195,7 +207,9 @@ const UserProfile = () => {
       } else if (error instanceof Error) {
         toast.error(error.message, { id: loadingToast });
       } else {
-        toast.error("An unexpected error occurred. Please try again.", { id: loadingToast });
+        toast.error("An unexpected error occurred. Please try again.", {
+          id: loadingToast,
+        });
       }
     } finally {
       setIsSaving(false);
@@ -242,7 +256,9 @@ const UserProfile = () => {
     return `${year}-${month}-${day}`;
   };
 
-  const displayImage = previewUrl || "https://images.unsplash.com/photo-1599058917212-d750089bc07a";
+  const displayImage =
+    previewUrl ||
+    "https://images.unsplash.com/photo-1599058917212-d750089bc07a";
 
   return (
     <SidebarLayout role="user">
@@ -250,7 +266,10 @@ const UserProfile = () => {
         <div className="flex flex-1 max-w-7xl mx-auto">
           <main className="flex-1 px-10">
             <h1 className="text-lg text-slate-300 mb-6">
-              WELCOME <span className="text-indigo-400 font-semibold">{profile.name}</span>
+              WELCOME{" "}
+              <span className="text-indigo-400 font-semibold">
+                {profile.name}
+              </span>
             </h1>
 
             <div className="relative bg-linear-to-br from-[#140b3a] to-[#0a0624] rounded-3xl p-8 shadow-xl">
@@ -270,7 +289,9 @@ const UserProfile = () => {
                         className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40 rounded-full cursor-pointer hover:bg-opacity-50 transition"
                         onClick={handleProfilePicClick}
                       >
-                        <span className="text-white text-xs">{isSaving ? "..." : <PenIcon/>}</span>
+                        <span className="text-white text-xs">
+                          {isSaving ? "..." : <PenIcon />}
+                        </span>
                       </div>
                     )}
                     <input
@@ -320,7 +341,11 @@ const UserProfile = () => {
                 </div>
               </div>
 
-              <form id="profile-form" className="space-y-4" onSubmit={handleUpdate}>
+              <form
+                id="profile-form"
+                className="space-y-4"
+                onSubmit={handleUpdate}
+              >
                 <div className="grid grid-cols-2 gap-8 text-sm">
                   <div className="flex flex-col gap-1">
                     <label className="text-xs text-slate-400">Name</label>
@@ -380,7 +405,9 @@ const UserProfile = () => {
                       onChange={(e) => {
                         setForm((prev) => ({
                           ...prev,
-                          dateOfBirth: e.target.value ? new Date(e.target.value) : null,
+                          dateOfBirth: e.target.value
+                            ? new Date(e.target.value)
+                            : null,
                         }));
                       }}
                       disabled={!isEditing}
@@ -406,10 +433,18 @@ const UserProfile = () => {
                   </div>
                 </div>
               </form>
-
-              <p className="mt-6 text-xs text-indigo-400 cursor-pointer hover:text-indigo-300 transition">
-                Purchase history
-              </p>
+              <div className="mt-6 flex gap-4">
+                <p className="text-xs text-indigo-400 cursor-pointer hover:text-indigo-300 transition">
+                  Purchase history
+                </p>
+                <span className="text-slate-600">|</span>
+                <p
+                  onClick={() => navigate("/change-password")}
+                  className="text-xs text-indigo-400 cursor-pointer hover:text-indigo-300 transition"
+                >
+                  Change Password
+                </p>
+              </div>
             </div>
           </main>
         </div>
