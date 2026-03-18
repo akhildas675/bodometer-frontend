@@ -31,31 +31,38 @@ const ForgetPassword = () => {
   };
 
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (loading) return;
-    if (!form.email) return toast.error("Email is required");
+ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  e.preventDefault();
+  if (loading) return;
+  if (!form.email) return toast.error("Email is required");
 
-    setLoading(true);
+  setLoading(true);
 
-    try {
-      const result = await authService.forgotPassword(payload);
-      console.log("forget password payload",payload)
-      if (result.success) {
-        const role = result.data.role
+  try {
+    const result = await authService.forgotPassword(payload);
 
-        useOtpStore.getState().setOtpContext({
-          email: form.email,
-          role: role,
-          purpose: "FORGET_PASSWORD",
-        });
-
-        navigate(`/${role}-otp`, { replace: true });
+    if (result.success) {
+      const role = result.data.role;
+      if (!role) {
+        toast.error("No account found with this email. Please register.");
+        return;
       }
-    } catch (error) {
-      console.log("Error submitting email",error);
+
+      useOtpStore.getState().setOtpContext({
+        email: form.email,
+        role: role,
+        purpose: "FORGET_PASSWORD",
+      });
+
+      navigate(`/${role}-otp`, { replace: true });
     }
-  };
+  } catch (error) {
+    toast.error("Something went wrong. Please try again.");
+    console.log("Error submitting email", error);
+  } finally {
+    setLoading(false); 
+  }
+};
 
   return (
     <div className="min-h-screen w-full bg-linear-to-b from-[#03000D] to-[#190473] flex items-center justify-center">
