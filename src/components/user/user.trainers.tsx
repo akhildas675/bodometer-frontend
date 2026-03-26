@@ -1,16 +1,13 @@
-// pages/user/trainers/user-trainers.page.tsx
 import { useState, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import SidebarLayout from "@/components/ui/app.sidebar/sidebar.layout";
 import { useAuthStore } from "@/stores/auth.store";
 import { useTableFetch } from "@/hooks/useTableFetch";
-import SearchBar from "@/components/controls/search/search";
-import SortDropdown, { type SortConfig } from "@/components/controls/sort/sort";
-import Pagination from "@/components/controls/pagination/pagination";
 import userServices from "@/services/user/user.services";
 import type { PaginationMeta } from "@/interface/admin.interface";
 import type { TrainerListItem } from "@/interface/user.interface";
-import { Dumbbell, Star } from "lucide-react";
+import {Search, SlidersHorizontal } from "lucide-react";
+import Pagination from "@/components/controls/pagination/pagination";
 
 const TRAINER_SORT_OPTIONS = [
   { label: "Name", value: "name" },
@@ -24,74 +21,121 @@ const UserTrainers = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(9);
   const [searchQuery, setSearchQuery] = useState("");
-  const [sortConfig, setSortConfig] = useState<SortConfig<string>>({
-    field: "",
-    order: "asc",
-  });
+  const [searchInput, setSearchInput] = useState("");
+  const [sortField, setSortField] = useState("");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+  const [showSortMenu, setShowSortMenu] = useState(false);
 
-  const { data: response, loading, refetch } =
-    useTableFetch<{ data: TrainerListItem[]; pagination: PaginationMeta }>(
-      () =>
-        userServices
-          .getTrainers(
-            currentPage,
-            itemsPerPage,
-            searchQuery,
-            sortConfig.field || undefined,
-            sortConfig.order,
-          )
-          .then((res) => ({
-            data: res.data,
-            pagination: res.pagination,
-          })),
-      false,
-    );
+  const {
+    data: response,
+    loading,
+    refetch,
+  } = useTableFetch<{ data: TrainerListItem[]; pagination: PaginationMeta }>(
+    () =>
+      userServices
+        .getTrainers(
+          currentPage,
+          itemsPerPage,
+          searchQuery,
+          sortField || undefined,
+          sortOrder,
+        )
+        .then((res) => ({
+          data: res.data,
+          pagination: res.pagination,
+        })),
+    false,
+  );
 
   useEffect(() => {
     refetch();
-  }, [currentPage, searchQuery, sortConfig, refetch]);
+  }, [currentPage, searchQuery, sortField, sortOrder, refetch]);
 
-  const handleSearch = useCallback((value: string) => {
-    setSearchQuery(value);
+  const handleSearch = useCallback(() => {
+    setSearchQuery(searchInput);
     setCurrentPage(1);
-  }, []);
+  }, [searchInput]);
 
-  const handleSortChange = useCallback((sort: SortConfig<string>) => {
-    setSortConfig(sort);
-    setCurrentPage(1);
-  }, []);
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") handleSearch();
+  };
 
   const trainers = response?.data ?? [];
   const pagination = response?.pagination;
 
+  console.log("trainers page ",trainers)
+
   return (
     <SidebarLayout role={user?.role || "user"}>
-      <div className="text-white">
-        {/* Header */}
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-semibold">Trainers</h1>
+      <div className="text-white min-h-screen">
+        {/* Header Row */}
+        <div className="flex items-center justify-between mb-8 gap-4 flex-wrap">
+          <h1 className="text-3xl font-extrabold text-purple-400 tracking-tight">
+            Trainers
+          </h1>
+
+          <div className="flex items-center gap-3 ml-auto">
+            {/* Search Bar */}
+            <div className="flex items-center bg-[#1a1535] border border-purple-700/40 rounded-full px-4 py-2 gap-2 w-64">
+              <input
+                type="text"
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder="Search"
+                className="bg-transparent text-white text-sm placeholder-white/40 outline-none flex-1"
+              />
+              <button onClick={handleSearch}>
+                <Search size={18} className="text-white/60 hover:text-white transition" />
+              </button>
+            </div>
+
+            {/* Sort / Filter */}
+            <div className="relative">
+              <button
+                onClick={() => setShowSortMenu((v) => !v)}
+                className="flex items-center gap-2 bg-[#1a1535] border border-purple-700/40 rounded-full px-4 py-2 text-sm text-white/70 hover:text-white transition"
+              >
+                <SlidersHorizontal size={15} />
+                Sort / Filter
+              </button>
+
+              {showSortMenu && (
+                <div className="absolute right-0 mt-2 w-44 bg-[#1a1535] border border-purple-700/40 rounded-xl overflow-hidden z-50 shadow-xl">
+                  {TRAINER_SORT_OPTIONS.map((opt) => (
+                    <button
+                      key={opt.value}
+                      onClick={() => {
+                        if (sortField === opt.value) {
+                          setSortOrder((o) => (o === "asc" ? "desc" : "asc"));
+                        } else {
+                          setSortField(opt.value);
+                          setSortOrder("asc");
+                        }
+                        setCurrentPage(1);
+                        setShowSortMenu(false);
+                      }}
+                      className={`w-full text-left px-4 py-2.5 text-sm transition hover:bg-purple-700/20 ${
+                        sortField === opt.value
+                          ? "text-purple-400 font-semibold"
+                          : "text-white/70"
+                      }`}
+                    >
+                      {opt.label}
+                      {sortField === opt.value && (
+                        <span className="ml-1 text-xs">
+                          {sortOrder === "asc" ? "↑" : "↓"}
+                        </span>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
         </div>
 
-        {/* Search and Sort */}
-        <div className="flex gap-3 mb-6">
-          <SearchBar
-            value={searchQuery}
-            onSearch={handleSearch}
-            placeholder="Search trainers by name..."
-            disabled={loading}
-            className="flex-1 max-w-md"
-          />
-          <SortDropdown<string>
-            options={TRAINER_SORT_OPTIONS}
-            value={sortConfig}
-            onSortChange={handleSortChange}
-            disabled={loading}
-            className="w-56"
-            placeholder="Sort by..."
-          />
-        </div>
-
-        {/* Trainers Grid */}
+        {/* Grid */}
         {loading ? (
           <div className="text-center text-purple-300 py-20">
             Loading trainers...
@@ -101,64 +145,63 @@ const UserTrainers = () => {
             No trainers found.
           </div>
         ) : (
-          <div className="grid grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {trainers.map((trainer) => (
               <div
                 key={trainer._id}
-                className="bg-gradient-to-b from-[#140b3a] to-[#0a0624] rounded-2xl overflow-hidden border border-white/5 hover:border-purple-500/30 transition"
+                className="relative rounded-2xl overflow-hidden border border-purple-700/30 hover:border-purple-500/60 transition group cursor-pointer"
+                style={{ height: "380px" }}
+                onClick={() => navigate(`/trainers/${trainer.profileId}`)}
               >
-                {/* Cover + Avatar */}
-                <div className="relative h-28 bg-gradient-to-r from-purple-900 to-indigo-900">
-                  <div className="absolute -bottom-8 left-4">
-                    <img
-                      src={trainer.profilePic || "https://via.placeholder.com/80"}
-                      alt={trainer.name}
-                      className="w-16 h-16 rounded-full object-cover border-2 border-purple-500"
-                    />
-                  </div>
-                </div>
+                {/* Full Background Image */}
+                <img
+                  src={trainer.profilePic || "https://via.placeholder.com/400x380?text=No+Photo"}
+                  alt={trainer.name}
+                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                />
 
-                {/* Content */}
-                <div className="pt-10 px-4 pb-4">
-                  <h3 className="text-white font-bold text-lg truncate">
+                {/* Gradient overlay - bottom fade */}
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0a0624] via-[#0a0624]/60 to-transparent" />
+
+                {/* Bottom Content */}
+                <div className="absolute bottom-0 left-0 right-0 px-5 pb-5 text-center">
+                  {/* Name */}
+                  <h3 className="text-white font-extrabold text-xl tracking-widest uppercase mb-1">
                     {trainer.name}
                   </h3>
 
-                  {/* Experience */}
-                  <div className="flex items-center gap-1 text-purple-300 text-sm mt-1">
-                    <Star size={14} className="text-yellow-400" />
-                    <span>{trainer.experienceInYears} yrs experience</span>
+                  {/* Experience + Rating row */}
+                  <div className="flex items-center justify-center gap-4 text-sm mb-2">
+                    <span className="text-purple-300 font-medium">
+                      {trainer.experienceInYears}+{" "}
+                      <span className="text-white/60 font-normal">Experience</span>
+                    </span>
+                    {/* <span className="flex items-center gap-1 text-white/60">
+                      <Star size={13} className="text-yellow-400 fill-yellow-400" />
+                      <span className="text-white/70">
+                        {trainer.rating ?? "4.5"}
+                      </span>
+                    </span> */}
                   </div>
 
-                  {/* Bio */}
-                  <p className="text-slate-400 text-sm mt-2 line-clamp-2">
-                    {trainer.bio || "No bio provided"}
-                  </p>
-
-                  {/* Specializations */}
+                  {/* Skills */}
                   {trainer.specializations.length > 0 && (
-                    <div className="flex flex-wrap gap-1 mt-3">
-                      {trainer.specializations.slice(0, 3).map((spec) => (
-                        <span
-                          key={spec._id}
-                          className="flex items-center gap-1 px-2 py-0.5 bg-indigo-800/60 text-indigo-300 rounded-full text-xs"
-                        >
-                          <Dumbbell size={10} />
-                          {spec.workoutName}
-                        </span>
-                      ))}
-                      {trainer.specializations.length > 3 && (
-                        <span className="px-2 py-0.5 bg-white/5 text-slate-400 rounded-full text-xs">
-                          +{trainer.specializations.length - 3} more
-                        </span>
-                      )}
-                    </div>
+                    <p className="text-white/50 text-xs mb-4 truncate">
+                      {trainer.specializations
+                        .slice(0, 4)
+                        .map((s) => s.workoutName)
+                        .join(", ")}
+                      {trainer.specializations.length > 4 && "..."}
+                    </p>
                   )}
 
                   {/* Visit Button */}
                   <button
-                    onClick={() => navigate(`/trainers/${trainer._id}`)}
-                    className="mt-4 w-full bg-purple-600 hover:bg-purple-700 text-white text-sm font-semibold py-2 rounded-lg transition"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigate(`/trainers/${trainer.profileId}`);
+                    }}
+                    className="w-full bg-purple-600 hover:bg-purple-500 text-white font-bold text-sm py-2.5 rounded-xl transition"
                   >
                     Visit
                   </button>

@@ -14,6 +14,7 @@ export const ADMIN_API_ROUTES = {
   ADD_WORKOUT: "/add-workout",
   TOGGLE_WORKOUT_STATUS: (id: string) => `/toggle-workout/${id}`,
   UPDATE_WORKOUT: (id: string) => `/update-workout/${id}`,
+  GET_WORKOUT_BY_ID: (id: string) => `/workout/${id}`,
 
   // Trainer Appointments
   GET_TRAINER_APPOINTMENTS: "/get-trainer-appointments",

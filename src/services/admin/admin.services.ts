@@ -5,7 +5,6 @@ import type {TrainerWithProfile } from "@/components/ui/table/table.types";
 import type {
   AdminGetTrainersResponse,
   AdminGetUsersResponse,
-  Workout,
   PaginatedResponse,
   PaginationMeta,
 } from "@/interface/admin.interface";
@@ -14,6 +13,7 @@ import type { ApiResponse } from "@/interface/api-response.interface";
 
 import { ADMIN_API_ROUTES } from "@/constants/constant-routes/api-routes/admin-constant.routes";
 import { AdminGetSubscriptionResponse, SubscriptionFormData } from "@/interface/subscription.interface";
+import { Workout } from "@/interface/workout.interface";
 
 class AdminService {
   // User Management
@@ -135,7 +135,7 @@ async getWorkouts(
 }
 
 async updateWorkout(id: string, formData: FormData): Promise<ApiResponse<Workout>> {
-  const response = await adminApi.patch(
+  const response = await adminApi.put(
     ADMIN_API_ROUTES.UPDATE_WORKOUT(id), 
     formData,
     { headers: { "Content-Type": "multipart/form-data" } }
@@ -158,6 +158,10 @@ async toggleWorkoutStatus(id: string): Promise<ApiResponse<Workout>> {
     return response.data;
   }
 
+async getWorkoutById(id: string): Promise<ApiResponse<Workout>> {
+  const response = await adminApi.get(ADMIN_API_ROUTES.GET_WORKOUT_BY_ID(id));
+  return response.data;
+}
   // Get all trainer appointments
   async getTrainerAppointments(
   search?: string,

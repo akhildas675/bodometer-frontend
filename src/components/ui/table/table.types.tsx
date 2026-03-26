@@ -26,6 +26,7 @@ export interface TrainerProfile {
   experienceInYears: number;
   certifications: string[];
   bio: string;
+  coverPhoto:string;
   verificationStatus: "pending" | "approved" | "rejected";
   rejectionReason: string | null;
   applyCount: number;  

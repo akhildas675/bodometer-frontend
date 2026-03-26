@@ -89,7 +89,7 @@ const Sidebar = ({ role }: Props) => {
     <aside
       className={`${
         isExpanded ? "w-64" : "w-20"
-      } min-h-screen bg-gradient-to-b from-[#03000D] to-[#190473] p-4 text-white flex flex-col justify-between transition-all duration-300 ease-in-out relative`}
+      } min-h-screen bg-linear-to-b from-[#03000D] to-[#190473] p-4 text-white flex flex-col justify-between transition-all duration-300 ease-in-out relative`}
       onMouseEnter={() => setIsExpanded(true)}
       onMouseLeave={() => setIsExpanded(false)}
     >
@@ -111,7 +111,7 @@ const Sidebar = ({ role }: Props) => {
 
         {/* PROFILE SECTION */}
         <div className="flex flex-col items-center mb-8 overflow-hidden">
-          <div className="h-12 w-12 rounded-full bg-purple-600 flex items-center justify-center text-lg font-bold flex-shrink-0">
+          <div className="h-12 w-12 rounded-full bg-purple-600 flex items-center justify-center text-lg font-bold shrink-0">
             {user?.name?.charAt(0).toUpperCase() || role.charAt(0).toUpperCase()}
           </div>
           {isExpanded && (
@@ -141,7 +141,7 @@ const Sidebar = ({ role }: Props) => {
               }
               title={!isExpanded ? item.label : ""}
             >
-              <span className="flex-shrink-0">
+              <span className="shrink-0">
                 {iconMap[item.path] || <LayoutDashboard size={20} />}
               </span>
               {isExpanded && (

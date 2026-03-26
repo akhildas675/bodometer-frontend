@@ -2,18 +2,24 @@ import { GENDER } from "@/constants/identity";
 import trainerService from "@/services/trainer/trainer.service";
 import { useAuthStore } from "@/stores/auth.store";
 import { useTrainerOnboardingStore } from "@/stores/trainer-onboarding.store";
-
 import axios from "axios";
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 const TrainerOnboardingProfile = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Profile image
   const [profilePreview, setProfilePreview] = useState<string | null>(null);
-  const [certFileName, setCertFileName] = useState<string | null>(null);
   const [profileImageFile, setProfileImageFile] = useState<File | null>(null);
+
+  // Cover photo
+  const [coverPreview, setCoverPreview] = useState<string | null>(null);
+  const [coverImageFile, setCoverImageFile] = useState<File | null>(null);
+
+  // Certificate
+  const [certFileName, setCertFileName] = useState<string | null>(null);
   const [certificateFile, setCertificateFile] = useState<File | null>(null);
 
   const navigate = useNavigate();
@@ -28,17 +34,20 @@ const TrainerOnboardingProfile = () => {
     };
 
   const handleFile =
-    (field: "profileImage" | "certifications") =>
+    (field: "profileImage" | "coverImage" | "certifications") =>
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0] ?? null;
 
       if (field === "profileImage") {
-        if (profilePreview) {
-          URL.revokeObjectURL(profilePreview);
-        }
-
+        if (profilePreview) URL.revokeObjectURL(profilePreview);
         setProfileImageFile(file);
         setProfilePreview(file ? URL.createObjectURL(file) : null);
+      }
+
+      if (field === "coverImage") {
+        if (coverPreview) URL.revokeObjectURL(coverPreview);
+        setCoverImageFile(file);
+        setCoverPreview(file ? URL.createObjectURL(file) : null);
       }
 
       if (field === "certifications") {
@@ -55,6 +64,11 @@ const TrainerOnboardingProfile = () => {
 
     if (!form.profile.gender) {
       toast.error("Please select gender");
+      return false;
+    }
+
+    if (!coverImageFile) {
+      toast.error("Please upload a cover photo");
       return false;
     }
 
@@ -96,12 +110,17 @@ const TrainerOnboardingProfile = () => {
         profileImageFile instanceof File,
       );
       console.log(
+        "coverImageFile instanceof File:",
+        coverImageFile instanceof File,
+      );
+      console.log(
         "certificateFile instanceof File:",
         certificateFile instanceof File,
       );
 
       const formData = new FormData();
 
+      formData.append("coverImage", coverImageFile!);
       formData.append("profileImage", profileImageFile!);
       formData.append("certificate", certificateFile!);
       formData.append("dateOfBirth", form.profile.dateOfBirth);
@@ -113,11 +132,12 @@ const TrainerOnboardingProfile = () => {
         formData.append("specializationIds", id);
       });
 
-       for (const pair of formData.entries()) {
-       console.log("Trainer service.........kikik",pair[0], pair[1]);
-     }
+      for (const pair of formData.entries()) {
+        console.log("Trainer service.", pair[0], pair[1]);
+      }
 
       await trainerService.submitTrainerProfile(formData);
+      useTrainerOnboardingStore.getState().reset();
 
       useAuthStore.getState().setVerificationStatus("pending");
       toast.success("Profile submitted! Awaiting admin approval.");
@@ -169,27 +189,91 @@ const TrainerOnboardingProfile = () => {
             TELL US ABOUT YOU
           </h1>
 
-          {/* PROFILE IMAGE */}
-          <div className="flex justify-center mb-8">
-            <label className="relative h-24 w-24 rounded-full border-2 border-purple-500/60 flex items-center justify-center cursor-pointer">
-              <img
-                src={
-                  profilePreview ??
-                  "https://ui-avatars.com/api/?background=6d28d9&color=fff&size=80&name=T"
-                }
-                alt="profile"
-                className="h-20 w-20 rounded-full object-cover"
-              />
-              <div className="absolute bottom-0 right-0 h-6 w-6 rounded-full bg-purple-600 flex items-center justify-center text-xs border-2 border-[#03000D]">
-                ✎
+          {/* COVER PHOTO + PROFILE IMAGE */}
+          <div className="mb-8">
+            {/* Cover Photo */}
+            <label className="relative w-full rounded-2xl border-2 border-dashed border-purple-500/60 bg-purple-900/20 cursor-pointer hover:border-purple-400 transition-all overflow-hidden"
+              style={{ display: "block", height: "144px" }}>
+              {/* Centered content wrapper */}
+              <div className="absolute inset-0 flex flex-col items-center justify-center gap-2" style={{ paddingBottom: "36px" }}>
+                {!coverPreview && (
+                  <>
+                    <svg
+                      className="w-7 h-7 text-purple-400"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <rect x="3" y="3" width="18" height="18" rx="2" strokeWidth={1.5} />
+                      <circle cx="8.5" cy="8.5" r="1.5" strokeWidth={1.5} />
+                      <path
+                        d="M21 15l-5-5L5 21"
+                        strokeWidth={1.5}
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                    <span className="text-purple-300 text-sm font-medium">
+                      Upload Cover Photo
+                    </span>
+                    <span className="text-white/30 text-xs">
+                      Recommended: 1200 × 300px
+                    </span>
+                  </>
+                )}
               </div>
+
+              {/* Cover preview image */}
+              {coverPreview && (
+                <>
+                  <img
+                    src={coverPreview}
+                    alt="cover"
+                    className="absolute inset-0 w-full h-full object-cover"
+                  />
+                  {/* Hover overlay */}
+                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
+                    <div className="flex items-center gap-2 text-white text-sm font-medium">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                          d="M15.232 5.232l3.536 3.536M9 13l6.586-6.586a2 2 0 112.828 2.828L11.828 15.828a2 2 0 01-1.414.586H9v-2a2 2 0 01.586-1.414z" />
+                      </svg>
+                      Change Cover Photo
+                    </div>
+                  </div>
+                </>
+              )}
+
               <input
                 type="file"
                 accept="image/*"
-                onChange={handleFile("profileImage")}
+                onChange={handleFile("coverImage")}
                 className="hidden"
               />
             </label>
+
+            {/* Profile Image — overlapping the cover at the bottom center */}
+            <div className="flex justify-center -mt-10 relative z-10">
+              <label className="relative h-24 w-24 rounded-full border-2 border-purple-500/60 flex items-center justify-center cursor-pointer shadow-lg shadow-black/40">
+                <img
+                  src={
+                    profilePreview ??
+                    "https://ui-avatars.com/api/?background=6d28d9&color=fff&size=80&name=T"
+                  }
+                  alt="profile"
+                  className="h-20 w-20 rounded-full object-cover"
+                />
+                <div className="absolute bottom-0 right-0 h-6 w-6 rounded-full bg-purple-600 flex items-center justify-center text-xs border-2 border-[#03000D]">
+                  ✎
+                </div>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFile("profileImage")}
+                  className="hidden"
+                />
+              </label>
+            </div>
           </div>
 
           {/* FIELDS */}

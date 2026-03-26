@@ -9,6 +9,7 @@ export const USER_API_ROUTES = {
     GET_MY_SUBSCRIPTION: "/my-subscription",
     CREATE_CHECKOUT_SESSION: "/subscriptions/checkout",
     GET_TRAINERS: "/trainers",
+    GET_TRAINER_BY_ID: (id: string) => `/trainers/${id}`
 
 
 } as const

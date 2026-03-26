@@ -3,6 +3,8 @@ export const ADMIN_UI_ROUTES = {
   USERS: "/admin/users",
   TRAINERS: "/admin/trainers",
   WORKOUTS: "/admin/workouts",
+  WORKOUTS_CREATE: "/admin/workouts/create",
+  WORKOUTS_EDIT: "/admin/workouts/edit/:id",
   TRAINER_APPOINTMENT_LIST: "/admin/appointments",
   APPOINTMENT_DETAILS: (profileId: string) => `/admin/appointments/${profileId}`,
   APPOINTMENT_DETAILS_PATH: "/admin/appointments/:profileId",

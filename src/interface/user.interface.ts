@@ -36,14 +36,15 @@ export interface UserWorkout {
   workoutName: string;
   workoutDescription: string;
   workoutImage: string;
+  coverPhoto: string;
+  introVideo: string;
+  targetMuscles: string[];
+  equipment: string[];
+  benefits: string[];
+  isActive: boolean;
+  createdAt?: Date;
 }
 
-export interface UserWorkout {
-  id: string;
-  workoutName: string;
-  workoutDescription: string;
-  workoutImage: string;
-}
 
 export interface RelatedTrainer {
   _id: string;
@@ -82,9 +83,21 @@ export interface ActiveSubscription {
 
 export interface TrainerListItem {
   _id: string;
+  profileId: string; 
   name: string;
   profilePic: string | null;
   experienceInYears: number;
+  coverPhoto:string| null;
   bio: string;
+  specializations: { _id: string; workoutName: string }[];
+}
+
+export interface TrainerDetail {
+  _id: string;
+  name: string;
+  profilePic: string | null;
+  coverPhoto: string;
+  bio: string;
+  experienceInYears: number;
   specializations: { _id: string; workoutName: string }[];
 }

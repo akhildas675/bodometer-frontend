@@ -5,5 +5,6 @@ export const USER_UI_ROUTES={
     USER_SUBSCRIPTION:"/subscriptions",
     USER_SUBSCRIPTION_SUCCESS:"/subscriptions/success",
     USER_TRAINERS:"/trainers",
+    USER_TRAINER_DETAILS:"/trainers/:id",
     USER_CHANGE_PASSWORD:"/change-password",
 } as const

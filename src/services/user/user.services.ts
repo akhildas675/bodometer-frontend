@@ -9,6 +9,7 @@ import type {
   ActiveSubscription,
   ProfileUpdatePayload,
   SubscriptionPlan,
+  TrainerDetail,
   TrainerListItem,
   UploadProfilePictureResponse,
   UserProfileInterface,
@@ -108,6 +109,12 @@ const userServices = {
     );
     return response.data;
   },
+
+  async getTrainerById(id:string):Promise<ApiResponse<TrainerDetail>>{
+    const response = await userApi.get<ApiResponse<TrainerDetail>>(USER_API_ROUTES.GET_TRAINER_BY_ID(id),);
+    return response.data
+  }
+
 };
 
 export default userServices;

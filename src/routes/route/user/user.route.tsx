@@ -9,6 +9,7 @@ import UserSubscriptionPage from "@/pages/user/user-subscription.page";
 import UserSubscriptionSuccessPage from "@/pages/user/user.subscription-success.page";
 import UserTrainersPage from "@/pages/user/user-trainers.page";
 import UserChangePasswordPage from "@/pages/user/user.change-password.page";
+import UserTrainerDetailPage from "@/pages/user/user.trainer-detail.page";
 
 export const userRoutes = (
   <Route element={<ProtectedRoute allowedRoles={["user"]} />}>
@@ -31,13 +32,18 @@ export const userRoutes = (
         element={<UserSubscriptionSuccessPage />}
       />
       <Route
+        path={USER_UI_ROUTES.USER_CHANGE_PASSWORD}
+        element={<UserChangePasswordPage/>}
+      />
+      <Route
         path={USER_UI_ROUTES.USER_TRAINERS}
         element={<UserTrainersPage/>}
       />
       <Route
-        path={USER_UI_ROUTES.USER_CHANGE_PASSWORD}
-        element={<UserChangePasswordPage/>}
+        path={USER_UI_ROUTES.USER_TRAINER_DETAILS}
+        element={<UserTrainerDetailPage/>}
       />
+
     </Route>
   </Route>
 );

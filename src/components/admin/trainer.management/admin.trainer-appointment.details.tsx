@@ -21,15 +21,12 @@ const AdminTrainerAppointmentDetails = () => {
   const [loading, setLoading] = useState(true);
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
-  console.log("trainer appointment details");
 
   const fetchTrainerDetails = async () => {
     if (!profileId) return;
-
     try {
       setLoading(true);
       const response = await adminServices.getTrainerByProfileId(profileId);
-      
       setTrainer(response.data);
     } catch (error) {
       toast.error("Failed to fetch trainer details");
@@ -41,14 +38,11 @@ const AdminTrainerAppointmentDetails = () => {
   };
 
   useEffect(() => {
-    if (profileId) {
-      fetchTrainerDetails();
-    }
+    if (profileId) fetchTrainerDetails();
   }, [profileId]);
 
   const handleApprove = async () => {
     if (!trainer) return;
-
     try {
       setActionLoading(true);
       await adminServices.approveTrainer(trainer.profile._id);
@@ -64,7 +58,6 @@ const AdminTrainerAppointmentDetails = () => {
 
   const handleReject = async (reason: string) => {
     if (!trainer) return;
-
     try {
       setActionLoading(true);
       await adminServices.rejectTrainer(trainer.profile._id, reason);
@@ -115,35 +108,29 @@ const AdminTrainerAppointmentDetails = () => {
           <span>Back to Trainers</span>
         </button>
 
-        {/* Header */}
-        <div className="bg-white/5 rounded-xl p-6 mb-6 border border-white/10">
-          <div className="flex items-start justify-between">
-            <div className="flex gap-4">
+        {/* Header — cover photo + profile pic */}
+      
+        <div className="rounded-xl mb-6 border border-white/10">
+          {/* Cover Photo */}
+          <div className="relative h-44 w-full rounded-t-xl overflow-hidden">
+            {trainer.profile.coverPhoto ? (
               <img
-                src={
-                  trainer.user.profilePic || "https://via.placeholder.com/100"
-                }
-                alt={trainer.user.name}
-                className="w-20 h-20 rounded-full object-cover border-2 border-indigo-500"
+                src={trainer.profile.coverPhoto}
+                alt="cover"
+                className="w-full h-full object-cover"
               />
-              <div>
-                <h1 className="text-2xl font-bold text-white mb-1">
-                  {trainer.user.name}
-                </h1>
-                <p className="text-slate-400 text-sm mb-2">
-                  @{trainer.user.userName}
-                </p>
-                <StatusBadge status={trainer.profile.verificationStatus} />
-              </div>
-            </div>
+            ) : (
+              <div className="w-full h-full bg-linear-to-r from-[#1a0f3c] to-[#0a0624]" />
+            )}
+            <div className="absolute inset-0 bg-black/30" />
 
-            {/* Action Buttons */}
+            {/* Action Buttons — top right over cover */}
             {isPending && (
-              <div className="flex gap-3">
+              <div className="absolute top-4 right-4 flex gap-3">
                 <button
                   onClick={handleApprove}
                   disabled={actionLoading}
-                  className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition disabled:opacity-50"
+                  className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition disabled:opacity-50 shadow-lg"
                 >
                   <CheckCircle size={18} />
                   Approve
@@ -151,7 +138,7 @@ const AdminTrainerAppointmentDetails = () => {
                 <button
                   onClick={() => setShowRejectModal(true)}
                   disabled={actionLoading}
-                  className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition disabled:opacity-50"
+                  className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition disabled:opacity-50 shadow-lg"
                 >
                   <XCircle size={18} />
                   Reject
@@ -159,9 +146,30 @@ const AdminTrainerAppointmentDetails = () => {
               </div>
             )}
           </div>
+
+          {/* Profile info below cover */}
+          {/* ✅ relative so avatar absolute positioning is scoped here */}
+          <div className="relative bg-white/5 rounded-b-xl px-6 pb-6 pt-14">
+            {/* ✅ Avatar: absolute -top-10 so it straddles cover + info section */}
+            <div className="absolute -top-10 left-6">
+              <img
+                src={trainer.user.profilePic || "https://via.placeholder.com/100"}
+                alt={trainer.user.name}
+                className="w-20 h-20 rounded-full object-cover border-4 border-[#0d0b1f] shadow-lg"
+              />
+            </div>
+
+            <h1 className="text-2xl font-bold text-white mb-1">
+              {trainer.user.name}
+            </h1>
+            <p className="text-slate-400 text-sm mb-2">
+              @{trainer.user.userName}
+            </p>
+            <StatusBadge status={trainer.profile.verificationStatus} />
+          </div>
         </div>
 
-        {/* User Information */}
+        {/* Contact Information */}
         <div className="bg-white/5 rounded-xl p-6 mb-6 border border-white/10">
           <h2 className="text-xl font-semibold text-white mb-4">
             Contact Information
@@ -253,9 +261,7 @@ const AdminTrainerAppointmentDetails = () => {
               <h2 className="text-xl font-semibold text-red-400 mb-2">
                 Rejection Reason
               </h2>
-              <p className="text-slate-300">
-                {trainer.profile.rejectionReason}
-              </p>
+              <p className="text-slate-300">{trainer.profile.rejectionReason}</p>
             </div>
           )}
       </div>

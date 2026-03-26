@@ -63,11 +63,3 @@ export interface UpdateWorkoutPayload {
   workoutImage?: File;
   oldImageUrl?: string;
 }
-
-export interface Workout {
-  id: string;
-  workoutName: string;
-  workoutDescription: string;
-  workoutImage: string;
-  isActive: boolean;
-}
