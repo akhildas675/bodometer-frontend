@@ -11,6 +11,7 @@ import TrainerStatusPage from "@/pages/trainer/trainer-status.page";
 
 import { TRAiNER_UI_ROUTES } from "@/constants/constant-routes/ui-routes/trainer.ui-constant.routes";
 import TrainerOnboardingProfilePage from "@/pages/trainer/trainer.onboarding-experience.page";
+import MainLayouts from "@/components/layouts/MainLayouts";
 
 export const trainerRoutes = (
   <Route element={<ProtectedRoute allowedRoles={["trainer"]} />}>
@@ -27,10 +28,13 @@ export const trainerRoutes = (
     </Route>
 
     {/*Approved */}
+    <Route element={<MainLayouts/>}>
+
     <Route element={<ApprovedTrainerRoute />}>
       <Route path={TRAiNER_UI_ROUTES.TRAINER_DASHBOARD} element={<TrainerDashboardPage />} />
       <Route path={TRAiNER_UI_ROUTES.TRAINER_PROFILE}   element={<TrainerProfilePage />} />
     </Route>
 
+    </Route>
   </Route>
 );

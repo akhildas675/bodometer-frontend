@@ -3,7 +3,7 @@ import { PenIcon } from "lucide-react";
 import { toast } from "sonner";
 import axios from "axios";
 
-import SidebarLayout from "@/components/ui/app.sidebar/sidebar.layout";
+
 
 import { useAuthStore } from "@/stores/auth.store";
 import { useFetch } from "@/hooks/useFetch";
@@ -229,38 +229,38 @@ const TrainerProfile = () => {
 
   if (loading) {
     return (
-      <SidebarLayout role="trainer">
+    
         <div className="min-h-screen bg-[#050017] text-white pt-24 pb-10 flex items-center justify-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500"></div>
         </div>
-      </SidebarLayout>
+     
     );
   }
 
   if (error) {
     return (
-      <SidebarLayout role="trainer">
+    
         <div className="min-h-screen bg-[#050017] text-white pt-24 pb-10 flex items-center justify-center">
           <p className="text-red-400">
             Failed to load profile. Please try again.
           </p>
         </div>
-      </SidebarLayout>
+     
     );
   }
 
   if (!profile || !user) {
     return (
-      <SidebarLayout role="trainer">
+  
         <div className="min-h-screen bg-[#050017] text-white pt-24 pb-10 flex items-center justify-center">
           <p>No profile data found</p>
         </div>
-      </SidebarLayout>
+     
     );
   }
 
   return (
-    <SidebarLayout role="trainer">
+ 
       <div className="min-h-screen bg-[#050017] text-white pt-24 pb-10">
         <div className="flex flex-1 max-w-7xl mx-auto">
           <main className="flex-1 px-10">
@@ -430,7 +430,7 @@ const TrainerProfile = () => {
           </main>
         </div>
       </div>
-    </SidebarLayout>
+   
   );
 };
 

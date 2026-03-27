@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";  // ✅ add
-import SidebarLayout from "@/components/ui/app.sidebar/sidebar.layout";
+
 import type { PaginationMeta } from "@/interface/admin.interface";
 import { useTableFetch } from "@/hooks/useTableFetch";
 import Pagination from "@/components/controls/pagination/pagination";
@@ -62,7 +62,7 @@ const UserWorkouts = () => {
   const pagination = response?.pagination;
 
   return (
-    <SidebarLayout role={user?.role || "user"}>
+   
       <div className="text-white">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-2xl font-semibold">Workouts</h1>
@@ -143,7 +143,7 @@ const UserWorkouts = () => {
           </div>
         )}
       </div>
-    </SidebarLayout>
+   
   );
 };
 

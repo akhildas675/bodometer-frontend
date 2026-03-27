@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from "react";
 
-import SidebarLayout from "@/components/ui/app.sidebar/sidebar.layout";
+
 import DataTable from "@/components/ui/table/data.table";
 import ConfirmationModal from "@/components/ui/confirm.dialog";
 
@@ -100,7 +100,7 @@ const {
   }
 
   return (
-    <SidebarLayout role={user.role}>
+   <>
       <div className="text-white">
         <h1 className="text-2xl font-semibold mb-6">User Management</h1>
 
@@ -158,8 +158,9 @@ const {
               onClose={() => setModalConfig((prev) => ({ ...prev, isOpen: false }))}
               onConfirm={modalConfig.onConfirm}
             />
-    </SidebarLayout>
+   </>
   );
+
 };
 
 export default AdminUsersManagement;

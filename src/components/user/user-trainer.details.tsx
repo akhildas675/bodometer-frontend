@@ -1,7 +1,5 @@
 import { useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useAuthStore } from "@/stores/auth.store";
-import SidebarLayout from "@/components/ui/app.sidebar/sidebar.layout";
 import userServices from "@/services/user/user.services";
 import type { TrainerDetail } from "@/interface/user.interface";
 import { Dumbbell, ArrowLeft, Clock } from "lucide-react";
@@ -11,7 +9,7 @@ import type { ApiResponse } from "@/interface/api-response.interface";
 const UserTrainerDetails = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const user = useAuthStore((state) => state.user);
+
 
   const { data, loading } = useFetch<ApiResponse<TrainerDetail>>(
     useCallback(() => userServices.getTrainerById(id!), [id]),
@@ -21,7 +19,7 @@ const UserTrainerDetails = () => {
   const trainer = data?.data ?? null;
 
   return (
-    <SidebarLayout role={user?.role || "user"}>
+   
       <div className="text-white max-w-3xl mx-auto">
         {/* Back */}
         <button
@@ -122,7 +120,7 @@ const UserTrainerDetails = () => {
           </div>
         )}
       </div>
-    </SidebarLayout>
+   
   );
 };
 

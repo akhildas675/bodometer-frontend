@@ -9,7 +9,7 @@ const UserSubscriptionSuccess = () => {
   const navigate = useNavigate();
 
   return (
-    <SidebarLayout role={user?.role || "user"}>
+   
       <div className="flex flex-col items-center justify-center h-full text-white text-center">
         <CheckCircle size={64} className="text-green-400 mb-6" />
         <h1 className="text-3xl font-bold mb-3">Payment Successful!</h1>
@@ -23,7 +23,7 @@ const UserSubscriptionSuccess = () => {
           View My Plan
         </button>
       </div>
-    </SidebarLayout>
+   
   );
 }
 

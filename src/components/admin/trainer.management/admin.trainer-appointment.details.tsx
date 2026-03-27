@@ -4,11 +4,8 @@ import { toast } from "sonner";
 import { ArrowLeft, CheckCircle, FileText, XCircle } from "lucide-react";
 
 import adminServices from "@/services/admin/admin.services";
-import { useAuthStore } from "@/stores/auth.store";
 
 import type { TrainerWithProfile } from "@/components/ui/table/table.types";
-
-import SidebarLayout from "@/components/ui/app.sidebar/sidebar.layout";
 
 import RejectionModal from "./trainer.appointment-rejection.modal";
 import { VerificationStatus } from "@/constants/verification.status";
@@ -16,7 +13,7 @@ import { VerificationStatus } from "@/constants/verification.status";
 const AdminTrainerAppointmentDetails = () => {
   const { profileId } = useParams<{ profileId: string }>();
   const navigate = useNavigate();
-  const user = useAuthStore((state) => state.user);
+
   const [trainer, setTrainer] = useState<TrainerWithProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [showRejectModal, setShowRejectModal] = useState(false);
@@ -78,26 +75,24 @@ const AdminTrainerAppointmentDetails = () => {
 
   if (loading) {
     return (
-      <SidebarLayout role={user?.role || "admin"}>
-        <div className="flex items-center justify-center h-full">
-          <div className="text-white text-xl">Loading trainer details...</div>
-        </div>
-      </SidebarLayout>
+      <div className="min-h-screen bg-[#0d0b1f] flex items-center justify-center">
+        <div className="text-white text-xl">Loading trainer details...</div>
+      </div>
     );
   }
 
   if (!trainer) {
     return (
-      <SidebarLayout role={user?.role || "admin"}>
-        <div className="text-white p-6">Trainer not found</div>
-      </SidebarLayout>
+      <div className="min-h-screen bg-[#0d0b1f] p-6">
+        <div className="text-white">Trainer not found</div>
+      </div>
     );
   }
 
   const isPending = trainer.profile.verificationStatus === "pending";
 
   return (
-    <SidebarLayout role={user?.role || "admin"}>
+    <div className="min-h-screen bg-[#0d0b1f]">
       <div className="max-w-5xl mx-auto py-8 px-8">
         {/* Back Button */}
         <button
@@ -109,7 +104,6 @@ const AdminTrainerAppointmentDetails = () => {
         </button>
 
         {/* Header — cover photo + profile pic */}
-      
         <div className="rounded-xl mb-6 border border-white/10">
           {/* Cover Photo */}
           <div className="relative h-44 w-full rounded-t-xl overflow-hidden">
@@ -120,11 +114,11 @@ const AdminTrainerAppointmentDetails = () => {
                 className="w-full h-full object-cover"
               />
             ) : (
-              <div className="w-full h-full bg-linear-to-r from-[#1a0f3c] to-[#0a0624]" />
+              <div className="w-full h-full bg-gradient-to-r from-[#1a0f3c] to-[#0a0624]" />
             )}
             <div className="absolute inset-0 bg-black/30" />
 
-            {/* Action Buttons — top right over cover */}
+            {/* Action Buttons */}
             {isPending && (
               <div className="absolute top-4 right-4 flex gap-3">
                 <button
@@ -148,12 +142,12 @@ const AdminTrainerAppointmentDetails = () => {
           </div>
 
           {/* Profile info below cover */}
-          {/* ✅ relative so avatar absolute positioning is scoped here */}
           <div className="relative bg-white/5 rounded-b-xl px-6 pb-6 pt-14">
-            {/* ✅ Avatar: absolute -top-10 so it straddles cover + info section */}
             <div className="absolute -top-10 left-6">
               <img
-                src={trainer.user.profilePic || "https://via.placeholder.com/100"}
+                src={
+                  trainer.user.profilePic || "https://via.placeholder.com/100"
+                }
                 alt={trainer.user.name}
                 className="w-20 h-20 rounded-full object-cover border-4 border-[#0d0b1f] shadow-lg"
               />
@@ -261,7 +255,9 @@ const AdminTrainerAppointmentDetails = () => {
               <h2 className="text-xl font-semibold text-red-400 mb-2">
                 Rejection Reason
               </h2>
-              <p className="text-slate-300">{trainer.profile.rejectionReason}</p>
+              <p className="text-slate-300">
+                {trainer.profile.rejectionReason}
+              </p>
             </div>
           )}
       </div>
@@ -274,7 +270,7 @@ const AdminTrainerAppointmentDetails = () => {
           loading={actionLoading}
         />
       )}
-    </SidebarLayout>
+    </div>
   );
 };
 

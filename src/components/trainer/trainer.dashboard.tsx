@@ -1,4 +1,4 @@
-import SidebarLayout from "@/components/ui/app.sidebar/sidebar.layout";
+
 
 const TrainerDashboard = () => {
 
@@ -7,7 +7,7 @@ const TrainerDashboard = () => {
  
   return (
 
-    <SidebarLayout role={"trainer"}>
+   
 
     <div className="min-h-screen bg-[#050017] flex">
       {/* SIDEBAR */}
@@ -27,7 +27,7 @@ const TrainerDashboard = () => {
         
       </main>
     </div>
-    </SidebarLayout>
+   
   );
 };
 

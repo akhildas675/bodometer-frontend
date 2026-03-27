@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import SidebarLayout from "@/components/ui/app.sidebar/sidebar.layout";
+
 import { Pencil, Plus } from "lucide-react";
 import type { PaginationMeta } from "@/interface/admin.interface";
 import { toast } from "sonner";
@@ -86,7 +86,7 @@ const AdminWorkoutList = () => {
   const pagination = response?.pagination;
 
   return (
-    <SidebarLayout role="admin">
+  
       <div className="text-white">
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
@@ -218,7 +218,7 @@ const AdminWorkoutList = () => {
           </div>
         )}
       </div>
-    </SidebarLayout>
+   
   );
 };
 

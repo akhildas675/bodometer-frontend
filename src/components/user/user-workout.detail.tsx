@@ -1,8 +1,6 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, Dumbbell, User, Target, Wrench, Sparkles, Play } from "lucide-react";
 import { toast } from "sonner";
-import SidebarLayout from "@/components/ui/app.sidebar/sidebar.layout";
-import { useAuthStore } from "@/stores/auth.store";
 import userServices from "@/services/user/user.services";
 import type { WorkoutDetailResponse } from "@/interface/user.interface";
 import { useFetch } from "@/hooks/useFetch";
@@ -10,7 +8,7 @@ import { useFetch } from "@/hooks/useFetch";
 const UserWorkoutDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const user = useAuthStore((state) => state.user);
+
 
   const { data, loading } = useFetch<WorkoutDetailResponse>(
     () => userServices.getWorkoutDetail(id!).then((res) => res.data)
@@ -20,11 +18,11 @@ const UserWorkoutDetail = () => {
 
   if (loading) {
     return (
-      <SidebarLayout role={user?.role || "user"}>
+     
         <div className="flex items-center justify-center h-full">
           <div className="text-white text-xl">Loading...</div>
         </div>
-      </SidebarLayout>
+     
     );
   }
 
@@ -44,7 +42,7 @@ const UserWorkoutDetail = () => {
   const benefits      = workout.benefits      ?? [];
 
   return (
-    <SidebarLayout role={user?.role || "user"}>
+   
       <div className="text-white max-w-5xl mx-auto pb-12">
 
         {/* ── BACK ── */}
@@ -234,7 +232,7 @@ const UserWorkoutDetail = () => {
         )}
 
       </div>
-    </SidebarLayout>
+   
   );
 };
 

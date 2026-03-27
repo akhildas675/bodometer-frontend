@@ -11,10 +11,13 @@ import AdminSubscriptionListPage from "@/pages/admin/admin.subscription-list.pag
 import AdminSubscriptionFormPage from "@/pages/admin/admin.subscription-form.page";
 import AdminWorkoutListPage from "@/pages/admin/admin.workout-list.page";
 import AdminWorkoutFormPage from "@/pages/admin/admin.workout-form.page";
+import MainLayouts from "@/components/layouts/MainLayouts";
 
 
 export const adminRoutes = (
   <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
+    <Route element={<MainLayouts/>}>
+
     <Route path={ADMIN_UI_ROUTES.DASHBOARD} element={<AdminDashboardPage />} />
     <Route path={ADMIN_UI_ROUTES.USERS} element={<AdminUsersPage />} />
     <Route path={ADMIN_UI_ROUTES.TRAINERS} element={<AdminTrainersPage />} />
@@ -26,5 +29,6 @@ export const adminRoutes = (
     <Route path={ADMIN_UI_ROUTES.WORKOUTS} element={<AdminWorkoutListPage />} />
     <Route path={ADMIN_UI_ROUTES.WORKOUTS_CREATE} element={<AdminWorkoutFormPage/>} />
     <Route path={ADMIN_UI_ROUTES.WORKOUTS_EDIT} element={<AdminWorkoutFormPage/>} />
+    </Route>
   </Route>
 );

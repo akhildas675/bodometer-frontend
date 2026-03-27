@@ -1,5 +1,5 @@
 import { useAuthStore } from "@/stores/auth.store";
-import SidebarLayout from "@/components/ui/app.sidebar/sidebar.layout";
+
 import userServices from "@/services/user/user.services";
 import type {
   ProfileUpdatePayload,
@@ -218,31 +218,31 @@ const UserProfile = () => {
 
   if (loading) {
     return (
-      <SidebarLayout role="user">
+     
         <div className="min-h-screen bg-[#050017] text-white pt-24 pb-10 flex items-center justify-center">
           <p>Loading profile...</p>
         </div>
-      </SidebarLayout>
+     
     );
   }
 
   if (error) {
     return (
-      <SidebarLayout role="user">
+
         <div className="min-h-screen bg-[#050017] text-white pt-24 pb-10 flex items-center justify-center">
           <p className="text-red-500">Error loading profile</p>
         </div>
-      </SidebarLayout>
+     
     );
   }
 
   if (!profile || !user) {
     return (
-      <SidebarLayout role="user">
+      
         <div className="min-h-screen bg-[#050017] text-white pt-24 pb-10 flex items-center justify-center">
           <p>No profile data found</p>
         </div>
-      </SidebarLayout>
+     
     );
   }
 
@@ -261,7 +261,7 @@ const UserProfile = () => {
     "https://images.unsplash.com/photo-1599058917212-d750089bc07a";
 
   return (
-    <SidebarLayout role="user">
+   
       <div className="min-h-screen bg-[#050017] text-white pt-24 pb-10">
         <div className="flex flex-1 max-w-7xl mx-auto">
           <main className="flex-1 px-10">
@@ -449,7 +449,7 @@ const UserProfile = () => {
           </main>
         </div>
       </div>
-    </SidebarLayout>
+   
   );
 };
 

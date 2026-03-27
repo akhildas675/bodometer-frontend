@@ -1,7 +1,7 @@
 import { CheckCircle, Zap, Crown, Star } from "lucide-react";
 import { toast } from "sonner";
 import { useState } from "react";
-import SidebarLayout from "@/components/ui/app.sidebar/sidebar.layout";
+
 import { useAuthStore } from "@/stores/auth.store";
 import { useFetch } from "@/hooks/useFetch";
 import userServices from "@/services/user/user.services";
@@ -54,16 +54,16 @@ const UserSubscription = () => {
 
   if (plansLoading || activeLoading) {
     return (
-      <SidebarLayout role={user?.role || "user"}>
+     
         <div className="flex items-center justify-center h-full">
           <div className="text-white text-xl">Loading...</div>
         </div>
-      </SidebarLayout>
+     
     );
   }
 
   return (
-    <SidebarLayout role={user?.role || "user"}>
+   
       <div className="text-white max-w-5xl mx-auto">
 
         {/* Active Subscription Banner */}
@@ -202,7 +202,7 @@ const UserSubscription = () => {
           </div>
         )}
       </div>
-    </SidebarLayout>
+   
   );
 };
 

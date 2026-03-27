@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import SidebarLayout from "../../ui/app.sidebar/sidebar.layout";
 import DataTable from "../../ui/table/data.table";
 import { useAuthStore } from "../../../stores/auth.store";
 import { AdminGetSubscriptionResponse } from "@/interface/subscription.interface";
@@ -99,7 +98,7 @@ const handleToggle = async (id: string) => {
   if (!user) return <div className="text-white">Loading...</div>;
 
   return (
-    <SidebarLayout role={user.role}>
+
       <div className="text-white">
         <div className="flex justify-between mb-6">
           <h1 className="text-2xl font-semibold">Subscription Management</h1>
@@ -116,7 +115,7 @@ const handleToggle = async (id: string) => {
           <DataTable columns={columns} data={subscriptions} actions={actions} />
         )}
       </div>
-    </SidebarLayout>
+   
   );
 };
 

@@ -2,8 +2,6 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
 import { ArrowLeft, Plus, X } from "lucide-react";
-import SidebarLayout from "@/components/ui/app.sidebar/sidebar.layout";
-import { useAuthStore } from "@/stores/auth.store";
 import { PLAN_DURATION_DAYS, PLAN_FEATURES, PLAN_LIVE_SESSIONS, PLAN_OPTIONS, PlanType } from "@/constants/subscription.constant";
 import { SubscriptionFormData } from "@/interface/subscription.interface";
 import { ADMIN_UI_ROUTES } from "@/constants/constant-routes/ui-routes/admin.ui-constant-routes";
@@ -22,7 +20,6 @@ const initialForm: SubscriptionFormData = {
 const AdminSubscriptionForm = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const user = useAuthStore((state) => state.user);
   const isEdit = Boolean(id);
 
   const [form, setForm] = useState<SubscriptionFormData>(initialForm);
@@ -143,16 +140,16 @@ const AdminSubscriptionForm = () => {
 
   if (fetchLoading) {
     return (
-      <SidebarLayout role={user?.role || "admin"}>
+      
         <div className="flex items-center justify-center h-screen">
           <div className="text-white text-xl">Loading...</div>
         </div>
-      </SidebarLayout>
+     
     );
   }
 
   return (
-    <SidebarLayout role={user?.role || "admin"}>
+    
       <div className="max-w-3xl mx-auto py-8 px-4">
         <button
           onClick={() => navigate(ADMIN_UI_ROUTES.SUBSCRIPTIONS)}
@@ -316,7 +313,7 @@ const AdminSubscriptionForm = () => {
           </div>
         </div>
       </div>
-    </SidebarLayout>
+   
   );
 };
 

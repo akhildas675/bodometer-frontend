@@ -1,5 +1,5 @@
 import { useAuthStore } from "@/stores/auth.store";
-import SidebarLayout from "@/components/ui/app.sidebar/sidebar.layout";
+
 
 const AdminDashboard = () => {
   const role = useAuthStore((state) => state.user?.role);
@@ -10,7 +10,7 @@ const AdminDashboard = () => {
 
 
   return (
-    <SidebarLayout role={role}>
+  
       <div className="text-white">
         {/* HEADER */}
         <div className="flex justify-between items-center mb-8">
@@ -21,7 +21,7 @@ const AdminDashboard = () => {
         
           
       </div>
-    </SidebarLayout>
+   
   );
 };
 

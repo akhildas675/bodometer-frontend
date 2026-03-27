@@ -11,7 +11,7 @@ import adminServices from "@/services/admin/admin.services";
 import { useAuthStore } from "@/stores/auth.store";
 import { useTableFetch } from "@/hooks/useTableFetch";
 
-import SidebarLayout from "@/components/ui/app.sidebar/sidebar.layout";
+
 import DataTable from "@/components/ui/table/data.table";
 
 import SearchBar from "@/components/controls/search/search";
@@ -87,14 +87,14 @@ const AdminTrainerOnboardingManagement = () => {
 
   if (!user) {
     return (
-      <SidebarLayout role="admin">
+     
         <div className="text-white p-6">Loading...</div>
-      </SidebarLayout>
+     
     );
   }
 
   return (
-    <SidebarLayout role={user.role}>
+ 
       <div className="max-w-7xl mx-auto py-8 px-8">
         {/* Header */}
         <div className="mb-8">
@@ -171,7 +171,7 @@ const AdminTrainerOnboardingManagement = () => {
           </>
         )}
       </div>
-    </SidebarLayout>
+   
   );
 };
 

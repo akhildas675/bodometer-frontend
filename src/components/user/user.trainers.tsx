@@ -1,7 +1,5 @@
 import { useState, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import SidebarLayout from "@/components/ui/app.sidebar/sidebar.layout";
-import { useAuthStore } from "@/stores/auth.store";
 import { useTableFetch } from "@/hooks/useTableFetch";
 import userServices from "@/services/user/user.services";
 import type { PaginationMeta } from "@/interface/admin.interface";
@@ -16,7 +14,7 @@ const TRAINER_SORT_OPTIONS = [
 ];
 
 const UserTrainers = () => {
-  const user = useAuthStore((state) => state.user);
+
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(9);
@@ -66,7 +64,7 @@ const UserTrainers = () => {
   console.log("trainers page ",trainers)
 
   return (
-    <SidebarLayout role={user?.role || "user"}>
+   
       <div className="text-white min-h-screen">
         {/* Header Row */}
         <div className="flex items-center justify-between mb-8 gap-4 flex-wrap">
@@ -226,7 +224,7 @@ const UserTrainers = () => {
           </div>
         )}
       </div>
-    </SidebarLayout>
+   
   );
 };
 

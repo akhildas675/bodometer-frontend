@@ -10,6 +10,7 @@ import UserSubscriptionSuccessPage from "@/pages/user/user.subscription-success.
 import UserTrainersPage from "@/pages/user/user-trainers.page";
 import UserChangePasswordPage from "@/pages/user/user.change-password.page";
 import UserTrainerDetailPage from "@/pages/user/user.trainer-detail.page";
+import MainLayoutsNoSidebar from "@/components/layouts/user.layouts.ts/MainLayoutsNoSidebar";
 
 export const userRoutes = (
   <Route element={<ProtectedRoute allowedRoles={["user"]} />}>
@@ -27,23 +28,26 @@ export const userRoutes = (
         path={USER_UI_ROUTES.USER_SUBSCRIPTION}
         element={<UserSubscriptionPage />}
       />
+
+      <Route
+        path={USER_UI_ROUTES.USER_CHANGE_PASSWORD}
+        element={<UserChangePasswordPage />}
+      />
+      <Route
+        path={USER_UI_ROUTES.USER_TRAINERS}
+        element={<UserTrainersPage />}
+      />
+      <Route
+        path={USER_UI_ROUTES.USER_TRAINER_DETAILS}
+        element={<UserTrainerDetailPage />}
+      />
+    </Route>
+
+    <Route element={<MainLayoutsNoSidebar />}>
       <Route
         path={USER_UI_ROUTES.USER_SUBSCRIPTION_SUCCESS}
         element={<UserSubscriptionSuccessPage />}
       />
-      <Route
-        path={USER_UI_ROUTES.USER_CHANGE_PASSWORD}
-        element={<UserChangePasswordPage/>}
-      />
-      <Route
-        path={USER_UI_ROUTES.USER_TRAINERS}
-        element={<UserTrainersPage/>}
-      />
-      <Route
-        path={USER_UI_ROUTES.USER_TRAINER_DETAILS}
-        element={<UserTrainerDetailPage/>}
-      />
-
     </Route>
   </Route>
 );

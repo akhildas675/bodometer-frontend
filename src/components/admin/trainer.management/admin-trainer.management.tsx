@@ -8,7 +8,6 @@ import type {
 
 import adminServices from "@/services/admin/admin.services";
 
-import SidebarLayout from "@/components/ui/app.sidebar/sidebar.layout";
 import DataTable from "@/components/ui/table/data.table";
 import ConfirmationModal from "@/components/ui/confirm.dialog";
 
@@ -22,7 +21,7 @@ import { trainerColumns } from "./admin-trainer.columns";
 import { useTrainerActions } from "./admin-trainer.actions";
 
 const AdminTrainerManagement = () => {
- const user = useAuthStore((state) => state.user);
+  const user = useAuthStore((state) => state.user);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortConfig, setSortConfig] = useState<SortConfig<keyof AdminGetTrainersResponse>>({
     field: "" as keyof AdminGetTrainersResponse,
@@ -46,8 +45,6 @@ const AdminTrainerManagement = () => {
       ),
     false
   );
-  
-  console.log("response data", response.data);
 
   const [modalConfig, setModalConfig] = useState<{
     isOpen: boolean;
@@ -97,7 +94,7 @@ const AdminTrainerManagement = () => {
   }
 
   return (
-    <SidebarLayout role={user.role}>
+    <>
       <div className="text-white">
         <h1 className="text-2xl font-semibold mb-6">Trainer Management</h1>
 
@@ -155,7 +152,7 @@ const AdminTrainerManagement = () => {
         onClose={() => setModalConfig((prev) => ({ ...prev, isOpen: false }))}
         onConfirm={modalConfig.onConfirm}
       />
-    </SidebarLayout>
+    </>
   );
 };
 

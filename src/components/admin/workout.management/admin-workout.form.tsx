@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, Plus, X, Video, Image } from "lucide-react";
 import { toast } from "sonner";
-import SidebarLayout from "@/components/ui/app.sidebar/sidebar.layout";
+
 import adminService from "@/services/admin/admin.services";
 import {
   TARGET_MUSCLES,
@@ -177,16 +177,16 @@ const AdminWorkoutForm = () => {
 
   if (fetchLoading) {
     return (
-      <SidebarLayout role="admin">
+    
         <div className="flex items-center justify-center h-full">
           <div className="text-white text-xl">Loading...</div>
         </div>
-      </SidebarLayout>
+     
     );
   }
 
   return (
-    <SidebarLayout role="admin">
+   
       <div className="text-white max-w-4xl mx-auto">
         <button
           onClick={() => navigate("/admin/workouts")}
@@ -544,7 +544,7 @@ const AdminWorkoutForm = () => {
           </div>
         </div>
       </div>
-    </SidebarLayout>
+   
   );
 };
 

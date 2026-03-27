@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Lock } from "lucide-react";
 import { toast } from "sonner";
 import axios from "axios";
-import SidebarLayout from "@/components/ui/app.sidebar/sidebar.layout";
+
 import InputWithIcon from "@/components/ui/input.box";
 import PrimaryButton from "@/components/ui/primary.button";
 import { useAuthStore } from "@/stores/auth.store";
@@ -68,7 +68,7 @@ const UserChangePassword = () => {
   };
 
   return (
-    <SidebarLayout role={user?.role || "user"}>
+   
       <div className="text-white max-w-md mx-auto mt-10">
         <div className="bg-linear-to-br from-[#140b3a] to-[#0a0624] rounded-2xl p-8 border border-white/10">
           <h1 className="text-2xl font-semibold text-indigo-300 mb-2">
@@ -116,7 +116,7 @@ const UserChangePassword = () => {
           </button>
         </div>
       </div>
-    </SidebarLayout>
+   
   );
 };
 
