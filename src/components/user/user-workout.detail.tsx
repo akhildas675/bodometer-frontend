@@ -4,26 +4,45 @@ import { toast } from "sonner";
 import userServices from "@/services/user/user.services";
 import type { WorkoutDetailResponse } from "@/interface/user.interface";
 import { useFetch } from "@/hooks/useFetch";
+import LazyImage from "@/components/ui/lazy.image";
+import { useCallback } from "react";
+
+const SkeletonLoader = () => (
+  <div className="text-white max-w-5xl mx-auto pb-12 animate-pulse">
+    <div className="h-6 w-32 bg-white/10 rounded mb-6" />
+    <div className="h-80 w-full bg-white/10 rounded-2xl mb-6 relative">
+      <div className="absolute bottom-0 left-0 right-0 p-8 flex items-end gap-5">
+        <div className="w-20 h-20 bg-white/20 rounded-xl shrink-0" />
+        <div className="space-y-3 flex-1">
+          <div className="h-10 w-2/3 bg-white/20 rounded" />
+          <div className="h-5 w-24 bg-white/20 rounded-full" />
+        </div>
+      </div>
+    </div>
+    <div className="grid grid-cols-3 gap-6">
+      <div className="col-span-2 space-y-6">
+        <div className="bg-indigo-900/40 border border-white/5 rounded-2xl p-6 h-32" />
+        <div className="bg-indigo-900/40 border border-white/5 rounded-2xl p-6 h-64" />
+      </div>
+      <div className="space-y-5">
+        <div className="bg-indigo-900/40 border border-white/5 rounded-2xl p-5 h-24" />
+        <div className="bg-indigo-900/40 border border-white/5 rounded-2xl p-5 h-24" />
+        <div className="bg-indigo-900/40 border border-white/5 rounded-2xl p-5 h-40" />
+      </div>
+    </div>
+  </div>
+);
 
 const UserWorkoutDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
 
-  const { data, loading } = useFetch<WorkoutDetailResponse>(
-    () => userServices.getWorkoutDetail(id!).then((res) => res.data)
-  );
-
-  console.log("data.... from workout details",data)
+  const fetchFn = useCallback(() => userServices.getWorkoutDetail(id!).then((res) => res.data), [id]);
+  const { data, loading } = useFetch<WorkoutDetailResponse>(fetchFn);
 
   if (loading) {
-    return (
-     
-        <div className="flex items-center justify-center h-full">
-          <div className="text-white text-xl">Loading...</div>
-        </div>
-     
-    );
+    return <SkeletonLoader />;
   }
 
   if (!data) {
@@ -57,9 +76,9 @@ const UserWorkoutDetail = () => {
         {/* ── HERO ── */}
         <div className="relative rounded-2xl overflow-hidden h-80 w-full mb-6">
           {coverPhoto ? (
-            <img src={coverPhoto} alt={workout.workoutName} className="w-full h-full object-cover" />
+            <LazyImage src={coverPhoto} alt={workout.workoutName} className="w-full h-full object-cover" containerClassName="w-full h-full" />
           ) : workoutImage ? (
-            <img src={workoutImage} alt={workout.workoutName} className="w-full h-full object-cover" />
+            <LazyImage src={workoutImage} alt={workout.workoutName} className="w-full h-full object-cover" containerClassName="w-full h-full" />
           ) : (
             <div className="w-full h-full bg-indigo-900/60 flex items-center justify-center">
               <Dumbbell size={64} className="text-purple-400 opacity-30" />
@@ -68,10 +87,11 @@ const UserWorkoutDetail = () => {
           <div className="absolute inset-0 bg-linear-to-t from-black/90 via-black/40 to-transparent" />
           <div className="absolute bottom-0 left-0 right-0 p-8 flex items-end gap-5">
             {workoutImage && (
-              <img
+              <LazyImage
                 src={workoutImage}
                 alt={workout.workoutName}
                 className="w-20 h-20 rounded-xl object-cover border-2 border-white/20 shrink-0"
+                containerClassName="w-20 h-20 rounded-xl shrink-0"
               />
             )}
             <div>
@@ -125,10 +145,11 @@ const UserWorkoutDetail = () => {
                       key={trainer._id}
                       className="flex items-center gap-3 bg-indigo-800/40 border border-white/5 rounded-xl p-3 hover:border-purple-500/30 transition cursor-pointer"
                     >
-                      <img
+                      <LazyImage
                         src={trainer.profilePic || "https://via.placeholder.com/48"}
                         alt={trainer.name}
                         className="w-11 h-11 rounded-full object-cover border-2 border-purple-500/40 shrink-0"
+                        containerClassName="w-11 h-11 shrink-0 rounded-full overflow-hidden"
                       />
                       <div className="min-w-0">
                         <p className="font-medium text-sm text-white truncate">{trainer.name}</p>
@@ -214,12 +235,13 @@ const UserWorkoutDetail = () => {
                   className="bg-indigo-900/40 rounded-xl overflow-hidden border border-white/5 hover:border-purple-500/30 transition cursor-pointer group"
                 >
                   <div className="relative h-36 overflow-hidden">
-                    <img
+                    <LazyImage
                       src={w.workoutImage}
                       alt={w.workoutName}
                       className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
+                      containerClassName="w-full h-full"
                     />
-                    <div className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent" />
+                    <div className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent pointer-events-none" />
                   </div>
                   <div className="p-4">
                     <h3 className="font-semibold text-sm truncate text-white">{w.workoutName}</h3>

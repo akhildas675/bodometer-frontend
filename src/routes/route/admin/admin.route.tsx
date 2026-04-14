@@ -11,6 +11,8 @@ import AdminSubscriptionListPage from "@/pages/admin/admin.subscription-list.pag
 import AdminSubscriptionFormPage from "@/pages/admin/admin.subscription-form.page";
 import AdminWorkoutListPage from "@/pages/admin/admin.workout-list.page";
 import AdminWorkoutFormPage from "@/pages/admin/admin.workout-form.page";
+import AdminOnboardingQuestionsPage from "@/pages/admin/admin-onboarding-questions.page";
+import AdminOnboardingQuestionFormPage from "@/pages/admin/admin-onboarding-question.form.page";
 import MainLayouts from "@/components/layouts/MainLayouts";
 
 
@@ -29,6 +31,9 @@ export const adminRoutes = (
     <Route path={ADMIN_UI_ROUTES.WORKOUTS} element={<AdminWorkoutListPage />} />
     <Route path={ADMIN_UI_ROUTES.WORKOUTS_CREATE} element={<AdminWorkoutFormPage/>} />
     <Route path={ADMIN_UI_ROUTES.WORKOUTS_EDIT} element={<AdminWorkoutFormPage/>} />
+    <Route path={ADMIN_UI_ROUTES.ONBOARDING_QUESTIONS} element={<AdminOnboardingQuestionsPage />} />
+    <Route path={ADMIN_UI_ROUTES.ONBOARDING_QUESTIONS_CREATE} element={<AdminOnboardingQuestionFormPage />} />
+    <Route path={ADMIN_UI_ROUTES.ONBOARDING_QUESTIONS_EDIT_PATH} element={<AdminOnboardingQuestionFormPage />} />
     </Route>
   </Route>
 );

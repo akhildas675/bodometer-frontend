@@ -11,5 +11,9 @@ export const ADMIN_UI_ROUTES = {
   SUBSCRIPTIONS: "/admin/subscriptions",
   SUBSCRIPTIONS_CREATE: "/admin/subscriptions/create",                    
   SUBSCRIPTIONS_EDIT: (id: string) => `/admin/subscriptions/edit/${id}`,  
-  SUBSCRIPTIONS_EDIT_PATH: "/admin/subscriptions/edit/:id",              
+  SUBSCRIPTIONS_EDIT_PATH: "/admin/subscriptions/edit/:id",
+  ONBOARDING_QUESTIONS: "/admin/onboarding",
+  ONBOARDING_QUESTIONS_CREATE: "/admin/onboarding/create",
+  ONBOARDING_QUESTIONS_EDIT: (id: string) => `/admin/onboarding/edit/${id}`,
+  ONBOARDING_QUESTIONS_EDIT_PATH: "/admin/onboarding/edit/:id",
 } as const;

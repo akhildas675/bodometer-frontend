@@ -24,13 +24,17 @@ const TrainerStatus = () => {
       }
       toast.dismiss(loadingToast);
       toast.success("Logged out successfully");
-      useAuthStore.getState().clearAuth();
-      navigate("/login", { replace: true });
+      setTimeout(() => {
+        useAuthStore.getState().clearAuth();
+        navigate("/login", { replace: true });
+      }, 3000);
     } catch (error) {
       console.error("Logout error:", error);
       toast.error("Logout failed");
-      useAuthStore.getState().clearAuth();
-      navigate("/login", { replace: true });
+      setTimeout(() => {
+        useAuthStore.getState().clearAuth();
+        navigate("/login", { replace: true });
+      }, 3000);
     } finally {
       setIsLoggingOut(false);
     }
@@ -61,11 +65,9 @@ useEffect(() => {
     });
     setTimeout(async () => {
       try { await authInitService.logout(); } catch (e) { console.error(e); }
-      finally {
-        useAuthStore.getState().clearAuth();
-        navigate("/login", { replace: true });
-      }
-    }, 2000);
+      useAuthStore.getState().clearAuth();
+      navigate("/login", { replace: true });
+    }, 4000);
   }
 }, [navigate, trainerProfileStatus]);
 

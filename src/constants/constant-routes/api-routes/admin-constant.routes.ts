@@ -22,12 +22,18 @@ export const ADMIN_API_ROUTES = {
   APPROVE_TRAINER: (profileId: string) => `/trainers/${profileId}/approve`,
   REJECT_TRAINER: (profileId: string) => `/trainers/${profileId}/reject`,
 
-  //subscription
-
+  // Subscription
   ADD_SUBSCRIPTION: "/add-subscription",
   GET_ALL_SUBSCRIPTIONS: "/subscriptions",
   GET_SUBSCRIPTION_BY_ID: (id: string) => `/subscriptions/${id}`,
   UPDATE_SUBSCRIPTION: (id: string) => `/subscriptions/${id}`,
   DELETE_SUBSCRIPTION: (id: string) => `/subscriptions/${id}`,
   TOGGLE_SUBSCRIPTION_STATUS: (id: string) => `/subscriptions/${id}/toggle`,
+
+  // Onboarding
+  GET_ONBOARDING_QUESTIONS: "/onboarding/questions",
+  CREATE_ONBOARDING_QUESTION: "/onboarding/questions",
+  UPDATE_ONBOARDING_QUESTION: (id: string) => `/onboarding/questions/${id}`,
+  DELETE_ONBOARDING_QUESTION: (id: string) => `/onboarding/questions/${id}`,
+  GET_ONBOARDING_SECTIONS: "/onboarding-sections",
 } as const;

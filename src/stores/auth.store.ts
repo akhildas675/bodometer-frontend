@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import type { Role } from "@/constants/role";
 import type { VerificationStatus } from "@/constants/verification.status";
+import { SubscriptionStatus } from "@/constants/subscription.constant";
 
 interface AuthUser {
   id: string;
@@ -9,6 +10,10 @@ interface AuthUser {
   name?: string;
   verificationStatus?: VerificationStatus | null;
   profileExists?: boolean | null;
+  subscription: {
+   status: SubscriptionStatus;
+   endDate: string | null;
+ };
 }
 
 interface AuthState {

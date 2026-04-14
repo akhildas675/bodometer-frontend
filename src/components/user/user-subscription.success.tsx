@@ -17,10 +17,10 @@ const UserSubscriptionSuccess = () => {
           Your subscription is now active. Start your fitness journey!
         </p>
         <button
-          onClick={() => navigate("/subscriptions")}
+          onClick={() => navigate("/intro")}
           className="px-6 py-3 bg-purple-600 hover:bg-purple-700 rounded-lg font-semibold transition"
         >
-          View My Plan
+          Start Onboarding
         </button>
       </div>
    

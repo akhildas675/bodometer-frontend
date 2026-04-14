@@ -101,3 +101,32 @@ export interface TrainerDetail {
   experienceInYears: number;
   specializations: { _id: string; workoutName: string }[];
 }
+
+
+//fitness
+
+export interface WorkoutTimeData {
+  workoutTimes: string[];
+}
+
+export interface FitnessGoalData {
+  fitnessGoals: string[];
+}
+
+export interface OnboardingWorkouts{
+  id:string;
+  workoutName:string;
+}
+
+export interface OnboardingOptionsResponse {
+  fitnessGoals: string[];
+  fitnessLevels: string[];
+  preferredWorkoutTimes: string[];
+  experienceDurations: string[];
+  strengthLevels: string[];
+  trainingTypes: string[];
+  consistencyLevels: string[];
+  weeklyTrainingDays: string[];
+  avgSessionDurations: string[];
+  goalIntensities: string[];
+}

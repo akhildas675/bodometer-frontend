@@ -7,6 +7,8 @@ import type { ApiResponse } from "@/interface/api-response.interface";
 
 import type {
   ActiveSubscription,
+  FitnessGoalData,
+  OnboardingWorkouts,
   ProfileUpdatePayload,
   SubscriptionPlan,
   TrainerDetail,
@@ -15,6 +17,8 @@ import type {
   UserProfileInterface,
   UserWorkout,
   WorkoutDetailResponse,
+  WorkoutTimeData,
+  OnboardingOptionsResponse
 } from "@/interface/user.interface";
 
 const userServices = {
@@ -110,11 +114,42 @@ const userServices = {
     return response.data;
   },
 
-  async getTrainerById(id:string):Promise<ApiResponse<TrainerDetail>>{
+  async getTrainerById(id: string): Promise<ApiResponse<TrainerDetail>> {
     const response = await userApi.get<ApiResponse<TrainerDetail>>(USER_API_ROUTES.GET_TRAINER_BY_ID(id),);
     return response.data
-  }
+  },
 
+  async getWorkoutTime(): Promise<ApiResponse<WorkoutTimeData>> {
+    const response = await userApi.get<ApiResponse<WorkoutTimeData>>(
+      USER_API_ROUTES.GET_WORKOUT_TIME
+    );
+    return response.data;
+  },
+
+    async getFitnessGoals(): Promise<ApiResponse<FitnessGoalData>> {
+    const response = await userApi.get<ApiResponse<FitnessGoalData>>(
+      USER_API_ROUTES.GET_FITNESS_GOALS
+    );
+    return response.data;
+  },
+
+  async fetchWorkouts():Promise<ApiResponse<OnboardingWorkouts[]>>{
+    const response = await userApi.get<ApiResponse<OnboardingWorkouts[]>>(USER_API_ROUTES.GET_ONBOARDING_WORKOUTS);
+    return response.data
+  },
+
+  async getOnboardingOptions(): Promise<ApiResponse<OnboardingOptionsResponse>> {
+    const response = await userApi.get<ApiResponse<OnboardingOptionsResponse>>(USER_API_ROUTES.GET_ONBOARDING_OPTIONS);
+    return response.data;
+  },
+
+  async submitPremiumOnboarding(data: Record<string, unknown>): Promise<ApiResponse<null>> {
+    const response = await userApi.post<ApiResponse<null>>(
+      USER_API_ROUTES.SUBMIT_ONBOARDING,
+      data
+    );
+    return response.data;
+  }
 };
 
 export default userServices;

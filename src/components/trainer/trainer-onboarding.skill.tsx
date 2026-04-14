@@ -46,15 +46,16 @@ const TrainerOnboardingSkills = () => {
       toast.dismiss(loadingToast);
       toast.success("Logged out successfully!");
       setTimeout(() => {
+        useAuthStore.getState().clearAuth();
         navigate("/login", { replace: true });
-      }, 500);
+      }, 3000);
     } catch (error) {
       console.error("Logout error:", error);
-      useAuthStore.getState().clearAuth();
       toast.error("Logout failed, but you've been signed out locally");
       setTimeout(() => {
+        useAuthStore.getState().clearAuth();
         navigate("/login", { replace: true });
-      }, 500);
+      }, 3000);
     } finally {
       setIsLoggingOut(false);
     }

@@ -9,7 +9,13 @@ export const USER_API_ROUTES = {
     GET_MY_SUBSCRIPTION: "/my-subscription",
     CREATE_CHECKOUT_SESSION: "/subscriptions/checkout",
     GET_TRAINERS: "/trainers",
-    GET_TRAINER_BY_ID: (id: string) => `/trainers/${id}`
+    GET_TRAINER_BY_ID: (id: string) => `/trainers/${id}`,
 
+    //Fitness
+    GET_WORKOUT_TIME:"/prefer-time",
+    GET_FITNESS_GOALS:"/fitness-goals",
+    GET_ONBOARDING_WORKOUTS:"/onboarding-workouts",
+    GET_ONBOARDING_OPTIONS:"/onboarding-options",
+    SUBMIT_ONBOARDING: "/onboarding-submit",
 
 } as const

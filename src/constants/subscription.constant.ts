@@ -64,3 +64,13 @@ export const PLAN_FEATURES: Record<PlanType, string[]> = {
   ],
 };
 
+
+
+export const SUBSCRIPTION_STATUS = {
+  ACTIVE: "active",
+  EXPIRED: "expired",
+  NONE: "none",
+} as const;
+
+export type SubscriptionStatus =
+  typeof SUBSCRIPTION_STATUS[keyof typeof SUBSCRIPTION_STATUS];

@@ -31,16 +31,14 @@ class AuthInitService {
 
 
   async logout(): Promise<void> {
-    const { clearAuth } = useAuthStore.getState();
-
     try {
-
       await authInstance.post("/logout");
     } catch (error) {
       console.error("Logout error:", error);
-    } finally {
-      clearAuth();
     }
+    // clearAuth() is intentionally NOT called here.
+    // The caller is responsible for clearing auth AFTER navigation
+    // so the toast can display without the route guard redirecting immediately.
   }
 }
 

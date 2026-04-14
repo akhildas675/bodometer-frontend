@@ -14,6 +14,7 @@ import type { ApiResponse } from "@/interface/api-response.interface";
 import { ADMIN_API_ROUTES } from "@/constants/constant-routes/api-routes/admin-constant.routes";
 import { AdminGetSubscriptionResponse, SubscriptionFormData } from "@/interface/subscription.interface";
 import { Workout } from "@/interface/workout.interface";
+import { OnboardingQuestion, OnboardingQuestionFormData } from "@/interface/onboarding.interface";
 
 class AdminService {
   // User Management
@@ -274,6 +275,48 @@ async getWorkoutById(id: string): Promise<ApiResponse<Workout>> {
   ): Promise<ApiResponse<AdminGetSubscriptionResponse>> {
     const response = await adminApi.patch<ApiResponse<AdminGetSubscriptionResponse>>(
       ADMIN_API_ROUTES.TOGGLE_SUBSCRIPTION_STATUS(id)
+    );
+    return response.data;
+  }
+
+  // Onboarding Questions
+  async getOnboardingQuestions(): Promise<ApiResponse<OnboardingQuestion[]>> {
+    const response = await adminApi.get<ApiResponse<OnboardingQuestion[]>>(
+      ADMIN_API_ROUTES.GET_ONBOARDING_QUESTIONS
+    );
+    return response.data;
+  }
+
+  async createOnboardingQuestion(
+    data: OnboardingQuestionFormData
+  ): Promise<ApiResponse<OnboardingQuestion>> {
+    const response = await adminApi.post<ApiResponse<OnboardingQuestion>>(
+      ADMIN_API_ROUTES.CREATE_ONBOARDING_QUESTION,
+      data
+    );
+    return response.data;
+  }
+
+  async updateOnboardingQuestion(
+    id: string,
+    data: Partial<OnboardingQuestionFormData>
+  ): Promise<ApiResponse<OnboardingQuestion>> {
+    const response = await adminApi.put<ApiResponse<OnboardingQuestion>>(
+      ADMIN_API_ROUTES.UPDATE_ONBOARDING_QUESTION(id),
+      data
+    );
+    return response.data;
+  }
+
+  async deleteOnboardingQuestion(id: string): Promise<ApiResponse<null>> {
+    const response = await adminApi.delete<ApiResponse<null>>(
+      ADMIN_API_ROUTES.DELETE_ONBOARDING_QUESTION(id)
+    );
+    return response.data;
+  }
+  async getOnboardingSections(): Promise<ApiResponse<{ key: string; title: string }[]>> {
+    const response = await adminApi.get<ApiResponse<{ key: string; title: string }[]>>(
+      ADMIN_API_ROUTES.GET_ONBOARDING_SECTIONS
     );
     return response.data;
   }

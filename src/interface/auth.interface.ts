@@ -1,4 +1,5 @@
 import type { Role } from "@/constants/role";
+import { SubscriptionStatus } from "@/constants/subscription.constant";
 import type { VerificationStatus } from "@/constants/verification.status";
 
 
@@ -10,6 +11,10 @@ export interface User {
   email: string;
   role:Role
   profilePic: string | null;
+  subscription: {
+    status: SubscriptionStatus;
+    endDate: string | null;
+  };
 }
 
 export interface RegisterPayload{

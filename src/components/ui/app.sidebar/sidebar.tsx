@@ -21,6 +21,7 @@ import {
   ChevronRight,
   ChevronLeft,
   SubscriptIcon,
+  ClipboardList,
 } from "lucide-react";
 
 type Props = {
@@ -35,6 +36,7 @@ const iconMap: Record<string, React.ReactNode> = {
   "/admin/trainers": <UserCheck size={20} />,
   "/admin/workouts": <Dumbbell size={20} />,
   "/admin/subscriptions": <SubscriptIcon size={20} />,
+  "/admin/onboarding": <ClipboardList size={20}/>,
   
   // Trainer
   "/trainer": <LayoutDashboard size={20} />,
@@ -71,15 +73,16 @@ const Sidebar = ({ role }: Props) => {
       toast.dismiss(loadingToast);
       toast.success("Logged out successfully!");
       setTimeout(() => {
+        useAuthStore.getState().clearAuth();
         navigator("/login", { replace: true });
-      }, 500);
+      }, 3000);
     } catch (error) {
       console.error("Logout error:", error);
-      useAuthStore.getState().clearAuth();
       toast.error("Logout failed, but you've been signed out locally");
       setTimeout(() => {
+        useAuthStore.getState().clearAuth();
         navigator("/login", { replace: true });
-      }, 500);
+      }, 3000);
     } finally {
       setIsLoggingOut(false);
     }
