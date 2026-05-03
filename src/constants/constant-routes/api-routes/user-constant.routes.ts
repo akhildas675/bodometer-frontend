@@ -16,6 +16,16 @@ export const USER_API_ROUTES = {
     GET_FITNESS_GOALS:"/fitness-goals",
     GET_ONBOARDING_WORKOUTS:"/onboarding-workouts",
     GET_ONBOARDING_OPTIONS:"/onboarding-options",
-    SUBMIT_ONBOARDING: "/onboarding-submit",
+    GET_ONBOARDING_QUESTIONS: "/onboarding-questions",
+    
+    
+    //onboarding Questions
+    
+    GET_USER_QUESTIONS:"/user-questions",
+
+    //submit 
+    SUBMIT_ONBOARDING: "/submit-onboarding",
+
+    GET_ONBOARDING_PROFILE:"/onboarding-profile"
 
 } as const

@@ -46,6 +46,7 @@ export interface OnboardingQuestion {
   config?: OnboardingQuestionConfig;
   validation?: OnboardingQuestionValidation;
   isActive: boolean;
+  createdAt?: string;
 }
 
-export type OnboardingQuestionFormData = Omit<OnboardingQuestion, "id">;
+export type OnboardingQuestionFormData = Omit<OnboardingQuestion, "id" | "createdAt">;

@@ -43,23 +43,4 @@ export interface PaginatedResponse<T> {
   data: T[];
   pagination: PaginationMeta;
 }
-
-export interface AddWorkoutForm {
-  workoutName: string;
-  workoutDescription: string;
-  workoutImage: File | null;
-}
-
-
-export interface AddWorkoutPayload {
-  workoutName: string;
-  workoutDescription: string;
-  workoutImage: File;
-}
-
-export interface UpdateWorkoutPayload {
-  workoutName: string;
-  workoutDescription: string;
-  workoutImage?: File;
-  oldImageUrl?: string;
-}
+

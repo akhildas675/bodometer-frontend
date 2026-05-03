@@ -49,7 +49,6 @@ const {
     false
   );
 
-  console.log("response data", response.data);
 
   const [modalConfig, setModalConfig] = useState<{
       isOpen: boolean;

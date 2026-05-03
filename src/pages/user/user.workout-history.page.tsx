@@ -1,5 +1,4 @@
 import UserWorkoutHistory from '@/components/user/user-workout.history';
-import React from 'react';
 
 const UserWorkoutHistoryPage = () => {
     return (

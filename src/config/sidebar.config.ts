@@ -12,9 +12,6 @@ export const sidebarConfig: Record<SidebarRole, SidebarItem[]> = {
     { label: "Users", path: "/admin/users" },
     { label: "Trainers", path: "/admin/trainers" },
     { label: "Trainer Appointment", path: "/admin/appointments" },
-    { label: "Manage Workouts", path: "/admin/workouts" },
-    { label: "Subscriptions", path: "/admin/subscriptions" },
-    { label: "Questions", path: "/admin/onboarding" },
   ],
 
   trainer: [
@@ -29,10 +26,11 @@ export const sidebarConfig: Record<SidebarRole, SidebarItem[]> = {
 
   user: [
     { label: "Dashboard", path: "/" },
-    { label: "Workout Plans", path: "/workouts" },
+
     { label: "Food Log", path: "/food-log" },
     { label: "Progress", path: "/progress" },
-    { label: "Subscriptions", path: "/subscriptions" },
+
     { label: "Profile", path: "/profile" },
+
   ],
 };

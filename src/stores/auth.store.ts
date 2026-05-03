@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import type { Role } from "@/constants/role";
 import type { VerificationStatus } from "@/constants/verification.status";
-import { SubscriptionStatus } from "@/constants/subscription.constant";
+
 
 interface AuthUser {
   id: string;
@@ -10,10 +10,8 @@ interface AuthUser {
   name?: string;
   verificationStatus?: VerificationStatus | null;
   profileExists?: boolean | null;
-  subscription: {
-   status: SubscriptionStatus;
-   endDate: string | null;
- };
+
+
 }
 
 interface AuthState {
@@ -38,18 +36,25 @@ export const useAuthStore = create<AuthState>((set) => ({
   isAuthenticated: false,
   isInitialized: false,
 
-  setAuth: ({ accessToken, user, trainerStatus }) =>
-    set({
-      accessToken,
-      user: {
-        ...user,
-        
-        verificationStatus: trainerStatus?.verificationStatus ?? user.verificationStatus ?? null,
-        profileExists: trainerStatus?.profileExists ?? null,
-      },
-      isAuthenticated: true,
-      isInitialized: true,
-    }),
+ setAuth: ({ accessToken, user, trainerStatus }) =>
+  set({
+    accessToken,
+    user: {
+      ...user,
+
+      verificationStatus:
+        trainerStatus?.verificationStatus ??
+        user.verificationStatus ??
+        null,
+
+      profileExists:
+        trainerStatus?.profileExists ?? null,
+    },
+    isAuthenticated: true,
+    isInitialized: true,
+  }),
+
+    
 
   clearAuth: () =>
     set({
@@ -65,4 +70,5 @@ export const useAuthStore = create<AuthState>((set) => ({
     set((state) => ({
       user: state.user ? { ...state.user, verificationStatus: status } : null,
     })),
+
 }));

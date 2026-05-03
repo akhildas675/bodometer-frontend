@@ -377,7 +377,7 @@ const UserHome = () => {
             ) : (
               <>
                 <button
-                  onClick={() => navigate("/subscription")}
+                  onClick={() => navigate("/subscriptions")}
                   className="bg-purple-500 text-white px-8 py-3 rounded-full text-lg font-semibold hover:bg-purple-600 transition"
                 >
                   Get Started

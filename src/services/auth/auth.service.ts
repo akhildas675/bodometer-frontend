@@ -49,7 +49,6 @@ class AuthService {
             useAuthStore.getState().setAuth({ accessToken, user });
         }
 
-        console.log("Login Response from backend", response.data)
 
         return response.data;
     }

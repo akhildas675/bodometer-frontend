@@ -13,7 +13,7 @@ const AdminOnboardingQuestionFormPage = () => {
 
   const [question, setQuestion] = useState<OnboardingQuestion | undefined>(undefined);
   const [sections, setSections] = useState<{ key: string; title: string }[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading]   = useState(true);
 
   useEffect(() => {
     fetchInitialData();
@@ -22,18 +22,19 @@ const AdminOnboardingQuestionFormPage = () => {
   const fetchInitialData = async () => {
     try {
       setLoading(true);
+
+      // Always fetch sections
       const sResponse = await adminServices.getOnboardingSections();
       if (sResponse.success) setSections(sResponse.data);
 
+      // When editing, fetch the single question by ID — not all questions
       if (id) {
-        const qResponse = await adminServices.getOnboardingQuestions();
+        const qResponse = await adminServices.getOnboardingQuestionById(id);
         if (qResponse.success) {
-          const found = qResponse.data.find(q => q.id === id);
-          if (found) setQuestion(found);
-          else {
-             toast.error("Question not found");
-             navigate(ADMIN_UI_ROUTES.ONBOARDING_QUESTIONS);
-          }
+          setQuestion(qResponse.data);
+        } else {
+          toast.error("Question not found");
+          navigate(ADMIN_UI_ROUTES.ONBOARDING_QUESTIONS);
         }
       }
     } catch {
@@ -44,7 +45,6 @@ const AdminOnboardingQuestionFormPage = () => {
   };
 
   const handleSubmit = async (data: OnboardingQuestionFormData) => {
-    console.log("Onboarding Question Form Data (Debug):", data);
     try {
       if (isCreating) {
         const response = await adminServices.createOnboardingQuestion(data);
@@ -59,7 +59,7 @@ const AdminOnboardingQuestionFormPage = () => {
           navigate(ADMIN_UI_ROUTES.ONBOARDING_QUESTIONS);
         }
       }
-    } catch  {
+    } catch {
       toast.error("Failed to save onboarding question");
     }
   };

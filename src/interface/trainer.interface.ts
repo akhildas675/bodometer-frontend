@@ -1,10 +1,6 @@
 import type { Gender } from "@/constants/identity";
 import type { VerificationStatus } from "@/constants/verification.status";
 
-export interface WorkoutList{
-    id:string,
-    workoutName:string
-}
 
 export interface TrainerProfileForm {
   experience: number | ""
@@ -51,3 +47,5 @@ export interface TrainerProfileStatus{
   verificationStatus: VerificationStatus;
   rejectionReason?: string | null
 }
+
+

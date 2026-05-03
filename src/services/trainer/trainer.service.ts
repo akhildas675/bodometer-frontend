@@ -10,7 +10,7 @@ import type {
   TrainerProfileInterface,
   TrainerProfileStatus,
   UploadProfilePictureResponse,
-  WorkoutList,
+
 } from "@/interface/trainer.interface";
 
 class TrainerService {
@@ -37,10 +37,6 @@ class TrainerService {
     return response.data;
   }
 
-  async workoutList(): Promise<ApiResponse<WorkoutList[]>> {
-    const response = await trainerApi.get<ApiResponse<WorkoutList[]>>(TRAINER_API_ROUTES.GET_WORKOUT_LIST);
-    return response.data;
-  }
 
 async submitTrainerProfile(
   formData: FormData

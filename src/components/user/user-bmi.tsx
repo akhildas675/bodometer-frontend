@@ -1,191 +1,369 @@
 import { useState } from "react";
+import { useFetch } from "@/hooks/useFetch";
+import userServices from "@/services/user/user.services";
+import { OnboardingQuestion } from "@/interface/user.interface";
+import { ApiResponse } from "@/interface/api-response.interface";
+import { BMI_PAGE_KEYS, ONBOARDING_KEYS } from "@/constants/schema-key.constant";
+
+import { useNavigate } from "react-router-dom";
+import { useOnboardingStore } from "@/stores/user-onboarding.store";
 
 type Unit = "metric" | "imperial";
 
-const UserBmi = () => {
-  const [unit, setUnit] = useState<Unit>("metric");
-  const [height, setHeight] = useState("");
-  const [heightFt, setHeightFt] = useState("");
-  const [heightIn, setHeightIn] = useState("");
-  const [weight, setWeight] = useState("");
-  const [bmi, setBmi] = useState<number | null>(null);
+interface StepperConfig {
+  min: number;
+  max: number;
+  step: number;
+  unit?: string;
+}
 
-  const calculateBMI = () => {
-    if (unit === "metric") {
-      const h = parseFloat(height) / 100;
-      const w = parseFloat(weight);
-      if (!h || !w) return;
-      setBmi(parseFloat((w / (h * h)).toFixed(1)));
-    } else {
-      const totalInches = parseFloat(heightFt) * 12 + parseFloat(heightIn || "0");
-      const w = parseFloat(weight);
-      if (!totalInches || !w) return;
-      setBmi(parseFloat(((w / (totalInches * totalInches)) * 703).toFixed(1)));
-    }
+interface StepperInputProps {
+  question: OnboardingQuestion | undefined;
+  value: number | null;
+  setter: (v: number) => void;
+  unitLabel?: string;
+  onReset: () => void;
+}
+
+const StepperInput = ({
+  question,
+  value,
+  setter,
+  unitLabel,
+  onReset,
+}: StepperInputProps) => {
+  if (!question?.config) return null;
+
+  const { min, max, step, unit }: StepperConfig = question.config;
+
+  const display = value ?? min;
+  const progress = ((display - min) / (max - min)) * 100;
+
+  const handleStep = (direction: "inc" | "dec") => {
+    const next =
+      direction === "inc"
+        ? Math.min(display + step, max)
+        : Math.max(display - step, min);
+    setter(next);
+    onReset();
   };
 
+  return (
+    <div className="space-y-3">
+      <div className="flex items-center justify-between">
+        <div className="flex items-baseline gap-1">
+          <span className="text-4xl font-bold text-white">{display}</span>
+          <span className="text-purple-400 text-sm">{unitLabel ?? unit}</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => handleStep("dec")}
+            className="w-9 h-9 rounded-full bg-white/10 border border-purple-500/50 text-white text-lg font-bold hover:bg-purple-700/50 transition flex items-center justify-center"
+          >
+            −
+          </button>
+          <button
+            type="button"
+            onClick={() => handleStep("inc")}
+            className="w-9 h-9 rounded-full bg-white/10 border border-purple-500/50 text-white text-lg font-bold hover:bg-purple-700/50 transition flex items-center justify-center"
+          >
+            +
+          </button>
+        </div>
+      </div>
+
+      <div className="relative">
+        <input
+          type="range"
+          min={min}
+          max={max}
+          step={step}
+          value={display}
+          onChange={(e) => {
+            setter(Number(e.target.value));
+            onReset();
+          }}
+          className="w-full h-2 rounded-full appearance-none cursor-pointer accent-purple-500"
+          style={{
+            background: `linear-gradient(to right, #9333ea ${progress}%, rgba(255,255,255,0.1) ${progress}%)`,
+          }}
+        />
+        <div className="flex justify-between text-xs text-white/30 mt-1">
+          <span>{min}</span>
+          <span>{max}</span>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const getBMICategory = (bmi: number) => {
+  if (bmi < 18.5) return { label: "Underweight", color: "text-blue-400" };
+  if (bmi < 25) return { label: "Normal Weight", color: "text-green-400" };
+  if (bmi < 30) return { label: "Overweight", color: "text-yellow-400" };
+  return { label: "Obese", color: "text-red-400" };
+};
+
+const getIndicatorPosition = (bmi: number): number => {
+  const min = 10;
+  const max = 40;
+  const clamped = Math.min(Math.max(bmi, min), max);
+  return ((clamped - min) / (max - min)) * 100;
+};
+
+const BMI_CATEGORIES = [
+  { range: "< 18.5", label: "Underweight", color: "bg-blue-400" },
+  { range: "18.5 – 24.9", label: "Normal", color: "bg-green-400" },
+  { range: "25 – 29.9", label: "Overweight", color: "bg-yellow-400" },
+  { range: "≥ 30", label: "Obese", color: "bg-red-400" },
+];
+
+const UserBmi = () => {
+
+  const medicalProfile = useOnboardingStore((state) => state.medicalProfile);
+
+
+const [height, setHeight] = useState<number | null>(
+  medicalProfile.heightCm > 0 ? medicalProfile.heightCm : null
+);
+const [weight, setWeight] = useState<number | null>(
+  medicalProfile.weightKg > 0 ? medicalProfile.weightKg : null
+);
+const [bmi, setBmi] = useState<number | null>(
+  medicalProfile.bmi > 0 ? medicalProfile.bmi : null
+);
+  const [unit, setUnit] = useState<Unit>("metric");
+  const [heightFt, setHeightFt] = useState("");
+  const [heightIn, setHeightIn] = useState("");
+
+
+  const navigate = useNavigate();
+
+  const setBodyMetrics = useOnboardingStore((state) => state.setBmi);
+  const markBmiDone = useOnboardingStore((state) => state.markBmiDone);
+
+  const { data: questionsRes, loading } = useFetch<ApiResponse<OnboardingQuestion[]>>(
+    () => userServices.userOnboardingQuestions({ keys: BMI_PAGE_KEYS }),
+    true
+  );
+
+  const questions = questionsRes?.success ? questionsRes.data : [];
+  const heightQ = questions.find((q) => q.key === ONBOARDING_KEYS.HEIGHT_CM);
+  const weightQ = questions.find((q) => q.key === ONBOARDING_KEYS.WEIGHT_KG);
+
+  const resetBmi = () => setBmi(null);
+
   const reset = () => {
-    setHeight("");
+    setHeight(null);
     setHeightFt("");
     setHeightIn("");
-    setWeight("");
+    setWeight(null);
     setBmi(null);
   };
 
-  const getBMICategory = (bmi: number) => {
-    if (bmi < 18.5) return { label: "Underweight", color: "text-blue-400", bg: "bg-blue-400" };
-    if (bmi < 25) return { label: "Normal Weight", color: "text-green-400", bg: "bg-green-400" };
-    if (bmi < 30) return { label: "Overweight", color: "text-yellow-400", bg: "bg-yellow-400" };
-    return { label: "Obese", color: "text-red-400", bg: "bg-red-400" };
+
+
+  const canGoNext =
+    medicalProfile.bmi > 0 &&
+    medicalProfile.heightCm > 0 &&
+    medicalProfile.weightKg > 0;
+
+  const handleNext = () => {
+    if (!canGoNext) return;
+    navigate("/select-workouts");
   };
 
-  const getIndicatorPosition = (bmi: number) => {
-    // Map BMI 10-40 to 0-100%
-    const min = 10;
-    const max = 40;
-    const clamped = Math.min(Math.max(bmi, min), max);
-    return ((clamped - min) / (max - min)) * 100;
+  const calculateBMI = () => {
+    if (unit === "metric") {
+      if (!height || !weight) return;
+      const h = height / 100;
+      const calculatedBmi = parseFloat((weight / (h * h)).toFixed(1));
+      setBmi(calculatedBmi);
+      setBodyMetrics(calculatedBmi, height, weight);
+      markBmiDone();
+    } else {
+      const totalInches = parseFloat(heightFt) * 12 + parseFloat(heightIn || "0");
+      if (!totalInches || !weight) return;
+      const calculatedBmi = parseFloat(
+        ((weight / (totalInches * totalInches)) * 703).toFixed(1)
+      );
+      setBmi(calculatedBmi);
+      const heightCm = Math.round(totalInches * 2.54);
+      const weightKg = parseFloat((weight * 0.453592).toFixed(1));
+      setBodyMetrics(calculatedBmi, heightCm, weightKg);
+      markBmiDone();
+    }
   };
+
+  const isCalculateDisabled =
+    unit === "metric"
+      ? !height || !weight
+      : (!heightFt && !heightIn) || !weight;
 
   const category = bmi ? getBMICategory(bmi) : null;
 
-  return (
-    <div className="min-h-screen bg-[#050017] flex items-center justify-center">
-      <div className="relative w-full max-w-6xl rounded-3xl overflow-hidden bg-gradient-to-br from-[#04001a] via-[#07002a] to-[#12043b] text-white px-16 py-12">
-        <div className="relative z-10">
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-linear-to-b from-[#03000D] to-[#190473] flex items-center justify-center">
+        <div className="text-white text-center">Loading...</div>
+      </div>
+    );
+  }
 
-          {/* Title */}
-          <h1 className="text-3xl font-semibold mb-2 tracking-wide">
-            CALCULATE YOUR{" "}
-            <span className="text-purple-400">BMI</span>
+  return (
+    <div className="min-h-screen bg-linear-to-b from-[#03000D] to-[#190473] flex flex-col items-center justify-center p-8">
+      {/* TOP BAR */}
+      <div className="w-full max-w-6xl mb-6 flex items-center justify-between">
+        <img
+          src="https://bodometer-assets.s3.eu-north-1.amazonaws.com/Bodometer+Logo+corrected+1.png"
+          alt="Bodometer"
+          className="h-10 object-contain"
+        />
+      </div>
+
+      <div className="max-w-6xl w-full bg-linear-to-b from-[#03000D] to-[#190473] rounded-3xl p-12 relative overflow-hidden">
+        {/* Background blobs — same as workout page */}
+        <div className="absolute top-0 left-0 w-96 h-96 bg-purple-600/10 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
+        <div className="absolute bottom-0 right-0 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl translate-x-1/2 translate-y-1/2" />
+
+        <div className="relative z-10">
+          {/* TITLE */}
+          <h1 className="text-3xl font-semibold text-white mb-2 tracking-wide">
+            CALCULATE YOUR <span className="text-purple-400">BMI</span>
           </h1>
-          <p className="text-slate-300 mb-8 text-sm">
+          <p className="text-white/50 mb-8 text-sm">
             Body Mass Index helps understand your body weight relative to your height.
           </p>
 
-          <div className="grid grid-cols-2 gap-12">
-
+          {/* GRID */}
+          <div className="grid grid-cols-2 gap-6 mb-12">
             {/* LEFT — Inputs */}
-            <div className="space-y-6">
-
+            <div className="space-y-5">
               {/* Unit Toggle */}
               <div>
-                <label className="text-purple-200 text-sm block mb-3">Unit System</label>
-                <div className="flex bg-white/5 rounded-xl p-1 w-fit">
-                  <button
-                    onClick={() => { setUnit("metric"); reset(); }}
-                    className={`px-6 py-2 rounded-lg text-sm font-medium transition ${
-                      unit === "metric"
-                        ? "bg-purple-600 text-white"
-                        : "text-slate-400 hover:text-white"
-                    }`}
-                  >
-                    Metric
-                  </button>
-                  <button
-                    onClick={() => { setUnit("imperial"); reset(); }}
-                    className={`px-6 py-2 rounded-lg text-sm font-medium transition ${
-                      unit === "imperial"
-                        ? "bg-purple-600 text-white"
-                        : "text-slate-400 hover:text-white"
-                    }`}
-                  >
-                    Imperial
-                  </button>
+                <label className="text-white/50 text-xs uppercase tracking-widest font-semibold block mb-3">
+                  Unit System
+                </label>
+                <div className="flex bg-white/5 rounded-xl p-1 w-fit border border-white/10">
+                  {(["metric", "imperial"] as Unit[]).map((u) => (
+                    <button
+                      key={u}
+                      onClick={() => {
+                        setUnit(u);
+                        reset();
+                      }}
+                      className={`px-6 py-2 rounded-lg text-sm font-medium transition capitalize ${
+                        unit === u
+                          ? "bg-purple-600 text-white"
+                          : "text-white/40 hover:text-white"
+                      }`}
+                    >
+                      {u}
+                    </button>
+                  ))}
                 </div>
               </div>
 
               {/* Height */}
-              <div>
-                <label className="text-purple-200 text-sm block mb-2">
-                  Height {unit === "metric" ? "(cm)" : "(ft / in)"}
+              <div className="bg-white/5 rounded-2xl p-5 border border-white/10">
+                <label className="text-white/50 text-xs uppercase tracking-widest font-semibold block mb-4">
+                  {heightQ?.question ?? "What is your height?"}
                 </label>
                 {unit === "metric" ? (
-                  <input
-                    type="number"
+                  <StepperInput
+                    question={heightQ}
                     value={height}
-                    onChange={(e) => { setHeight(e.target.value); setBmi(null); }}
-                    placeholder="e.g. 175"
-                    className="w-full bg-indigo-800/50 border border-purple-600 rounded-xl px-4 py-3 text-white placeholder-purple-300 focus:outline-none focus:border-purple-400"
+                    setter={setHeight}
+                    onReset={resetBmi}
                   />
                 ) : (
                   <div className="flex gap-3">
                     <input
                       type="number"
                       value={heightFt}
-                      onChange={(e) => { setHeightFt(e.target.value); setBmi(null); }}
+                      onChange={(e) => {
+                        setHeightFt(e.target.value);
+                        resetBmi();
+                      }}
                       placeholder="ft"
-                      className="w-1/2 bg-indigo-800/50 border border-purple-600 rounded-xl px-4 py-3 text-white placeholder-purple-300 focus:outline-none focus:border-purple-400"
+                      className="w-1/2 bg-white/5 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/30 focus:outline-none focus:border-purple-500"
                     />
                     <input
                       type="number"
                       value={heightIn}
-                      onChange={(e) => { setHeightIn(e.target.value); setBmi(null); }}
+                      onChange={(e) => {
+                        setHeightIn(e.target.value);
+                        resetBmi();
+                      }}
                       placeholder="in"
-                      className="w-1/2 bg-indigo-800/50 border border-purple-600 rounded-xl px-4 py-3 text-white placeholder-purple-300 focus:outline-none focus:border-purple-400"
+                      className="w-1/2 bg-white/5 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/30 focus:outline-none focus:border-purple-500"
                     />
                   </div>
                 )}
               </div>
 
               {/* Weight */}
-              <div>
-                <label className="text-purple-200 text-sm block mb-2">
-                  Weight {unit === "metric" ? "(kg)" : "(lbs)"}
+              <div className="bg-white/5 rounded-2xl p-5 border border-white/10">
+                <label className="text-white/50 text-xs uppercase tracking-widest font-semibold block mb-4">
+                  {weightQ?.question ?? "What is your weight?"}
                 </label>
-                <input
-                  type="number"
+                <StepperInput
+                  question={weightQ}
                   value={weight}
-                  onChange={(e) => { setWeight(e.target.value); setBmi(null); }}
-                  placeholder={unit === "metric" ? "e.g. 70" : "e.g. 154"}
-                  className="w-full bg-indigo-800/50 border border-purple-600 rounded-xl px-4 py-3 text-white placeholder-purple-300 focus:outline-none focus:border-purple-400"
+                  setter={setWeight}
+                  unitLabel={unit === "imperial" ? "lbs" : weightQ?.config?.unit}
+                  onReset={resetBmi}
                 />
               </div>
 
               {/* Calculate Button */}
               <button
                 onClick={calculateBMI}
-                className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 rounded-xl transition"
+                disabled={isCalculateDisabled}
+                className={`w-full border-2 px-8 py-2 rounded-full font-semibold transition-all ${
+                  !isCalculateDisabled
+                    ? "border-white text-white hover:bg-white hover:text-purple-900"
+                    : "border-white/20 text-white/30 cursor-not-allowed"
+                }`}
               >
                 Calculate BMI
               </button>
-
             </div>
 
             {/* RIGHT — Result */}
             <div className="flex flex-col justify-center">
               {!bmi ? (
-                <div className="flex flex-col items-center justify-center h-full text-center gap-4 opacity-40">
-                  <div className="w-24 h-24 rounded-full border-4 border-purple-600/40 flex items-center justify-center">
+                <div className="flex flex-col items-center justify-center h-full text-center gap-4">
+                  <div className="w-24 h-24 rounded-full border-2 border-white/20 flex items-center justify-center">
                     <span className="text-4xl">⚖️</span>
                   </div>
-                  <p className="text-slate-400 text-sm">
+                  <p className="text-white/30 text-sm">
                     Enter your height and weight to calculate your BMI
                   </p>
                 </div>
               ) : (
                 <div className="space-y-6">
-
-                  {/* BMI Value */}
+                  {/* BMI Circle */}
                   <div className="text-center">
-                    <div className="w-36 h-36 rounded-full border-4 border-purple-500/50 flex flex-col items-center justify-center mx-auto bg-purple-500/10">
+                    <div className="w-36 h-36 rounded-full border-2 border-white/20 flex flex-col items-center justify-center mx-auto bg-white/5">
                       <span className="text-5xl font-bold text-white">{bmi}</span>
-                      <span className="text-purple-300 text-xs mt-1">BMI</span>
+                      <span className="text-white/50 text-xs mt-1">BMI</span>
                     </div>
                     <h2 className={`text-xl font-semibold mt-4 ${category?.color}`}>
                       {category?.label}
                     </h2>
                   </div>
 
-                  {/* BMI Gauge Bar */}
+                  {/* Gauge Bar */}
                   <div>
                     <div className="relative h-3 rounded-full overflow-hidden bg-gradient-to-r from-blue-500 via-green-500 via-yellow-500 to-red-500">
                       <div
-                        className="absolute top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-white border-2 border-purple-600 shadow-lg transition-all duration-500"
+                        className="absolute top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-white border-2 border-purple-500 shadow-lg transition-all duration-500"
                         style={{ left: `calc(${getIndicatorPosition(bmi)}% - 6px)` }}
                       />
                     </div>
-                    <div className="flex justify-between text-xs text-slate-400 mt-1">
+                    <div className="flex justify-between text-xs text-white/30 mt-1">
                       <span>10</span>
                       <span>18.5</span>
                       <span>25</span>
@@ -194,17 +372,12 @@ const UserBmi = () => {
                     </div>
                   </div>
 
-                  {/* BMI Categories Legend */}
+                  {/* Legend */}
                   <div className="grid grid-cols-2 gap-2">
-                    {[
-                      { range: "< 18.5", label: "Underweight", color: "bg-blue-400" },
-                      { range: "18.5 – 24.9", label: "Normal", color: "bg-green-400" },
-                      { range: "25 – 29.9", label: "Overweight", color: "bg-yellow-400" },
-                      { range: "≥ 30", label: "Obese", color: "bg-red-400" },
-                    ].map((item) => (
+                    {BMI_CATEGORIES.map((item) => (
                       <div key={item.label} className="flex items-center gap-2">
                         <div className={`w-2 h-2 rounded-full ${item.color}`} />
-                        <span className="text-xs text-slate-400">
+                        <span className="text-xs text-white/40">
                           {item.range} — {item.label}
                         </span>
                       </div>
@@ -214,18 +387,29 @@ const UserBmi = () => {
                   {/* Recalculate */}
                   <button
                     onClick={reset}
-                    className="w-full py-2 rounded-xl border border-purple-600/40 text-purple-300 text-sm hover:bg-purple-600/10 transition"
+                    className="w-full py-2 rounded-full border border-white/20 text-white/50 text-sm hover:text-white hover:border-white/40 transition"
                   >
                     Recalculate
                   </button>
-
                 </div>
               )}
             </div>
           </div>
 
-          {/* Stepper */}
-           <div className="flex gap-2">
+          {/* FOOTER */}
+          <div className="flex items-center justify-between">
+            {/* PREVIOUS */}
+            <div className="flex-1 flex justify-start">
+              <button
+                onClick={() => navigate("/intro")}
+                className="text-white/50 hover:text-white transition-colors uppercase tracking-widest text-xs font-semibold"
+              >
+                ← Back
+              </button>
+            </div>
+
+            {/* STEPPER dots — same style as workout page */}
+            <div className="flex gap-2">
               <span className="h-2 w-2 rounded-full bg-purple-500" />
               <span className="h-2 w-2 rounded-full bg-white/30" />
               <span className="h-2 w-2 rounded-full bg-white/30" />
@@ -233,18 +417,24 @@ const UserBmi = () => {
               <span className="h-2 w-2 rounded-full bg-white/30" />
               <span className="h-2 w-2 rounded-full bg-white/30" />
               <span className="h-2 w-2 rounded-full bg-white/30" />
+              <span className="h-2 w-2 rounded-full bg-white/30" />
             </div>
 
-          {/* Next */}
-          <div className="flex justify-end mt-4">
-            <button
-              disabled={!bmi}
-              className="px-5 py-1 rounded-full bg-[#1c1550] text-xs hover:bg-[#2a2075] transition disabled:opacity-40 disabled:cursor-not-allowed"
-            >
-              Next
-            </button>
+            {/* NEXT */}
+            <div className="flex-1 flex justify-end">
+              <button
+                disabled={!canGoNext}
+                onClick={handleNext}
+                className={`border-2 px-8 py-2 rounded-full font-semibold transition-all ${
+                  canGoNext
+                    ? "border-white text-white hover:bg-white hover:text-purple-900"
+                    : "border-white/20 text-white/30 cursor-not-allowed"
+                }`}
+              >
+                Next
+              </button>
+            </div>
           </div>
-
         </div>
       </div>
     </div>

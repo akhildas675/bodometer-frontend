@@ -32,8 +32,11 @@ export const ADMIN_API_ROUTES = {
 
   // Onboarding
   GET_ONBOARDING_QUESTIONS: "/onboarding/questions",
-  CREATE_ONBOARDING_QUESTION: "/onboarding/questions",
-  UPDATE_ONBOARDING_QUESTION: (id: string) => `/onboarding/questions/${id}`,
-  DELETE_ONBOARDING_QUESTION: (id: string) => `/onboarding/questions/${id}`,
+  GET_ONBOARDING_QUESTION_BY_ID: (id: string) => `/onboarding/questions/${id}`,
+  CREATE_ONBOARDING_QUESTION: "/create-question",
+  UPDATE_ONBOARDING_QUESTION: (id: string) => `/update-question/${id}`,
+  DELETE_ONBOARDING_QUESTION: (id: string) => `/delete-question/${id}`,
   GET_ONBOARDING_SECTIONS: "/onboarding-sections",
+  GET_SCHEMA_KEY: "/schema-keys",
+  
 } as const;

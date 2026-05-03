@@ -2,18 +2,9 @@ export const ADMIN_UI_ROUTES = {
   DASHBOARD: "/admin",
   USERS: "/admin/users",
   TRAINERS: "/admin/trainers",
-  WORKOUTS: "/admin/workouts",
-  WORKOUTS_CREATE: "/admin/workouts/create",
-  WORKOUTS_EDIT: "/admin/workouts/edit/:id",
+
   TRAINER_APPOINTMENT_LIST: "/admin/appointments",
   APPOINTMENT_DETAILS: (profileId: string) => `/admin/appointments/${profileId}`,
   APPOINTMENT_DETAILS_PATH: "/admin/appointments/:profileId",
-  SUBSCRIPTIONS: "/admin/subscriptions",
-  SUBSCRIPTIONS_CREATE: "/admin/subscriptions/create",                    
-  SUBSCRIPTIONS_EDIT: (id: string) => `/admin/subscriptions/edit/${id}`,  
-  SUBSCRIPTIONS_EDIT_PATH: "/admin/subscriptions/edit/:id",
-  ONBOARDING_QUESTIONS: "/admin/onboarding",
-  ONBOARDING_QUESTIONS_CREATE: "/admin/onboarding/create",
-  ONBOARDING_QUESTIONS_EDIT: (id: string) => `/admin/onboarding/edit/${id}`,
-  ONBOARDING_QUESTIONS_EDIT_PATH: "/admin/onboarding/edit/:id",
+
 } as const;

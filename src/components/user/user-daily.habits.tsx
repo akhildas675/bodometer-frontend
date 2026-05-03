@@ -1,21 +1,20 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useUserOnboardingStore } from "@/stores/user-onboarding.store";
-import userServices from "@/services/user/user.services";
 import { toast } from "sonner";
 
-/* ---------- SUB-COMPONENTS (outside main component) ---------- */
+import userServices from "@/services/user/user.services";
+import { useFetch } from "@/hooks/useFetch";
+import { ApiResponse } from "@/interface/api-response.interface";
+import { OnboardingQuestion } from "@/interface/onboarding.interface";
+import { DAILY_HABITS_PAGE_KEYS } from "@/constants/schema-key.constant";
+import { useOnboardingStore } from "@/stores/user-onboarding.store";
 
-const InputField = ({
-  label,
-  stateKey,
-  value,
-  min,
-  max,
-  step = 1,
-  unit,
-  onChange,
-}: {
+type FormValue = string | number | boolean;
+type FormState = Record<string, FormValue>;
+type ErrorState = Record<string, string>;
+
+
+interface StepperProps {
   label: string;
   stateKey: string;
   value: number;
@@ -24,27 +23,35 @@ const InputField = ({
   step?: number;
   unit: string;
   onChange: (key: string, value: number) => void;
-}) => (
+}
+
+const Stepper = ({
+  label,
+  stateKey,
+  value,
+  min,
+  max,
+  step = 1,
+  unit,
+  onChange,
+}: StepperProps) => (
   <div className="flex items-center justify-between">
     <span className="text-white/80 text-sm">{label}</span>
     <div className="flex items-center gap-3">
       <button
-        onClick={() =>
-          onChange(stateKey, Math.max(min, +(value - step).toFixed(1)))
-        }
-        className="w-8 h-8 rounded-full border border-white/20 text-white/70 hover:border-white/60 hover:text-white transition-all flex items-center justify-center text-lg leading-none"
+        type="button"
+        onClick={() => onChange(stateKey, Math.max(min, value - step))}
+        className="w-9 h-9 rounded-full bg-white/10 border border-white/20 text-white text-lg font-bold hover:bg-purple-700/50 transition flex items-center justify-center"
       >
         −
       </button>
-      <span className="text-white font-semibold w-20 text-center">
-        {value}{" "}
-        <span className="text-white/50 text-xs font-normal">{unit}</span>
+      <span className="text-white font-semibold w-24 text-center">
+        {value} <span className="text-xs text-white/50">{unit}</span>
       </span>
       <button
-        onClick={() =>
-          onChange(stateKey, Math.min(max, +(value + step).toFixed(1)))
-        }
-        className="w-8 h-8 rounded-full border border-white/20 text-white/70 hover:border-white/60 hover:text-white transition-all flex items-center justify-center text-lg leading-none"
+        type="button"
+        onClick={() => onChange(stateKey, Math.min(max, value + step))}
+        className="w-9 h-9 rounded-full bg-white/10 border border-white/20 text-white text-lg font-bold hover:bg-purple-700/50 transition flex items-center justify-center"
       >
         +
       </button>
@@ -52,115 +59,144 @@ const InputField = ({
   </div>
 );
 
-const Toggle = ({
+const BoolToggle = ({
   label,
-  stateKey,
   value,
   onChange,
 }: {
   label: string;
-  stateKey: string;
   value: boolean;
-  onChange: (key: string, value: boolean) => void;
+  onChange: (v: boolean) => void;
 }) => (
   <div className="flex items-center justify-between">
     <span className="text-white/80 text-sm">{label}</span>
-    <button
-      onClick={() => onChange(stateKey, !value)}
-      className={`relative w-12 h-6 rounded-full transition-all duration-300 ${
-        value ? "bg-purple-500" : "bg-white/10 border border-white/20"
-      }`}
-    >
-      <span
-        className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all duration-300 ${
-          value ? "left-7" : "left-1"
-        }`}
-      />
-    </button>
+    <div className="flex bg-white/5 rounded-xl p-1 border border-white/10">
+      {(["Yes", "No"] as const).map((opt) => (
+        <button
+          key={opt}
+          type="button"
+          onClick={() => onChange(opt === "Yes")}
+          className={`px-6 py-1.5 rounded-lg text-sm font-medium transition ${
+            (opt === "Yes") === value
+              ? "bg-purple-600 text-white"
+              : "text-white/40 hover:text-white"
+          }`}
+        >
+          {opt}
+        </button>
+      ))}
+    </div>
   </div>
 );
 
-/* ---------- MAIN COMPONENT ---------- */
+
 
 const UserDailyHabits = () => {
   const navigate = useNavigate();
-  const { setDailyHabits } = useUserOnboardingStore();
+  const [submitLoading, setSubmitLoading] = useState(false);
 
-  const [form, setForm] = useState({
-    wakeUpTime: "",
-    sleepTime: "",
-    mealsPerDay: 3,
-    avgWaterLiters: 2,
-    avgDailySteps: 5000,
-    caffeine: false,
-    alcohol: false,
+  // ── Zustand ──
+  const dailyHabits         = useOnboardingStore((s) => s.dailyHabits);
+  const setWakeUpTime       = useOnboardingStore((s) => s.setWakeUpTime);
+  const setSleepTime        = useOnboardingStore((s) => s.setSleepTime);
+  const setMealsPerDay      = useOnboardingStore((s) => s.setMealsPerDay);
+  const setAvgWaterLiters   = useOnboardingStore((s) => s.setAvgWaterLiters);
+  const setAvgDailySteps    = useOnboardingStore((s) => s.setAvgDailySteps);
+  const setCaffeine         = useOnboardingStore((s) => s.setCaffeine);
+  const setAlcohol          = useOnboardingStore((s) => s.setAlcohol);
+  const markDailyHabitsDone = useOnboardingStore((s) => s.markDailyHabitsDone);
+  const getSubmitPayload    = useOnboardingStore((s) => s.getSubmitPayload);
+  const resetStore          = useOnboardingStore((s) => s.resetStore);
+
+
+  const [form, setForm] = useState<FormState>({
+    wake_up_time:     dailyHabits.wakeUpTime,
+    sleep_time:       dailyHabits.sleepTime,
+    meals_per_day:    dailyHabits.mealsPerDay    || 3,
+    avg_water_liters: dailyHabits.avgWaterLiters || 2,
+    avg_daily_steps:  dailyHabits.avgDailySteps  || 5000,
+    caffeine:         dailyHabits.caffeine,
+    alcohol:          dailyHabits.alcohol,
   });
 
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [errors, setErrors] = useState<ErrorState>({});
 
-  /* ---------- HANDLERS ---------- */
-  const handleChange = (key: string, value: string | number | boolean) => {
+  // ── Fetch questions ──
+  const { data: questionsRes, loading } = useFetch<ApiResponse<OnboardingQuestion[]>>(
+    () => userServices.userOnboardingQuestions({ keys: DAILY_HABITS_PAGE_KEYS }),
+    true,
+  );
+
+  const questions: OnboardingQuestion[] = questionsRes?.success ? questionsRes.data : [];
+
+  // ── Helpers ──
+  const handleChange = (key: string, value: FormValue): void => {
     setForm((prev) => ({ ...prev, [key]: value }));
     setErrors((prev) => ({ ...prev, [key]: "" }));
   };
 
-  const validateTime = (value: string) =>
-    /^([01]\d|2[0-3]):([0-5]\d)$/.test(value);
+  // ── Validate & submit ──
+  const handleFinish = async (): Promise<void> => {
+    const newErrors: ErrorState = {};
 
-  /* ---------- NEXT ---------- */
-  const handleNext = async () => {
-    const newErrors: Record<string, string> = {};
+    questions.forEach((question) => {
+      const val = form[question.key];
+      if (
+        question.validation?.required &&
+        (val === undefined || val === null || val === "")
+      ) {
+        newErrors[question.key] = "Required";
+      }
+    });
 
-    if (!form.wakeUpTime) newErrors.wakeUpTime = "Required";
-    else if (!validateTime(form.wakeUpTime))
-      newErrors.wakeUpTime = "Use HH:MM format (e.g. 06:30)";
-
-    if (!form.sleepTime) newErrors.sleepTime = "Required";
-    else if (!validateTime(form.sleepTime))
-      newErrors.sleepTime = "Use HH:MM format (e.g. 22:00)";
+    if (!form.avg_water_liters && Number(form.avg_water_liters) <= 0) {
+      newErrors.avg_water_liters = "Required";
+    }
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
     }
 
-    console.log("Daily Habits:", form);
-
-    const habitsPayload = {
-      dietPreference: "Not Specified",
-      dailyMeals: form.mealsPerDay.toString(),
-      waterIntake: `${form.avgWaterLiters} Liters`,
-      sleepDuration: `${form.sleepTime} to ${form.wakeUpTime}`,
-      stressLevel: "Not Specified",
-      workType: `Daily Steps: ${form.avgDailySteps}`,
-      smokingDrinking: `Caffeine: ${form.caffeine ? 'Yes' : 'No'}, Alcohol: ${form.alcohol ? 'Yes' : 'No'}`,
-    };
-
-    setDailyHabits(habitsPayload);
+    setWakeUpTime(String(form.wake_up_time ?? ""));
+    setSleepTime(String(form.sleep_time ?? ""));
+    setMealsPerDay(Number(form.meals_per_day ?? 0));
+    setAvgWaterLiters(Number(form.avg_water_liters ?? 0));
+    setAvgDailySteps(Number(form.avg_daily_steps ?? 0));
+    setCaffeine(Boolean(form.caffeine));
+    setAlcohol(Boolean(form.alcohol));
+    markDailyHabitsDone();
 
     try {
-      const state = useUserOnboardingStore.getState();
-      
-      const payload = {
-        fitnessProfile: state.fitnessProfile,
-        workoutHistory: state.workoutHistory,
-        medicalProfile: state.medicalProfile,
-        dailyHabits: habitsPayload,
-      };
+      setSubmitLoading(true);
+      const payload = getSubmitPayload();
+      const res = await userServices.submitOnboarding(payload);
 
-      await userServices.submitPremiumOnboarding(payload);
-      
-      toast.success("Ready to crush your goals! Generating your dashboard...");
-      
-      // Clear store memory
-      state.resetOnboarding();
-      
-      navigate("/onboarding-complete"); 
-    } catch (err) {
-      console.error(err);
-      toast.error("Failed to save onboarding data");
+      if (!res.success) {
+        toast.error("Failed to save your data. Please try again.");
+        return;
+      }
+
+      resetStore();
+      toast.success("Onboarding complete! Welcome to Bodometer 🎉");
+      navigate("/onboarding-complete");
+    } catch {
+      toast.error("Something went wrong. Please try again.");
+    } finally {
+      setSubmitLoading(false);
     }
   };
+
+  if (loading) return (
+    <div className="min-h-screen bg-linear-to-b from-[#03000D] to-[#190473] flex items-center justify-center">
+      <div className="text-white text-center">Loading...</div>
+    </div>
+  );
+
+  // ── Partition questions by type ──
+  const timeQuestions    = questions.filter((q) => q.type === "time");
+  const stepperQuestions = questions.filter((q) => q.type === "number_stepper");
+  const boolQuestions    = questions.filter((q) => q.type === "boolean");
 
   return (
     <div className="min-h-screen bg-linear-to-b from-[#03000D] to-[#190473] flex flex-col items-center justify-center p-8">
@@ -174,126 +210,93 @@ const UserDailyHabits = () => {
       </div>
 
       <div className="max-w-6xl w-full bg-linear-to-b from-[#03000D] to-[#190473] rounded-3xl p-12 relative overflow-hidden">
-        {/* Background orbs */}
         <div className="absolute top-0 left-0 w-96 h-96 bg-purple-600/10 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
         <div className="absolute bottom-0 right-0 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl translate-x-1/2 translate-y-1/2" />
 
         <div className="relative z-10">
-          {/* TITLE */}
-          <h1 className="text-white text-3xl font-bold mb-12 text-center">
-            YOUR <span className="text-purple-400">DAILY HABITS</span>
+          <h1 className="text-3xl font-semibold text-white mb-2 tracking-wide">
+            DAILY <span className="text-purple-400">HABITS</span>
           </h1>
+          <p className="text-white/50 mb-8 text-sm">
+            Tell us about your daily routine so we can personalise your plan.
+          </p>
 
-          <div className="grid grid-cols-2 gap-8">
-            {/* LEFT COLUMN */}
-            <div className="space-y-6">
+          <div className="grid grid-cols-2 gap-6 mb-12">
 
-              {/* SLEEP SCHEDULE */}
-              <div className="rounded-2xl border border-white/10 bg-white/5 px-6 py-5 space-y-5">
-                <p className="text-white/50 text-xs uppercase tracking-widest font-semibold">
-                  Sleep Schedule
-                </p>
-
-                <div className="space-y-1">
-                  <label className="text-white/70 text-sm">Wake up time</label>
+            {/* LEFT — time + boolean */}
+            <div className="space-y-4">
+              {timeQuestions.map((question) => (
+                <div key={question.key} className="bg-white/5 border border-white/10 rounded-2xl p-5">
+                  <label className="text-white/50 text-xs uppercase tracking-widest font-semibold block mb-3">
+                    {question.question}
+                  </label>
                   <input
                     type="time"
-                    value={form.wakeUpTime}
-                    onChange={(e) => handleChange("wakeUpTime", e.target.value)}
-                    className={`w-full bg-white/5 border rounded-xl px-4 py-3 text-white placeholder-white/20 text-sm outline-none focus:border-purple-400 transition-colors [color-scheme:dark] ${
-                      errors.wakeUpTime ? "border-red-500" : "border-white/10"
-                    }`}
+                    value={String(form[question.key] ?? "")}
+                    onChange={(e) => handleChange(question.key, e.target.value)}
+                    className="w-full p-3 rounded-xl bg-white/5 border border-white/20 text-white focus:outline-none focus:border-purple-500"
                   />
-                  {errors.wakeUpTime && (
-                    <p className="text-red-400 text-xs">{errors.wakeUpTime}</p>
+                  {errors[question.key] && (
+                    <p className="text-red-400 text-xs mt-2">{errors[question.key]}</p>
                   )}
                 </div>
+              ))}
 
-                <div className="space-y-1">
-                  <label className="text-white/70 text-sm">Sleep time</label>
-                  <input
-                    type="time"
-                    value={form.sleepTime}
-                    onChange={(e) => handleChange("sleepTime", e.target.value)}
-                    className={`w-full bg-white/5 border rounded-xl px-4 py-3 text-white placeholder-white/20 text-sm outline-none focus:border-purple-400 transition-colors [color-scheme:dark] ${
-                      errors.sleepTime ? "border-red-500" : "border-white/10"
-                    }`}
+              {boolQuestions.map((question) => (
+                <div key={question.key} className="bg-white/5 border border-white/10 rounded-2xl p-5">
+                  <BoolToggle
+                    label={question.question}
+                    value={Boolean(form[question.key])}
+                    onChange={(v) => handleChange(question.key, v)}
                   />
-                  {errors.sleepTime && (
-                    <p className="text-red-400 text-xs">{errors.sleepTime}</p>
+                  {errors[question.key] && (
+                    <p className="text-red-400 text-xs mt-2">{errors[question.key]}</p>
                   )}
                 </div>
-              </div>
-
-              {/* LIFESTYLE TOGGLES */}
-              <div className="rounded-2xl border border-white/10 bg-white/5 px-6 py-5 space-y-5">
-                <p className="text-white/50 text-xs uppercase tracking-widest font-semibold">
-                  Lifestyle
-                </p>
-                <Toggle
-                  label="Do you consume caffeine?"
-                  stateKey="caffeine"
-                  value={form.caffeine}
-                  onChange={handleChange}
-                />
-                <div className="border-t border-white/5" />
-                <Toggle
-                  label="Do you consume alcohol?"
-                  stateKey="alcohol"
-                  value={form.alcohol}
-                  onChange={handleChange}
-                />
-              </div>
-
+              ))}
             </div>
 
-            {/* RIGHT COLUMN */}
-            <div className="space-y-6">
+            {/* RIGHT — steppers + manual water */}
+            <div className="space-y-4">
+              {stepperQuestions.map((question) => (
+                <div key={question.key} className="bg-white/5 border border-white/10 rounded-2xl p-5">
+                  <Stepper
+                    label={question.question}
+                    stateKey={question.key}
+                    value={Number(form[question.key] ?? question.config?.min ?? 0)}
+                    min={question.config?.min ?? 0}
+                    max={question.config?.max ?? 100}
+                    step={question.config?.step ?? 1}
+                    unit={question.config?.unit ?? ""}
+                    onChange={handleChange}
+                  />
+                  {errors[question.key] && (
+                    <p className="text-red-400 text-xs mt-2">{errors[question.key]}</p>
+                  )}
+                </div>
+              ))}
 
-              {/* DAILY METRICS */}
-              <div className="rounded-2xl border border-white/10 bg-white/5 px-6 py-5 space-y-5">
-                <p className="text-white/50 text-xs uppercase tracking-widest font-semibold">
-                  Daily Metrics
-                </p>
-                <InputField
-                  label="Meals per day"
-                  stateKey="mealsPerDay"
-                  value={form.mealsPerDay}
-                  min={1}
-                  max={10}
-                  unit="meals"
-                  onChange={handleChange}
-                />
-                <div className="border-t border-white/5" />
-                <InputField
-                  label="Water intake"
-                  stateKey="avgWaterLiters"
-                  value={form.avgWaterLiters}
+              {/* Manual water — not returned by API but required in submit payload */}
+              <div className="bg-white/5 border border-white/10 rounded-2xl p-5">
+                <Stepper
+                  label="How many litres of water do you drink daily?"
+                  stateKey="avg_water_liters"
+                  value={Number(form.avg_water_liters ?? 2)}
                   min={0}
                   max={10}
                   step={0.5}
-                  unit="liters"
+                  unit="L"
                   onChange={handleChange}
                 />
-                <div className="border-t border-white/5" />
-                <InputField
-                  label="Daily steps"
-                  stateKey="avgDailySteps"
-                  value={form.avgDailySteps}
-                  min={0}
-                  max={30000}
-                  step={500}
-                  unit="steps"
-                  onChange={handleChange}
-                />
+                {errors.avg_water_liters && (
+                  <p className="text-red-400 text-xs mt-2">{errors.avg_water_liters}</p>
+                )}
               </div>
-
             </div>
           </div>
 
           {/* FOOTER */}
-          <div className="flex items-center justify-between mt-12">
-            {/* PREVIOUS */}
+          <div className="flex items-center justify-between">
             <div className="flex-1 flex justify-start">
               <button
                 onClick={() => navigate("/health-details")}
@@ -303,8 +306,9 @@ const UserDailyHabits = () => {
               </button>
             </div>
 
-            {/* STEPPER (Step 6 of 6) */}
             <div className="flex gap-2">
+              <span className="h-2 w-2 rounded-full bg-white/30" />
+              <span className="h-2 w-2 rounded-full bg-white/30" />
               <span className="h-2 w-2 rounded-full bg-white/30" />
               <span className="h-2 w-2 rounded-full bg-white/30" />
               <span className="h-2 w-2 rounded-full bg-white/30" />
@@ -313,13 +317,13 @@ const UserDailyHabits = () => {
               <span className="h-2 w-2 rounded-full bg-purple-500" />
             </div>
 
-            {/* NEXT */}
             <div className="flex-1 flex justify-end">
               <button
-                onClick={handleNext}
-                className="border-2 border-white text-white px-8 py-2 rounded-full font-semibold transition-all hover:bg-white hover:text-purple-900"
+                onClick={handleFinish}
+                disabled={submitLoading}
+                className="border-2 border-white text-white px-8 py-2 rounded-full font-semibold hover:bg-white hover:text-purple-900 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
               >
-                Finish
+                {submitLoading ? "Saving..." : "Finish"}
               </button>
             </div>
           </div>

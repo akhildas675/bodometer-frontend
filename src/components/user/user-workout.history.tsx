@@ -1,111 +1,157 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Card } from "../ui/card.wrapper";
-import { Checkbox } from "../ui/checkbox";
-import { Radio } from "../ui/radio";
 
 import { useFetch } from "@/hooks/useFetch";
 import userServices from "@/services/user/user.services";
-import { useUserOnboardingStore } from "@/stores/user-onboarding.store";
 import { ApiResponse } from "@/interface/api-response.interface";
-import { OnboardingOptionsResponse } from "@/interface/user.interface";
 
-// ─── Option maps (for legacy/enum formatting) ──────────────────────────────────
-const LBL_MAP: Record<string, string> = {
-  // Experience
-  "new_0_1_month": "I am totally new (0–1 months)",
-  "m1_6": "1–6 months",
-  "m6_12": "6–12 months",
-  "y1_3": "1–3 years",
-  "y3_plus": "3+ years",
-  // Strength
-  "struggle_basic": "I struggle with basic exercises",
-  "bodyweight_ok": "I can do most bodyweight exercises",
-  "weights_confident": "I can do weighted exercises confidently",
-  "advanced_heavy": "I lift heavy / advanced movements",
-  // Training
-  "gym": "Gym / Strength training",
-  "bodyweight": "Bodyweight / Home workouts",
-  "cardio": "Running / Cardio",
-  "sports": "Sports (football, cricket, badminton, etc.)",
-  "yoga": "Yoga / Pilates",
-  "none": "None",
-  // Consistency
-  "never": "Never consistent",
-  "m1_3": "1–3 months consistent",
-  "m3_6": "3–6 months consistent",
-  "years": "Consistent for years",
-  // Weekly
-  "0": "0 days",
-  "1_2": "1–2 days",
-  "3_4": "3–4 days",
-  "5_6": "5–6 days",
-  "everyday": "Everyday",
-  // Duration
-  "lt_20": "<20 minutes",
-  "20_40": "20–40 minutes",
-  "40_60": "40–60 minutes",
-  "60_plus": "60+ minutes",
-  // Intensity
-  "easy": "Easy / Light",
-  "moderate": "Moderate",
-  "challenging": "Challenging",
-  "intense": "Very intense",
-};
+import { WORKOUT_HISTORY_PAGE_KEYS } from "@/constants/schema-key.constant";
+import { useOnboardingStore } from "@/stores/user-onboarding.store";
 
-const formatLabel = (v: string) => LBL_MAP[v] || v;
 
-// ─── Component ────────────────────────────────────────────────────────────────
+
+/** Single-select radio card */
+const OptionCard = ({
+  label,
+  active,
+  onClick,
+}: {
+  label: string;
+  active: boolean;
+  onClick: () => void;
+}) => (
+  <button
+    onClick={onClick}
+    className={`w-full text-left px-5 py-3 rounded-xl border transition-all text-sm font-medium ${
+      active
+        ? "border-purple-500 bg-purple-500/20 text-white"
+        : "border-white/10 bg-white/5 text-white/60 hover:border-white/30 hover:text-white"
+    }`}
+  >
+    {label}
+  </button>
+);
+
+/** Multi-select chip card */
+const MultiCard = ({
+  label,
+  active,
+  onClick,
+}: {
+  label: string;
+  active: boolean;
+  onClick: () => void;
+}) => (
+  <button
+    onClick={onClick}
+    className={`w-full text-left px-5 py-3 rounded-xl border transition-all text-sm font-medium flex items-center justify-between ${
+      active
+        ? "border-purple-500 bg-purple-500/20 text-white"
+        : "border-white/10 bg-white/5 text-white/60 hover:border-white/30 hover:text-white"
+    }`}
+  >
+    <span>{label}</span>
+    {active && (
+      <span className="w-5 h-5 rounded-full bg-purple-500 flex items-center justify-center text-white text-xs">✓</span>
+    )}
+  </button>
+);
+
+/** Yes / No boolean toggle */
+const BooleanToggle = ({
+  value,
+  onChange,
+}: {
+  value: boolean;
+  onChange: (v: boolean) => void;
+}) => (
+  <div className="flex bg-white/5 rounded-xl p-1 w-fit border border-white/10">
+    {(["Yes", "No"] as const).map((label) => {
+      const isActive = label === "Yes" ? value === true : value === false;
+      return (
+        <button
+          key={label}
+          onClick={() => onChange(label === "Yes")}
+          className={`px-8 py-2 rounded-lg text-sm font-medium transition ${
+            isActive ? "bg-purple-600 text-white" : "text-white/40 hover:text-white"
+          }`}
+        >
+          {label}
+        </button>
+      );
+    })}
+  </div>
+);
+
+
 
 const UserWorkoutHistory = () => {
   const navigate = useNavigate();
-  const { workoutHistory, setWorkoutHistory } = useUserOnboardingStore();
 
-  const [form, setForm] = useState({
-    experienceDuration: workoutHistory.experienceDuration || "",
-    strengthLevel:      workoutHistory.strengthLevel || "",
-    trainedWithCoach:   workoutHistory.trainedWithCoach,
-    trainingTypes:      workoutHistory.trainingTypes || ([] as string[]),
-    consistencyLevel:   workoutHistory.consistencyLevel || "",
-    weeklyTrainingDays: workoutHistory.weeklyTrainingDays || "",
-    avgSessionDuration: workoutHistory.avgSessionDuration || "",
-    goalIntensity:      workoutHistory.goalIntensity || "",
-  });
 
-  const { data: metadataResponse, loading } = useFetch<ApiResponse<OnboardingOptionsResponse>>(userServices.getOnboardingOptions, true);
-  const metadata = metadataResponse?.data || {} as Partial<OnboardingOptionsResponse>;
+  const storeHistory = useOnboardingStore((state) => state.workoutHistory);
 
-  /* ---------- Handlers ---------- */
+  const setExperienceDuration  = useOnboardingStore((s) => s.setExperienceDuration);
+  const setStrengthLevel       = useOnboardingStore((s) => s.setStrengthLevel);
+  const setTrainedWithCoach    = useOnboardingStore((s) => s.setTrainedWithCoach);
+  const setTrainingTypes       = useOnboardingStore((s) => s.setTrainingTypes);
+  const setConsistencyLevel    = useOnboardingStore((s) => s.setConsistencyLevel);
+  const setWeeklyTrainingDays  = useOnboardingStore((s) => s.setWeeklyTrainingDays);
+  const setAvgSessionDuration  = useOnboardingStore((s) => s.setAvgSessionDuration);
+  const setGoalIntensity       = useOnboardingStore((s) => s.setGoalIntensity);
+  const markWorkoutHistoryDone = useOnboardingStore((s) => s.markWorkoutHistoryDone);
 
-  const setSingle = (key: string, value: string) =>
-    setForm((prev) => ({ ...prev, [key]: value }));
 
-  const toggleTrainingType = (value: string) =>
-    setForm((prev) => ({
-      ...prev,
-      trainingTypes: prev.trainingTypes.includes(value)
-        ? prev.trainingTypes.filter((t) => t !== value)
-        : [...prev.trainingTypes, value],
-    }));
+  const [experienceDuration, setLocalExperienceDuration] = useState<string>(storeHistory.experienceDuration);
+  const [strengthLevel,      setLocalStrengthLevel]      = useState<string>(storeHistory.strengthLevel);
+  const [trainedWithCoach,   setLocalTrainedWithCoach]   = useState<boolean>(storeHistory.trainedWithCoach);
+  const [trainingTypes,      setLocalTrainingTypes]      = useState<string[]>(storeHistory.trainingTypes);
+  const [consistencyLevel,   setLocalConsistencyLevel]   = useState<string>(storeHistory.consistencyLevel);
+  const [weeklyTrainingDays, setLocalWeeklyTrainingDays] = useState<string>(storeHistory.weeklyTrainingDays);
+  const [avgSessionDuration, setLocalAvgSessionDuration] = useState<string>(storeHistory.avgSessionDuration);
+  const [goalIntensity,      setLocalGoalIntensity]      = useState<string>(storeHistory.goalIntensity);
 
-  /* ---------- Submit ---------- */
+
+
+
+
+  const q = (key: string) => questions.find((item) => item.key === key);
+
+
+  const toggleMulti = (value: string) => {
+    setLocalTrainingTypes((prev) =>
+      prev.includes(value) ? prev.filter((v) => v !== value) : [...prev, value]
+    );
+  };
+
+  const canGoNext =
+    !!experienceDuration &&
+    !!strengthLevel &&
+    trainingTypes.length > 0 &&
+    !!consistencyLevel &&
+    !!weeklyTrainingDays &&
+    !!avgSessionDuration &&
+    !!goalIntensity;
 
   const handleNext = () => {
-    console.log("Workout History:", form);
-    setWorkoutHistory(form);
+    if (!canGoNext) return;
+
+    // Persist everything to Zustand
+    setExperienceDuration(experienceDuration);
+    setStrengthLevel(strengthLevel);
+    setTrainedWithCoach(trainedWithCoach);
+    setTrainingTypes(trainingTypes);
+    setConsistencyLevel(consistencyLevel);
+    setWeeklyTrainingDays(weeklyTrainingDays);
+    setAvgSessionDuration(avgSessionDuration);
+    setGoalIntensity(goalIntensity);
+    markWorkoutHistoryDone();
+
     navigate("/health-details");
   };
 
-  const isValid =
-    form.experienceDuration &&
-    form.strengthLevel &&
-    form.trainedWithCoach !== null &&
-    form.trainingTypes.length > 0 &&
-    form.consistencyLevel &&
-    form.weeklyTrainingDays &&
-    form.avgSessionDuration &&
-    form.goalIntensity;
 
+  /* ── Render ── */
   return (
     <div className="min-h-screen bg-linear-to-b from-[#03000D] to-[#190473] flex flex-col items-center justify-center p-8">
       {/* TOP BAR */}
@@ -118,132 +164,161 @@ const UserWorkoutHistory = () => {
       </div>
 
       <div className="max-w-6xl w-full bg-linear-to-b from-[#03000D] to-[#190473] rounded-3xl p-12 relative overflow-hidden">
-        {/* Background orbs */}
         <div className="absolute top-0 left-0 w-96 h-96 bg-purple-600/10 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
         <div className="absolute bottom-0 right-0 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl translate-x-1/2 translate-y-1/2" />
 
         <div className="relative z-10">
           {/* TITLE */}
-          <h1 className="text-white text-3xl font-bold mb-2 text-center">
-            PAST WORKOUT DETAILS
+          <h1 className="text-3xl font-semibold text-white mb-2 tracking-wide">
+            WORKOUT <span className="text-purple-400">HISTORY</span>
           </h1>
-          <p className="text-white/40 text-sm text-center mb-10">Step 5 of 5</p>
+          <p className="text-white/50 mb-8 text-sm">
+            Tell us about your training background so we can personalise your plan.
+          </p>
 
-          {/* TWO COLUMN GRID */}
-          <div className="grid grid-cols-2 gap-6">
+          {/* ── QUESTIONS GRID ── */}
+          <div className="grid grid-cols-2 gap-6 mb-12">
 
-            {/* ── LEFT COLUMN ── */}
+            {/* LEFT COLUMN */}
             <div className="space-y-6">
 
-              {/* Experience duration */}
-              <Card title="How long have you been consistently working out?">
-                {(metadata.experienceDurations || []).map((val: string) => (
-                  <Checkbox
-                    key={val}
-                    label={formatLabel(val)}
-                    checked={form.experienceDuration === val}
-                    onChange={() => setSingle("experienceDuration", val)}
-                  />
-                ))}
-              </Card>
+              {/* Q1 — experience_duration (single_select) */}
+              <div className="bg-white/5 border border-white/10 rounded-2xl p-5">
+                <label className="text-white/50 text-xs uppercase tracking-widest font-semibold block mb-4">
+                  {q("experience_duration")?.question ?? "How long have you been training?"}
+                </label>
+                <div className="space-y-2">
+                  {q("experience_duration")?.options?.map((opt) => (
+                    <OptionCard
+                      key={opt.value}
+                      label={opt.label}
+                      active={experienceDuration === opt.value}
+                      onClick={() => setLocalExperienceDuration(opt.value)}
+                    />
+                  ))}
+                </div>
+              </div>
 
-              {/* Strength level */}
-              <Card title="What strength level best describes you?">
-                {(metadata.strengthLevels || []).map((val: string) => (
-                  <Checkbox
-                    key={val}
-                    label={formatLabel(val)}
-                    checked={form.strengthLevel === val}
-                    onChange={() => setSingle("strengthLevel", val)}
-                  />
-                ))}
-              </Card>
+              {/* Q3 — trained_with_coach (boolean) */}
+              <div className="bg-white/5 border border-white/10 rounded-2xl p-5">
+                <label className="text-white/50 text-xs uppercase tracking-widest font-semibold block mb-4">
+                  {q("trained_with_coach")?.question ?? "Have you trained with a coach before?"}
+                </label>
+                <BooleanToggle value={trainedWithCoach} onChange={setLocalTrainedWithCoach} />
+              </div>
 
-              {/* Trained with coach */}
-              <Card title="Have you trained with a personal coach before?">
-                <Radio
-                  label="Yes"
-                  active={form.trainedWithCoach === true}
-                  onClick={() => setForm((p) => ({ ...p, trainedWithCoach: true }))}
-                />
-                <Radio
-                  label="No"
-                  active={form.trainedWithCoach === false}
-                  onClick={() => setForm((p) => ({ ...p, trainedWithCoach: false }))}
-                />
-              </Card>
+              {/* Q5 — consistency_level (single_select) */}
+              <div className="bg-white/5 border border-white/10 rounded-2xl p-5">
+                <label className="text-white/50 text-xs uppercase tracking-widest font-semibold block mb-4">
+                  {q("consistency_level")?.question ?? "How consistent have you been with training?"}
+                </label>
+                <div className="space-y-2">
+                  {q("consistency_level")?.options?.map((opt) => (
+                    <OptionCard
+                      key={opt.value}
+                      label={opt.label}
+                      active={consistencyLevel === opt.value}
+                      onClick={() => setLocalConsistencyLevel(opt.value)}
+                    />
+                  ))}
+                </div>
+              </div>
 
-              {/* Training types */}
-              <Card title="What type of training have you done before?">
-                {(metadata.trainingTypes || []).map((val: string) => (
-                  <Checkbox
-                    key={val}
-                    label={formatLabel(val)}
-                    checked={form.trainingTypes.includes(val)}
-                    onChange={() => toggleTrainingType(val)}
-                  />
-                ))}
-              </Card>
+              {/* Q7 — avg_session_duration (single_select) */}
+              <div className="bg-white/5 border border-white/10 rounded-2xl p-5">
+                <label className="text-white/50 text-xs uppercase tracking-widest font-semibold block mb-4">
+                  {q("avg_session_duration")?.question ?? "How long is your average workout session?"}
+                </label>
+                <div className="space-y-2">
+                  {q("avg_session_duration")?.options?.map((opt) => (
+                    <OptionCard
+                      key={opt.value}
+                      label={opt.label}
+                      active={avgSessionDuration === opt.value}
+                      onClick={() => setLocalAvgSessionDuration(opt.value)}
+                    />
+                  ))}
+                </div>
+              </div>
 
             </div>
 
-            {/* ── RIGHT COLUMN ── */}
+            {/* RIGHT COLUMN */}
             <div className="space-y-6">
 
-              {/* Consistency */}
-              <Card title="Any periods of serious consistency?">
-                {(metadata.consistencyLevels || []).map((val: string) => (
-                  <Checkbox
-                    key={val}
-                    label={formatLabel(val)}
-                    checked={form.consistencyLevel === val}
-                    onChange={() => setSingle("consistencyLevel", val)}
-                  />
-                ))}
-              </Card>
+              {/* Q2 — strength_level (single_select) */}
+              <div className="bg-white/5 border border-white/10 rounded-2xl p-5">
+                <label className="text-white/50 text-xs uppercase tracking-widest font-semibold block mb-4">
+                  {q("strength_level")?.question ?? "How would you rate your current strength level?"}
+                </label>
+                <div className="space-y-2">
+                  {q("strength_level")?.options?.map((opt) => (
+                    <OptionCard
+                      key={opt.value}
+                      label={opt.label}
+                      active={strengthLevel === opt.value}
+                      onClick={() => setLocalStrengthLevel(opt.value)}
+                    />
+                  ))}
+                </div>
+              </div>
 
-              {/* Weekly training days */}
-              <Card title="How many days per week did you train on average?">
-                {(metadata.weeklyTrainingDays || []).map((val: string) => (
-                  <Checkbox
-                    key={val}
-                    label={formatLabel(val)}
-                    checked={form.weeklyTrainingDays === val}
-                    onChange={() => setSingle("weeklyTrainingDays", val)}
-                  />
-                ))}
-              </Card>
+              {/* Q4 — training_types (multi_select) */}
+              <div className="bg-white/5 border border-white/10 rounded-2xl p-5">
+                <label className="text-white/50 text-xs uppercase tracking-widest font-semibold block mb-4">
+                  {q("training_types")?.question ?? "What type of training have you done?"}
+                </label>
+                <div className="space-y-2">
+                  {q("training_types")?.options?.map((opt) => (
+                    <MultiCard
+                      key={opt.value}
+                      label={opt.label}
+                      active={trainingTypes.includes(opt.value)}
+                      onClick={() => toggleMulti(opt.value)}
+                    />
+                  ))}
+                </div>
+              </div>
 
-              {/* Avg session duration */}
-              <Card title="How long was your average workout session?">
-                {(metadata.avgSessionDurations || []).map((val: string) => (
-                  <Checkbox
-                    key={val}
-                    label={formatLabel(val)}
-                    checked={form.avgSessionDuration === val}
-                    onChange={() => setSingle("avgSessionDuration", val)}
-                  />
-                ))}
-              </Card>
+              {/* Q6 — weekly_training_days (single_select) */}
+              <div className="bg-white/5 border border-white/10 rounded-2xl p-5">
+                <label className="text-white/50 text-xs uppercase tracking-widest font-semibold block mb-4">
+                  {q("weekly_training_days")?.question ?? "How many days do you train per week?"}
+                </label>
+                <div className="space-y-2">
+                  {q("weekly_training_days")?.options?.map((opt) => (
+                    <OptionCard
+                      key={opt.value}
+                      label={opt.label}
+                      active={weeklyTrainingDays === opt.value}
+                      onClick={() => setLocalWeeklyTrainingDays(opt.value)}
+                    />
+                  ))}
+                </div>
+              </div>
 
-              {/* Goal intensity */}
-              <Card title="What is your goal intensity?">
-                {(metadata.goalIntensities || []).map((val: string) => (
-                  <Checkbox
-                    key={val}
-                    label={formatLabel(val)}
-                    checked={form.goalIntensity === val}
-                    onChange={() => setSingle("goalIntensity", val)}
-                  />
-                ))}
-              </Card>
+              {/* Q8 — goal_intensity (single_select) */}
+              <div className="bg-white/5 border border-white/10 rounded-2xl p-5">
+                <label className="text-white/50 text-xs uppercase tracking-widest font-semibold block mb-4">
+                  {q("goal_intensity")?.question ?? "How intense do you want your training to be?"}
+                </label>
+                <div className="space-y-2">
+                  {q("goal_intensity")?.options?.map((opt) => (
+                    <OptionCard
+                      key={opt.value}
+                      label={opt.label}
+                      active={goalIntensity === opt.value}
+                      onClick={() => setLocalGoalIntensity(opt.value)}
+                    />
+                  ))}
+                </div>
+              </div>
 
             </div>
           </div>
 
           {/* FOOTER */}
-          <div className="flex items-center justify-between mt-12">
-            {/* PREVIOUS */}
+          <div className="flex items-center justify-between">
             <div className="flex-1 flex justify-start">
               <button
                 onClick={() => navigate("/prefer-time")}
@@ -253,8 +328,9 @@ const UserWorkoutHistory = () => {
               </button>
             </div>
 
-            {/* STEPPER (Step 4 of 6) */}
             <div className="flex gap-2">
+              <span className="h-2 w-2 rounded-full bg-white/30" />
+              <span className="h-2 w-2 rounded-full bg-white/30" />
               <span className="h-2 w-2 rounded-full bg-white/30" />
               <span className="h-2 w-2 rounded-full bg-white/30" />
               <span className="h-2 w-2 rounded-full bg-white/30" />
@@ -263,13 +339,12 @@ const UserWorkoutHistory = () => {
               <span className="h-2 w-2 rounded-full bg-white/30" />
             </div>
 
-            {/* NEXT */}
             <div className="flex-1 flex justify-end">
               <button
+                disabled={!canGoNext}
                 onClick={handleNext}
-                disabled={!isValid}
                 className={`border-2 px-8 py-2 rounded-full font-semibold transition-all ${
-                  isValid
+                  canGoNext
                     ? "border-white text-white hover:bg-white hover:text-purple-900"
                     : "border-white/20 text-white/30 cursor-not-allowed"
                 }`}
@@ -278,7 +353,6 @@ const UserWorkoutHistory = () => {
               </button>
             </div>
           </div>
-
         </div>
       </div>
     </div>

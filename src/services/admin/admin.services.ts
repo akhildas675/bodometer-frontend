@@ -12,9 +12,7 @@ import type {
 import type { ApiResponse } from "@/interface/api-response.interface";
 
 import { ADMIN_API_ROUTES } from "@/constants/constant-routes/api-routes/admin-constant.routes";
-import { AdminGetSubscriptionResponse, SubscriptionFormData } from "@/interface/subscription.interface";
-import { Workout } from "@/interface/workout.interface";
-import { OnboardingQuestion, OnboardingQuestionFormData } from "@/interface/onboarding.interface";
+
 
 class AdminService {
   // User Management
@@ -37,7 +35,7 @@ class AdminService {
       pagination: PaginationMeta;
     }>(ADMIN_API_ROUTES.GET_USERS, { params });
 
-    console.log("API Response Users:", response.data);
+
 
     
     return {
@@ -47,7 +45,7 @@ class AdminService {
   }
 
   async blockUser(userId: string): Promise<ApiResponse<null>> {
-    console.log("frontend userid....", userId);
+  
     const response = await adminApi.patch<ApiResponse<null>>(
       ADMIN_API_ROUTES.BLOCK_USER(userId)
     );
@@ -56,11 +54,11 @@ class AdminService {
   }
 
   async unblockUser(userId: string): Promise<ApiResponse<null>> {
-    console.log("frontend userid....", userId);
+
     const response = await adminApi.patch<ApiResponse<null>>(
       ADMIN_API_ROUTES.UNBLOCK_USER(userId)
     );
-    console.log(response.data);
+ 
     return response.data;
   }
 
@@ -87,7 +85,7 @@ class AdminService {
       pagination: PaginationMeta;
     }>(ADMIN_API_ROUTES.GET_TRAINERS, { params });
 
-    console.log("API Response trainers:", response.data);
+  
 
     
     return {
@@ -97,72 +95,24 @@ class AdminService {
   }
 
   async blockTrainer(trainerId: string): Promise<ApiResponse<null>> {
-    console.log("trainer id... frontend", trainerId);
+
     const response = await adminApi.patch<ApiResponse<null>>(
       ADMIN_API_ROUTES.BLOCK_TRAINER(trainerId)
     );
-    console.log(response.data);
+    
     return response.data;
   }
 
   async unblockTrainer(trainerId: string): Promise<ApiResponse<null>> {
-    console.log("trainer id...frontend", trainerId);
+
     const response = await adminApi.patch<ApiResponse<null>>(
       ADMIN_API_ROUTES.UNBLOCK_TRAINER(trainerId)
     );
-    console.log(response.data);
+  
     return response.data;
   }
 
-  // Workouts
-async getWorkouts(
-  page?: number,
-  limit?: number,
-  search?: string,
-  sortBy?: string,
-  sortOrder?: "asc" | "desc",
-): Promise<ApiResponse<Workout[]> & { pagination: PaginationMeta }> {
-  const params = new URLSearchParams();
-  if (page) params.append("page", String(page));
-  if (limit) params.append("limit", String(limit));
-  if (search) params.append("search", search);
-  if (sortBy) params.append("sortBy", sortBy);
-  if (sortOrder) params.append("sortOrder", sortOrder);
 
-  const response = await adminApi.get<ApiResponse<Workout[]> & { pagination: PaginationMeta }>(
-    `${ADMIN_API_ROUTES.GET_WORKOUTS}?${params.toString()}`
-  );
-  return response.data;
-}
-
-async updateWorkout(id: string, formData: FormData): Promise<ApiResponse<Workout>> {
-  const response = await adminApi.put(
-    ADMIN_API_ROUTES.UPDATE_WORKOUT(id), 
-    formData,
-    { headers: { "Content-Type": "multipart/form-data" } }
-  );
-  return response.data;
-}
-
-async toggleWorkoutStatus(id: string): Promise<ApiResponse<Workout>> {
-  const response = await adminApi.patch(
-    ADMIN_API_ROUTES.TOGGLE_WORKOUT_STATUS(id)
-  );
-  return response.data;
-}
-  async addWorkouts(data: FormData): Promise<ApiResponse<Workout>> {
-    const response = await adminApi.post(ADMIN_API_ROUTES.ADD_WORKOUT, data, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
-    return response.data;
-  }
-
-async getWorkoutById(id: string): Promise<ApiResponse<Workout>> {
-  const response = await adminApi.get(ADMIN_API_ROUTES.GET_WORKOUT_BY_ID(id));
-  return response.data;
-}
   // Get all trainer appointments
   async getTrainerAppointments(
   search?: string,
@@ -225,101 +175,7 @@ async getWorkoutById(id: string): Promise<ApiResponse<Workout>> {
   }
 
 
-  //subscription
-    async createSubscription(
-    data: SubscriptionFormData
-  ): Promise<ApiResponse<AdminGetSubscriptionResponse>> {
-    const response = await adminApi.post<ApiResponse<AdminGetSubscriptionResponse>>(
-      ADMIN_API_ROUTES.ADD_SUBSCRIPTION,
-      { data }
-    );
-    return response.data;
-  }
 
-  async getAllSubscriptions(): Promise<ApiResponse<AdminGetSubscriptionResponse[]>> {
-    const response = await adminApi.get<ApiResponse<AdminGetSubscriptionResponse[]>>(
-      ADMIN_API_ROUTES.GET_ALL_SUBSCRIPTIONS
-    );
-    return response.data;
-  }
-
-  async getSubscriptionById(
-    id: string
-  ): Promise<ApiResponse<AdminGetSubscriptionResponse>> {
-    const response = await adminApi.get<ApiResponse<AdminGetSubscriptionResponse>>(
-      ADMIN_API_ROUTES.GET_SUBSCRIPTION_BY_ID(id)
-    );
-    return response.data;
-  }
-
-  async updateSubscription(
-    id: string,
-    data: Partial<SubscriptionFormData>
-  ): Promise<ApiResponse<AdminGetSubscriptionResponse>> {
-    const response = await adminApi.put<ApiResponse<AdminGetSubscriptionResponse>>(
-      ADMIN_API_ROUTES.UPDATE_SUBSCRIPTION(id),
-      { data }
-    );
-    return response.data;
-  }
-
-  async deleteSubscription(id: string): Promise<ApiResponse<null>> {
-    const response = await adminApi.delete<ApiResponse<null>>(
-      ADMIN_API_ROUTES.DELETE_SUBSCRIPTION(id)
-    );
-    return response.data;
-  }
-
-  async toggleSubscriptionStatus(
-    id: string
-  ): Promise<ApiResponse<AdminGetSubscriptionResponse>> {
-    const response = await adminApi.patch<ApiResponse<AdminGetSubscriptionResponse>>(
-      ADMIN_API_ROUTES.TOGGLE_SUBSCRIPTION_STATUS(id)
-    );
-    return response.data;
-  }
-
-  // Onboarding Questions
-  async getOnboardingQuestions(): Promise<ApiResponse<OnboardingQuestion[]>> {
-    const response = await adminApi.get<ApiResponse<OnboardingQuestion[]>>(
-      ADMIN_API_ROUTES.GET_ONBOARDING_QUESTIONS
-    );
-    return response.data;
-  }
-
-  async createOnboardingQuestion(
-    data: OnboardingQuestionFormData
-  ): Promise<ApiResponse<OnboardingQuestion>> {
-    const response = await adminApi.post<ApiResponse<OnboardingQuestion>>(
-      ADMIN_API_ROUTES.CREATE_ONBOARDING_QUESTION,
-      data
-    );
-    return response.data;
-  }
-
-  async updateOnboardingQuestion(
-    id: string,
-    data: Partial<OnboardingQuestionFormData>
-  ): Promise<ApiResponse<OnboardingQuestion>> {
-    const response = await adminApi.put<ApiResponse<OnboardingQuestion>>(
-      ADMIN_API_ROUTES.UPDATE_ONBOARDING_QUESTION(id),
-      data
-    );
-    return response.data;
-  }
-
-  async deleteOnboardingQuestion(id: string): Promise<ApiResponse<null>> {
-    const response = await adminApi.delete<ApiResponse<null>>(
-      ADMIN_API_ROUTES.DELETE_ONBOARDING_QUESTION(id)
-    );
-    return response.data;
-  }
-  async getOnboardingSections(): Promise<ApiResponse<{ key: string; title: string }[]>> {
-    const response = await adminApi.get<ApiResponse<{ key: string; title: string }[]>>(
-      ADMIN_API_ROUTES.GET_ONBOARDING_SECTIONS
-    );
-    return response.data;
-  }
 }
 
 export default new AdminService();

@@ -1,80 +1,120 @@
 import React from "react";
-import { Pencil } from "lucide-react";
 import { OnboardingQuestion } from "@/interface/onboarding.interface";
+import DataTable from "@/components/ui/table/data.table";
+import type { TableColumn, TableAction } from "@/components/ui/table/table.types";
 
 interface OnboardingQuestionListProps {
-  questions: OnboardingQuestion[];
-  onEdit: (question: OnboardingQuestion) => void;
-  onDelete: (id: string) => void;
+  questions:    OnboardingQuestion[];
+  currentPage:  number;
+  itemsPerPage: number;
+  onEdit:       (question: OnboardingQuestion) => void;
+  onDelete:     (id: string) => void;
+  onToggleStatus?: (question: OnboardingQuestion) => void;
 }
 
 const OnboardingQuestionList: React.FC<OnboardingQuestionListProps> = ({
   questions,
+  currentPage,
+  itemsPerPage,
   onEdit,
   onDelete,
+  onToggleStatus,
 }) => {
-  return (
-    <div className="bg-white/5 rounded-xl border border-white/10 overflow-hidden">
-      <table className="w-full text-sm">
-        <thead className="bg-white/5 text-left">
-          <tr>
-            <th className="px-4 py-3 text-slate-400 font-medium w-16">#</th>
-            <th className="px-4 py-3 text-slate-400 font-medium">Question Text</th>
-            <th className="px-4 py-3 text-slate-400 font-medium">Type</th>
-            <th className="px-4 py-3 text-slate-400 font-medium">Status</th>
-            <th className="px-4 py-3 text-slate-400 font-medium">Actions</th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-white/5">
-          {questions.length === 0 ? (
-            <tr>
-              <td colSpan={5} className="px-4 py-10 text-center text-purple-300">
-                No onboarding questions found.
-              </td>
-            </tr>
-          ) : (
-            questions.map((question, index) => (
-              <tr key={question.id} className="hover:bg-white/5 transition">
-                <td className="px-4 py-3 text-slate-400">{index + 1}</td>
-                <td className="px-4 py-3 text-white font-medium max-w-md">
-                  <p className="truncate">{question.question}</p>
-                </td>
-                <td className="px-4 py-3 text-slate-400 capitalize">
-                  {question.type.replace("_", " ")}
-                </td>
-                <td className="px-4 py-3">
-                  <span
-                    className={`text-xs font-medium ${
-                      question.isActive ? "text-green-400" : "text-red-400"
-                    }`}
-                  >
-                     {question.isActive ? "● Active" : "● Inactive"}
-                  </span>
-                </td>
-                <td className="px-4 py-3">
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => onEdit(question)}
-                      className="p-2 bg-indigo-700/50 hover:bg-indigo-600 text-purple-300 hover:text-white rounded-lg transition"
-                      title="Edit"
-                    >
-                      <Pencil size={15} />
-                    </button>
-                    <button
-                      onClick={() => onDelete(question.id)}
-                      className="px-3 py-1.5 bg-red-600/80 hover:bg-red-600 text-white text-xs font-medium rounded-lg transition"
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))
-          )}
-        </tbody>
-      </table>
-    </div>
-  );
+  const columns: TableColumn<OnboardingQuestion>[] = [
+    {
+      key: "id",
+      label: "#",
+      render: (_, index) => (
+        <span>{(currentPage - 1) * itemsPerPage + index + 1}</span>
+      ),
+    },
+    {
+      key: "question",
+      label: "Question Text",
+      render: (q) => (
+        <span className="font-medium max-w-md truncate block">{q.question}</span>
+      ),
+    },
+    {
+      key: "section",
+      label: "Section",
+      render: (q) => (
+        <span className="capitalize">{q.section.replace(/_/g, " ")}</span>
+      ),
+    },
+    {
+      key: "type",
+      label: "Type",
+      render: (q) => (
+        <span className="capitalize">{q.type.replace(/_/g, " ")}</span>
+      ),
+    },
+    {
+      key: "schemaKey",
+      label: "Schema Key",
+      render: (q) => (
+        <span className="text-gray-400 font-mono text-xs">{q.schemaKey ?? "N/A"}</span>
+      ),
+    },
+    {
+      key: "isActive",
+      label: "Status",
+      render: (q) => (
+        <span
+          className={`text-xs font-medium px-2 py-1 rounded ${
+            q.isActive ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400"
+          }`}
+        >
+          {q.isActive ? "Active" : "Inactive"}
+        </span>
+      ),
+    },
+    {
+      key: "createdAt",
+      label: "Created",
+      render: (q) => (
+        <span className="text-xs text-slate-400">
+          {q.createdAt ? new Date(q.createdAt).toLocaleDateString() : "—"}
+        </span>
+      ),
+    },
+  ];
+
+  const actions: TableAction<OnboardingQuestion>[] = [
+    {
+      label: "Edit",
+      variant: "primary",
+      onClick: onEdit,
+    },
+    {
+      label: "Unblock",
+      variant: "primary",
+      onClick: (q) => onToggleStatus && onToggleStatus(q),
+      visible: (q) => !!onToggleStatus && !q.isActive,
+    },
+    {
+      label: "Block",
+      variant: "danger",
+      onClick: (q) => onToggleStatus && onToggleStatus(q),
+      visible: (q) => !!onToggleStatus && q.isActive,
+    },
+    {
+      label: "Delete",
+      variant: "danger",
+      onClick: (q) => onDelete(q.id),
+      disabled: (q) => q.isCoreLocked,
+    },
+  ];
+
+  if (questions.length === 0) {
+    return (
+      <div className="bg-white/5 rounded-xl border border-white/10 p-10 text-center text-purple-300">
+        No onboarding questions found.
+      </div>
+    );
+  }
+
+  return <DataTable columns={columns} data={questions} actions={actions} />;
 };
 
 export default OnboardingQuestionList;

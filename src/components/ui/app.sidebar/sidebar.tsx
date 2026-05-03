@@ -34,9 +34,7 @@ const iconMap: Record<string, React.ReactNode> = {
   "/admin": <LayoutDashboard size={20} />,
   "/admin/users": <Users size={20} />,
   "/admin/trainers": <UserCheck size={20} />,
-  "/admin/workouts": <Dumbbell size={20} />,
-  "/admin/subscriptions": <SubscriptIcon size={20} />,
-  "/admin/onboarding": <ClipboardList size={20}/>,
+
   
   // Trainer
   "/trainer": <LayoutDashboard size={20} />,
@@ -49,11 +47,10 @@ const iconMap: Record<string, React.ReactNode> = {
   
   // User
   "/": <LayoutDashboard size={20} />,
-  "/workouts": <Dumbbell size={20} />,
   "/food-log": <Apple size={20} />,
   "/progress": <TrendingUp size={20} />,
-  "/subscriptions": <CreditCard size={20} />,
   "/profile": <UserCircle size={20} />,
+
 };
 
 const Sidebar = ({ role }: Props) => {

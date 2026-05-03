@@ -1,30 +1,31 @@
-import React from 'react';
-import SidebarLayout from '../ui/app.sidebar/sidebar.layout';
-import { CheckCircle } from 'lucide-react';
-import { useAuthStore } from '@/stores/auth.store';
-import { useNavigate } from 'react-router-dom';
+import { CheckCircle } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const UserSubscriptionSuccess = () => {
-   const user = useAuthStore((state) => state.user);
   const navigate = useNavigate();
 
   return (
-   
-      <div className="flex flex-col items-center justify-center h-full text-white text-center">
-        <CheckCircle size={64} className="text-green-400 mb-6" />
-        <h1 className="text-3xl font-bold mb-3">Payment Successful!</h1>
-        <p className="text-slate-400 mb-8">
-          Your subscription is now active. Start your fitness journey!
+    <div className="min-h-screen bg-gradient-to-b from-[#03000D] to-[#190473] flex items-center justify-center px-6">
+      <div className="text-center text-white max-w-xl">
+        <CheckCircle size={72} className="text-green-400 mx-auto mb-6" />
+
+        <h1 className="text-4xl font-bold mb-4">
+          Payment Successful!
+        </h1>
+
+        <p className="text-white/70 text-lg mb-10">
+          Your subscription is now active. Start your fitness journey.
         </p>
+
         <button
           onClick={() => navigate("/intro")}
-          className="px-6 py-3 bg-purple-600 hover:bg-purple-700 rounded-lg font-semibold transition"
+          className="px-8 py-4 bg-purple-600 hover:bg-purple-700 rounded-xl font-semibold transition-all"
         >
           Start Onboarding
         </button>
       </div>
-   
+    </div>
   );
-}
+};
 
 export default UserSubscriptionSuccess;

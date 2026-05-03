@@ -1,69 +1,51 @@
-
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { Skill } from "../ui/skills-listing.checkbox";
-import { FITNESS_GOALS_PAGE_KEYS } from "@/constants/schema-key.constant";
+import { Skill } from "@/components/ui/skills-listing.checkbox";
 import { useFetch } from "@/hooks/useFetch";
+import userServices from "@/services/user/user.services";
 import { ApiResponse } from "@/interface/api-response.interface";
 import { OnboardingQuestion } from "@/interface/onboarding.interface";
-import userServices from "@/services/user/user.services";
-import { useState } from "react";
+import { FITNESS_LEVEL_PAGE_KEYS } from "@/constants/schema-key.constant";
 import { useOnboardingStore } from "@/stores/user-onboarding.store";
 
-
-const UserFitnessGoals = () => {
-
-  const fitnessProfile = useOnboardingStore((state) => state.fitnessProfile);
-const setFitnessGoals = useOnboardingStore((state) => state.setFitnessGoals);
-const markFitnessGoalsDone = useOnboardingStore((state) => state.markFitnessGoalsDone);
-
-
+const UserFitnessLevel = () => {
   const navigate = useNavigate();
-const [selectedGoals, setSelectedGoals] = useState<string[]>(
-  fitnessProfile.fitnessGoals
-);
 
+  // ── Zustand ──
+  const storedLevel          = useOnboardingStore((s) => s.fitnessProfile.fitnessLevel);
+  const setFitnessLevel      = useOnboardingStore((s) => s.setFitnessLevel);
+  const markFitnessLevelDone = useOnboardingStore((s) => s.markFitnessLevelDone);
 
+  // ── Pre-fill from store so back navigation restores selection ──
+  const [selected, setSelected] = useState<string>(storedLevel ?? "");
+
+  // ── Fetch question ──
   const { data: questionsRes, loading } = useFetch<ApiResponse<OnboardingQuestion[]>>(
-    () => userServices.userOnboardingQuestions({ keys: FITNESS_GOALS_PAGE_KEYS }),
+    () => userServices.userOnboardingQuestions({ keys: FITNESS_LEVEL_PAGE_KEYS }),
     true
   );
-const goalQuestion = questionsRes?.success
-  ? questionsRes.data[0]
-  : null;
 
+  const question = questionsRes?.success ? questionsRes.data[0] : null;
+  const options  = question?.options ?? [];
 
+  // Split into two columns exactly like WorkoutSelect
+  const mid         = Math.ceil(options.length / 2);
+  const leftColumn  = options.slice(0, mid);
+  const rightColumn = options.slice(mid);
 
-const goals = goalQuestion?.options || [];
-const mid = Math.ceil(goals.length / 2);
-const leftColumn = goals.slice(0, mid);
-const rightColumn = goals.slice(mid);
+  const handleNext = () => {
+    if (!selected) return;
+    setFitnessLevel(selected);
+    markFitnessLevelDone();
+    navigate("/prefer-time");
+  };
 
-const toggleGoal = (value: string) => {
-  setSelectedGoals((prev) =>
-    prev.includes(value)
-      ? prev.filter((item) => item !== value)
-      : [...prev, value]
+  if (loading) return (
+    <div className="min-h-screen bg-linear-to-b from-[#03000D] to-[#190473] flex items-center justify-center">
+      <div className="text-white text-center">Loading...</div>
+    </div>
   );
-};
-
-const handleNext = () => {
-  if (selectedGoals.length === 0) return;
-
- setFitnessGoals(selectedGoals); 
-  markFitnessGoalsDone();
-  navigate("/fitness-level");
-
-};
-
-  
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-linear-to-b from-[#03000D] to-[#190473] flex items-center justify-center">
-        <div className="text-white text-center">Loading...</div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-linear-to-b from-[#03000D] to-[#190473] flex flex-col items-center justify-center p-8">
@@ -77,35 +59,38 @@ const handleNext = () => {
       </div>
 
       <div className="max-w-6xl w-full bg-linear-to-b from-[#03000D] to-[#190473] rounded-3xl p-12 relative overflow-hidden">
+        {/* Background blobs */}
         <div className="absolute top-0 left-0 w-96 h-96 bg-purple-600/10 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
         <div className="absolute bottom-0 right-0 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl translate-x-1/2 translate-y-1/2" />
 
         <div className="relative z-10">
           {/* TITLE */}
-          <h1 className="text-white text-3xl font-bold mb-12 text-center uppercase">
-            {goalQuestion?.question ?? "What are your fitness goals?"}
+          <h1 className="text-3xl font-semibold text-white mb-2 tracking-wide">
+            FITNESS <span className="text-purple-400">LEVEL</span>
           </h1>
+          <p className="text-white/50 mb-8 text-sm">
+            {question?.question ?? "What is your current fitness level?"}
+          </p>
 
-          {/* GRID */}
+          {/* GRID — same pattern as WorkoutSelect & FitnessGoals */}
           <div className="grid grid-cols-2 gap-6 mb-12">
             <div className="space-y-4">
-              {leftColumn.map((goal) => (
+              {leftColumn.map((opt) => (
                 <Skill
-                  key={goal.value}
-                  label={goal.label}
-                  checked={selectedGoals.includes(goal.value)}
-                  onClick={() => toggleGoal(goal.value)}
+                  key={opt.value}
+                  label={opt.label}
+                  checked={selected === opt.value}
+                  onClick={() => setSelected(opt.value)}
                 />
               ))}
             </div>
-
             <div className="space-y-4">
-              {rightColumn.map((goal) => (
+              {rightColumn.map((opt) => (
                 <Skill
-                  key={goal.value}
-                  label={goal.label}
-                  checked={selectedGoals.includes(goal.value)}
-                  onClick={() => toggleGoal(goal.value)}
+                  key={opt.value}
+                  label={opt.label}
+                  checked={selected === opt.value}
+                  onClick={() => setSelected(opt.value)}
                 />
               ))}
             </div>
@@ -113,18 +98,17 @@ const handleNext = () => {
 
           {/* FOOTER */}
           <div className="flex items-center justify-between">
-            {/* PREVIOUS */}
             <div className="flex-1 flex justify-start">
               <button
-                onClick={() => navigate("/select-workouts")}
+                onClick={() => navigate("/goals")}
                 className="text-white/50 hover:text-white transition-colors uppercase tracking-widest text-xs font-semibold"
               >
                 ← Back
               </button>
             </div>
 
-            {/* STEPPER (Step 2 of 6) */}
             <div className="flex gap-2">
+              <span className="h-2 w-2 rounded-full bg-white/30" />
               <span className="h-2 w-2 rounded-full bg-white/30" />
               <span className="h-2 w-2 rounded-full bg-white/30" />
               <span className="h-2 w-2 rounded-full bg-purple-500" />
@@ -132,16 +116,14 @@ const handleNext = () => {
               <span className="h-2 w-2 rounded-full bg-white/30" />
               <span className="h-2 w-2 rounded-full bg-white/30" />
               <span className="h-2 w-2 rounded-full bg-white/30" />
-              <span className="h-2 w-2 rounded-full bg-white/30" />
             </div>
 
-            {/* NEXT */}
             <div className="flex-1 flex justify-end">
               <button
-                disabled={selectedGoals.length === 0}
+                disabled={!selected}
                 onClick={handleNext}
                 className={`border-2 px-8 py-2 rounded-full font-semibold transition-all ${
-                  selectedGoals.length > 0
+                  selected
                     ? "border-white text-white hover:bg-white hover:text-purple-900"
                     : "border-white/20 text-white/30 cursor-not-allowed"
                 }`}
@@ -149,7 +131,6 @@ const handleNext = () => {
                 Next
               </button>
             </div>
-
           </div>
         </div>
       </div>
@@ -157,4 +138,4 @@ const handleNext = () => {
   );
 };
 
-export default UserFitnessGoals;
+export default UserFitnessLevel;

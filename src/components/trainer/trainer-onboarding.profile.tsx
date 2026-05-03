@@ -105,19 +105,7 @@ const TrainerOnboardingProfile = () => {
     try {
       setIsSubmitting(true);
 
-      console.log(
-        "profileImageFile instanceof File:",
-        profileImageFile instanceof File,
-      );
-      console.log(
-        "coverImageFile instanceof File:",
-        coverImageFile instanceof File,
-      );
-      console.log(
-        "certificateFile instanceof File:",
-        certificateFile instanceof File,
-      );
-
+   
       const formData = new FormData();
 
       formData.append("coverImage", coverImageFile!);
@@ -132,9 +120,7 @@ const TrainerOnboardingProfile = () => {
         formData.append("specializationIds", id);
       });
 
-      for (const pair of formData.entries()) {
-        console.log("Trainer service.", pair[0], pair[1]);
-      }
+    
 
       await trainerService.submitTrainerProfile(formData);
       useTrainerOnboardingStore.getState().reset();

@@ -39,7 +39,7 @@ export default function DataTable<T>({
             >
               {columns.map((col) => (
                 <td key={String(col.key)} className="px-4 py-3">
-                  {col.render ? col.render(row) : String(row[col.key])}
+                {col.render ? col.render(row, i) : String(row[col.key as keyof T])}
                 </td>
               ))}
 

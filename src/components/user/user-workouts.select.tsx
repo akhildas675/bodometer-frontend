@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom"
 import { useFetch } from "@/hooks/useFetch";
 
@@ -6,42 +6,60 @@ import { Skill } from "@/components/ui/skills-listing.checkbox";
 import { OnboardingWorkouts } from "@/interface/user.interface";
 import userServices from "@/services/user/user.services";
 import { ApiResponse } from "@/interface/api-response.interface";
-import { useUserOnboardingStore } from "@/stores/user-onboarding.store";
+import { useOnboardingStore } from "@/stores/user-onboarding.store";
+import { toast } from "sonner";
+
 
 
 
 
 
 const UserWorkoutSelect = () => {
-  const [selectedWorkout, setSelectedWorkout] = useState<string | null>(null);
+
+  const fitnessProfile = useOnboardingStore((state) => state.fitnessProfile);
+const setPreferredWorkout = useOnboardingStore((state) => state.setPreferredWorkout);
+const markWorkoutCategoryDone = useOnboardingStore((state) => state.markWorkoutCategoryDone);
+
+const [selectedWorkout, setSelectedWorkout] = useState<string | null>(
+  fitnessProfile.preferredWorkout[0] ?? null
+);
+
+
   const navigate = useNavigate();
 
   const {
-  data: workoutResponse,
-  loading,
-  error,
-} = useFetch<ApiResponse<OnboardingWorkouts[]>>(
-  userServices.fetchWorkouts,
-  true
-);
+    data: workoutResponse,
+    loading: workoutsLoading,
+    error,
+  } = useFetch<ApiResponse<OnboardingWorkouts[]>>(
+    userServices.fetchWorkouts,
+    true
+  );
 
-const workouts = workoutResponse?.data || [];
+
+
+
+  const loading = workoutsLoading 
+  const workouts = workoutResponse?.data || [];
+
 
   const handleSelect = (id: string) => {
     setSelectedWorkout(id);
   };
 
-  const handleNext = async () => {
-    if (!selectedWorkout) {
-      alert("Please select a workout");
-      return;
-    }
+const handleNext = () => {
+  if (!selectedWorkout) {
+    toast.error("Please Select workout")
+    return;
+  }
 
-    const setFitnessProfile = useUserOnboardingStore.getState().setFitnessProfile;
-    setFitnessProfile({ preferredWorkoutCategories: [selectedWorkout] });
-    
-    navigate("/goals"); 
-  };
+ 
+  setPreferredWorkout([selectedWorkout]);
+
+  markWorkoutCategoryDone();
+
+  navigate("/goals");
+};
 
 
   if (loading) {
@@ -79,10 +97,9 @@ const workouts = workoutResponse?.data || [];
 
         <div className="relative z-10">
           {/* TITLE */}
-          <h1 className="text-white text-3xl font-bold mb-12 text-center">
-            SELECT YOUR WORKOUT
+         <h1 className="text-white text-3xl font-bold mb-12 text-center uppercase">
+           SELECT WORKOUTS
           </h1>
-
           {/* GRID */}
           <div className="grid grid-cols-2 gap-6 mb-12">
             <div className="space-y-4">
@@ -113,7 +130,7 @@ const workouts = workoutResponse?.data || [];
             {/* PREVIOUS */}
             <div className="flex-1 flex justify-start">
               <button
-                onClick={() => navigate("/intro")}
+                onClick={() => navigate("/bmi")}
                 className="text-white/50 hover:text-white transition-colors uppercase tracking-widest text-xs font-semibold"
               >
                 ← Back
@@ -122,7 +139,9 @@ const workouts = workoutResponse?.data || [];
 
             {/* STEPPER (Step 1 of 6) */}
             <div className="flex gap-2">
+              <span className="h-2 w-2 rounded-full bg-white/30" />
               <span className="h-2 w-2 rounded-full bg-purple-500" />
+              <span className="h-2 w-2 rounded-full bg-white/30" />
               <span className="h-2 w-2 rounded-full bg-white/30" />
               <span className="h-2 w-2 rounded-full bg-white/30" />
               <span className="h-2 w-2 rounded-full bg-white/30" />
