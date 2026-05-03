@@ -10,8 +10,8 @@ import PrimaryButton from "@/components/ui/primary.button";
 
 import type { LoginPayload } from "@/interface/auth.interface";
 import authService from "@/services/auth/auth.service";
-import { useAuthStore } from "@/stores/auth.store";
-import { VERIFICATION_STATUS } from "@/constants/verification.status";
+import { useAuthStore, type AuthUser } from "@/stores/auth.store";
+import { VERIFICATION_STATUS, type VerificationStatus } from "@/constants/verification.status";
 
 const AuthLoginPage = () => {
   const [loading, setLoading] = useState(false);
@@ -27,40 +27,72 @@ const AuthLoginPage = () => {
       setForm((prev) => ({ ...prev, [field]: e.target.value }));
     };
 
- c
+  const handleSuccess = (
+    user: AuthUser,
+    accessToken: string,
+    trainerStatus?: { verificationStatus?: VerificationStatus | null; profileExists?: boolean | null }
+  ) => {
+    useAuthStore.getState().setAuth({ user, accessToken, trainerStatus });
+
+    toast.success(`Welcome back, ${user.name || "User"}!`);
+
+    if (user.role === "trainer") {
+      const noProfile =
+        !trainerStatus ||
+        trainerStatus.profileExists === false ||
+        trainerStatus.profileExists === undefined ||
+        trainerStatus.profileExists === null;
+
+      if (noProfile) {
+        navigate("/trainer/onboarding/workouts", { replace: true });
+        return;
+      }
+
+      if (trainerStatus.verificationStatus === VERIFICATION_STATUS.APPROVED) {
+        navigate("/trainer", { replace: true });
+      } else {
+        navigate("/trainer/status", { replace: true });
+      }
+    } else if (user.role === "admin") {
+      navigate("/admin", { replace: true });
+    } else {
+      navigate("/", { replace: true });
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!form.email || !form.password) {
+      return toast.error("Please fill in all fields.");
+    }
+    setLoading(true);
+    try {
+      const result = await authService.login(form);
+      const { user, accessToken, trainerStatus } = result.data;
+      handleSuccess(user, accessToken, trainerStatus);
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response) {
+        const errorMessage = error.response.data?.message || "Login failed";
+        toast.error(errorMessage, {
+          duration: error.response.status === 403 ? 5000 : 3000,
+          style: error.response.status === 403
+            ? { background: "#ef4444", color: "#fff" }
+            : undefined,
+        });
+      } else {
+        toast.error("Login failed. Please check your credentials.");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleGoogleSuccess = async (credential: string) => {
+    setLoading(true);
     try {
       const result = await authService.googleLogin({ idToken: credential });
       const { user, accessToken, trainerStatus } = result.data;
-
-      useAuthStore.getState().setAuth({ user, accessToken, trainerStatus }); 
-
-      toast.success(`Welcome back, ${user.name || "User"}!`);
-
-      if (user.role === "trainer") {
-        // Google login trainers
-        const noProfile =
-          !trainerStatus ||
-          trainerStatus.profileExists === false ||
-          trainerStatus.profileExists === undefined ||
-          trainerStatus.profileExists === null;
-
-        if (noProfile) {
-          navigate("//trainer/onboarding/workouts", { replace: true });
-          return;
-        }
-
-        if (trainerStatus.verificationStatus === VERIFICATION_STATUS.APPROVED) {
-          navigate("/trainer", { replace: true });
-        } else {
-          navigate("/trainer/status", { replace: true });
-        }
-      } else if (user.role === "admin") {
-        navigate("/admin", { replace: true });
-      } else {
-        navigate("/", { replace: true });
-      }
+      handleSuccess(user, accessToken, trainerStatus);
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
         const errorMessage = error.response.data?.message || "Login failed";

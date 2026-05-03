@@ -1,7 +1,5 @@
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/stores/auth.store";
-import { useEffect, useState, useRef } from "react";
-import userServices from "@/services/user/user.services";
 import {
   Dumbbell,
   Users,
@@ -15,54 +13,6 @@ import {
 
 const FALLBACK_HERO =
   "https://bodometer-assets.s3.eu-north-1.amazonaws.com/Heroic%20images/bodometer_home_page_heroic.jpg";
-
-/** Auto-cycling hero background pulled from real workout cover photos. */
-const useDynamicHero = (isAuthenticated: boolean) => {
-  const [images, setImages] = useState<string[]>([FALLBACK_HERO]);
-  const [activeIdx, setActiveIdx] = useState(0);
-  const [nextIdx, setNextIdx] = useState(1);
-  const [fading, setFading] = useState(false);
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  // Only fetch when the user is logged in (userApi requires auth)
-  useEffect(() => {
-    if (!isAuthenticated) return;
-
-    userServices
-      .getWorkouts(1, 8)
-      .then((res) => {
-        const imgs = (res.data ?? [])
-          .map((w) => w.coverPhoto || w.workoutImage)
-          .filter(Boolean);
-        setImages(imgs.length ? imgs : [FALLBACK_HERO]);
-      })
-      .catch(() => setImages([FALLBACK_HERO]));
-  }, [isAuthenticated]);
-
-  // Cycle images
-  useEffect(() => {
-    if (images.length <= 1) return;
-
-    timerRef.current = setInterval(() => {
-      const next = (activeIdx + 1) % images.length;
-      setNextIdx(next);
-      setFading(true);
-      setTimeout(() => {
-        setActiveIdx(next);
-        setFading(false);
-      }, 800);
-    }, 4000);
-
-    return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
-    };
-  }, [images, activeIdx]);
-
-  const current = images[activeIdx] ?? FALLBACK_HERO;
-  const next    = images[nextIdx]   ?? FALLBACK_HERO;
-
-  return { current, next, fading };
-};
 
 
 const WHY_FEATURES = [
@@ -314,7 +264,6 @@ const CtaBanner = ({
 const UserHome = () => {
   const { isAuthenticated, user } = useAuthStore();
   const navigate = useNavigate();
-  const { current, next, fading } = useDynamicHero(isAuthenticated);
 
   return (
     <div
@@ -324,21 +273,11 @@ const UserHome = () => {
       {/* ── Hero ── */}
       <div className="relative w-full h-[90vh] overflow-hidden flex items-center">
 
-        {/* Current image layer */}
+        {/* Static image layer */}
         <div
-          className="absolute inset-0 bg-center bg-cover transition-opacity duration-700"
+          className="absolute inset-0 bg-center bg-cover"
           style={{
-            backgroundImage: `url('${current}')`,
-            opacity: fading ? 0 : 1,
-          }}
-        />
-
-        {/* Next image layer (fades in during transition) */}
-        <div
-          className="absolute inset-0 bg-center bg-cover transition-opacity duration-700"
-          style={{
-            backgroundImage: `url('${next}')`,
-            opacity: fading ? 1 : 0,
+            backgroundImage: `url('${FALLBACK_HERO}')`,
           }}
         />
 

@@ -1,9 +1,12 @@
 import { Toaster } from "sonner";
 import AppRoutes from "./routes/route/app.routes";
+import { ErrorBoundary } from "./components/ui/error.boundary";
+import { Suspense } from "react";
+import { ScreenLoader } from "./components/ui/screen-loader";
 
 const App = () => {
   return (
-    <>
+    <ErrorBoundary>
       <Toaster 
       position="top-right" 
       expand={false}
@@ -19,8 +22,10 @@ const App = () => {
         className: 'toast-custom',
       }}
     />
-      <AppRoutes />
-    </>
+      <Suspense fallback={<ScreenLoader />}>
+        <AppRoutes />
+      </Suspense>
+    </ErrorBoundary>
   );
 };
 

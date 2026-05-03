@@ -3,7 +3,7 @@ import type { Role } from "@/constants/role";
 import type { VerificationStatus } from "@/constants/verification.status";
 
 
-interface AuthUser {
+export interface AuthUser {
   id: string;
   email: string;
   role: Role;

@@ -1,6 +1,7 @@
 import { Navigate, Outlet } from "react-router-dom";
 import { useAuthStore } from "@/stores/auth.store";
 import type { Role } from "@/constants/role";
+import { ScreenLoader } from "@/components/ui/screen-loader";
 
 interface Props {
   allowedRoles: Role[];
@@ -11,7 +12,7 @@ const ProtectedRoute = ({ allowedRoles }: Props) => {
 
  
   if (!isInitialized) {
-    return null;
+    return <ScreenLoader />;
   }
 
   if (!isAuthenticated || !user) {
