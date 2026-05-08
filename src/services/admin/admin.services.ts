@@ -1,12 +1,13 @@
 import { adminApi } from "@/api/api.instance";
 
-import type {TrainerWithProfile } from "@/components/ui/table/table.types";
+import type { TrainerWithProfile } from "@/components/ui/table/table.types";
 
 import type {
   AdminGetTrainersResponse,
   AdminGetUsersResponse,
   PaginatedResponse,
   PaginationMeta,
+  UpdateCategory,
 } from "@/interface/admin.interface";
 
 import type { ApiResponse } from "@/interface/api-response.interface";
@@ -37,7 +38,7 @@ class AdminService {
 
 
 
-    
+
     return {
       data: response.data.data,
       pagination: response.data.pagination,
@@ -45,11 +46,11 @@ class AdminService {
   }
 
   async blockUser(userId: string): Promise<ApiResponse<null>> {
-  
+
     const response = await adminApi.patch<ApiResponse<null>>(
       ADMIN_API_ROUTES.BLOCK_USER(userId)
     );
- 
+
     return response.data;
   }
 
@@ -58,7 +59,7 @@ class AdminService {
     const response = await adminApi.patch<ApiResponse<null>>(
       ADMIN_API_ROUTES.UNBLOCK_USER(userId)
     );
- 
+
     return response.data;
   }
 
@@ -85,9 +86,9 @@ class AdminService {
       pagination: PaginationMeta;
     }>(ADMIN_API_ROUTES.GET_TRAINERS, { params });
 
-  
 
-    
+
+
     return {
       data: response.data.data,
       pagination: response.data.pagination,
@@ -99,7 +100,7 @@ class AdminService {
     const response = await adminApi.patch<ApiResponse<null>>(
       ADMIN_API_ROUTES.BLOCK_TRAINER(trainerId)
     );
-    
+
     return response.data;
   }
 
@@ -108,39 +109,39 @@ class AdminService {
     const response = await adminApi.patch<ApiResponse<null>>(
       ADMIN_API_ROUTES.UNBLOCK_TRAINER(trainerId)
     );
-  
+
     return response.data;
   }
 
 
   // Get all trainer appointments
   async getTrainerAppointments(
-  search?: string,
-  sortBy?: string,
-  sortOrder?: 'asc' | 'desc',
-  page?: number,
-  limit?: number,
-  status?: string          
-): Promise<PaginatedResponse<TrainerWithProfile>> {
-  const params: Record<string, string | number> = {};
-  if (search) params.search = search;
-  if (sortBy) params.sortBy = sortBy;
-  if (sortOrder) params.sortOrder = sortOrder;
-  if (page) params.page = page;
-  if (limit) params.limit = limit;
-  if (status) params.status = status;   
+    search?: string,
+    sortBy?: string,
+    sortOrder?: 'asc' | 'desc',
+    page?: number,
+    limit?: number,
+    status?: string
+  ): Promise<PaginatedResponse<TrainerWithProfile>> {
+    const params: Record<string, string | number> = {};
+    if (search) params.search = search;
+    if (sortBy) params.sortBy = sortBy;
+    if (sortOrder) params.sortOrder = sortOrder;
+    if (page) params.page = page;
+    if (limit) params.limit = limit;
+    if (status) params.status = status;
 
-  const response = await adminApi.get<{
-    success: boolean;
-    data: TrainerWithProfile[];
-    pagination: PaginationMeta;
-  }>(ADMIN_API_ROUTES.GET_TRAINER_APPOINTMENTS, { params });
+    const response = await adminApi.get<{
+      success: boolean;
+      data: TrainerWithProfile[];
+      pagination: PaginationMeta;
+    }>(ADMIN_API_ROUTES.GET_TRAINER_APPOINTMENTS, { params });
 
-  return {
-    data: response.data.data,
-    pagination: response.data.pagination,
-  };
-}
+    return {
+      data: response.data.data,
+      pagination: response.data.pagination,
+    };
+  }
 
   // get trainer by profileId 
   async getTrainerByProfileId(
@@ -174,7 +175,58 @@ class AdminService {
     return response.data;
   }
 
+  async createCategory(
+    categoryData: FormData
+  ): Promise<ApiResponse<{ message: string }>> {
+    console.log("service", FormData)
+    const response = await adminApi.post<ApiResponse<{ message: string }>>(
+      ADMIN_API_ROUTES.CREATE_CATEGORY,
+      categoryData
+    );
+    return response.data;
+  }
 
+  async updateCategory(id: string, categoryData: FormData): Promise<ApiResponse<{ message: string }>> {
+    const response = await adminApi.put<ApiResponse<{ message: string }>>(ADMIN_API_ROUTES.UPDATE_CATEGORY(id), categoryData);
+    return response.data
+  }
+
+  async getCategoryById(id: string): Promise<ApiResponse<UpdateCategory>> {
+    const response = await adminApi.get<ApiResponse<UpdateCategory>>(ADMIN_API_ROUTES.GET_CATEGORY_BY_ID(id));
+    return response.data
+  }
+
+  async getAllCategories(
+    search?: string,
+    sortBy?: string,
+    sortOrder?: "asc" | "desc",
+    page?: number,
+    limit?: number
+  ): Promise<PaginatedResponse<UpdateCategory>> {
+    const params: Record<string, string | number> = {};
+    if (search) params.search = search;
+    if (sortBy) params.sortBy = sortBy;
+    if (sortOrder) params.sortOrder = sortOrder;
+    if (page) params.page = page;
+    if (limit) params.limit = limit;
+
+    const response = await adminApi.get<{
+      success: boolean;
+      data: UpdateCategory[];
+      pagination: PaginationMeta;
+    }>(ADMIN_API_ROUTES.GET_CATEGORIES, { params });
+
+    return {
+      data: response.data.data,
+      pagination: response.data.pagination,
+    };
+  }
+  async toggleCategoryStatus(id: string): Promise<ApiResponse<{ message: string }>> {
+    const response = await adminApi.patch<ApiResponse<{ message: string }>>(
+      ADMIN_API_ROUTES.TOGGLE_CATEGORY_STATUS(id)
+    );
+    return response.data;
+  }
 
 }
 

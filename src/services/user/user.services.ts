@@ -9,6 +9,8 @@ import type {
   ProfileUpdatePayload,
   TrainerDetail,
   TrainerListItem,
+  CategoryListItem,
+  CategoryDetail,
   UploadProfilePictureResponse,
   UserProfileInterface,
 } from "@/interface/user.interface";
@@ -72,7 +74,33 @@ const userServices = {
     return response.data
   },
 
+  async getCategories(
+    page = 1,
+    limit = 9,
+    search?: string,
+    sortBy?: string,
+    sortOrder?: "asc" | "desc",
+  ): Promise<ApiResponse<CategoryListItem[]> & { pagination: PaginationMeta }> {
+    const params = new URLSearchParams();
+    params.append("page", String(page));
+    params.append("limit", String(limit));
+    if (search) params.append("search", search);
+    if (sortBy) params.append("sortBy", sortBy);
+    if (sortOrder) params.append("sortOrder", sortOrder);
+    const response = await userApi.get(
+      `${USER_API_ROUTES.GET_CATEGORIES}?${params.toString()}`
+    );
+    return response.data;
+  },
+
+  async getCategoryById(id: string): Promise<ApiResponse<CategoryDetail>> {
+    const response = await userApi.get<ApiResponse<CategoryDetail>>(
+      USER_API_ROUTES.GET_CATEGORY_BY_ID(id)
+    );
+    return response.data;
+  },
+
 
 };
 
-export default userServices;
+export default userServices;

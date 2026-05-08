@@ -10,6 +10,8 @@ export const USER_API_ROUTES = {
     CREATE_CHECKOUT_SESSION: "/subscriptions/checkout",
     GET_TRAINERS: "/trainers",
     GET_TRAINER_BY_ID: (id: string) => `/trainers/${id}`,
+    GET_CATEGORIES: "/categories",
+    GET_CATEGORY_BY_ID: (id: string) => `/categories/${id}`,
 
     //Fitness
     GET_WORKOUT_TIME:"/prefer-time",

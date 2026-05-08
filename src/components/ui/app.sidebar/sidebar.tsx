@@ -13,15 +13,15 @@ import {
   Clock,
   DollarSign,
   UserCircle,
-  Dumbbell,
   Apple,
   TrendingUp,
-  CreditCard,
   LogOut,
   ChevronRight,
   ChevronLeft,
-  SubscriptIcon,
-  ClipboardList,
+  Layers,
+  Tag,
+  Dumbbell,
+  HelpCircle,
 } from "lucide-react";
 
 type Props = {
@@ -34,8 +34,11 @@ const iconMap: Record<string, React.ReactNode> = {
   "/admin": <LayoutDashboard size={20} />,
   "/admin/users": <Users size={20} />,
   "/admin/trainers": <UserCheck size={20} />,
+  "/admin/groups": <Layers size={20} />,
+  "/admin/categories": <Tag size={20} />,
+  "/admin/workouts": <Dumbbell size={20} />,
+  "/admin/questions": <HelpCircle size={20} />,
 
-  
   // Trainer
   "/trainer": <LayoutDashboard size={20} />,
   "/trainer/sessions": <Calendar size={20} />,
@@ -44,13 +47,12 @@ const iconMap: Record<string, React.ReactNode> = {
   "/trainer/slots": <Clock size={20} />,
   "/trainer/earnings": <DollarSign size={20} />,
   "/trainer/profile": <UserCircle size={20} />,
-  
+
   // User
   "/": <LayoutDashboard size={20} />,
   "/food-log": <Apple size={20} />,
   "/progress": <TrendingUp size={20} />,
   "/profile": <UserCircle size={20} />,
-
 };
 
 const Sidebar = ({ role }: Props) => {
@@ -112,7 +114,8 @@ const Sidebar = ({ role }: Props) => {
         {/* PROFILE SECTION */}
         <div className="flex flex-col items-center mb-8 overflow-hidden">
           <div className="h-12 w-12 rounded-full bg-purple-600 flex items-center justify-center text-lg font-bold shrink-0">
-            {user?.name?.charAt(0).toUpperCase() || role.charAt(0).toUpperCase()}
+            {user?.name?.charAt(0).toUpperCase() ||
+              role.charAt(0).toUpperCase()}
           </div>
           {isExpanded && (
             <div className="mt-2 text-center transition-all duration-300">
@@ -171,11 +174,7 @@ const Sidebar = ({ role }: Props) => {
 
       {/* EXPAND/COLLAPSE INDICATOR */}
       <div className="absolute -right-3 top-1/2 transform -translate-y-1/2 bg-purple-600 rounded-full p-1 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-        {isExpanded ? (
-          <ChevronLeft size={16} />
-        ) : (
-          <ChevronRight size={16} />
-        )}
+        {isExpanded ? <ChevronLeft size={16} /> : <ChevronRight size={16} />}
       </div>
     </aside>
   );

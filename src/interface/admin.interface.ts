@@ -43,4 +43,35 @@ export interface PaginatedResponse<T> {
   data: T[];
   pagination: PaginationMeta;
 }
-
+
+export interface Category {
+  name: string;
+  description: string;
+  image: File | null;
+ 
+}
+
+export interface UpdateCategory {
+  categoryId: string;
+  name?: string;
+  description?: string;
+  image?: string;
+  isActive?: boolean;
+}
+
+/** Shape returned by the backend getAllCategories / getCategoryById endpoints */
+export interface CategoryResponse {
+  categoryId: string;
+  name: string;
+  description: string;
+  image: string;
+}
+
+export interface ICategory {
+  _id: string;
+  name: string;
+  description: string;
+  media: { image: { url: string } };
+  isActive: boolean;
+  createdAt: string;
+}

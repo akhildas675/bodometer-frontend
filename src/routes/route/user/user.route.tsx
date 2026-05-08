@@ -4,6 +4,7 @@ import UserProfilePage from "@/pages/user/user-profile.page";
 import ProtectedRoute from "@/routes/guard.routes/protected.route";
 import { USER_UI_ROUTES } from "@/constants/constant-routes/ui-routes/user.ui-constant.routes";
 import UserTrainersPage from "@/pages/user/user-trainers.page";
+import UserCategoriesPage from "@/pages/user/user-categories.page";
 import UserChangePasswordPage from "@/pages/user/user.change-password.page";
 import UserTrainerDetailPage from "@/pages/user/user.trainer-detail.page";
 import MainLayoutsNoSidebar from "@/components/layouts/user.layouts.ts/MainLayoutsNoSidebar";
@@ -25,8 +26,12 @@ export const userRoutes = (
         path={USER_UI_ROUTES.USER_TRAINER_DETAILS}
         element={<UserTrainerDetailPage />}
       />
-
+      <Route
+        path={USER_UI_ROUTES.USER_CATEGORIES}
+        element={<UserCategoriesPage />}
+      />
     </Route>
+
 
 
 

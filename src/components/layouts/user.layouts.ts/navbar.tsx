@@ -44,14 +44,14 @@ const Navbar = () => {
   </NavLink>
 
   <NavLink
-    to="/workouts"
+    to="/categories"
     className={({ isActive }) =>
       `cursor-pointer hover:text-white ${
         isActive ? "text-white font-semibold" : ""
       }`
     }
   >
-    Workouts
+    Categories
   </NavLink>
 
   <NavLink

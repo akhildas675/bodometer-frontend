@@ -9,12 +9,6 @@ export const ADMIN_API_ROUTES = {
   BLOCK_TRAINER: (trainerId: string) => `/trainer/${trainerId}/block`,
   UNBLOCK_TRAINER: (trainerId: string) => `/trainer/${trainerId}/unblock`,
 
-  // Workouts
-  GET_WORKOUTS: "/get-workouts",
-  ADD_WORKOUT: "/add-workout",
-  TOGGLE_WORKOUT_STATUS: (id: string) => `/toggle-workout/${id}`,
-  UPDATE_WORKOUT: (id: string) => `/update-workout/${id}`,
-  GET_WORKOUT_BY_ID: (id: string) => `/workout/${id}`,
 
   // Trainer Appointments
   GET_TRAINER_APPOINTMENTS: "/get-trainer-appointments",
@@ -22,21 +16,13 @@ export const ADMIN_API_ROUTES = {
   APPROVE_TRAINER: (profileId: string) => `/trainers/${profileId}/approve`,
   REJECT_TRAINER: (profileId: string) => `/trainers/${profileId}/reject`,
 
-  // Subscription
-  ADD_SUBSCRIPTION: "/add-subscription",
-  GET_ALL_SUBSCRIPTIONS: "/subscriptions",
-  GET_SUBSCRIPTION_BY_ID: (id: string) => `/subscriptions/${id}`,
-  UPDATE_SUBSCRIPTION: (id: string) => `/subscriptions/${id}`,
-  DELETE_SUBSCRIPTION: (id: string) => `/subscriptions/${id}`,
-  TOGGLE_SUBSCRIPTION_STATUS: (id: string) => `/subscriptions/${id}/toggle`,
+  //Category 
+  GET_CATEGORIES: "/get-categories",
+  CREATE_CATEGORY: "/create-category",
+  GET_CATEGORY_BY_ID: (id: string) => `/categories/${id}`,
+  UPDATE_CATEGORY: (id: string) => `/update-category/${id}`,
+  DELETE_CATEGORY: (id: string) => `/delete-category/${id}`,
+  TOGGLE_CATEGORY_STATUS: (id: string) => `/categories/${id}/toggle`,
 
-  // Onboarding
-  GET_ONBOARDING_QUESTIONS: "/onboarding/questions",
-  GET_ONBOARDING_QUESTION_BY_ID: (id: string) => `/onboarding/questions/${id}`,
-  CREATE_ONBOARDING_QUESTION: "/create-question",
-  UPDATE_ONBOARDING_QUESTION: (id: string) => `/update-question/${id}`,
-  DELETE_ONBOARDING_QUESTION: (id: string) => `/delete-question/${id}`,
-  GET_ONBOARDING_SECTIONS: "/onboarding-sections",
-  GET_SCHEMA_KEY: "/schema-keys",
   
 } as const;

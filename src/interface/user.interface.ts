@@ -50,4 +50,23 @@ export interface TrainerDetail {
   bio: string;
   experienceInYears: number;
 }
+
+export interface CategoryListItem {
+  _id: string;
+  categoryId: string;
+  name: string;
+  description: string;
+  image?: string;
+  media?: { image?: { url: string } };
+  isActive: boolean;
+  createdAt: string;
+}
+
+export interface CategoryDetail {
+  categoryId: string;
+  name: string;
+  description: string;
+  image: string;
+  isActive: boolean;
+}
 
