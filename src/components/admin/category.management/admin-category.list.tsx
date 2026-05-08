@@ -28,6 +28,16 @@ const AdminCategoryList = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
 
+  const fetchFn = useCallback(async() =>{
+    return adminServices.getAllCategories(
+        searchQuery,
+        sortConfig.field ? String(sortConfig.field) : undefined,
+        sortConfig.order,
+        currentPage,
+        itemsPerPage
+      )
+  },[searchQuery, sortConfig, currentPage, itemsPerPage])
+
   const {
     data: response,
     loading,
@@ -43,6 +53,10 @@ const AdminCategoryList = () => {
       ),
     false
   );
+
+  useEffect(() => {
+    refetch();
+  }, [fetchFn, refetch]);
 
   const [modalConfig, setModalConfig] = useState<CategoryModalConfig>({
     isOpen: false,

@@ -6,5 +6,6 @@ export const USER_UI_ROUTES={
     USER_CHANGE_PASSWORD:"/change-password",
 
     USER_CATEGORIES:"/categories",
+    USER_CATEGORIES_DETAIL:"/categories/:id",
 
 } as const

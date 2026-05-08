@@ -23,6 +23,7 @@ export const ADMIN_API_ROUTES = {
   UPDATE_CATEGORY: (id: string) => `/update-category/${id}`,
   DELETE_CATEGORY: (id: string) => `/delete-category/${id}`,
   TOGGLE_CATEGORY_STATUS: (id: string) => `/categories/${id}/toggle`,
+  GET_ALL_CATEGORIES: "/get-all-categories",
 
   
 } as const;

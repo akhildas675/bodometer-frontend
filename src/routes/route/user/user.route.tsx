@@ -9,42 +9,26 @@ import UserChangePasswordPage from "@/pages/user/user.change-password.page";
 import UserTrainerDetailPage from "@/pages/user/user.trainer-detail.page";
 import MainLayoutsNoSidebar from "@/components/layouts/user.layouts.ts/MainLayoutsNoSidebar";
 import { ROLES } from "@/constants/role";
+import UserCategoryDetailsPage from "@/pages/user/user.category-detail.page";
+
 export const userRoutes = (
   <Route element={<ProtectedRoute allowedRoles={[ROLES.USER]} />}>
     <Route element={<MainLayouts />}>
       <Route path={USER_UI_ROUTES.USER_PROFILE} element={<UserProfilePage />} />
-
+      <Route path={USER_UI_ROUTES.USER_CHANGE_PASSWORD} element={<UserChangePasswordPage />} />
+      <Route path={USER_UI_ROUTES.USER_TRAINERS} element={<UserTrainersPage />} />
+      <Route path={USER_UI_ROUTES.USER_TRAINER_DETAILS} element={<UserTrainerDetailPage />} />
+      <Route path={USER_UI_ROUTES.USER_CATEGORIES} element={<UserCategoriesPage />} />
       <Route
-        path={USER_UI_ROUTES.USER_CHANGE_PASSWORD}
-        element={<UserChangePasswordPage />}
+        path={USER_UI_ROUTES.USER_CATEGORIES_DETAIL} 
+        element={<UserCategoryDetailsPage />}
       />
-      <Route
-        path={USER_UI_ROUTES.USER_TRAINERS}
-        element={<UserTrainersPage />}
-      />
-      <Route
-        path={USER_UI_ROUTES.USER_TRAINER_DETAILS}
-        element={<UserTrainerDetailPage />}
-      />
-      <Route
-        path={USER_UI_ROUTES.USER_CATEGORIES}
-        element={<UserCategoriesPage />}
-      />
-    </Route>
 
+      {/* No Sidebar pages */}
+      <Route element={<MainLayoutsNoSidebar />}>
 
+      </Route>
 
-
-
-    {/* No Sidebar pages */}
-    <Route element={<MainLayoutsNoSidebar />}>
-
-
-    </Route>
-
-
-
-
-
+    </Route> 
   </Route>
 );
