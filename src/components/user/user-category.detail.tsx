@@ -47,7 +47,7 @@ const UserCategoryDetail = () => {
       [id],
     );
 
-    const {data:response,loading,error,refetch}=useFetch(fetchFn,false)
+    const {data:response,loading,error,refetch}=useFetch(fetchFn, !!id)
 
     console.log("category details",response)
     

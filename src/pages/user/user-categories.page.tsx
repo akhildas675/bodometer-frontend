@@ -1,8 +1,9 @@
-import UserCategoryDetail from "@/components/user/user-category.detail";
+import UserCategories from "@/components/user/user-categories";
+
 
 function UserCategoriesPage() {
   return <div>
-    <UserCategoryDetail/>
+    <UserCategories/>
   </div>;
 }
 

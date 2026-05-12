@@ -29,6 +29,7 @@ export const useCategoryActions = (
     {
      label:"Block",
      variant:"danger",
+     visible: (cat) => cat.isActive !== false,
      onClick:(cat)=>{
        setModalConfig({
         isOpen:true,
@@ -50,6 +51,7 @@ export const useCategoryActions = (
     {
       label:"Unblock",
       variant:"primary",
+      visible: (cat) => cat.isActive === false,
       onClick:(cat)=>{
         setModalConfig({
           isOpen:true,

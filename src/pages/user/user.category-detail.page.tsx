@@ -1,7 +1,9 @@
+import UserCategoryDetail from "@/components/user/user-category.detail";
+
 const CategoryDetailsPage = () => {
   return (
     <div>
-      <p>category details</p>
+      <UserCategoryDetail />
     </div>
   );
 };
