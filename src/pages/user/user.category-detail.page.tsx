@@ -1,11 +1,9 @@
-import UserCategoryDetail from "@/components/user/user-category.detail";
-
-const UserCategoryDetailsPage = () => {
+const CategoryDetailsPage = () => {
   return (
     <div>
-      <UserCategoryDetail/>
+      <p>category details</p>
     </div>
   );
 };
 
-export default UserCategoryDetailsPage;
+export default CategoryDetailsPage;

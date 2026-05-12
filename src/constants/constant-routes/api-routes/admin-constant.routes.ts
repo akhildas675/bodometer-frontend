@@ -25,5 +25,23 @@ export const ADMIN_API_ROUTES = {
   TOGGLE_CATEGORY_STATUS: (id: string) => `/categories/${id}/toggle`,
   GET_ALL_CATEGORIES: "/get-all-categories",
 
-  
+
+  //Subscription features
+
+  GET_SUBSCRIPTION_FEATURES: "/get-subscription-features",
+  CREATE_SUBSCRIPTION_FEATURE: "/create-subscription-feature",
+  GET_SUBSCRIPTION_FEATURE_BY_ID: (id: string) => `/get-subscription-feature/${id}`,
+  UPDATE_SUBSCRIPTION_FEATURE: (id: string) => `/update-subscription-feature/${id}`,
+  DELETE_SUBSCRIPTION_FEATURE: (id: string) => `/delete-subscription-feature/${id}`,
+  TOGGLE_SUBSCRIPTION_FEATURE_STATUS: (id: string) => `/toggle-subscription-features/${id}`,
+
+  //Subscription plans
+  GET_SUBSCRIPTION_PLANS: "/get-subscription-plans",
+  CREATE_SUBSCRIPTION_PLAN: "/create-subscription-plan",
+  GET_SUBSCRIPTION_PLAN_BY_ID: (id: string) => `/get-subscription-plan/${id}`,
+  UPDATE_SUBSCRIPTION_PLAN: (id: string) => `/update-subscription-plan/${id}`,
+  TOGGLE_SUBSCRIPTION_PLAN_STATUS: (id: string) => `/toggle-subscription-plan/${id}`,
+
+
+
 } as const;

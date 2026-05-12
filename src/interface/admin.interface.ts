@@ -48,7 +48,7 @@ export interface Category {
   name: string;
   description: string;
   image: File | null;
- 
+
 }
 
 export interface UpdateCategory {
@@ -74,4 +74,100 @@ export interface ICategory {
   media: { image: { url: string } };
   isActive: boolean;
   createdAt: string;
+}
+export interface SubscriptionFeature {
+  subscriptionFeatureId?: string;
+  key?: string;
+  title?: string;
+  description?: string;
+  type?: string;
+  isActive?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface SubscriptionPlanListItem {
+  planId: string;
+  name: string;
+  price: number;
+  durationInDays: number;
+  featuresCount: number;
+  isPopular: boolean;
+  isActive: boolean;
+}
+
+export interface FeatureListItem {
+  featureId: string;
+  key: string;
+  title: string;
+  description: string;
+  type: "boolean" | "limit";
+  isActive: boolean;
+}
+
+export interface SubscriptionPlanFormData {
+  name: string;
+  description: string;
+  price: string;
+  durationInDays: string;
+  isPopular: boolean;
+  features: {
+    featureId: string;
+    type: "boolean" | "limit";
+    limit: string;
+    limitType: string;
+  }[];
+}
+
+export interface SubscriptionPlanListItem {
+  planId: string;
+  name: string;
+  price: number;
+  durationInDays: number;
+  featuresCount: number;
+  isPopular: boolean;
+  isActive: boolean;
+}
+
+export interface FeatureListItem {
+  featureId: string;
+  key: string;
+  title: string;
+  description: string;
+  type: "boolean" | "limit";
+  isActive: boolean;
+}
+
+export interface SubscriptionPlanFormData {
+  name: string;
+  description: string;
+  price: string;
+  durationInDays: string;
+  isPopular: boolean;
+  features: {
+    featureId: string;
+    type: "boolean" | "limit";
+    limit: string;
+    limitType: string;
+  }[];
+}
+
+export interface SubscriptionPlan {
+  planId: string;
+  subscriptionPlanId?: string; // Backend consistency
+  name: string;
+  description: string;
+  price: number;
+  durationInDays: number;
+  isPopular: boolean;
+  featuresCount: number;
+  isActive: boolean;
+  features?: {
+    featureId: string;
+    title?: string;
+    limit?: number;
+    limitType?: string;
+  }[];
+  createdAt: string;
+  updatedAt: string;
 }

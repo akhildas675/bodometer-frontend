@@ -52,28 +52,28 @@ export interface TrainerDetail {
 }
 
 export interface CategoryListItem {
-  _id?: string;
-  categoryId?: string;
+  categoryId: string;
   name: string;
   description: string;
-  image?: string;
-  media?: {
-    image?: {
-      url?: string;
-    };
-  };
+  media?: { image?: { url: string } };
   isActive: boolean;
+  createdAt: string;
 }
 
 export interface CategoryDetail {
   categoryId: string;
   name: string;
   description: string;
-  media:{
-    image:{
-      url:string
-    }
-  }
+  image: string;
   isActive: boolean;
 }
 
+export interface ActiveSubscription{
+  subscriptionId: string;
+  planId: string;
+  planName: string;
+  startDate: string;
+  endDate: string;
+  status: string;
+  daysRemaining: number;
+}

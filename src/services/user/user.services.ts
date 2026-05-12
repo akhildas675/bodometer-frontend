@@ -1,7 +1,7 @@
 import { userApi } from "@/api/api.instance";
 
 import { USER_API_ROUTES } from "@/constants/constant-routes/api-routes/user-constant.routes";
-import { PaginationMeta } from "@/interface/admin.interface";
+import { PaginationMeta, SubscriptionPlan } from "@/interface/admin.interface";
 
 import type { ApiResponse } from "@/interface/api-response.interface";
 
@@ -13,6 +13,7 @@ import type {
   CategoryDetail,
   UploadProfilePictureResponse,
   UserProfileInterface,
+  ActiveSubscription,
 } from "@/interface/user.interface";
 
 const userServices = {
@@ -100,6 +101,33 @@ const userServices = {
     return response.data;
   },
 
+
+  async getMySubscriptions(): Promise<ApiResponse<SubscriptionPlan>> {
+    const response = await userApi.get<ApiResponse<SubscriptionPlan>>(USER_API_ROUTES.GET_MY_SUBSCRIPTION);
+    console.log("subscription frontend service", response.data)
+    return response.data
+  },
+
+  async createCheckoutSession(planId: string): Promise<ApiResponse<{ checkoutUrl: string }>> {
+    const response = await userApi.post<ApiResponse<{ checkoutUrl: string }>>(USER_API_ROUTES.CREATE_CHECKOUT_SESSION, {
+      planId: planId
+    });
+    return response.data
+  },
+
+  async verifyPayment(sessionId: string): Promise<ApiResponse<ActiveSubscription>> {
+    const response = await userApi.get<ApiResponse<ActiveSubscription>>(
+      `${USER_API_ROUTES.VERIFY_PAYMENT}?session_id=${sessionId}`
+    );
+    return response.data;
+  },
+
+  async getActiveSubscription(): Promise<ApiResponse<ActiveSubscription | null>> {
+    const response = await userApi.get<ApiResponse<ActiveSubscription | null>>(
+      USER_API_ROUTES.GET_ACTIVE_SUBSCRIPTION
+    );
+    return response.data;
+  },
 
 };
 

@@ -1,17 +1,28 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, Dumbbell } from "lucide-react";
 import userServices from "@/services/user/user.services";
-import { CategoryDetail } from "@/interface/user.interface";
+import { useFetch } from "@/hooks/useFetch";
 
+interface ICategoryDetail {
+  _id: string;
+  name: string;
+  description: string;
+  media?: { image?: { url?: string } };
+  image?: string;
+}
 
-const resolveImage = (cat: CategoryDetail): string =>
-  cat.media?.image?.url ?? "";
+const resolveImage = (cat: ICategoryDetail): string =>
+  cat.media?.image?.url ?? cat.image ?? "";
 
+// ── Skeleton ──────────────────────────────────────────────────────────────
 const DetailSkeleton = () => (
   <div className="animate-pulse">
+    {/* Hero */}
     <div className="w-full rounded-2xl bg-[#140b3a] mb-8" style={{ height: "360px" }} />
+    {/* Title */}
     <div className="h-8 w-1/3 bg-white/10 rounded-lg mb-4" />
+    {/* Description lines */}
     <div className="space-y-3">
       <div className="h-4 w-full bg-white/10 rounded" />
       <div className="h-4 w-5/6 bg-white/10 rounded" />
@@ -20,39 +31,35 @@ const DetailSkeleton = () => (
   </div>
 );
 
+// ── Page ──────────────────────────────────────────────────────────────────
 const UserCategoryDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [category, setCategory] = useState<CategoryDetail | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
 
-  useEffect(() => {
-    if (!id) return;
+  const [category, setCategory] = useState<ICategoryDetail | null>(null);
 
-    const fetchCategory = async () => {
-      try {
-        setLoading(true);
-        setError(false);
-        const response = await userServices.getCategoryById(id);
-        if (response?.success) {
-          setCategory(response.data);
-        } else {
-          setError(true);
-        }
-      } catch  {
-        setError(true);
 
-      } finally {
-        setLoading(false);
+    const fetchFn = useCallback(
+      () =>
+        userServices
+          .getCategoryById(id)
+          .then((res) => ({ data: res.data })),
+      [id],
+    );
+
+    const {data:response,loading,error,refetch}=useFetch(fetchFn,false)
+
+    console.log("category details",response)
+    
+    useEffect(() => {
+      if (response) {
+        setCategory(response.data);
       }
-    };
-
-    fetchCategory();
-  }, [id]);
+    }, [response,refetch]);
 
   return (
     <div className="text-white min-h-screen max-w-4xl mx-auto">
+      {/* Back */}
       <button
         onClick={() => navigate(-1)}
         className="flex items-center gap-2 text-purple-400 hover:text-white mb-6 transition text-sm"
@@ -61,18 +68,22 @@ const UserCategoryDetail = () => {
         Back
       </button>
 
+      {/* Loading */}
       {loading && <DetailSkeleton />}
 
+      {/* Error */}
       {!loading && error && (
         <div className="text-center py-24 text-red-400">
           Failed to load category. Please try again.
         </div>
       )}
 
+      {/* Content */}
       {!loading && !error && category && (() => {
         const imgSrc = resolveImage(category);
         return (
           <>
+            {/* Hero image */}
             <div
               className="relative w-full rounded-2xl overflow-hidden border border-purple-700/30 mb-8"
               style={{ height: "360px" }}
@@ -88,7 +99,11 @@ const UserCategoryDetail = () => {
                   <Dumbbell size={72} className="text-purple-600/30" />
                 </div>
               )}
-              <div className="absolute inset-0 bg-linear-to-t from-[#0a0624]/80 via-transparent to-transparent" />
+
+              {/* Gradient */}
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0a0624]/80 via-transparent to-transparent" />
+
+              {/* Name overlay on image */}
               <div className="absolute bottom-0 left-0 right-0 px-8 pb-7">
                 <h1 className="text-4xl font-extrabold tracking-widest uppercase text-white drop-shadow-lg">
                   {category.name}
@@ -96,6 +111,7 @@ const UserCategoryDetail = () => {
               </div>
             </div>
 
+            {/* Description */}
             {category.description && (
               <div className="bg-indigo-900/40 border border-purple-800/30 rounded-2xl p-6 backdrop-blur">
                 <h2 className="text-purple-300 text-xs font-semibold uppercase tracking-widest mb-3">

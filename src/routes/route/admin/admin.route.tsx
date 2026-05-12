@@ -11,6 +11,10 @@ import { ADMIN_UI_ROUTES } from "@/constants/constant-routes/ui-routes/admin.ui-
 import MainSidebarLayout from "@/components/layouts/main-sidebar.layout";
 import AdminCategoryListPage from "@/pages/admin/admin.category-list.page";
 import AdminCategoryFormPage from "@/pages/admin/admin.category-form.page";
+import AdminSubscriptionFeatureListPage from "@/pages/admin/admin-subscription.feature-list.page";
+import AdminSubscriptionFeatureFormPage from "@/pages/admin/admin-subscription.featureform.page";
+import AdminSubscriptionPlanListPage from "@/pages/admin/admin-subscription.plan-list.page";
+import AdminSubscriptionPlanFormPage from "@/pages/admin/admin-subscription.plan-form.page";
 
 
 export const adminRoutes = (
@@ -25,6 +29,12 @@ export const adminRoutes = (
     <Route path={ADMIN_UI_ROUTES.CATEGORY} element={<AdminCategoryListPage />} />
     <Route path={ADMIN_UI_ROUTES.CATEGORY_CREATE} element={<AdminCategoryFormPage />} />
     <Route path={ADMIN_UI_ROUTES.CATEGORY_EDIT_PATH} element={<AdminCategoryFormPage />} />
+    <Route path={ADMIN_UI_ROUTES.SUBSCRIPTION_FEATURES} element={<AdminSubscriptionFeatureListPage/>} />
+    <Route path={ADMIN_UI_ROUTES.SUBSCRIPTION_FEATURE_CREATE} element={<AdminSubscriptionFeatureFormPage/>} />
+    <Route path={ADMIN_UI_ROUTES.SUBSCRIPTION_FEATURE_EDIT_PATH} element={<AdminSubscriptionFeatureFormPage/>} />
+    <Route path={ADMIN_UI_ROUTES.SUBSCRIPTION_PLANS} element={<AdminSubscriptionPlanListPage/>} />
+    <Route path={ADMIN_UI_ROUTES.SUBSCRIPTION_PLAN_CREATE} element={<AdminSubscriptionPlanFormPage/>} />
+    <Route path={ADMIN_UI_ROUTES.SUBSCRIPTION_PLAN_EDIT_PATH} element={<AdminSubscriptionPlanFormPage/>} />
 
 
     </Route>

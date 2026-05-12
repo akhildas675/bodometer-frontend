@@ -1,27 +1,164 @@
-import { CheckCircle } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { CheckCircle, Loader2, AlertCircle, Calendar, Clock, Zap } from "lucide-react";
+import userServices from "@/services/user/user.services";
+import { ActiveSubscription } from "@/interface/user.interface";
+
+type PageState = "loading" | "success" | "error";
 
 const UserSubscriptionSuccess = () => {
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const sessionId = searchParams.get("session_id");
 
+  const [state, setState] = useState<PageState>("loading");
+  const [subscription, setSubscription] = useState<ActiveSubscription | null>(null);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  useEffect(() => {
+    if (!sessionId) {
+      setErrorMessage("No session ID found. Your payment may still have gone through.");
+      setState("error");
+      return;
+    }
+
+    let isMounted = true;
+
+    const verify = async () => {
+      try {
+        const res = await userServices.verifyPayment(sessionId);
+        if (!isMounted) return;
+        
+        setSubscription(res.data);
+        setState("success");
+      } catch (err: unknown) {
+        if (!isMounted) return;
+
+        const message =
+          err instanceof Error ? err.message : "Unable to confirm payment at this time.";
+        setErrorMessage(message);
+        setState("error");
+      }
+    };
+
+    verify();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [sessionId]);
+
+  const formatDate = (d: string) =>
+    new Date(d).toLocaleDateString("en-IN", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
+
+  // ── Loading ──────────────────────────────────────────────────────────────
+  if (state === "loading") {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-[#03000D] to-[#190473] flex items-center justify-center">
+        <div className="text-center text-white">
+          <div className="w-16 h-16 rounded-full bg-white/10 flex items-center justify-center mx-auto mb-5">
+            <Loader2 size={28} className="animate-spin text-purple-300" />
+          </div>
+          <p className="text-white/70 text-sm">Confirming your payment…</p>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Error ────────────────────────────────────────────────────────────────
+  if (state === "error") {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-[#03000D] to-[#190473] flex items-center justify-center px-6">
+        <div className="text-center text-white max-w-md">
+          <div className="w-16 h-16 rounded-full bg-amber-500/15 border border-amber-500/30 flex items-center justify-center mx-auto mb-5">
+            <AlertCircle size={28} className="text-amber-400" />
+          </div>
+          <h2 className="text-xl font-semibold mb-2">Payment received</h2>
+          <p className="text-white/60 text-sm leading-relaxed mb-8">
+            {errorMessage || "Your payment went through but we couldn't activate your subscription yet. It may take a moment."}
+          </p>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <button
+              onClick={() => navigate("/")}
+              className="px-6 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-sm font-semibold transition"
+            >
+              Go to Dashboard
+            </button>
+            <button
+              onClick={() => window.location.reload()}
+              className="px-6 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-white/80 text-sm font-semibold transition"
+            >
+              Try Again
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Success
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#03000D] to-[#190473] flex items-center justify-center px-6">
-      <div className="text-center text-white max-w-xl">
-        <CheckCircle size={72} className="text-green-400 mx-auto mb-6" />
+      <div className="w-full max-w-md text-white text-center">
 
-        <h1 className="text-4xl font-bold mb-4">
-          Payment Successful!
-        </h1>
+        {/* Icon */}
+        <div className="w-20 h-20 rounded-full bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center mx-auto mb-6">
+          <CheckCircle size={36} className="text-emerald-400" />
+        </div>
 
-        <p className="text-white/70 text-lg mb-10">
-          Your subscription is now active. Start your fitness journey.
+        {/* Heading */}
+        <h1 className="text-3xl font-bold mb-2">Payment Successful!</h1>
+        <p className="text-white/60 text-sm mb-8">
+          Your{" "}
+          <span className="text-white font-medium">{subscription?.planName}</span>{" "}
+          subscription is now active.
         </p>
 
+        {/* Subscription details */}
+        {subscription && (
+          <div className="bg-white/5 border border-white/10 rounded-2xl p-5 mb-8 text-left space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-lg bg-purple-500/20 flex items-center justify-center">
+                <Zap size={14} className="text-purple-300" />
+              </div>
+              <div>
+                <p className="text-white/50 text-xs">Plan</p>
+                <p className="text-white text-sm font-medium">{subscription.planName}</p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-lg bg-emerald-500/20 flex items-center justify-center">
+                <Clock size={14} className="text-emerald-300" />
+              </div>
+              <div>
+                <p className="text-white/50 text-xs">Days Remaining</p>
+                <p className="text-white text-sm font-medium">{subscription.daysRemaining} days</p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center">
+                <Calendar size={14} className="text-blue-300" />
+              </div>
+              <div>
+                <p className="text-white/50 text-xs">Valid Until</p>
+                <p className="text-white text-sm font-medium">{formatDate(subscription.endDate)}</p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* CTA */}
         <button
           onClick={() => navigate("/intro")}
-          className="px-8 py-4 bg-purple-600 hover:bg-purple-700 rounded-xl font-semibold transition-all"
+          className="w-full py-3.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-semibold transition-all active:scale-[0.98]"
         >
-          Start Onboarding
+          Start Training
         </button>
       </div>
     </div>

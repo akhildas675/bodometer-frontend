@@ -7,6 +7,8 @@ import type {
   AdminGetUsersResponse,
   PaginatedResponse,
   PaginationMeta,
+  SubscriptionFeature,
+  SubscriptionPlan,
   UpdateCategory,
 } from "@/interface/admin.interface";
 
@@ -221,13 +223,168 @@ class AdminService {
       pagination: response.data.pagination,
     };
   }
+
   async toggleCategoryStatus(id: string): Promise<ApiResponse<{ message: string }>> {
-    const response = await adminApi.patch<ApiResponse<{ message: string }>>(
-      ADMIN_API_ROUTES.TOGGLE_CATEGORY_STATUS(id)
+    const response = await adminApi.patch<ApiResponse<{ message: string }>>(ADMIN_API_ROUTES.TOGGLE_CATEGORY_STATUS(id));
+    return response.data
+  }
+
+  async getAllSubscriptionFeatures(
+    search?: string,
+    type?: "boolean" | "count",
+    sortBy?: string,
+    sortOrder?: "asc" | "desc",
+    page?: number,
+    limit?: number
+  ): Promise<PaginatedResponse<SubscriptionFeature>> {
+    const params: Record<string, string | number> = {};
+    if (search) params.search = search;
+    if (type) params.type = type;
+    if (sortBy) params.sortBy = sortBy;
+    if (sortOrder) params.sortOrder = sortOrder;
+    if (page) params.page = page;
+    if (limit) params.limit = limit;
+
+    const response = await adminApi.get<{
+      success: boolean;
+      data: SubscriptionFeature[];
+      pagination: PaginationMeta;
+    }>(ADMIN_API_ROUTES.GET_SUBSCRIPTION_FEATURES, { params });
+
+    return {
+      data: response.data.data,
+      pagination: response.data.pagination,
+    };
+  }
+
+  async createSubscriptionFeature(
+    featureData: SubscriptionFeature
+  ): Promise<ApiResponse<{ message: string }>> {
+    const response = await adminApi.post<ApiResponse<{ message: string }>>(
+      ADMIN_API_ROUTES.CREATE_SUBSCRIPTION_FEATURE,
+      featureData
     );
     return response.data;
   }
 
+  async getSubscriptionFeatureById(
+    id: string
+  ): Promise<ApiResponse<SubscriptionFeature>> {
+    const response = await adminApi.get<ApiResponse<SubscriptionFeature>>(
+      ADMIN_API_ROUTES.GET_SUBSCRIPTION_FEATURE_BY_ID(id)
+    );
+    return response.data;
+  }
+
+  async updateSubscriptionFeature(
+    id: string,
+    featureData: SubscriptionFeature
+  ): Promise<ApiResponse<{ message: string }>> {
+    const response = await adminApi.put<ApiResponse<{ message: string }>>(
+      ADMIN_API_ROUTES.UPDATE_SUBSCRIPTION_FEATURE(id),
+      featureData
+    );
+    return response.data;
+  }
+
+  async toggleSubscriptionFeatureStatus(subscriptionFeatureId: string): Promise<ApiResponse<{ message: string }>> {
+    const response = await adminApi.patch<ApiResponse<{ message: string }>>(
+      ADMIN_API_ROUTES.TOGGLE_SUBSCRIPTION_FEATURE_STATUS(subscriptionFeatureId)
+    )
+    return response.data
+  }
+
+  async getAllSubscriptionPlans(
+    search?: string,
+    sortBy?: string,
+    sortOrder?: "asc" | "desc",
+    page?: number,
+    limit?: number
+  ): Promise<PaginatedResponse<SubscriptionPlan>> {
+    const params: Record<string, string | number> = {};
+    if (search) params.search = search;
+    if (sortBy) params.sortBy = sortBy;
+    if (sortOrder) params.sortOrder = sortOrder;
+    if (page) params.page = page;
+    if (limit) params.limit = limit;
+
+    const response = await adminApi.get<{
+      success: boolean;
+      data: Array<{
+        subscriptionPlanId: string;
+        name: string;
+        price: number;
+        durationInDays: number;
+        isPopular: boolean;
+        isActive: boolean;
+        features?: Array<{ featureId: string; limit?: number; limitType?: string }>;
+        description?: string;
+      }>;
+      pagination: PaginationMeta;
+    }>(ADMIN_API_ROUTES.GET_SUBSCRIPTION_PLANS, { params });
+
+    const mappedData: SubscriptionPlan[] = (response.data.data || []).map((b) => ({
+      planId: b.subscriptionPlanId,
+      name: b.name,
+      price: b.price,
+      durationInDays: b.durationInDays,
+      isPopular: b.isPopular,
+      isActive: b.isActive,
+      description: b.description || "",
+      featuresCount: b.features?.length || 0,
+      createdAt: "", 
+      updatedAt: ""
+    }));
+
+    return {
+      data: mappedData,
+      pagination: response.data.pagination,
+    };
+  }
+
+  async createSubscriptionPlan(payload: {
+    name: string;
+    description: string;
+    price: number;
+    durationInDays: number;
+    isPopular: boolean;
+    features: Array<{ featureId: string; limit?: number; limitType?: string }>;
+  }): Promise<ApiResponse<{ message: string }>> {
+    const response = await adminApi.post<ApiResponse<{ message: string }>>(
+      ADMIN_API_ROUTES.CREATE_SUBSCRIPTION_PLAN,
+      payload
+    );
+    return response.data;
+  }
+
+  async getSubscriptionPlanById(id: string): Promise<ApiResponse<SubscriptionPlan & { features: Array<{ featureId: string; type: "boolean" | "limit"; limit?: number; limitType?: string }> }>> {
+    const response = await adminApi.get<ApiResponse<SubscriptionPlan & { features: Array<{ featureId: string; type: "boolean" | "limit"; limit?: number; limitType?: string }> }>>(
+      ADMIN_API_ROUTES.GET_SUBSCRIPTION_PLAN_BY_ID(id)
+    );
+    return response.data;
+  }
+
+  async updateSubscriptionPlan(id: string, payload: {
+    name: string;
+    description: string;
+    price: number;
+    durationInDays: number;
+    isPopular: boolean;
+    features: Array<{ featureId: string; limit?: number; limitType?: string }>;
+  }): Promise<ApiResponse<{ message: string }>> {
+    const response = await adminApi.put<ApiResponse<{ message: string }>>(
+      ADMIN_API_ROUTES.UPDATE_SUBSCRIPTION_PLAN(id),
+      payload
+    );
+    return response.data;
+  }
+
+  async toggleSubscriptionPlanStatus(id: string): Promise<ApiResponse<{ message: string }>> {
+    const response = await adminApi.patch<ApiResponse<{ message: string }>>(
+      ADMIN_API_ROUTES.TOGGLE_SUBSCRIPTION_PLAN_STATUS(id)
+    );
+    return response.data;
+  }
 }
 
 export default new AdminService();

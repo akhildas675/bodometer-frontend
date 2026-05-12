@@ -3,9 +3,11 @@ import type { Role } from "@/constants/role";
 export type SidebarItem = {
   label: string;
   path: string;
+  children?: SidebarItem[];
 };
 
-export type SidebarRole = Role
+export type SidebarRole = Role;
+
 export const sidebarConfig: Record<SidebarRole, SidebarItem[]> = {
   admin: [
     { label: "Dashboard", path: "/admin" },
@@ -13,6 +15,14 @@ export const sidebarConfig: Record<SidebarRole, SidebarItem[]> = {
     { label: "Trainers", path: "/admin/trainers" },
     { label: "Trainer Appointment", path: "/admin/appointments" },
     { label: "Category", path: "/admin/category" },
+    {
+      label: "Subscription",
+      path: "/admin/subscription",
+      children: [
+        { label: "Plans", path: "/admin/subscription/plans" },
+        { label: "Features", path: "/admin/subscription/features" },
+      ],
+    },
   ],
 
   trainer: [
@@ -27,11 +37,8 @@ export const sidebarConfig: Record<SidebarRole, SidebarItem[]> = {
 
   user: [
     { label: "Dashboard", path: "/" },
-
     { label: "Food Log", path: "/food-log" },
     { label: "Progress", path: "/progress" },
-
     { label: "Profile", path: "/profile" },
-
   ],
 };

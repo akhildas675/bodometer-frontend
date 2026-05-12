@@ -1,11 +1,9 @@
-import UserCategories from '@/components/user/user-categories';
+import UserCategoryDetail from "@/components/user/user-category.detail";
 
-const UserCategoriesPage = () => {
-    return (
-        <div>
-            <UserCategories />
-        </div>
-    );
-};
+function UserCategoriesPage() {
+  return <div>
+    <UserCategoryDetail/>
+  </div>;
+}
 
 export default UserCategoriesPage;

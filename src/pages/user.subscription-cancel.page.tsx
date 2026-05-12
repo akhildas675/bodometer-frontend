@@ -1,7 +1,7 @@
 import UserSubscriptionSuccess from '@/components/user/user-subscription.success';
+import React from 'react';
 
-
-const UserSubscriptionSuccessPage = () => {
+const UserSubscriptionCancelPage = () => {
     return (
         <div>
             <UserSubscriptionSuccess/>
@@ -9,4 +9,4 @@ const UserSubscriptionSuccessPage = () => {
     );
 }
 
-export default UserSubscriptionSuccessPage;
+export default UserSubscriptionCancelPage;
