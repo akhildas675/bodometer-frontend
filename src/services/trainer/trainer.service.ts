@@ -12,6 +12,8 @@ import type {
   UploadProfilePictureResponse,
 
 } from "@/interface/trainer.interface";
+import type { CategoryListItem } from "@/interface/user.interface";
+import { PaginationMeta } from "@/interface/admin.interface";
 
 class TrainerService {
   async getTrainerProfile(): Promise<ApiResponse<TrainerProfileInterface>> {
@@ -52,6 +54,21 @@ async submitTrainerProfile(
   async getTrainerProfileStatus(): Promise<ApiResponse<TrainerProfileStatus>> {
     const response = await trainerApi.get<ApiResponse<TrainerProfileStatus>>("/profile/status");
     return response.data
+  }
+
+  async getCategories(
+    page = 1,
+    limit = 20,
+    search?: string,
+  ): Promise<ApiResponse<CategoryListItem[]> & { pagination: PaginationMeta }> {
+    const params = new URLSearchParams();
+    params.append("page", String(page));
+    params.append("limit", String(limit));
+    if (search) params.append("search", search);
+    const response = await trainerApi.get(
+      `${TRAINER_API_ROUTES.GET_CATEGORIES}?${params.toString()}`
+    );
+    return response.data;
   }
 }
 

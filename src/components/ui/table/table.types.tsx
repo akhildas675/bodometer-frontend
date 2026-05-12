@@ -22,7 +22,7 @@ export interface TableAction<T> {
 export interface TrainerProfile {
   _id: string;
   userId: string;
-  specializationIds: { _id: string; workoutName: string }[];  
+  specializations: { _id: string; name: string }[];  
   experienceInYears: number;
   certifications: string[];
   bio: string;

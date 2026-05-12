@@ -39,7 +39,7 @@ export interface TrainerListItem {
   experienceInYears: number;
   coverPhoto: string | null;
   bio: string;
-  specializations: { _id: string; workoutName: string }[];
+  specializations: { _id: string; name: string }[];
 }
 
 export interface TrainerDetail {
@@ -49,6 +49,7 @@ export interface TrainerDetail {
   coverPhoto: string;
   bio: string;
   experienceInYears: number;
+  specializations: { _id: string; name: string }[];
 }
 
 export interface CategoryListItem {
@@ -64,7 +65,8 @@ export interface CategoryDetail {
   categoryId: string;
   name: string;
   description: string;
-  image: string;
+  media?: { image?: { url: string } };
+  image?: string;
   isActive: boolean;
 }
 

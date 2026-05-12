@@ -228,14 +228,14 @@ const AdminTrainerAppointmentDetails = () => {
 
             <div>
               <p className="text-slate-400 text-sm mb-2">Specializations</p>
-              {trainer.profile.specializationIds.length > 0 ? (
+              {trainer.profile.specializations && trainer.profile.specializations.length > 0 ? (
                 <div className="flex flex-wrap gap-2">
-                  {trainer.profile.specializationIds.map((spec) => (
+                  {trainer.profile.specializations.map((spec) => (
                     <span
                       key={spec._id}
                       className="px-3 py-1 bg-indigo-500/20 border border-indigo-500/30 text-indigo-300 rounded-full text-sm"
                     >
-                      {spec.workoutName}
+                      {spec.name}
                     </span>
                   ))}
                 </div>

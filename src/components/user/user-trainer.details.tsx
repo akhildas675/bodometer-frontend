@@ -110,7 +110,7 @@ const UserTrainerDetails = () => {
                         className="flex items-center gap-1.5 px-3 py-1 bg-indigo-900/60 text-indigo-300 rounded-full text-sm"
                       >
                         <Dumbbell size={11} />
-                        {spec.workoutName}
+                        {spec.name}
                       </span>
                     ))}
                   </div>

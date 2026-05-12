@@ -44,7 +44,7 @@ const AuthLoginPage = () => {
         trainerStatus.profileExists === null;
 
       if (noProfile) {
-        navigate("/trainer/onboarding/workouts", { replace: true });
+        navigate("/trainer/categories", { replace: true });
         return;
       }
 

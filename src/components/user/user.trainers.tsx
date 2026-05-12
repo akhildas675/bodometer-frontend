@@ -69,7 +69,7 @@ const TrainerCard = ({ trainer }: { trainer: TrainerListItem }) => {
           <p className="text-white/50 text-xs mb-4 truncate">
             {trainer.specializations
               .slice(0, 4)
-              .map((s) => s.workoutName)
+              .map((s) => s.name)
               .join(", ")}
             {trainer.specializations.length > 4 && "..."}
           </p>

@@ -1,18 +1,13 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, Dumbbell } from "lucide-react";
 import userServices from "@/services/user/user.services";
 import { useFetch } from "@/hooks/useFetch";
 
-interface ICategoryDetail {
-  _id: string;
-  name: string;
-  description: string;
-  media?: { image?: { url?: string } };
-  image?: string;
-}
+import type { CategoryDetail } from "@/interface/user.interface";
+import type { ApiResponse } from "@/interface/api-response.interface";
 
-const resolveImage = (cat: ICategoryDetail): string =>
+const resolveImage = (cat: CategoryDetail): string =>
   cat.media?.image?.url ?? cat.image ?? "";
 
 // ── Skeleton ──────────────────────────────────────────────────────────────
@@ -36,26 +31,12 @@ const UserCategoryDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
-  const [category, setCategory] = useState<ICategoryDetail | null>(null);
+  const { data, loading, error } = useFetch<ApiResponse<CategoryDetail>>(
+    useCallback(() => userServices.getCategoryById(id!), [id]),
+    !!id
+  );
 
-
-    const fetchFn = useCallback(
-      () =>
-        userServices
-          .getCategoryById(id)
-          .then((res) => ({ data: res.data })),
-      [id],
-    );
-
-    const {data:response,loading,error,refetch}=useFetch(fetchFn, !!id)
-
-    console.log("category details",response)
-    
-    useEffect(() => {
-      if (response) {
-        setCategory(response.data);
-      }
-    }, [response,refetch]);
+  const category = data?.data ?? null;
 
   return (
     <div className="text-white min-h-screen max-w-4xl mx-auto">

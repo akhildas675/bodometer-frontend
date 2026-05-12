@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { useFetch } from "@/hooks/useFetch";
-import type { WorkoutList } from "@/interface/trainer.interface";
+import type { CategoryListItem } from "@/interface/user.interface";
 import trainerService from "@/services/trainer/trainer.service";
 import { toast } from "sonner";
 import authInitService from "@/services/auth/auth-init.service";
@@ -25,11 +25,11 @@ const TrainerOnboardingSkills = () => {
   const navigate = useNavigate();
 
   const {
-    data: workoutList,
+    data: categoryList,
     loading,
     refetch,
-  } = useFetch<WorkoutList[]>(() =>
-    trainerService.workoutList().then((res) => res.data),
+  } = useFetch<CategoryListItem[]>(() =>
+    trainerService.getCategories().then((res) => res.data),
   );
 
   useEffect(() => {
@@ -63,32 +63,32 @@ const TrainerOnboardingSkills = () => {
 
   const handleNext = () => {
     if (selectedSkills.length === 0) {
-      toast.error("Select at least one workout");
+      toast.error("Select at least one category");
       return;
     }
 
     navigate("/trainer/onboarding/profile");
   };
 
-  if (loading && !workoutList) {
+  if (loading && !categoryList) {
     return (
       <div className="min-h-screen bg-linear-to-b from-[#03000D] to-[#190473] flex items-center justify-center">
-        <div className="text-white text-xl">Loading workouts...</div>
+        <div className="text-white text-xl">Loading categories...</div>
       </div>
     );
   }
 
-  if (!workoutList || workoutList.length === 0) {
+  if (!categoryList || categoryList.length === 0) {
     return (
       <div className="min-h-screen bg-linear-to-b from-[#03000D] to-[#190473] flex items-center justify-center">
-        <div className="text-white text-xl">No workouts available</div>
+        <div className="text-white text-xl">No categories available</div>
       </div>
     );
   }
 
-  const midPoint = Math.ceil(workoutList.length / 2);
-  const leftColumn = workoutList.slice(0, midPoint);
-  const rightColumn = workoutList.slice(midPoint);
+  const midPoint = Math.ceil(categoryList.length / 2);
+  const leftColumn = categoryList.slice(0, midPoint);
+  const rightColumn = categoryList.slice(midPoint);
 
   return (
     <div className="min-h-screen bg-linear-to-b from-[#03000D] to-[#190473] flex flex-col items-center justify-center p-8">
@@ -136,22 +136,22 @@ const TrainerOnboardingSkills = () => {
             {/* SKILLS GRID */}
             <div className="grid grid-cols-2 gap-6 mb-12">
               <div className="space-y-4">
-                {leftColumn.map((workout) => (
+                {leftColumn.map((category) => (
                   <Skill
-                    key={workout.id}
-                    label={workout.workoutName}
-                    checked={selectedSkills.includes(workout.id)}
-                    onClick={() => toggleSkill(workout.id)}
+                    key={category.categoryId}
+                    label={category.name}
+                    checked={selectedSkills.includes(category.categoryId)}
+                    onClick={() => toggleSkill(category.categoryId)}
                   />
                 ))}
               </div>
               <div className="space-y-4">
-                {rightColumn.map((workout) => (
+                {rightColumn.map((category) => (
                   <Skill
-                    key={workout.id}
-                    label={workout.workoutName}
-                    checked={selectedSkills.includes(workout.id)}
-                    onClick={() => toggleSkill(workout.id)}
+                    key={category.categoryId}
+                    label={category.name}
+                    checked={selectedSkills.includes(category.categoryId)}
+                    onClick={() => toggleSkill(category.categoryId)}
                   />
                 ))}
               </div>
