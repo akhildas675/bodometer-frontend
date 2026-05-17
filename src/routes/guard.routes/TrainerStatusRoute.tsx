@@ -30,7 +30,7 @@ const TrainerStatusRoute = () => {
           setRedirect("/login");
         } else if (!status) {
         
-          setRedirect("/trainer/onboarding/workouts");
+          setRedirect("/trainer/onboarding/intro");
         } else {
        
           useAuthStore.getState().setVerificationStatus(status);

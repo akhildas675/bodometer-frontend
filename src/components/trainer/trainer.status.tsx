@@ -227,7 +227,7 @@ useEffect(() => {
 
           {isRejected && (
             <button
-              onClick={() => navigate("//trainer/onboarding/workouts")}
+              onClick={() => navigate("/trainer/onboarding/intro")}
               className="mt-8 flex items-center gap-2 px-8 py-3 rounded-full bg-linear-to-r from-red-600/80 to-rose-600/80 hover:from-red-600 hover:to-rose-600 text-white font-semibold text-sm transition-all hover:scale-105 shadow-lg shadow-red-900/30 border border-red-500/30"
             >
               <RefreshCw size={16} />

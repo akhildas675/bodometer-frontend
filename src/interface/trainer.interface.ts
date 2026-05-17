@@ -26,6 +26,11 @@ export interface TrainerProfileInterface {
   gender: Gender;
   profilePic: string | null;
   dateOfBirth: Date | null;
+  experienceInYears?: number;
+  bio?: string;
+  specializations?: string[];
+  coverPhoto?: string;
+  certifications?: string[];
 }
 
 export interface ProfileUpdatePayload {
@@ -35,6 +40,11 @@ export interface ProfileUpdatePayload {
   gender: Gender;
   profilePic?: string;
   dateOfBirth: Date | null;
+  experienceInYears?: number;
+  bio?: string;
+  specializations?: string[];
+  coverPhoto?: string;
+  certifications?: string[];
 }
 
 export interface UploadProfilePictureResponse {

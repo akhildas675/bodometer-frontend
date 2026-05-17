@@ -49,7 +49,7 @@ const AuthLoginPage = () => {
         trainerStatus.profileExists === null;
 
       if (noProfile) {
-        navigate("/trainer/categories", { replace: true });
+        navigate("/trainer/onboarding/intro", { replace: true });
         return;
       }
 

@@ -7,6 +7,13 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
+const GENDER_LABELS: Record<string, string> = {
+  [GENDER.MALE]: "Male",
+  [GENDER.FEMALE]: "Female",
+  [GENDER.OTHER]: "Other",
+  [GENDER.PREFER_NOT_SAY]: "Prefer Not to Say",
+};
+
 const TrainerOnboardingProfile = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -281,14 +288,20 @@ const TrainerOnboardingProfile = () => {
             <select
               value={form.profile.gender}
               onChange={handleChange("gender")}
-              className="w-full px-6 py-3 rounded-full bg-blue-900/30 text-white border border-purple-700/50 text-sm font-medium focus:outline-none focus:border-purple-400 transition-all appearance-none"
+              className="w-full px-6 py-3 rounded-full bg-purple-900/30 text-white border border-purple-700/50 text-sm font-medium focus:outline-none focus:border-purple-400 transition-all appearance-none cursor-pointer pr-10"
+              style={{
+                backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23a78bfa' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
+                backgroundPosition: 'right 1.25rem center',
+                backgroundRepeat: 'no-repeat',
+                backgroundSize: '1.25rem 1.25rem'
+              }}
             >
-              <option value="" disabled>
+              <option value="" disabled className="bg-[#0e0a30] text-white/60">
                 Gender
               </option>
               {Object.values(GENDER).map((gender) => (
-                <option key={gender} value={gender}>
-                  {gender.replace("_", " ")}
+                <option key={gender} value={gender} className="bg-[#0e0a30] text-white">
+                  {GENDER_LABELS[gender]}
                 </option>
               ))}
             </select>
