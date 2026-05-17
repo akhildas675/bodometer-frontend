@@ -15,8 +15,13 @@ class AuthInitService {
       >("/refresh-token");
 
       if (response.data.success && response.data.data) {
-        const { accessToken, user } = response.data.data;
-        setAuth({ accessToken, user });
+        const { accessToken, user, onboardingComplete, hasActiveSubscription, trainerStatus } = response.data.data;
+        const userWithFlags = {
+          ...user,
+          onboardingComplete,
+          hasActiveSubscription
+        };
+        setAuth({ accessToken, user: userWithFlags, trainerStatus });
       } else {
         clearAuth();
       }

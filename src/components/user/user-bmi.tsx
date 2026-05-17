@@ -1,12 +1,16 @@
 import { useState } from "react";
-import { useFetch } from "@/hooks/useFetch";
-import userServices from "@/services/user/user.services";
-import { OnboardingQuestion } from "@/interface/user.interface";
-import { ApiResponse } from "@/interface/api-response.interface";
-import { BMI_PAGE_KEYS, ONBOARDING_KEYS } from "@/constants/schema-key.constant";
-
+import { OnboardingQuestion } from "@/interface/onboarding.interface";
 import { useNavigate } from "react-router-dom";
 import { useOnboardingStore } from "@/stores/user-onboarding.store";
+import { USER_UI_ROUTES } from "@/constants/constant-routes/ui-routes/user.ui-constant.routes";
+import { useOnboardingStore as useDynamicOnboardingStore, OnboardingQuestion as DynamicQuestion } from "@/stores/onboarding.store";
+
+const ONBOARDING_KEYS = {
+  HEIGHT_CM: "height_cm",
+  WEIGHT_KG: "weight_kg",
+} as const;
+
+const BMI_PAGE_KEYS = ["height_cm", "weight_kg"];
 
 type Unit = "metric" | "imperial";
 
@@ -37,7 +41,8 @@ const StepperInput = ({
   const { min, max, step, unit }: StepperConfig = question.config;
 
   const display = value ?? min;
-  const progress = ((display - min) / (max - min)) * 100;
+  const clampedDisplay = Math.min(Math.max(display, min), max);
+  const progress = ((clampedDisplay - min) / (max - min)) * 100;
 
   const handleStep = (direction: "inc" | "dec") => {
     const next =
@@ -52,7 +57,19 @@ const StepperInput = ({
     <div className="space-y-3">
       <div className="flex items-center justify-between">
         <div className="flex items-baseline gap-1">
-          <span className="text-4xl font-bold text-white">{display}</span>
+          <input
+            type="number"
+            value={value !== null ? value : ""}
+            onChange={(e) => {
+              const val = e.target.value === "" ? min : Number(e.target.value);
+              if (!isNaN(val)) {
+                setter(val);
+                onReset();
+              }
+            }}
+            className="text-4xl font-bold text-white bg-transparent border-none outline-none w-24 focus:ring-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+            placeholder={String(min)}
+          />
           <span className="text-purple-400 text-sm">{unitLabel ?? unit}</span>
         </div>
         <div className="flex items-center gap-2">
@@ -79,7 +96,7 @@ const StepperInput = ({
           min={min}
           max={max}
           step={step}
-          value={display}
+          value={clampedDisplay}
           onChange={(e) => {
             setter(Number(e.target.value));
             onReset();
@@ -142,15 +159,61 @@ const [bmi, setBmi] = useState<number | null>(
 
   const setBodyMetrics = useOnboardingStore((state) => state.setBmi);
   const markBmiDone = useOnboardingStore((state) => state.markBmiDone);
+  const setDynamicAnswer = useDynamicOnboardingStore((state) => state.setAnswer);
 
-  const { data: questionsRes, loading } = useFetch<ApiResponse<OnboardingQuestion[]>>(
-    () => userServices.userOnboardingQuestions({ keys: BMI_PAGE_KEYS }),
-    true
+  const allQuestions = useDynamicOnboardingStore((state) => state.questions);
+  const allGroups = useDynamicOnboardingStore((state) => state.groups);
+  const loading = useDynamicOnboardingStore((state) => state.loading);
+
+  // 1. Locate the BMI Group dynamically from stored collections
+  const bmiGroup = allGroups.find(
+    (g) => g.key?.startsWith("bmi") || g.title?.toLowerCase().includes("bmi")
   );
 
-  const questions = questionsRes?.success ? questionsRes.data : [];
-  const heightQ = questions.find((q) => q.key === ONBOARDING_KEYS.HEIGHT_CM);
-  const weightQ = questions.find((q) => q.key === ONBOARDING_KEYS.WEIGHT_KG);
+  // 2. Pull questions tied to that specific group and translate them to flat format
+    .filter((q) => {
+      if (!bmiGroup) return false;
+      return q.groupId === bmiGroup.groupId;
+    })
+    .map((q: DynamicQuestion) => ({
+      id: q.questionId || "",
+      key: q.key || "",
+      schemaKey: null,
+      isCoreLocked: false,
+      question: q.question || "",
+      type: (q.type === "number" && q.numberConfig) ? "number_stepper" : q.type,
+      section: "",
+      order: q.order || 0,
+      options: q.options?.map((o) => ({
+        label: o.label || "",
+        value: String(o.value ?? ""),
+      })),
+      config: {
+        min: q.numberConfig?.min ?? (q.key.includes("height") ? 100 : 30),
+        max: q.numberConfig?.max ?? (q.key.includes("height") ? 250 : 200),
+        step: q.numberConfig?.step ?? 1,
+        unit: q.numberConfig?.unit ?? (q.key.includes("height") ? "cm" : "kg"),
+      },
+      validation: q.validation,
+      isActive: q.isActive ?? true,
+    }));
+
+  // 3. Dynamically select height and weight questions by analyzing key and body text
+  const heightQ = questions.find(
+    (q) => q.key.includes("height") || q.question.toLowerCase().includes("height")
+  ) || ({
+    id: "fallback_height",
+    key: "height_cm",
+    config: { min: 100, max: 250, step: 1, unit: "cm" }
+  } as unknown as OnboardingQuestion);
+
+  const weightQ = questions.find(
+    (q) => q.key.includes("weight") || q.question.toLowerCase().includes("weight")
+  ) || ({
+    id: "fallback_weight",
+    key: "weight_kg",
+    config: { min: 30, max: 200, step: 1, unit: "kg" }
+  } as unknown as OnboardingQuestion);
 
   const resetBmi = () => setBmi(null);
 
@@ -171,29 +234,43 @@ const [bmi, setBmi] = useState<number | null>(
 
   const handleNext = () => {
     if (!canGoNext) return;
-    navigate("/select-workouts");
+    navigate(USER_UI_ROUTES.ONBOARDING_ASSESSMENT);
   };
 
   const calculateBMI = () => {
+    let finalBmi = 0;
+    let finalHeight = 0;
+    let finalWeight = 0;
+
     if (unit === "metric") {
       if (!height || !weight) return;
       const h = height / 100;
-      const calculatedBmi = parseFloat((weight / (h * h)).toFixed(1));
-      setBmi(calculatedBmi);
-      setBodyMetrics(calculatedBmi, height, weight);
-      markBmiDone();
+      finalBmi = parseFloat((weight / (h * h)).toFixed(1));
+      finalHeight = height;
+      finalWeight = weight;
     } else {
       const totalInches = parseFloat(heightFt) * 12 + parseFloat(heightIn || "0");
       if (!totalInches || !weight) return;
-      const calculatedBmi = parseFloat(
+      finalBmi = parseFloat(
         ((weight / (totalInches * totalInches)) * 703).toFixed(1)
       );
-      setBmi(calculatedBmi);
-      const heightCm = Math.round(totalInches * 2.54);
-      const weightKg = parseFloat((weight * 0.453592).toFixed(1));
-      setBodyMetrics(calculatedBmi, heightCm, weightKg);
-      markBmiDone();
+      finalHeight = Math.round(totalInches * 2.54);
+      finalWeight = parseFloat((weight * 0.453592).toFixed(1));
     }
+
+    setBmi(finalBmi);
+    setBodyMetrics(finalBmi, finalHeight, finalWeight);
+    markBmiDone();
+
+    // Sync mapped inputs with the dynamic onboarding store for final submission
+    if (heightQ) setDynamicAnswer(heightQ.id, heightQ.key, finalHeight);
+    if (weightQ) setDynamicAnswer(weightQ.id, weightQ.key, finalWeight);
+
+    const bmiQ = allQuestions.find((q) => {
+      if (!bmiGroup) return false;
+      return q.groupId === bmiGroup.groupId && (q.key.includes("bmi") || q.question.toLowerCase().includes("bmi"));
+    });
+    if (bmiQ) setDynamicAnswer(bmiQ.questionId, bmiQ.key, finalBmi);
   };
 
   const isCalculateDisabled =

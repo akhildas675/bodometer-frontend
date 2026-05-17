@@ -2,66 +2,67 @@ import { Route } from "react-router-dom";
 import MainLayouts from "@/components/layouts/MainLayouts";
 import UserProfilePage from "@/pages/user/user-profile.page";
 import ProtectedRoute from "@/routes/guard.routes/protected.route";
+import SubscriptionRoute from "@/routes/guard.routes/subscription.route";
 import { USER_UI_ROUTES } from "@/constants/constant-routes/ui-routes/user.ui-constant.routes";
-import UserTrainersPage from "@/pages/user/user-trainers.page";
-import UserChangePasswordPage from "@/pages/user/user.change-password.page";
-import UserTrainerDetailPage from "@/pages/user/user.trainer-detail.page";
-import MainLayoutsNoSidebar from "@/components/layouts/user.layouts.ts/MainLayoutsNoSidebar";
+import UserTrainersPage from "@/pages/user/user-fitness/user-trainers.page";
+import UserChangePasswordPage from "@/pages/user/user-auth/user.change-password.page";
+import UserTrainerDetailPage from "@/pages/user/user-fitness/user.trainer-detail.page";
 import { ROLES } from "@/constants/role";
-import UserCategoriesPage from "@/pages/user/user-categories.page";
-import UserCategoryDetailPage from "@/pages/user/user.category-detail.page";
-import UserSubscriptionPage from "@/pages/user/user-subscription.page";
-import UserSubscriptionSuccessPage from "@/pages/user/user.subscription-success.page";
-import UserSubscriptionCancelPage from "@/pages/user.subscription-cancel.page";
+import UserCategoriesPage from "@/pages/user/user-fitness/user-categories.page";
+import UserCategoryDetailPage from "@/pages/user/user-fitness/user.category-detail.page";
+import UserSubscriptionPage from "@/pages/user/user-subscription/user-subscription.page";
+import UserSubscriptionSuccessPage from "@/pages/user/user-subscription/user.subscription-success.page";
+import UserSubscriptionCancelPage from "@/pages/user/user-subscription/user.subscription-cancel.page";
+import UserOnboardingIntroPage from "@/pages/user/user-fitness/user.onboarding-intro.page";
+import UserOnboardingAssessmentPage from "@/pages/user/user-fitness/user.onboarding-assessment.page";
+import UserFitnessProfilePage from "@/pages/user/user-fitness/user.fitness-profile.page";
+
+
 export const userRoutes = (
   <Route element={<ProtectedRoute allowedRoles={[ROLES.USER]} />}>
     <Route element={<MainLayouts />}>
+      {/* Non-premium user profile pages */}
       <Route path={USER_UI_ROUTES.USER_PROFILE} element={<UserProfilePage />} />
-
       <Route
         path={USER_UI_ROUTES.USER_CHANGE_PASSWORD}
         element={<UserChangePasswordPage />}
       />
-      <Route
-        path={USER_UI_ROUTES.USER_TRAINERS}
-        element={<UserTrainersPage />}
-      />
-      <Route
-        path={USER_UI_ROUTES.USER_TRAINER_DETAILS}
-        element={<UserTrainerDetailPage />}
-      />
 
-      <Route
-        path={USER_UI_ROUTES.USER_CATEGORIES}
-        element={<UserCategoriesPage />}
-      />
+      {/* accessible to non-subscribed users) */}
       <Route 
-      path={USER_UI_ROUTES.USER_CATEGORY_DETAILS}
-      element={<UserCategoryDetailPage />}
+        path={USER_UI_ROUTES.USER_SUBSCRIPTIONS}
+        element={<UserSubscriptionPage />}
       />
-
-      <Route 
-      path={USER_UI_ROUTES.USER_SUBSCRIPTIONS}
-      element={<UserSubscriptionPage />}
-      />
-
       <Route path={USER_UI_ROUTES.USER_SUBSCRIPTIONS_SUCCESS} element={<UserSubscriptionSuccessPage/>}/>
       <Route path={USER_UI_ROUTES.USER_SUBSCRIPTIONS_CANCEL} element={<UserSubscriptionCancelPage/>}/>
 
+      {/* Premium Routes inside Main Layout */}
+      <Route element={<SubscriptionRoute />}>
+        <Route
+          path={USER_UI_ROUTES.USER_TRAINERS}
+          element={<UserTrainersPage />}
+        />
+        <Route
+          path={USER_UI_ROUTES.USER_TRAINER_DETAILS}
+          element={<UserTrainerDetailPage />}
+        />
+        <Route
+          path={USER_UI_ROUTES.USER_CATEGORIES}
+          element={<UserCategoriesPage />}
+        />
+        <Route 
+          path={USER_UI_ROUTES.USER_CATEGORY_DETAILS}
+          element={<UserCategoryDetailPage />}
+        />
+      </Route>
+      <Route path={USER_UI_ROUTES.USER_FITNESS_PROFILE} element={<UserFitnessProfilePage/>} />
     </Route>
 
-
-
-
-    {/* No Sidebar pages */}
-    <Route element={<MainLayoutsNoSidebar />}>
-
-
+    {/*  No Sidebar Layout No Navbar */}
+    <Route element={<SubscriptionRoute />}>
+      <Route path={USER_UI_ROUTES.ONBOARDING_INTRO} element={<UserOnboardingIntroPage />} />
+      <Route path={USER_UI_ROUTES.ONBOARDING_ASSESSMENT} element={<UserOnboardingAssessmentPage />} />
     </Route>
-
-
-
-
-
   </Route>
 );
+

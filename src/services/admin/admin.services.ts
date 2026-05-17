@@ -10,6 +10,12 @@ import type {
   SubscriptionFeature,
   SubscriptionPlan,
   UpdateCategory,
+  QuestionGroup,
+  OnboardingQuestion,
+  CreateQuestionGroupData,
+  UpdateQuestionGroupData,
+  CreateQuestionData,
+  UpdateQuestionData,
 } from "@/interface/admin.interface";
 
 import type { ApiResponse } from "@/interface/api-response.interface";
@@ -383,6 +389,92 @@ class AdminService {
     const response = await adminApi.patch<ApiResponse<{ message: string }>>(
       ADMIN_API_ROUTES.TOGGLE_SUBSCRIPTION_PLAN_STATUS(id)
     );
+    return response.data;
+  }
+
+  // Question Groups
+  async getQuestionGroups(
+    search?: string,
+    page?: number,
+    limit?: number
+  ): Promise<PaginatedResponse<QuestionGroup>> {
+    const params: Record<string, string | number> = {};
+    if (search) params.search = search;
+    if (page) params.page = page;
+    if (limit) params.limit = limit;
+
+    const response = await adminApi.get<{
+      success: boolean;
+      data: QuestionGroup[];
+      pagination: PaginationMeta;
+    }>(ADMIN_API_ROUTES.GET_QUESTION_GROUPS, { params });
+    
+    return { data: response.data.data, pagination: response.data.pagination };
+  }
+
+  async createQuestionGroup(data: CreateQuestionGroupData): Promise<ApiResponse<{ message: string }>> {
+    const response = await adminApi.post<ApiResponse<{ message: string }>>(ADMIN_API_ROUTES.CREATE_QUESTION_GROUP, data);
+    return response.data;
+  }
+
+  async updateQuestionGroup(id: string, data: UpdateQuestionGroupData): Promise<ApiResponse<{ message: string }>> {
+    const response = await adminApi.put<ApiResponse<{ message: string }>>(ADMIN_API_ROUTES.UPDATE_QUESTION_GROUP(id), data);
+    return response.data;
+  }
+
+  async getQuestionGroupById(id: string): Promise<ApiResponse<QuestionGroup>> {
+    const response = await adminApi.get<ApiResponse<QuestionGroup>>(ADMIN_API_ROUTES.GET_QUESTION_GROUP_BY_ID(id));
+    return response.data;
+  }
+
+  async toggleQuestionGroupStatus(id: string): Promise<ApiResponse<{ message: string }>> {
+    const response = await adminApi.patch<ApiResponse<{ message: string }>>(ADMIN_API_ROUTES.TOGGLE_QUESTION_GROUP_STATUS(id));
+    return response.data;
+  }
+
+  // Questions
+  async getQuestions(
+    search?: string,
+    groupId?: string,
+    page?: number,
+    limit?: number,
+    sortBy?: string,
+    sortOrder?: "asc" | "desc"
+  ): Promise<PaginatedResponse<OnboardingQuestion>> {
+    const params: Record<string, string | number> = {};
+    if (search) params.search = search;
+    if (groupId) params.groupId = groupId;
+    if (page) params.page = page;
+    if (limit) params.limit = limit;
+    if (sortBy) params.sortBy = sortBy;
+    if (sortOrder) params.sortOrder = sortOrder;
+
+    const response = await adminApi.get<{
+      success: boolean;
+      data: OnboardingQuestion[];
+      pagination: PaginationMeta;
+    }>(ADMIN_API_ROUTES.GET_QUESTIONS, { params });
+    
+    return { data: response.data.data, pagination: response.data.pagination };
+  }
+
+  async createQuestion(data: CreateQuestionData): Promise<ApiResponse<{ message: string }>> {
+    const response = await adminApi.post<ApiResponse<{ message: string }>>(ADMIN_API_ROUTES.CREATE_QUESTION, data);
+    return response.data;
+  }
+
+  async updateQuestion(id: string, data: UpdateQuestionData): Promise<ApiResponse<{ message: string }>> {
+    const response = await adminApi.put<ApiResponse<{ message: string }>>(ADMIN_API_ROUTES.UPDATE_QUESTION(id), data);
+    return response.data;
+  }
+
+  async getQuestionById(id: string): Promise<ApiResponse<OnboardingQuestion>> {
+    const response = await adminApi.get<ApiResponse<OnboardingQuestion>>(ADMIN_API_ROUTES.GET_QUESTION_BY_ID(id));
+    return response.data;
+  }
+
+  async toggleQuestionStatus(id: string): Promise<ApiResponse<{ message: string }>> {
+    const response = await adminApi.patch<ApiResponse<{ message: string }>>(ADMIN_API_ROUTES.TOGGLE_QUESTION_STATUS(id));
     return response.data;
   }
 }

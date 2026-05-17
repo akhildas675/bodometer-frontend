@@ -15,9 +15,9 @@ export interface ProfileUpdatePayload {
   name: string;
   userName: string;
   phoneNumber: string | null;
-  gender: Gender;
+  gender?: Gender;
   profilePic?: string;
-  dateOfBirth: Date | null;
+  dateOfBirth?: Date | null;
 }
 
 export interface UpdateProfileResponse {
@@ -70,7 +70,7 @@ export interface CategoryDetail {
   isActive: boolean;
 }
 
-export interface ActiveSubscription{
+export interface ActiveSubscription {
   subscriptionId: string;
   planId: string;
   planName: string;
@@ -78,4 +78,26 @@ export interface ActiveSubscription{
   endDate: string;
   status: string;
   daysRemaining: number;
+}
+
+export interface Question {
+  questionId: string;
+  text: string;
+  questionType: string;
+  options: Option[];
+  isRequired: boolean;
+  order: number;
+  isActive: boolean;
+  metadata: Metadata;
+}
+
+interface Option {
+  optionId: string;
+  text: string;
+  mediaUrl: string | null;
+  order: number;
+}
+
+interface Metadata {
+  targetMuscleGroup: string;
 }

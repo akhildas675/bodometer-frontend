@@ -38,8 +38,6 @@ const UserProfile = () => {
     name: "",
     userName: "",
     phoneNumber: null,
-    gender: "prefer_not_say" as Gender,
-    dateOfBirth: null,
   });
 
   useEffect(() => {
@@ -48,8 +46,6 @@ const UserProfile = () => {
         name: profile.name || "",
         userName: profile.userName || "",
         phoneNumber: profile.phoneNumber || null,
-        gender: profile.gender || "prefer_not_say",
-        dateOfBirth: profile.dateOfBirth || null,
       });
       setPreviewUrl(profile.profilePic || "");
     }
@@ -75,8 +71,6 @@ const UserProfile = () => {
         name: profile.name || "",
         userName: profile.userName || "",
         phoneNumber: profile.phoneNumber || null,
-        gender: profile.gender || "prefer_not_say",
-        dateOfBirth: profile.dateOfBirth || null,
       });
       setPreviewUrl(profile.profilePic || "");
     }
@@ -118,16 +112,6 @@ const UserProfile = () => {
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!form.gender || form.gender === "prefer_not_say") {
-      toast.error("Please select your gender before updating profile");
-      return;
-    }
-
-    if (!form.dateOfBirth) {
-      toast.error("Please enter your date of birth before updating profile");
-      return;
-    }
-
     setIsSaving(true);
     const loadingToast = toast.loading("Updating profile...");
 
@@ -157,8 +141,6 @@ const UserProfile = () => {
         name: form.name,
         userName: form.userName,
         phoneNumber: form.phoneNumber,
-        gender: form.gender,
-        dateOfBirth: form.dateOfBirth,
       };
 
       if (uploadedImageUrl) {
@@ -394,43 +376,7 @@ const UserProfile = () => {
                     />
                   </div>
 
-                  <div className="flex flex-col gap-1">
-                    <label className="text-xs text-slate-400">
-                      Date of Birth <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="date"
-                      className="bg-[#1c1550] px-4 py-3 rounded-lg outline-none border-2 border-transparent disabled:opacity-60 disabled:cursor-not-allowed"
-                      value={formatDateForInput(form.dateOfBirth)}
-                      onChange={(e) => {
-                        setForm((prev) => ({
-                          ...prev,
-                          dateOfBirth: e.target.value
-                            ? new Date(e.target.value)
-                            : null,
-                        }));
-                      }}
-                      disabled={!isEditing}
-                      required
-                    />
-                  </div>
 
-                  <div className="flex flex-col gap-1">
-                    <label className="text-xs text-slate-400">
-                      Gender <span className="text-red-500">*</span>
-                    </label>
-                    <select
-                      className="bg-[#1c1550] px-4 py-3 rounded-lg outline-none disabled:opacity-60 disabled:cursor-not-allowed"
-                      value={form.gender}
-                      onChange={handleChange("gender")}
-                      disabled={!isEditing}
-                      required
-                    >
-                      <option value="prefer_not_say">Select Gender</option>
-                      <option value="male">Male</option>
-                      <option value="female">Female</option>
-                    </select>
-                  </div>
                 </div>
               </form>
               <div className="mt-6 flex gap-4">
@@ -443,6 +389,13 @@ const UserProfile = () => {
                   className="text-xs text-indigo-400 cursor-pointer hover:text-indigo-300 transition"
                 >
                   Change Password
+                </p>
+                <span className="text-slate-600">|</span>
+                <p
+                  onClick={() => navigate("/assessment-history")}
+                  className="text-xs text-indigo-400 cursor-pointer hover:text-indigo-300 transition"
+                >
+                  Assessment History
                 </p>
               </div>
             </div>

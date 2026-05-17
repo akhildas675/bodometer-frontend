@@ -1,11 +1,4 @@
-export type QuestionType = 
-    | "boolean"
-    | "single_select"
-    | "multi_select"
-    | "text"
-    | "number"
-    | "time"
-    | "number_stepper";
+import { QuestionType } from "@/constants/question.type";
 
 export interface OnboardingQuestionOption {
   label: string;

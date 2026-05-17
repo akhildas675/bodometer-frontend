@@ -203,11 +203,18 @@ const CtaBanner = ({
   navigate,
 }: {
   isAuthenticated: boolean;
-  user: { name?: string } | null;
+  user: { name?: string; hasActiveSubscription?: boolean; onboardingComplete?: boolean } | null;
   navigate: (to: string) => void;
-}) => (
+}) => {
+  const getDestination = (defaultRoute: string) => {
+    return user?.hasActiveSubscription && !user?.onboardingComplete
+      ? "/onboarding/intro"
+      : defaultRoute;
+  };
+
+  return (
   <section className="py-20 px-6">
-    <div className="max-w-3xl mx-auto text-center bg-gradient-to-br from-purple-700/30 to-purple-900/40 border border-purple-500/30 rounded-3xl p-12">
+    <div className="max-w-3xl mx-auto text-center bg-linear-to-br from-purple-700/30 to-purple-900/40 border border-purple-500/30 rounded-3xl p-12">
       {isAuthenticated && user ? (
         <>
           <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-3">
@@ -218,13 +225,13 @@ const CtaBanner = ({
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button
-              onClick={() => navigate("/workouts")}
+              onClick={() => navigate(getDestination("/workouts"))}
               className="bg-purple-600 hover:bg-purple-500 text-white px-8 py-3 rounded-full font-semibold transition flex items-center gap-2 justify-center"
             >
               Browse Workouts <ChevronRight size={16} />
             </button>
             <button
-              onClick={() => navigate("/trainers")}
+              onClick={() => navigate(getDestination("/trainers"))}
               className="border border-purple-500 text-purple-300 hover:bg-purple-700/30 px-8 py-3 rounded-full font-semibold transition"
             >
               Find a Trainer
@@ -257,12 +264,14 @@ const CtaBanner = ({
       )}
     </div>
   </section>
-);
+  );
+};
 
-// ── Main page ──────────────────────────────────────────────────────────────
+// main page
 
 const UserHome = () => {
   const { isAuthenticated, user } = useAuthStore();
+  console.log("user....",user)
   const navigate = useNavigate();
 
   return (
@@ -282,7 +291,7 @@ const UserHome = () => {
         />
 
         {/* Dark overlay for text readability */}
-        <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-black/20" />
+        <div className="absolute inset-0 bg-linear-to-r from-black/70 via-black/40 to-black/20" />
 
         {/* Content */}
         <div className="relative z-10 w-full px-10 md:px-16 flex justify-between items-center">
@@ -316,7 +325,11 @@ const UserHome = () => {
             ) : (
               <>
                 <button
-                  onClick={() => navigate("/subscriptions")}
+                  onClick={() => navigate(
+                    user?.hasActiveSubscription && !user?.onboardingComplete 
+                      ? "/onboarding/intro" 
+                      : "/trainers"
+                  )}
                   className="bg-purple-500 text-white px-8 py-3 rounded-full text-lg font-semibold hover:bg-purple-600 transition"
                 >
                   Get Started

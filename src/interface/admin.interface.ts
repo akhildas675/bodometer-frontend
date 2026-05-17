@@ -1,5 +1,5 @@
 import type { Role } from "@/constants/role";
-
+import { QuestionType } from "@/constants/question.type";
 export interface AdminGetUsersRequest {
   page?: number;
   limit?: number;
@@ -171,3 +171,62 @@ export interface SubscriptionPlan {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface QuestionGroup {
+  groupId: string;
+  key: string;
+  title: string;
+  order: number;
+  isActive: boolean;
+  createdAt?: string;
+}
+
+export interface OnboardingQuestion {
+  questionId: string;
+  key: string;
+  question: string;
+  description?: string;
+  groupId: string;
+  order: number;
+  isActive: boolean;
+  type: QuestionType;
+  options?: { label: string; value: string | number | boolean }[];
+  dataSource?: string;
+  next?: {
+    condition: { operator: string; value?: string | number | boolean };
+    nextQuestionId: string;
+  }[];
+  numberConfig?: { min?: number; max?: number; step?: number; unit?: string };
+  validation?: { required?: boolean };
+  createdAt?: string;
+}
+
+export interface CreateQuestionGroupData {
+  key: string;
+  title: string;
+  order: number;
+}
+
+export interface UpdateQuestionGroupData {
+  title: string;
+  order: number;
+}
+
+export interface CreateQuestionData {
+  key: string;
+  question: string;
+  description?: string;
+  groupId: string;
+  order: number;
+  type: string;
+  options?: { label: string; value: string | number | boolean }[];
+  dataSource?: string;
+  next?: {
+    condition: { operator: string; value?: string | number | boolean };
+    nextQuestionId: string;
+  }[];
+  numberConfig?: { min?: number; max?: number; step?: number; unit?: string };
+  validation?: { required?: boolean };
+}
+
+export interface UpdateQuestionData extends Partial<CreateQuestionData> {}

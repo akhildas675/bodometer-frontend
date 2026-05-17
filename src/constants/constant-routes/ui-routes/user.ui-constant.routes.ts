@@ -12,6 +12,14 @@ export const USER_UI_ROUTES = {
     USER_SUBSCRIPTIONS_CANCEL: "/subscription-cancel",
 
 
+    //Onboarding
+    ONBOARDING_INTRO: "/onboarding/intro",
+    ONBOARDING_ASSESSMENT: "/onboarding/assessment",
+    USER_FITNESS_PROFILE: "/fitness-profile",
+
+
+
+
 
 
 } as const

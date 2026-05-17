@@ -23,15 +23,14 @@ export const USER_API_ROUTES = {
     GET_ONBOARDING_WORKOUTS: "/onboarding-workouts",
     GET_ONBOARDING_OPTIONS: "/onboarding-options",
     GET_ONBOARDING_QUESTIONS: "/onboarding-questions",
+    GET_ONBOARDING_GROUPS: "/onboarding-groups",
+    SUBMIT_ONBOARDING: "/submit-onboarding",
 
 
     //onboarding Questions
 
-    GET_USER_QUESTIONS: "/user-questions",
-
-    //submit 
-    SUBMIT_ONBOARDING: "/submit-onboarding",
-
-    GET_ONBOARDING_PROFILE: "/onboarding-profile"
+    GET_ALL_QUESTIONS: "/onboarding-questions",
+    GET_ONBOARDING_STATUS: "/onboarding-status",
+    GET_ONBOARDING_ANSWERS: "/onboarding-answers",
 
 } as const

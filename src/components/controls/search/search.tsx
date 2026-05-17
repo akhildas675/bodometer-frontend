@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 interface SearchBarProps {
   value?: string;
@@ -20,6 +20,12 @@ const SearchBar = ({
   showClearButton = true,
 }: SearchBarProps) => {
   const [searchInput, setSearchInput] = useState(value);
+  const onSearchRef = useRef(onSearch);
+
+  // Sync latest function ref without breaking effect logic
+  useEffect(() => {
+    onSearchRef.current = onSearch;
+  }, [onSearch]);
 
   // Sync with external value changes
   useEffect(() => {
@@ -29,11 +35,11 @@ const SearchBar = ({
   // Debounced search
   useEffect(() => {
     const timer = setTimeout(() => {
-      onSearch(searchInput);
+      onSearchRef.current(searchInput);
     }, debounceMs);
 
     return () => clearTimeout(timer);
-  }, [searchInput, debounceMs, onSearch]);
+  }, [searchInput, debounceMs]);
 
   const handleClear = () => {
     setSearchInput('');

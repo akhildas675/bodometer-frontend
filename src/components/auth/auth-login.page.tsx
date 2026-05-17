@@ -4,10 +4,8 @@ import { toast } from "sonner";
 import { Mail, Lock } from "lucide-react";
 import { GoogleLogin } from "@react-oauth/google";
 import axios from "axios";
-
 import InputWithIcon from "@/components/ui/input.box";
 import PrimaryButton from "@/components/ui/primary.button";
-
 import type { LoginPayload } from "@/interface/auth.interface";
 import authService from "@/services/auth/auth.service";
 import { useAuthStore, type AuthUser } from "@/stores/auth.store";
@@ -30,9 +28,16 @@ const AuthLoginPage = () => {
   const handleSuccess = (
     user: AuthUser,
     accessToken: string,
-    trainerStatus?: { verificationStatus?: VerificationStatus | null; profileExists?: boolean | null }
+    trainerStatus?: { verificationStatus?: VerificationStatus | null; profileExists?: boolean | null },
+    onboardingComplete?: boolean,
+    hasActiveSubscription?: boolean
   ) => {
-    useAuthStore.getState().setAuth({ user, accessToken, trainerStatus });
+    const userWithFlags = {
+      ...user,
+      onboardingComplete,
+      hasActiveSubscription,
+    };
+    useAuthStore.getState().setAuth({ user: userWithFlags, accessToken, trainerStatus });
 
     toast.success(`Welcome back, ${user.name || "User"}!`);
 
@@ -68,8 +73,8 @@ const AuthLoginPage = () => {
     setLoading(true);
     try {
       const result = await authService.login(form);
-      const { user, accessToken, trainerStatus } = result.data;
-      handleSuccess(user, accessToken, trainerStatus);
+      const { user, accessToken, trainerStatus, onboardingComplete, hasActiveSubscription } = result.data;
+      handleSuccess(user, accessToken, trainerStatus, onboardingComplete, hasActiveSubscription);
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
         const errorMessage = error.response.data?.message || "Login failed";
@@ -91,8 +96,8 @@ const AuthLoginPage = () => {
     setLoading(true);
     try {
       const result = await authService.googleLogin({ idToken: credential });
-      const { user, accessToken, trainerStatus } = result.data;
-      handleSuccess(user, accessToken, trainerStatus);
+      const { user, accessToken, trainerStatus, onboardingComplete, hasActiveSubscription } = result.data;
+      handleSuccess(user, accessToken, trainerStatus, onboardingComplete, hasActiveSubscription);
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
         const errorMessage = error.response.data?.message || "Login failed";

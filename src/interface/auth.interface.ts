@@ -47,6 +47,8 @@ export interface LoginResponseData {
   accessToken: string;
   user: User;
   trainerStatus?: TrainerStatus;
+  onboardingComplete?: boolean;
+  hasActiveSubscription?: boolean;
 }
 
 
@@ -98,4 +100,6 @@ export interface GoogleLoginResponse {
   };
   accessToken: string;
   trainerStatus?: TrainerStatus;
+  onboardingComplete?: boolean;
+  hasActiveSubscription?: boolean;
 }

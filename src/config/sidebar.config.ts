@@ -23,6 +23,14 @@ export const sidebarConfig: Record<SidebarRole, SidebarItem[]> = {
         { label: "Features", path: "/admin/subscription/features" },
       ],
     },
+    {
+      label: "Questions",
+      path: "/admin/questions",
+      children: [
+        { label: "Groups", path: "/admin/questions/groups" },
+        { label: "List", path: "/admin/questions/list" },
+      ],
+    },
   ],
 
   trainer: [
@@ -37,6 +45,7 @@ export const sidebarConfig: Record<SidebarRole, SidebarItem[]> = {
 
   user: [
     { label: "Dashboard", path: "/" },
+    { label: "Fitness Profile", path: "/fitness-profile" },
     { label: "Food Log", path: "/food-log" },
     { label: "Progress", path: "/progress" },
     { label: "Profile", path: "/profile" },

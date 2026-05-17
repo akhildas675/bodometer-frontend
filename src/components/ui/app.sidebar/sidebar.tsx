@@ -25,6 +25,7 @@ import {
   Crown,
   Sparkles,
   BarChart2,
+  Heart,
 } from "lucide-react";
 
 type Props = {
@@ -52,7 +53,9 @@ const iconMap: Record<string, React.ReactNode> = {
   "/trainer/earnings": <DollarSign size={20} />,
   "/trainer/profile": <UserCircle size={20} />,
 
+ 
   "/": <LayoutDashboard size={20} />,
+  "/fitness-profile": <Heart size={20} />,
   "/food-log": <Apple size={20} />,
   "/progress": <TrendingUp size={20} />,
   "/profile": <UserCircle size={20} />,

@@ -25,4 +25,15 @@ export const ADMIN_UI_ROUTES = {
   SUBSCRIPTION_PLAN_EDIT: (id: string) => `/admin/subscription/plans/edit/${id}`,
   SUBSCRIPTION_PLAN_EDIT_PATH: "/admin/subscription/plans/edit/:id",
 
+  QUESTIONS_SECTION: "/admin/questions",
+  QUESTION_GROUPS: "/admin/questions/groups",
+  QUESTION_GROUPS_CREATE: "/admin/questions/groups/create",
+  QUESTION_GROUPS_EDIT: (id: string) => `/admin/questions/groups/edit/${id}`,
+  QUESTION_GROUPS_EDIT_PATH: "/admin/questions/groups/edit/:id",
+
+  QUESTIONS_LIST: "/admin/questions/list",
+  QUESTION_CREATE: "/admin/questions/list/create",
+  QUESTION_EDIT: (id: string) => `/admin/questions/list/edit/${id}`,
+  QUESTION_EDIT_PATH: "/admin/questions/list/edit/:id",
+
 } as const;

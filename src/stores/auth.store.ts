@@ -10,6 +10,8 @@ export interface AuthUser {
   name?: string;
   verificationStatus?: VerificationStatus | null;
   profileExists?: boolean | null;
+  hasActiveSubscription?: boolean;
+  onboardingComplete?: boolean;
 
 
 }
@@ -28,6 +30,7 @@ interface AuthState {
   clearAuth: () => void;
   setInitialized: (value: boolean) => void;
   setVerificationStatus: (status: VerificationStatus) => void;
+  updateUser: (updates: Partial<AuthUser>) => void;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
@@ -36,25 +39,25 @@ export const useAuthStore = create<AuthState>((set) => ({
   isAuthenticated: false,
   isInitialized: false,
 
- setAuth: ({ accessToken, user, trainerStatus }) =>
-  set({
-    accessToken,
-    user: {
-      ...user,
+  setAuth: ({ accessToken, user, trainerStatus }) =>
+    set({
+      accessToken,
+      user: {
+        ...user,
 
-      verificationStatus:
-        trainerStatus?.verificationStatus ??
-        user.verificationStatus ??
-        null,
+        verificationStatus:
+          trainerStatus?.verificationStatus ??
+          user.verificationStatus ??
+          null,
 
-      profileExists:
-        trainerStatus?.profileExists ?? null,
-    },
-    isAuthenticated: true,
-    isInitialized: true,
-  }),
+        profileExists:
+          trainerStatus?.profileExists ?? null,
+      },
+      isAuthenticated: true,
+      isInitialized: true,
+    }),
 
-    
+
 
   clearAuth: () =>
     set({
@@ -69,6 +72,11 @@ export const useAuthStore = create<AuthState>((set) => ({
   setVerificationStatus: (status) =>
     set((state) => ({
       user: state.user ? { ...state.user, verificationStatus: status } : null,
+    })),
+
+  updateUser: (updates) =>
+    set((state) => ({
+      user: state.user ? { ...state.user, ...updates } : null,
     })),
 
 }));

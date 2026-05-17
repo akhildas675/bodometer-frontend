@@ -9,14 +9,20 @@ export interface TableColumn<T> {
 }
 
 export interface TableAction<T> {
-  label: string;
+  label: string | ((item: T) => string);
+
+  icon?: React.ReactNode | ((item: T) => React.ReactNode);
+
+  className?: string | ((item: T) => string);
+
   variant?: "danger" | "primary";
+
+  disabled?: (item: T) => boolean;
+
   visible?: (item: T) => boolean;
-  disabled?: (row: T) => boolean;
-  onClick: (item: T) => void | Promise<void>;
+
+  onClick: (item: T) => void;
 }
-
-
 
 
 export interface TrainerProfile {
