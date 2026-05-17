@@ -1,7 +1,8 @@
 import { create } from "zustand";
 import userServices from "@/services/user/user.services";
-import { QuestionType } from "@/constants/question.type";
-import { AnswerValue } from "@/constants/answer.value";
+import { AnswerValue, QuestionType } from "@/constants/onboarding.constant";
+
+
 
 export interface OnboardingOption {
     label: string;
