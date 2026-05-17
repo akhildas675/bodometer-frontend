@@ -147,7 +147,21 @@ const userServices = {
   },
 
   async userOnboardingQuestions(payload: { keys: string[] }): Promise<ApiResponse<FlatOnboardingQuestion[]>> {
-    const mapDynamicToFlat = (q: DynamicOnboardingQuestion): FlatOnboardingQuestion => ({
+    interface MapInputQuestion {
+      questionId: string;
+      key: string;
+      question: string;
+      description?: string;
+      groupId: string;
+      order: number;
+      type: string;
+      options?: { label: string; value?: string | number | boolean }[];
+      numberConfig?: { min?: number; max?: number; step?: number; unit?: string };
+      validation?: { required?: boolean };
+      isActive?: boolean;
+    }
+
+    const mapDynamicToFlat = (q: MapInputQuestion): FlatOnboardingQuestion => ({
       id: q.questionId || "",
       key: q.key || "",
       schemaKey: null,
@@ -156,7 +170,7 @@ const userServices = {
       type: (q.type === "number" && q.numberConfig) ? "number_stepper" : q.type,
       section: "",
       order: q.order || 0,
-      options: q.options?.map((o) => ({
+      options: q.options?.map((o: { label: string; value?: string | number | boolean }) => ({
         label: o.label || "",
         value: String(o.value ?? ""),
       })),
@@ -170,7 +184,7 @@ const userServices = {
       isActive: q.isActive ?? true,
     });
 
-    // 1. Try getting from cache to prevent multiple fetches
+
     try {
       const { useOnboardingStore } = await import("@/stores/onboarding.store");
       const cached = useOnboardingStore.getState().questions;
@@ -189,8 +203,6 @@ const userServices = {
       console.warn("Zustand cache not available yet, proceeding to network fetch:", err);
     }
 
-    // 2. Fallback to network if cache is cold
-    console.log(">>> Cache Miss: Fetching questions from backend API...");
     const response = await userApi.get<ApiResponse<DynamicOnboardingQuestion[]>>(USER_API_ROUTES.GET_ONBOARDING_QUESTIONS);
     if (response.data.success && response.data.data) {
       const filtered = response.data.data

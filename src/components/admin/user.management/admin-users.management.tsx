@@ -50,13 +50,7 @@ const {
   );
 
 
-  const [modalConfig, setModalConfig] = useState<{
-      isOpen: boolean;
-      title: string;
-      message: string;
-      onConfirm: () => void;
-      variant?: "danger" | "primary";
-    }>({
+  const [modalConfig, setModalConfig] = useState<import("./admin-users.actions").UserModalConfig>({
       isOpen: false,
       title: "",
       message: "",
@@ -150,13 +144,9 @@ const {
         )}
       </div>
       <ConfirmationModal
-              isOpen={modalConfig.isOpen}
-              title={modalConfig.title}
-              message={modalConfig.message}
-              variant={modalConfig.variant}
-              onClose={() => setModalConfig((prev) => ({ ...prev, isOpen: false }))}
-              onConfirm={modalConfig.onConfirm}
-            />
+        {...modalConfig}
+        onClose={() => setModalConfig((prev) => ({ ...prev, isOpen: false }))}
+      />
    </>
   );
 

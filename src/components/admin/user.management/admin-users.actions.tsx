@@ -2,13 +2,17 @@ import adminServices from "@/services/admin/admin.services";
 import type { TableAction } from "@/components/ui/table/table.types";
 import type { AdminGetUsersResponse } from "@/interface/admin.interface";
 import { toast } from "sonner";
+import { Lock, Unlock } from "lucide-react";
 
 export type UserModalConfig = {
   isOpen: boolean;
   title: string;
   message: string;
   onConfirm: () => void;
-  variant?: "danger" | "primary";
+  variant?: "danger" | "primary" | "purple";
+  icon?: React.ReactNode;
+  confirmText?: string;
+  cancelText?: string;
 };
 
 export const useUserActions = (
@@ -23,9 +27,12 @@ export const useUserActions = (
       onClick: (user) => {
         setModalConfig({
           isOpen: true,
-          title: "Block Trainer",
-          message: `Are you sure you want to block ${user.name}?`,
+          title: "Block User",
+          message: `Are you sure you want to block ${user.name}? This will temporarily restrict their account access.`,
           variant: "danger",
+          icon: <Lock className="w-6 h-6 text-red-400 animate-pulse" />,
+          confirmText: "Yes, block user",
+          cancelText: "Cancel",
           onConfirm: async () => {
             try {
               await adminServices.blockTrainer(user.id);
@@ -44,9 +51,12 @@ export const useUserActions = (
       onClick: (user) => {
         setModalConfig({
           isOpen: true,
-          title: "Unblock Trainer",
-          message: `Are you sure you want to unblock ${user.name}?`,
+          title: "Unblock User",
+          message: `Are you sure you want to restore access for ${user.name}?`,
           variant: "primary",
+          icon: <Unlock className="w-6 h-6 text-green-400" />,
+          confirmText: "Yes, unblock user",
+          cancelText: "Cancel",
           onConfirm: async () => {
             try {
               await adminServices.unblockTrainer(user.id);

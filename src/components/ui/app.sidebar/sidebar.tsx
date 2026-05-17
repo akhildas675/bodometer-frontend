@@ -20,12 +20,12 @@ import {
   ChevronLeft,
   Layers,
   Tag,
-  Dumbbell,
   HelpCircle,
   Crown,
   Sparkles,
-  BarChart2,
   Heart,
+  List,
+  CreditCard,
 } from "lucide-react";
 
 type Props = {
@@ -37,13 +37,13 @@ const iconMap: Record<string, React.ReactNode> = {
   "/admin/users": <Users size={20} />,
   "/admin/trainers": <UserCheck size={20} />,
   "/admin/appointments": <Calendar size={20} />,
-  "/admin/groups": <Layers size={20} />,
   "/admin/category": <Tag size={20} />,
   "/admin/subscription": <Crown size={20} />,
+  "/admin/subscription/plans": <CreditCard size={20} />,
   "/admin/subscription/features": <Sparkles size={20} />,
-  "/admin/subscription/plans": <BarChart2 size={20} />,
-  "/admin/workouts": <Dumbbell size={20} />,
   "/admin/questions": <HelpCircle size={20} />,
+  "/admin/questions/groups": <Layers size={20} />,
+  "/admin/questions/list": <List size={20} />,
 
   "/trainer": <LayoutDashboard size={20} />,
   "/trainer/sessions": <Calendar size={20} />,
@@ -53,12 +53,21 @@ const iconMap: Record<string, React.ReactNode> = {
   "/trainer/earnings": <DollarSign size={20} />,
   "/trainer/profile": <UserCircle size={20} />,
 
- 
   "/": <LayoutDashboard size={20} />,
   "/fitness-profile": <Heart size={20} />,
   "/food-log": <Apple size={20} />,
   "/progress": <TrendingUp size={20} />,
   "/profile": <UserCircle size={20} />,
+};
+
+/* ── active dot indicator for collapsed sidebar ── */
+const CollapsedActiveDot = ({ show }: { show: boolean }) => {
+  if (!show) return null;
+  return (
+    <div className="flex justify-center mt-1">
+      <span className="w-1.5 h-1.5 rounded-full bg-purple-400" />
+    </div>
+  );
 };
 
 /* ── collapsible group ── */
@@ -71,7 +80,7 @@ const NavGroup = ({
 }) => {
   const location = useLocation();
 
-  const isChildActive = item.children?.some((c) =>
+  const isChildActive = !!item.children?.some((c) =>
     location.pathname.startsWith(c.path)
   );
 
@@ -132,12 +141,8 @@ const NavGroup = ({
         </div>
       )}
 
-      {/* collapsed hint — tiny dot when a child is active */}
-      {!isExpanded && isChildActive && (
-        <div className="flex justify-center mt-1">
-          <span className="w-1.5 h-1.5 rounded-full bg-purple-400" />
-        </div>
-      )}
+      {/* collapsed hint — tiny dot when active */}
+      <CollapsedActiveDot show={!isExpanded && isChildActive} />
     </div>
   );
 };
@@ -224,22 +229,30 @@ const Sidebar = ({ role }: Props) => {
                 key={item.path}
                 to={item.path}
                 end={item.path === "/admin" || item.path === "/"}
-                className={({ isActive }) =>
-                  `flex items-center gap-3 px-3 py-3 rounded-lg transition-all duration-200 ${
-                    isActive
-                      ? "bg-purple-600 text-white"
-                      : "hover:bg-white/10 text-slate-300"
-                  }`
-                }
+                className="w-full block"
                 title={!isExpanded ? item.label : ""}
               >
-                <span className="shrink-0">
-                  {iconMap[item.path] || <LayoutDashboard size={20} />}
-                </span>
-                {isExpanded && (
-                  <span className="whitespace-nowrap transition-opacity duration-300">
-                    {item.label}
-                  </span>
+                {({ isActive }) => (
+                  <div className="w-full">
+                    <div
+                      className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-all duration-200 ${
+                        isActive
+                          ? "bg-purple-600 text-white"
+                          : "hover:bg-white/10 text-slate-300"
+                      }`}
+                    >
+                      <span className="shrink-0">
+                        {iconMap[item.path] || <LayoutDashboard size={20} />}
+                      </span>
+                      {isExpanded && (
+                        <span className="whitespace-nowrap transition-opacity duration-300">
+                          {item.label}
+                        </span>
+                      )}
+                    </div>
+                    {/* collapsed hint — tiny dot when active */}
+                    <CollapsedActiveDot show={!isExpanded && isActive} />
+                  </div>
                 )}
               </NavLink>
             )

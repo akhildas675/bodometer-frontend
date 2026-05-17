@@ -46,13 +46,7 @@ const AdminTrainerManagement = () => {
     false
   );
 
-  const [modalConfig, setModalConfig] = useState<{
-    isOpen: boolean;
-    title: string;
-    message: string;
-    onConfirm: () => void;
-    variant?: "danger" | "primary";
-  }>({
+  const [modalConfig, setModalConfig] = useState<import("./admin-trainer.actions").TrainerModalConfig>({
     isOpen: false,
     title: "",
     message: "",
@@ -145,12 +139,8 @@ const AdminTrainerManagement = () => {
       </div>
 
       <ConfirmationModal
-        isOpen={modalConfig.isOpen}
-        title={modalConfig.title}
-        message={modalConfig.message}
-        variant={modalConfig.variant}
+        {...modalConfig}
         onClose={() => setModalConfig((prev) => ({ ...prev, isOpen: false }))}
-        onConfirm={modalConfig.onConfirm}
       />
     </>
   );
