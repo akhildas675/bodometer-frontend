@@ -1,9 +1,9 @@
 import Footer from "./user.layouts.ts/footer";
 import { Outlet } from "react-router-dom";
 import Navbar from "./user.layouts.ts/navbar";
-import Sidebar from "@/components/ui/app.sidebar/sidebar";
 import { useAuthStore } from "@/stores/auth.store";
 import type { SidebarRole } from "@/config/sidebar.config";
+import SidebarLayout from "../ui/app.sidebar/sidebar.layout";
  
 const MainLayouts = () => {
   const user = useAuthStore((state) => state.user);
@@ -15,10 +15,9 @@ const MainLayouts = () => {
  
       {/* pt-[88px] clears the fixed navbar */}
       <div className="flex flex-1 pt-[88px]">
-        <Sidebar role={(user?.role as SidebarRole)} />
-        <main className="flex-1 overflow-y-auto p-10">
+        <SidebarLayout role={(user?.role as SidebarRole) || "user"}>
           <Outlet />
-        </main>
+        </SidebarLayout>
       </div>
  
       <Footer />
