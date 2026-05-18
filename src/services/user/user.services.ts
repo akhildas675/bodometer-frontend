@@ -1,7 +1,7 @@
 import { userApi } from "@/api/api.instance";
 import { buildQueryParams, TableQueryParams } from "@/api/query.helper";
 import { USER_API_ROUTES } from "@/constants/constant-routes/api-routes/user-constant.routes";
-import { PaginationMeta, SubscriptionPlan, QuestionGroup, OnboardingQuestion as DynamicOnboardingQuestion, SubscriptionTransaction } from "@/interface/admin.interface";
+import { PaginationMeta, SubscriptionPlan, QuestionGroup, OnboardingQuestion as DynamicOnboardingQuestion, SubscriptionTransaction, PaginatedResponse } from "@/interface/admin.interface";
 import type { ApiResponse } from "@/interface/api-response.interface";
 
 import type {
@@ -141,13 +141,15 @@ const userServices = {
     return response.data;
   },
 
-  async getMyTransactions(params?: TableQueryParams): Promise<ApiResponse<SubscriptionTransaction[]> & { pagination: PaginationMeta }> {
-    const { page = 1, limit = 10, search, sortBy, sortOrder, status } = params || {};
-    const queryParams = buildQueryParams({ page, limit, search, sortBy, sortOrder, status });
+  async getMyTransactions(params?: TableQueryParams): Promise<PaginatedResponse<SubscriptionTransaction>> {
+    const queryParams = buildQueryParams({ page: 1, limit: 10, ...params });
     const response = await userApi.get<ApiResponse<SubscriptionTransaction[]> & { pagination: PaginationMeta }>(
       `${USER_API_ROUTES.GET_MY_TRANSACTIONS}?${queryParams.toString()}`
     );
-    return response.data;
+    return {
+      data: response.data.data,
+      pagination: response.data.pagination,
+    };
   }
 };
 

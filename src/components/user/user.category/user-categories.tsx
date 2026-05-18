@@ -136,7 +136,13 @@ const UserCategories = () => {
   const fetchFn = useCallback(
     () =>
       userServices
-        .getCategories(currentPage, ITEMS_PER_PAGE, debouncedSearch, sortField || undefined, sortOrder)
+        .getCategories({
+          page: currentPage,
+          limit: ITEMS_PER_PAGE,
+          search: debouncedSearch,
+          sortBy: sortField || undefined,
+          sortOrder: sortOrder,
+        })
         .then((res) => ({ data: res.data, pagination: res.pagination })),
     [currentPage, debouncedSearch, sortField, sortOrder],
   );

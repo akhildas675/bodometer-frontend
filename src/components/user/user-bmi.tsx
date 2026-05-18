@@ -170,33 +170,21 @@ const [bmi, setBmi] = useState<number | null>(
     (g) => g.key?.startsWith("bmi") || g.title?.toLowerCase().includes("bmi")
   );
 
-  // 2. Pull questions tied to that specific group and translate them to flat format
+  // 2. Pull questions tied to that specific group
+  const questions = allQuestions
     .filter((q) => {
       if (!bmiGroup) return false;
       return q.groupId === bmiGroup.groupId;
     })
-    .map((q: DynamicQuestion) => ({
-      id: q.questionId || "",
-      key: q.key || "",
-      schemaKey: null,
-      isCoreLocked: false,
-      question: q.question || "",
-      type: (q.type === "number" && q.numberConfig) ? "number_stepper" : q.type,
-      section: "",
-      order: q.order || 0,
-      options: q.options?.map((o) => ({
-        label: o.label || "",
-        value: String(o.value ?? ""),
-      })),
-      config: {
+    .map((q) => ({
+      ...q,
+      config: q.config || {
         min: q.numberConfig?.min ?? (q.key.includes("height") ? 100 : 30),
         max: q.numberConfig?.max ?? (q.key.includes("height") ? 250 : 200),
         step: q.numberConfig?.step ?? 1,
         unit: q.numberConfig?.unit ?? (q.key.includes("height") ? "cm" : "kg"),
       },
-      validation: q.validation,
-      isActive: q.isActive ?? true,
-    }));
+    })) as unknown as OnboardingQuestion[];
 
   // 3. Dynamically select height and weight questions by analyzing key and body text
   const heightQ = questions.find(

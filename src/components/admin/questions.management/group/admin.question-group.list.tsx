@@ -22,7 +22,7 @@ const AdminQuestionGroupList = () => {
   const [itemsPerPage, setItemsPerPage] = useState(10);
 
   const fetchFn = useCallback(
-    () => adminServices.getQuestionGroups(searchQuery, currentPage, itemsPerPage),
+    () => adminServices.getQuestionGroups({ search: searchQuery || undefined, page: currentPage, limit: itemsPerPage }),
     [searchQuery, currentPage, itemsPerPage]
   );
 

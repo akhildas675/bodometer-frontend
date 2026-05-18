@@ -36,13 +36,13 @@ const AdminTrainerManagement = () => {
     refetch,
   } = useTableFetch<PaginatedResponse<AdminGetTrainersResponse>>(
     () =>
-      adminServices.getTrainers(
-        searchQuery,
-        sortConfig.field ? String(sortConfig.field) : undefined,
-        sortConfig.order,
-        currentPage,
-        itemsPerPage
-      ),
+      adminServices.getTrainers({
+        search: searchQuery,
+        sortBy: sortConfig.field ? String(sortConfig.field) : undefined,
+        sortOrder: sortConfig.order,
+        page: currentPage,
+        limit: itemsPerPage,
+      }),
     false
   );
 

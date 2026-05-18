@@ -1,9 +1,10 @@
-import { CheckCircle, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
+import { CheckCircle, ChevronLeft, ChevronRight, Loader2, AlertTriangle } from 'lucide-react';
 import React, { useEffect, useMemo } from 'react';
 import { DynamicFieldRenderer } from './dynamic.field.renderer';
 import { toast } from 'sonner';
 import { useOnboardingStore } from '@/stores/onboarding.store';
 import { useNavigate } from 'react-router-dom';
+import ConfirmationModal from '@/components/ui/confirm.dialog';
 
 const UserOnboardingAssessment = () => {
    const navigate = useNavigate();
@@ -105,8 +106,8 @@ const UserOnboardingAssessment = () => {
   if (error) {
     return (
       <div className="min-h-screen bg-linear-to-b from-[#03000D] to-[#190473] flex flex-col gap-4 items-center justify-center p-6 text-center">
-        <div className="w-16 h-16 rounded-full border-2 border-red-500/50 flex items-center justify-center text-2xl mb-2">
-          ⚠️
+        <div className="w-16 h-16 rounded-full border-2 border-red-500/50 flex items-center justify-center mb-2">
+          <AlertTriangle className="w-8 h-8 text-red-500 animate-pulse" />
         </div>
         <h2 className="text-white font-bold text-xl">Connection Interrupted</h2>
         <p className="text-red-300 text-sm max-w-md">{error}</p>
@@ -265,32 +266,17 @@ const UserOnboardingAssessment = () => {
         </div>
       </div>
 
-      {showConfirmModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="bg-linear-to-br from-[#140b3a] to-[#0a0624] border border-white/10 p-8 rounded-3xl max-w-md w-full shadow-2xl animate-in zoom-in-95 duration-200">
-            <h3 className="text-xl font-bold text-white mb-3 flex items-center gap-2">
-              <span className="text-purple-400">⚠️</span> Are you sure?
-            </h3>
-            <p className="text-slate-300 mb-8 text-sm leading-relaxed font-medium">
-              These details are critical for designing a safe and effective health and fitness plan tailored specifically to your body. Please ensure all answers are accurate before proceeding.
-            </p>
-            <div className="flex gap-4">
-              <button
-                onClick={() => setShowConfirmModal(false)}
-                className="flex-1 py-3 rounded-full font-bold text-sm bg-white/5 text-white hover:bg-white/10 border border-white/10 transition"
-              >
-                Wait, let me check
-              </button>
-              <button
-                onClick={confirmNext}
-                className="flex-1 py-3 rounded-full font-bold text-sm bg-purple-600 text-white hover:bg-purple-500 transition shadow-lg shadow-purple-600/20"
-              >
-                Yes, I'm sure
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <ConfirmationModal
+        isOpen={showConfirmModal}
+        onClose={() => setShowConfirmModal(false)}
+        onConfirm={confirmNext}
+        title="Are you sure?"
+        message="These details are critical for designing a safe and effective health and fitness plan tailored specifically to your body. Please ensure all answers are accurate before proceeding."
+        confirmText="Yes, I'm sure"
+        cancelText="Wait, let me check"
+        variant="purple"
+        icon={<AlertTriangle className="w-6 h-6 text-purple-400" />}
+      />
     </div>
   );
 }

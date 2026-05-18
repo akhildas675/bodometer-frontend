@@ -29,13 +29,13 @@ const AdminCategoryList = () => {
   const [itemsPerPage, setItemsPerPage] = useState(10);
 
   const fetchFn = useCallback(async() =>{
-    return adminServices.getAllCategories(
-        searchQuery,
-        sortConfig.field ? String(sortConfig.field) : undefined,
-        sortConfig.order,
-        currentPage,
-        itemsPerPage
-      )
+    return adminServices.getAllCategories({
+        search: searchQuery || undefined,
+        sortBy: sortConfig.field ? String(sortConfig.field) : undefined,
+        sortOrder: sortConfig.order,
+        page: currentPage,
+        limit: itemsPerPage
+      })
   },[searchQuery, sortConfig, currentPage, itemsPerPage])
 
   const {
@@ -44,13 +44,13 @@ const AdminCategoryList = () => {
     refetch,
   } = useTableFetch<PaginatedResponse<UpdateCategory>>(
     () =>
-      adminServices.getAllCategories(
-        searchQuery,
-        sortConfig.field ? String(sortConfig.field) : undefined,
-        sortConfig.order,
-        currentPage,
-        itemsPerPage
-      ),
+      adminServices.getAllCategories({
+        search: searchQuery || undefined,
+        sortBy: sortConfig.field ? String(sortConfig.field) : undefined,
+        sortOrder: sortConfig.order,
+        page: currentPage,
+        limit: itemsPerPage
+      }),
     false
   );
 

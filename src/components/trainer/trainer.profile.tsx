@@ -649,7 +649,7 @@ const TrainerProfile = () => {
                           ) : (
                             <input
                               type="date"
-                              className="w-full bg-[#1c1550]/60 px-3 py-1.5 rounded-lg border border-purple-800/40 text-white text-xs outline-none focus:border-purple-500 transition-all font-semibold [color-scheme:dark]"
+                              className="w-full bg-[#1c1550]/60 px-3 py-1.5 rounded-lg border border-purple-800/40 text-white text-xs outline-none focus:border-purple-500 transition-all font-semibold scheme-dark"
                               value={form.dateOfBirth || ""}
                               onChange={handleChange("dateOfBirth")}
                               required

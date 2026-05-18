@@ -33,19 +33,19 @@ const AdminUsersManagement = () => {
       const [currentPage, setCurrentPage] = useState(1);
       const [itemsPerPage, setItemsPerPage] = useState(10)
 
-const {
+  const {
     data: response,
     loading,
     refetch,
   } = useTableFetch<PaginatedResponse<AdminGetUsersResponse>>(
     () =>
-      adminServices.getUsers(
-        searchQuery,
-        sortConfig.field ? String(sortConfig.field) : undefined,
-        sortConfig.order,
-        currentPage,
-        itemsPerPage
-      ),
+      adminServices.getUsers({
+        search: searchQuery,
+        sortBy: sortConfig.field ? String(sortConfig.field) : undefined,
+        sortOrder: sortConfig.order,
+        page: currentPage,
+        limit: itemsPerPage,
+      }),
     false
   );
 

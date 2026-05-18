@@ -1,11 +1,12 @@
 import { useEffect, useState, FormEvent } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ChevronLeft, Loader2, Plus, Trash2, Check } from "lucide-react";
+import { ChevronLeft, Loader2, Plus, Trash2, Check, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
 
 import adminServices from "@/services/admin/admin.services";
 import { ADMIN_UI_ROUTES } from "@/constants/constant-routes/ui-routes/admin.ui-constant-routes";
 import type { QuestionGroup, CreateQuestionData, OnboardingQuestion, UpdateCategory } from "@/interface/admin.interface";
+import { QUESTION_TYPE } from "@/constants/onboarding.constant";
 
 interface NextJumpData {
   condition: { operator: string; value?: string | number | boolean };
@@ -13,13 +14,13 @@ interface NextJumpData {
 }
 
 const QUESTION_TYPES = [
-  { label: "Yes / No (Boolean)", value: "boolean" },
-  { label: "Single Select", value: "single_select" },
-  { label: "Multi Select", value: "multi_select" },
-  { label: "Text Input", value: "text" },
-  { label: "Number Input", value: "number" },
-  { label: "Time Picker", value: "time" },
-  { label: "Date Picker", value: "date" },
+  { label: "Yes / No (Boolean)", value: QUESTION_TYPE.BOOLEAN },
+  { label: "Single Select", value: QUESTION_TYPE.SINGLE_SELECT },
+  { label: "Multi Select", value: QUESTION_TYPE.MULTI_SELECT },
+  { label: "Text Input", value: QUESTION_TYPE.TEXT },
+  { label: "Number Input", value: QUESTION_TYPE.NUMBER },
+  { label: "Time Picker", value: QUESTION_TYPE.TIME },
+  { label: "Date Picker", value: QUESTION_TYPE.DATE },
 ];
 
 interface OptionData {
@@ -44,7 +45,7 @@ const AdminQuestionForm = () => {
   const [key, setKey] = useState("");
   const [question, setQuestion] = useState("");
   const [groupId, setGroupId] = useState("");
-  const [type, setType] = useState("single_select");
+  const [type, setType] = useState<string>(QUESTION_TYPE.SINGLE_SELECT);
   const [order, setOrder] = useState(1);
   const [isRequired, setIsRequired] = useState(true);
   const [options, setOptions] = useState<OptionData[]>([{ label: "", value: "" }]);
@@ -57,15 +58,15 @@ const AdminQuestionForm = () => {
   const [nextJumps, setNextJumps] = useState<NextJumpData[]>([]);
 
   useEffect(() => {
-    adminServices.getQuestionGroups("", 1, 100)
+    adminServices.getQuestionGroups({ page: 1, limit: 100 })
       .then((res) => setGroups(res.data || []))
       .catch((e) => console.error(e));
 
-    adminServices.getQuestions("", "", 1, 1000)
+    adminServices.getQuestions({ page: 1, limit: 1000 })
       .then((res) => setQuestionsList(res.data || []))
       .catch((e) => console.error(e));
 
-    adminServices.getAllCategories("", "", "asc", 1, 1000)
+    adminServices.getAllCategories({ sortOrder: "asc", page: 1, limit: 1000 })
       .then((res) => {
         const loadedCats = res.data || [];
         setCategories(loadedCats);
@@ -174,7 +175,7 @@ const AdminQuestionForm = () => {
     if (!groupId) { toast.error("Please select a Question Group"); return false; }
     if (!question.trim()) { toast.error("Question prompt is required"); return false; }
     
-    if (["single_select", "multi_select"].includes(type)) {
+    if ([QUESTION_TYPE.SINGLE_SELECT, QUESTION_TYPE.MULTI_SELECT].includes(type as any)) {
       if (dataSource === "category") {
         if (selectedCategories.length === 0) {
           toast.error("Please select at least one category option.");
@@ -211,7 +212,7 @@ const AdminQuestionForm = () => {
         groupId,
         order: Number(order),
         type,
-        dataSource: ["single_select", "multi_select"].includes(type) && dataSource ? dataSource : undefined,
+        dataSource: [QUESTION_TYPE.SINGLE_SELECT, QUESTION_TYPE.MULTI_SELECT].includes(type as any) && dataSource ? dataSource : undefined,
         validation: { required: isRequired },
         next: nextJumps.length > 0 ? nextJumps.map(j => ({
           condition: {
@@ -222,7 +223,7 @@ const AdminQuestionForm = () => {
         })) : undefined,
       };
 
-      if (["single_select", "multi_select"].includes(type)) {
+      if ([QUESTION_TYPE.SINGLE_SELECT, QUESTION_TYPE.MULTI_SELECT].includes(type as any)) {
         if (dataSource === "category") {
           const selectedCats = categories.filter((c) => selectedCategories.includes(c.categoryId));
           payload.options = selectedCats.map((c) => ({
@@ -234,7 +235,7 @@ const AdminQuestionForm = () => {
         }
       }
 
-      if (type === "number") {
+      if (type === QUESTION_TYPE.NUMBER) {
         payload.numberConfig = {
           min: minNum !== undefined ? Number(minNum) : undefined,
           max: maxNum !== undefined ? Number(maxNum) : undefined,
@@ -342,7 +343,7 @@ const AdminQuestionForm = () => {
             </div>
           </div>
 
-          {(type === "single_select" || type === "multi_select") && (
+          {([QUESTION_TYPE.SINGLE_SELECT, QUESTION_TYPE.MULTI_SELECT].includes(type as any)) && (
             <div className="border border-dashed border-purple-800/50 p-4 rounded-lg bg-[#0a041a] space-y-4">
               <div>
                 <label className="block text-xs font-semibold uppercase tracking-wide text-purple-400 mb-1.5">Option Data Source</label>
@@ -440,7 +441,7 @@ const AdminQuestionForm = () => {
                     })}
                     {categories.filter(c => c.isActive !== false).length === 0 && (
                       <div className="col-span-2 text-xs text-gray-500 italic py-4 flex flex-col items-center gap-2 bg-black/10 border border-dashed border-purple-900/20 rounded-xl">
-                        <span className="text-xl">⚠️</span>
+                        <AlertTriangle className="w-8 h-8 text-amber-500 animate-pulse" />
                         <span>No active workout categories found. Please create active categories first.</span>
                       </div>
                     )}
@@ -454,7 +455,7 @@ const AdminQuestionForm = () => {
             </div>
           )}
 
-          {type === "number" && (
+          {type === QUESTION_TYPE.NUMBER && (
             <div className="grid grid-cols-3 gap-4 border border-dashed border-purple-800/50 p-4 rounded-lg bg-[#0a041a]">
               <div>
                 <label className="text-xs text-purple-400 block mb-1">Min Bounds</label>

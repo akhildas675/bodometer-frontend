@@ -130,7 +130,13 @@ const UserTrainers = () => {
   const fetchFn = useCallback(
     () =>
       userServices
-        .getTrainers(currentPage, ITEMS_PER_PAGE, debouncedSearch, sortField || undefined, sortOrder)
+        .getTrainers({
+          page: currentPage,
+          limit: ITEMS_PER_PAGE,
+          search: debouncedSearch,
+          sortBy: sortField || undefined,
+          sortOrder: sortOrder,
+        })
         .then((res) => ({ data: res.data, pagination: res.pagination })),
     [currentPage, debouncedSearch, sortField, sortOrder],
   );

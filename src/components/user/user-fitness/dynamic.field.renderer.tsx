@@ -148,6 +148,7 @@ export const DynamicFieldRenderer = ({
       );
 
     case "number":
+    case "number_stepper":
       return (
         <StepperInput
           question={question}

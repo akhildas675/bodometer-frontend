@@ -1,10 +1,11 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { useOnboardingStore } from '@/stores/onboarding.store';
-import { Loader2, Save } from 'lucide-react';
+import { Loader2, Save, ClipboardList, AlertTriangle, ShieldAlert, Info } from 'lucide-react';
 import { DynamicFieldRenderer } from './dynamic.field.renderer';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import userServices from '@/services/user/user.services';
+import ConfirmationModal from '@/components/ui/confirm.dialog';
 
 const UserFitnessProfile = () => {
   const navigate = useNavigate();
@@ -23,7 +24,12 @@ const UserFitnessProfile = () => {
 
   const [activeGroupId, setActiveGroupId] = useState<string | null>(null);
   const [isInitializing, setIsInitializing] = useState(true);
-  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [modalConfig, setModalConfig] = useState<{ isOpen: boolean; mode: "welcome" | "save" }>({
+    isOpen: false,
+    mode: "welcome"
+  });
+  const [hasActivePlan, setHasActivePlan] = useState(false);
+  const [originalAnswers, setOriginalAnswers] = useState<Record<string, any> | null>(null);
 
   useEffect(() => {
     const checkStatus = async () => {
@@ -31,6 +37,8 @@ const UserFitnessProfile = () => {
         const res = await userServices.getOnboardingStatus();
         if (!res.data?.completed) {
           navigate("/onboarding/intro");
+        } else {
+          setHasActivePlan(true);
         }
       } catch (err) {
         console.error("Failed to check onboarding status", err);
@@ -51,6 +59,45 @@ const UserFitnessProfile = () => {
     init();
   }, [groups.length, loadOnboarding, loadUserAnswers]);
 
+  useEffect(() => {
+    if (!isInitializing && !originalAnswers && Object.keys(answers).length > 0) {
+      const initialMap = Object.keys(answers).reduce((acc, qId) => {
+        acc[qId] = answers[qId]?.value;
+        return acc;
+      }, {} as Record<string, any>);
+      setOriginalAnswers(initialMap);
+    }
+  }, [isInitializing, answers, originalAnswers]);
+
+  const updateOriginalAnswersSnapshot = () => {
+    const currentMap = Object.keys(answers).reduce((acc, qId) => {
+      acc[qId] = answers[qId]?.value;
+      return acc;
+    }, {} as Record<string, any>);
+    setOriginalAnswers(currentMap);
+  };
+
+  const isDirty = useMemo(() => {
+    if (!originalAnswers) return false;
+
+    return Object.keys(answers).some((qId) => {
+      const currentVal = answers[qId]?.value;
+      const originalVal = originalAnswers[qId];
+
+      if (Array.isArray(currentVal) && Array.isArray(originalVal)) {
+        if (currentVal.length !== originalVal.length) return true;
+        const sortedCurrent = [...currentVal].sort();
+        const sortedOriginal = [...originalVal].sort();
+        return sortedCurrent.some((item, idx) => item !== sortedOriginal[idx]);
+      }
+
+      const normalizedCurrent = currentVal === undefined || currentVal === null ? "" : currentVal;
+      const normalizedOriginal = originalVal === undefined || originalVal === null ? "" : originalVal;
+
+      return normalizedCurrent !== normalizedOriginal;
+    });
+  }, [answers, originalAnswers]);
+
   const currentActiveGroupId = activeGroupId ?? (groups.length > 0 ? groups[0].groupId : null);
 
   const activeGroup = groups.find(g => g.groupId === currentActiveGroupId);
@@ -59,6 +106,77 @@ const UserFitnessProfile = () => {
     () => (currentActiveGroupId ? getVisibleQuestionsInFlowOrder(currentActiveGroupId) : []),
     [currentActiveGroupId, groups, questions, answers, getVisibleQuestionsInFlowOrder]
   );
+
+  // Group editing policy helper
+  const getGroupEditingPolicy = (key: string, title: string) => {
+    const normalizedKey = (key || "").toLowerCase();
+    const normalizedTitle = (title || "").toLowerCase();
+
+    if (normalizedKey.includes("bmi") || normalizedKey.includes("body") || normalizedTitle.includes("bmi") || normalizedTitle.includes("body metrics")) {
+      return {
+        groupName: "Body Metrics",
+        editable: "Anytime",
+        effect: "live recalculation",
+        type: "live_recalc",
+        warningMessage: "Recalculates your body metrics and BMI instantly inside your profile dashboard.",
+        confirmText: "Save & Recalculate"
+      };
+    }
+    if (normalizedKey.includes("lifestyle") || normalizedKey.includes("habit") || normalizedTitle.includes("lifestyle") || normalizedTitle.includes("habit")) {
+      return {
+        groupName: "Lifestyle",
+        editable: "Anytime",
+        effect: "adaptive analysis",
+        type: "adaptive_analysis",
+        warningMessage: "Updates your lifestyle profile and instantly updates daily adaptive analysis trackers.",
+        confirmText: "Save & Analyze"
+      };
+    }
+    if (normalizedKey.includes("goal") || normalizedKey.includes("fitness") || normalizedTitle.includes("goal") || normalizedTitle.includes("fitness goals")) {
+      return {
+        groupName: "Fitness Goals",
+        editable: "Anytime with warning",
+        effect: "optional regeneration",
+        type: "program_regeneration",
+        warningMessage: "Changing fitness goals is a major update. This will flag your active AI training plan for optional program regeneration.",
+        confirmText: "Save & Flag Regeneration"
+      };
+    }
+    if (normalizedKey.includes("preference") || normalizedKey.includes("workout") || normalizedKey.includes("exercise") || normalizedTitle.includes("preference") || normalizedTitle.includes("workout") || normalizedTitle.includes("exercise")) {
+      return {
+        groupName: "Workout Preferences",
+        editable: "Anytime with warning",
+        effect: "optional regeneration",
+        type: "program_regeneration",
+        warningMessage: "Changing training preferences updates program layout. This will flag your active AI plan for optional workout program regeneration.",
+        confirmText: "Save & Flag Regeneration"
+      };
+    }
+    if (normalizedKey.includes("medical") || normalizedKey.includes("safety") || normalizedKey.includes("health") || normalizedKey.includes("history") || normalizedTitle.includes("medical") || normalizedTitle.includes("safety") || normalizedTitle.includes("health") || normalizedTitle.includes("history")) {
+      return {
+        groupName: "Medical History",
+        editable: "Anytime",
+        effect: "immediate safety review",
+        type: "safety_review",
+        warningMessage: "Critical: Modifying medical or health history triggers an immediate system safety review of your active training profile.",
+        confirmText: "Save & Run Safety Review"
+      };
+    }
+
+    return {
+      groupName: title || "General Details",
+      editable: "Anytime",
+      effect: "instant update",
+      type: "live_recalc",
+      warningMessage: "Modifying these details will update your profile.",
+      confirmText: "Yes, Save Changes"
+    };
+  };
+
+  const activePolicy = useMemo(() => {
+    if (!activeGroup) return null;
+    return getGroupEditingPolicy(activeGroup.key || "", activeGroup.title || "");
+  }, [activeGroup]);
 
   const handleSave = async () => {
     const unmetRequired = visibleQuestions.some((q) => {
@@ -77,14 +195,49 @@ const UserFitnessProfile = () => {
       return;
     }
 
-    setShowConfirmModal(true);
+    if (hasActivePlan) {
+      setModalConfig({ isOpen: true, mode: "save" });
+    } else {
+      await performSaveDirectly();
+    }
   };
 
-  const confirmSave = async () => {
-    setShowConfirmModal(false);
+  const performSaveDirectly = async () => {
     try {
       await submitOnboarding();
       toast.success("Assessment answers updated successfully!");
+      updateOriginalAnswersSnapshot();
+    } catch {
+      toast.error("Failed to update answers.");
+    }
+  };
+
+  const confirmSave = async () => {
+    setModalConfig(prev => ({ ...prev, isOpen: false }));
+    try {
+      await submitOnboarding();
+      updateOriginalAnswersSnapshot();
+      
+      // Dynamic effects toasts based on group type
+      if (activePolicy?.type === "program_regeneration") {
+        toast.success("Answers saved! Active AI plan has been flagged for regeneration.", {
+          description: "Go to your dashboard to regenerate your workout and meal plans.",
+          duration: 6000,
+        });
+      } else if (activePolicy?.type === "safety_review") {
+        toast.warning("Medical records updated! Immediate safety review initiated.", {
+          description: "Our health engine is scanning your answers. If any risks are flagged, you will be notified.",
+          duration: 6000,
+        });
+      } else if (activePolicy?.type === "adaptive_analysis") {
+        toast.success("Answers updated! Live adaptive analysis metrics recalculated.", {
+          duration: 4000,
+        });
+      } else {
+        toast.success("Assessment answers updated successfully!", {
+          duration: 3000,
+        });
+      }
     } catch {
       toast.error("Failed to update answers.");
     }
@@ -142,7 +295,7 @@ const UserFitnessProfile = () => {
                 </div>
                 <button
                   onClick={handleSave}
-                  disabled={submitting}
+                  disabled={submitting || !isDirty}
                   className="flex items-center gap-2 bg-purple-600 text-white px-6 py-2.5 rounded-full font-bold text-sm shadow-lg hover:bg-purple-500 transition disabled:opacity-50 disabled:cursor-not-allowed border border-purple-400/50"
                 >
                   {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
@@ -194,7 +347,7 @@ const UserFitnessProfile = () => {
                 <div className="mt-12 pt-8 border-t border-white/10 flex justify-end relative z-10">
                   <button
                     onClick={handleSave}
-                    disabled={submitting}
+                    disabled={submitting || !isDirty}
                     className="flex items-center gap-2 bg-purple-600 text-white px-8 py-3 rounded-full font-bold text-sm shadow-lg hover:bg-purple-500 transition disabled:opacity-50 disabled:cursor-not-allowed border border-purple-400/50"
                   >
                     {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
@@ -211,32 +364,162 @@ const UserFitnessProfile = () => {
         </main>
       </div>
 
-      {showConfirmModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="bg-linear-to-br from-[#140b3a] to-[#0a0624] border border-white/10 p-8 rounded-3xl max-w-md w-full shadow-2xl animate-in zoom-in-95 duration-200">
-            <h3 className="text-xl font-bold text-white mb-3 flex items-center gap-2">
-              <span className="text-purple-400">⚠️</span> Are you sure?
-            </h3>
-            <p className="text-slate-300 mb-8 text-sm leading-relaxed font-medium">
-              Modifying these details will impact how your health and fitness plan is generated. Please ensure all updated answers are accurate before saving.
-            </p>
-            <div className="flex gap-4">
-              <button
-                onClick={() => setShowConfirmModal(false)}
-                className="flex-1 py-3 rounded-full font-bold text-sm bg-white/5 text-white hover:bg-white/10 border border-white/10 transition"
-              >
-                Wait, let me check
-              </button>
-              <button
-                onClick={confirmSave}
-                className="flex-1 py-3 rounded-full font-bold text-sm bg-purple-600 text-white hover:bg-purple-500 transition shadow-lg shadow-purple-600/20"
-              >
-                Yes, save changes
-              </button>
+      <ConfirmationModal
+        isOpen={modalConfig.isOpen}
+        onClose={() => setModalConfig(prev => ({ ...prev, isOpen: false }))}
+        onConfirm={modalConfig.mode === "welcome" ? () => {} : confirmSave}
+        title={modalConfig.mode === "welcome" ? "Profile Editing Rules" : "Edit Confirmation"}
+        variant={modalConfig.mode === "welcome" ? "purple" : activePolicy?.type === "safety_review" ? "danger" : "purple"}
+        size={modalConfig.mode === "welcome" ? "2xl" : "lg"}
+        hideCancel={modalConfig.mode === "welcome"}
+        confirmText={modalConfig.mode === "welcome" ? "I Understand & Agree" : activePolicy?.confirmText}
+        cancelText="Cancel"
+        icon={
+          modalConfig.mode === "welcome" ? (
+            <ClipboardList className="w-6 h-6 text-purple-400" />
+          ) : (
+            <AlertTriangle className="w-6 h-6 text-amber-500" />
+          )
+        }
+        message={
+          <div>
+            {modalConfig.mode === "welcome" ? (
+              <p className="text-slate-300 mb-6 text-sm leading-relaxed font-medium">
+                Your profile is synced with your **active AI health and fitness plans**. Modifying specific groups will affect your program immediately or flag it for regeneration:
+              </p>
+            ) : (
+              <p className="text-slate-300 mb-6 text-sm leading-relaxed font-medium">
+                An active AI plan exists. Your changes will trigger segment-specific updates to your personalized program.
+              </p>
+            )}
+
+            {/* Premium Reusable Interactive Policy Grid Table */}
+            <div className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden mb-6 shadow-inner text-xs">
+              <div className="grid grid-cols-3 bg-white/5 border-b border-white/10 px-5 py-3.5 font-black uppercase tracking-wider text-purple-300">
+                <span>{modalConfig.mode === "welcome" ? "Category Group" : "Section Group"}</span>
+                <span>{modalConfig.mode === "welcome" ? "Editable Rule" : "Edit Policy"}</span>
+                <span>System Impact</span>
+              </div>
+              
+              {modalConfig.mode === "welcome" ? (
+                <div className="divide-y divide-white/5 font-semibold text-slate-300">
+                  {/* Body Metrics */}
+                  <div className="grid grid-cols-3 items-center px-5 py-3">
+                    <span className="text-white font-bold">Body Metrics</span>
+                    <div>
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase border bg-emerald-500/15 text-emerald-400 border-emerald-500/30">
+                        <span className="w-1 h-1 rounded-full bg-emerald-400" />
+                        Anytime
+                      </span>
+                    </div>
+                    <span className="text-teal-400 capitalize">live recalculation</span>
+                  </div>
+
+                  {/* Lifestyle */}
+                  <div className="grid grid-cols-3 items-center px-5 py-3">
+                    <span className="text-white font-bold">Lifestyle</span>
+                    <div>
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase border bg-emerald-500/15 text-emerald-400 border-emerald-500/30">
+                        <span className="w-1 h-1 rounded-full bg-emerald-400" />
+                        Anytime
+                      </span>
+                    </div>
+                    <span className="text-teal-400 capitalize">adaptive analysis</span>
+                  </div>
+
+                  {/* Fitness Goals */}
+                  <div className="grid grid-cols-3 items-center px-5 py-3">
+                    <span className="text-white font-bold">Fitness Goals</span>
+                    <div>
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase border bg-amber-500/15 text-amber-400 border-amber-500/30">
+                        <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+                        Anytime with warning
+                      </span>
+                    </div>
+                    <span className="text-rose-400 capitalize">optional regeneration</span>
+                  </div>
+
+                  {/* Workout Preferences */}
+                  <div className="grid grid-cols-3 items-center px-5 py-3">
+                    <span className="text-white font-bold">Workout Preferences</span>
+                    <div>
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase border bg-amber-500/15 text-amber-400 border-amber-500/30">
+                        <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+                        Anytime with warning
+                      </span>
+                    </div>
+                    <span className="text-rose-400 capitalize">optional regeneration</span>
+                  </div>
+
+                  {/* Medical History */}
+                  <div className="grid grid-cols-3 items-center px-5 py-3">
+                    <span className="text-white font-bold">Medical History</span>
+                    <div>
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase border bg-emerald-500/15 text-emerald-400 border-emerald-500/30">
+                        <span className="w-1 h-1 rounded-full bg-emerald-400" />
+                        Anytime
+                      </span>
+                    </div>
+                    <span className="text-red-400 capitalize">immediate safety review</span>
+                  </div>
+                </div>
+              ) : (
+                activePolicy && (
+                  <div className="grid grid-cols-3 items-center px-5 py-4 font-bold gap-2">
+                    <span className="text-white tracking-wide text-[13px]">{activePolicy.groupName}</span>
+                    <div>
+                      <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-extrabold uppercase border ${
+                        activePolicy.editable.includes("warning")
+                          ? "bg-amber-500/15 text-amber-400 border-amber-500/30"
+                          : "bg-emerald-500/15 text-emerald-400 border-emerald-500/30"
+                      }`}>
+                        <span className={`w-1.5 h-1.5 rounded-full ${
+                          activePolicy.editable.includes("warning") ? "bg-amber-400 animate-pulse" : "bg-emerald-400"
+                        }`} />
+                        {activePolicy.editable}
+                      </span>
+                    </div>
+                    <div>
+                      <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-extrabold uppercase border ${
+                        activePolicy.type === "program_regeneration"
+                          ? "bg-rose-500/15 text-rose-400 border-rose-500/30"
+                          : activePolicy.type === "safety_review"
+                          ? "bg-red-600/15 text-red-400 border-red-500/30"
+                          : "bg-teal-500/15 text-teal-400 border-teal-500/30"
+                      }`}>
+                        {activePolicy.effect}
+                      </span>
+                    </div>
+                  </div>
+                )
+              )}
             </div>
+
+            {modalConfig.mode === "save" && activePolicy && (
+              <div className={`border rounded-2xl p-4 ${
+                activePolicy.type === "program_regeneration"
+                  ? "bg-amber-500/5 border-amber-500/20 text-amber-200"
+                  : activePolicy.type === "safety_review"
+                  ? "bg-rose-500/5 border-rose-500/20 text-rose-200 animate-pulse"
+                  : "bg-purple-950/40 border-purple-500/20 text-purple-200"
+              }`}>
+                <p className="text-xs font-semibold leading-relaxed flex gap-2 items-start text-left">
+                  {activePolicy.type === "program_regeneration" ? (
+                    <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0" />
+                  ) : activePolicy.type === "safety_review" ? (
+                    <ShieldAlert className="w-4 h-4 text-rose-400 shrink-0 animate-pulse" />
+                  ) : (
+                    <Info className="w-4 h-4 text-purple-400 shrink-0" />
+                  )}
+                  <span className="flex-1">
+                    {activePolicy.warningMessage}
+                  </span>
+                </p>
+              </div>
+            )}
           </div>
-        </div>
-      )}
+        }
+      />
     </div>
   );
 };

@@ -32,21 +32,21 @@ const AdminQuestionList = () => {
   });
 
   useEffect(() => {
-     adminServices.getQuestionGroups("", 1, 100).then(res => {
+     adminServices.getQuestionGroups({ page: 1, limit: 100 }).then(res => {
          setGroups(res.data || []);
      }).catch(e => console.error(e));
   }, []);
 
   const fetchFn = useCallback(
     () =>
-      adminServices.getQuestions(
-        searchQuery,
-        selectedGroup || undefined,
-        currentPage,
-        itemsPerPage,
-        sortConfig.field ? String(sortConfig.field) : undefined,
-        sortConfig.order
-      ),
+      adminServices.getQuestions({
+        search: searchQuery || undefined,
+        groupId: selectedGroup || undefined,
+        page: currentPage,
+        limit: itemsPerPage,
+        sortBy: sortConfig.field ? String(sortConfig.field) : undefined,
+        sortOrder: sortConfig.order,
+      }),
     [searchQuery, selectedGroup, currentPage, itemsPerPage, sortConfig]
   );
 
