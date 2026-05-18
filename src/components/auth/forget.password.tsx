@@ -56,9 +56,9 @@ const ForgetPassword = () => {
 
       navigate(`/${role}-otp`, { replace: true });
     }
-  } catch (error) {
+  } catch  {
     toast.error("Something went wrong. Please try again.");
-    console.log("Error submitting email", error);
+  
   } finally {
     setLoading(false); 
   }

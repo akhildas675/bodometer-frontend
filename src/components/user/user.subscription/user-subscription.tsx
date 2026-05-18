@@ -89,8 +89,6 @@ const UserSubscription = () => {
     false,
   );
 
-  console.log("subscription response...", txResponse);
-
   const handleSearch = useCallback((value: string) => {
     setSearchQuery(value);
     setCurrentPage(1);

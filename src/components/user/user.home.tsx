@@ -271,7 +271,7 @@ const CtaBanner = ({
 
 const UserHome = () => {
   const { isAuthenticated, user } = useAuthStore();
-  console.log("user....",user)
+
   const navigate = useNavigate();
 
   return (

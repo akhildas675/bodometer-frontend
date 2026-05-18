@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { useOnboardingStore } from '@/stores/onboarding.store';
+import { AnswerValue } from '@/constants/onboarding.constant';
 import { Loader2, Save, ClipboardList, AlertTriangle, ShieldAlert, Info } from 'lucide-react';
 import { DynamicFieldRenderer } from './dynamic.field.renderer';
 import { toast } from 'sonner';
@@ -29,7 +30,7 @@ const UserFitnessProfile = () => {
     mode: "welcome"
   });
   const [hasActivePlan, setHasActivePlan] = useState(false);
-  const [originalAnswers, setOriginalAnswers] = useState<Record<string, any> | null>(null);
+  const [originalAnswers, setOriginalAnswers] = useState<Record<string, AnswerValue> | null>(null);
 
   useEffect(() => {
     const checkStatus = async () => {
@@ -54,26 +55,24 @@ const UserFitnessProfile = () => {
         await loadOnboarding();
       }
       await loadUserAnswers();
+
+      const currentAnswers = useOnboardingStore.getState().answers;
+      const initialMap = Object.keys(currentAnswers).reduce((acc, qId) => {
+        acc[qId] = currentAnswers[qId]?.value;
+        return acc;
+      }, {} as Record<string, AnswerValue>);
+      setOriginalAnswers(initialMap);
+
       setIsInitializing(false);
     };
     init();
   }, [groups.length, loadOnboarding, loadUserAnswers]);
 
-  useEffect(() => {
-    if (!isInitializing && !originalAnswers && Object.keys(answers).length > 0) {
-      const initialMap = Object.keys(answers).reduce((acc, qId) => {
-        acc[qId] = answers[qId]?.value;
-        return acc;
-      }, {} as Record<string, any>);
-      setOriginalAnswers(initialMap);
-    }
-  }, [isInitializing, answers, originalAnswers]);
-
   const updateOriginalAnswersSnapshot = () => {
     const currentMap = Object.keys(answers).reduce((acc, qId) => {
       acc[qId] = answers[qId]?.value;
       return acc;
-    }, {} as Record<string, any>);
+    }, {} as Record<string, AnswerValue>);
     setOriginalAnswers(currentMap);
   };
 

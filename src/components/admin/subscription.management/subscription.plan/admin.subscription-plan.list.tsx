@@ -4,7 +4,7 @@ import { ArrowLeft, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 import adminServices from "@/services/admin/admin.services";
-import { type FeatureListItem, type SubscriptionPlanFormData } from "@/interface/admin.interface";
+import { type FeatureListItem, type SubscriptionPlanFormData, type SubscriptionPlanDetailsResponse } from "@/interface/admin.interface";
 import { LIMIT_TYPES } from "@/constants/subscription.constants";
 import { useFetch } from "@/hooks/useFetch";
 
@@ -27,6 +27,7 @@ const AdminSubscriptionPlanForm = () => {
   const [availableFeatures, setAvailableFeatures] = useState<FeatureListItem[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [fetchLoading, setFetchLoading] = useState(false);
+  const [loadedPlan, setLoadedPlan] = useState<SubscriptionPlanDetailsResponse | null>(null);
 
   // Load available features
   const { data: response } = useFetch(() => adminServices.getAllSubscriptionFeatures());
@@ -53,20 +54,7 @@ const AdminSubscriptionPlanForm = () => {
         setFetchLoading(true);
         const res = await adminServices.getSubscriptionPlanById(id);
         if (res?.success) {
-          const plan = res.data;
-          setForm({
-            name: plan.name,
-            description: plan.description || "",
-            price: String(plan.price),
-            durationInDays: String(plan.durationInDays),
-            isPopular: plan.isPopular,
-            features: plan.features.map((f: { featureId: string; type: "boolean" | "limit"; limit?: number; limitType?: string }) => ({
-              featureId: f.featureId,
-              type: f.type,          
-              limit: f.limit ? String(f.limit) : "",
-              limitType: f.limitType || "",
-            })),
-          });
+          setLoadedPlan(res.data);
         }
       } catch {
         toast.error("Failed to load plan");
@@ -76,6 +64,27 @@ const AdminSubscriptionPlanForm = () => {
     };
     load();
   }, [id, isEdit]);
+
+  useEffect(() => {
+    if (loadedPlan && availableFeatures.length > 0) {
+      setForm({
+        name: loadedPlan.name,
+        description: loadedPlan.description || "",
+        price: String(loadedPlan.price),
+        durationInDays: String(loadedPlan.durationInDays),
+        isPopular: loadedPlan.isPopular,
+        features: loadedPlan.features.map((f: { featureId: string; limit?: number; limitType?: string }) => {
+          const selected = availableFeatures.find((af) => af.featureId === f.featureId);
+          return {
+            featureId: f.featureId,
+            type: selected?.type || "boolean",
+            limit: f.limit ? String(f.limit) : "",
+            limitType: f.limitType || "",
+          };
+        }),
+      });
+    }
+  }, [loadedPlan, availableFeatures]);
 
   // Add a feature row
   const addFeature = () => {

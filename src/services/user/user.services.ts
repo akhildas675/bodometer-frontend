@@ -81,7 +81,6 @@ const userServices = {
 
   async getMySubscriptions(): Promise<ApiResponse<SubscriptionPlan>> {
     const response = await userApi.get<ApiResponse<SubscriptionPlan>>(USER_API_ROUTES.GET_MY_SUBSCRIPTION);
-    console.log("subscription frontend service", response.data)
     return response.data
   },
 

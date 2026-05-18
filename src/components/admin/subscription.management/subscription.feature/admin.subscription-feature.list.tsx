@@ -41,14 +41,14 @@ const AdminSubscriptionFeatureList = () => {
 
   const fetchFn = useCallback(
     () =>
-      adminServices.getAllSubscriptionFeatures(
-        searchQuery,
-        typeFilter || undefined,
-        sortConfig.field ? String(sortConfig.field) : undefined,
-        sortConfig.order,
-        currentPage,
-        itemsPerPage
-      ),
+      adminServices.getAllSubscriptionFeatures({
+        search: searchQuery || undefined,
+        type: typeFilter || undefined,
+        sortBy: sortConfig.field ? String(sortConfig.field) : undefined,
+        sortOrder: sortConfig.order,
+        page: currentPage,
+        limit: itemsPerPage,
+      }),
     [searchQuery, typeFilter, sortConfig, currentPage, itemsPerPage]
   );
 

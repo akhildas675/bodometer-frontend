@@ -9,24 +9,12 @@ const UserOnboardingIntro = () => {
   const user = useAuthStore((state) => state.user);
   const navigate = useNavigate();
   const loadOnboarding = useOnboardingStore((state) => state.loadOnboarding);
-  const questions = useOnboardingStore((state) => state.questions);
   const groups = useOnboardingStore((state) => state.groups);
-  const loading = useOnboardingStore((state) => state.loading);
+
 
   useEffect(() => {
     loadOnboarding();
   }, [loadOnboarding]);
-
-  useEffect(() => {
-    if (!loading && questions.length > 0) {
-      console.log(">>> Onboarding Store Loaded into Intro Page Successfully:", {
-        questionsCount: questions.length,
-        groupsCount: groups.length,
-        questions,
-        groups,
-      });
-    }
-  }, [questions, groups, loading]);
 
   const handleStart = () => {
     navigate(USER_UI_ROUTES.ONBOARDING_ASSESSMENT);

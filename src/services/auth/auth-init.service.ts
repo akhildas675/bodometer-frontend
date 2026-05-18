@@ -3,6 +3,7 @@ import { useAuthStore } from "@/stores/auth.store";
 
 import type { ApiResponse } from "@/interface/api-response.interface";
 import type { LoginResponseData } from "@/interface/auth.interface";
+import { toast } from "sonner";
 
 class AuthInitService {
 
@@ -26,8 +27,7 @@ class AuthInitService {
         clearAuth();
       }
     } catch  {
-     
-      console.log("No active session found");
+     toast.error("No active session")
       clearAuth();
     } finally {
       setInitialized(true);

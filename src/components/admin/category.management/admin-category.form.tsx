@@ -78,6 +78,7 @@ const AdminCategoryForm = () => {
     try {
       setIsSubmitting(true);
       if (isEdit && id) {
+
         await adminService.updateCategory(id, formData);
         toast.success("Category updated successfully!");
       } else {

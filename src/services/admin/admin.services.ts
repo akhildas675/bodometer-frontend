@@ -149,7 +149,7 @@ class AdminService {
   async createCategory(
     categoryData: FormData
   ): Promise<ApiResponse<{ message: string }>> {
-    console.log("service", FormData)
+
     const response = await adminApi.post<ApiResponse<{ message: string }>>(
       ADMIN_API_ROUTES.CREATE_CATEGORY,
       categoryData
@@ -245,8 +245,14 @@ class AdminService {
       pagination: PaginationMeta;
     }>(ADMIN_API_ROUTES.GET_SUBSCRIPTION_PLANS, { params: queryParams });
 
+    const mappedData = response.data.data.map(plan => ({
+      ...plan,
+      planId: plan.planId || plan.subscriptionPlanId || "",
+      subscriptionPlanId: plan.subscriptionPlanId || plan.planId || "",
+    }));
+
     return {
-      data: response.data.data,
+      data: mappedData,
       pagination: response.data.pagination,
     };
   }
@@ -263,6 +269,10 @@ class AdminService {
     const response = await adminApi.get<ApiResponse<SubscriptionPlanDetailsResponse>>(
       ADMIN_API_ROUTES.GET_SUBSCRIPTION_PLAN_BY_ID(id)
     );
+    if (response.data?.data) {
+      response.data.data.planId = response.data.data.planId || response.data.data.subscriptionPlanId || "";
+      response.data.data.subscriptionPlanId = response.data.data.subscriptionPlanId || response.data.data.planId || "";
+    }
     return response.data;
   }
 
