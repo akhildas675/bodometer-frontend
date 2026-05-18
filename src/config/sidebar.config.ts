@@ -21,6 +21,7 @@ export const sidebarConfig: Record<SidebarRole, SidebarItem[]> = {
       children: [
         { label: "Plans", path: "/admin/subscription/plans" },
         { label: "Features", path: "/admin/subscription/features" },
+        { label: "Transactions", path: "/admin/subscription/transactions" },
       ],
     },
     {

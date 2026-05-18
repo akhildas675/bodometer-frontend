@@ -226,6 +226,27 @@ const userServices = {
   async getOnboardingAnswers(): Promise<ApiResponse<{ answers: { questionId: string; questionKey?: string; key?: string; answer?: AnswerValue; value?: AnswerValue }[] }>> {
     const response = await userApi.get<ApiResponse<{ answers: { questionId: string; questionKey?: string; key?: string; answer?: AnswerValue; value?: AnswerValue }[] }>>(USER_API_ROUTES.GET_ONBOARDING_ANSWERS);
     return response.data;
+  },
+
+  async getMyTransactions(
+    page = 1,
+    limit = 10,
+    search?: string,
+    sortBy?: string,
+    sortOrder?: "asc" | "desc",
+    status?: string,
+  ): Promise<ApiResponse<any[]> & { pagination: PaginationMeta }> {
+    const params = new URLSearchParams();
+    params.append("page", String(page));
+    params.append("limit", String(limit));
+    if (search) params.append("search", search);
+    if (sortBy) params.append("sortBy", sortBy);
+    if (sortOrder) params.append("sortOrder", sortOrder);
+    if (status) params.append("status", status);
+    const response = await userApi.get(
+      `${USER_API_ROUTES.GET_MY_TRANSACTIONS}?${params.toString()}`
+    );
+    return response.data;
   }
 };
 

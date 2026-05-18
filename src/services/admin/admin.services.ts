@@ -16,6 +16,7 @@ import type {
   UpdateQuestionGroupData,
   CreateQuestionData,
   UpdateQuestionData,
+  SubscriptionTransaction,
 } from "@/interface/admin.interface";
 
 import type { ApiResponse } from "@/interface/api-response.interface";
@@ -476,6 +477,34 @@ class AdminService {
   async toggleQuestionStatus(id: string): Promise<ApiResponse<{ message: string }>> {
     const response = await adminApi.patch<ApiResponse<{ message: string }>>(ADMIN_API_ROUTES.TOGGLE_QUESTION_STATUS(id));
     return response.data;
+  }
+
+  async getAllSubscriptionTransactions(
+    search?: string,
+    status?: string,
+    sortBy?: string,
+    sortOrder?: "asc" | "desc",
+    page?: number,
+    limit?: number
+  ): Promise<PaginatedResponse<SubscriptionTransaction>> {
+    const params: Record<string, string | number> = {};
+    if (search) params.search = search;
+    if (status) params.status = status;
+    if (sortBy) params.sortBy = sortBy;
+    if (sortOrder) params.sortOrder = sortOrder;
+    if (page) params.page = page;
+    if (limit) params.limit = limit;
+
+    const response = await adminApi.get<{
+      success: boolean;
+      data: SubscriptionTransaction[];
+      pagination: PaginationMeta;
+    }>(ADMIN_API_ROUTES.GET_SUBSCRIPTION_TRANSACTIONS, { params });
+
+    return {
+      data: response.data.data,
+      pagination: response.data.pagination,
+    };
   }
 }
 

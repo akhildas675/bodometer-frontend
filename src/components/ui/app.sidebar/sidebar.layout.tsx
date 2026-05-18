@@ -8,7 +8,7 @@ type Props = {
 
 const SidebarLayout = ({ role, children }: Props) => {
   return (
-    <div className="flex min-h-screen bg-[#050017]">
+    <div className="flex flex-1 min-h-screen bg-[#050017]">
       <Sidebar role={role} />
       <main className="flex-1 p-10">{children}</main>
     </div>

@@ -1,11 +1,94 @@
 import { CheckCircle, Zap, Star, Crown, Sparkles } from "lucide-react";
 import { toast } from "sonner";
-import { useState } from "react";
+import { useState, useCallback, useEffect } from "react";
 
 import { useFetch } from "@/hooks/useFetch";
 import userServices from "@/services/user/user.services";
 import { SubscriptionPlan } from "@/interface/admin.interface";
 import { ActiveSubscription } from "@/interface/user.interface";
+
+import DataTable from "@/components/ui/table/data.table";
+import SearchBar from "@/components/controls/search/search";
+import SortDropdown, { type SortConfig } from "@/components/controls/sort/sort";
+import { extractSortOptions } from "@/components/controls/sort/sort.label";
+import Pagination from "@/components/controls/pagination/pagination";
+import { useTableFetch } from "@/hooks/useTableFetch";
+import type { TableColumn } from "@/components/ui/table/table.types";
+
+const transactionColumns: TableColumn<any>[] = [
+  {
+    key: "subscriptionPlanId",
+    label: "Plan Name",
+    render: (tx) => (
+      <span className="text-white text-xs font-semibold">
+        {tx.subscriptionPlanId?.name || "Custom Plan"}
+      </span>
+    ),
+  },
+  {
+    key: "amount",
+    label: "Amount",
+    render: (tx) => (
+      <span className="text-indigo-300 font-bold text-xs">
+        ₹{tx.amount}
+      </span>
+    ),
+  },
+  {
+    key: "paymentMethod",
+    label: "Method",
+    render: (tx) => (
+      <div className="flex flex-col">
+        <span className="text-[11px] text-slate-200 capitalize font-medium">{tx.paymentMethod}</span>
+        <span className="text-[9px] text-slate-400 capitalize">{tx.paymentGateway}</span>
+      </div>
+    ),
+  },
+  {
+    key: "createdAt",
+    label: "Paid Date",
+    render: (tx) => {
+      const dateVal = tx.paidAt || tx.createdAt;
+      return (
+        <span className="text-[11px] text-slate-300">
+          {dateVal ? new Date(dateVal).toLocaleDateString("en-IN", {
+            day: "numeric",
+            month: "short",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit"
+          }) : "N/A"}
+        </span>
+      );
+    },
+  },
+  {
+    key: "paymentStatus",
+    label: "Payment Status",
+    render: (tx) => {
+      const status = tx.paymentStatus?.toLowerCase() || "pending";
+      if (status === "success" || status === "paid" || status === "completed") {
+        return (
+          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-green-500/15 text-green-400 border border-green-500/30">
+            Success
+          </span>
+        );
+      } else if (status === "failed") {
+        return (
+          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-500/15 text-red-400 border border-red-500/30">
+            Failed
+          </span>
+        );
+      } else {
+        return (
+          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-yellow-500/15 text-yellow-400 border border-yellow-500/30 animate-pulse">
+            Pending
+          </span>
+        );
+      }
+    },
+  },
+];
 
 /* ── tier config (no "type" label shown to user) ── */
 const TIER_STYLES = [
@@ -40,6 +123,65 @@ const TIER_STYLES = [
 
 const UserSubscription = () => {
   const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null);
+
+  // Transaction Table State
+  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
+  const [sortConfig, setSortConfig] = useState<SortConfig<any>>({
+    field: "createdAt",
+    order: "desc",
+  });
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+
+  const fetchTransactionsFn = useCallback(
+    async () =>
+      userServices.getMyTransactions(
+        currentPage,
+        itemsPerPage,
+        searchQuery || undefined,
+        sortConfig.field ? String(sortConfig.field) : undefined,
+        sortConfig.order,
+        statusFilter || undefined,
+      ),
+    [searchQuery, statusFilter, sortConfig, currentPage, itemsPerPage]
+  );
+
+  const { data: txResponse, loading: txLoading, refetch: refetchTransactions } =
+    useTableFetch<any>(fetchTransactionsFn, false);
+
+  const handleSearch = useCallback((value: string) => {
+    setSearchQuery(value);
+    setCurrentPage(1);
+  }, []);
+
+  const handleStatusChange = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
+    setStatusFilter(e.target.value);
+    setCurrentPage(1);
+  }, []);
+
+  const handleSortChange = useCallback(
+    (sort: SortConfig<any>) => {
+      setSortConfig(sort);
+      setCurrentPage(1);
+    },
+    []
+  );
+
+  const handlePageChange = useCallback((page: number) => {
+    setCurrentPage(page);
+  }, []);
+
+  const handleItemsPerPageChange = useCallback((items: number) => {
+    setItemsPerPage(items);
+    setCurrentPage(1);
+  }, []);
+
+  useEffect(() => {
+    refetchTransactions();
+  }, [searchQuery, statusFilter, sortConfig, currentPage, itemsPerPage, refetchTransactions]);
+
+  const sortOptions = extractSortOptions(transactionColumns);
 
   const { data: plansData, loading: plansLoading } = useFetch<SubscriptionPlan[]>(
     () =>
@@ -280,6 +422,93 @@ const UserSubscription = () => {
           })}
         </div>
       )}
+
+      {/* Divider */}
+      <div className="border-t border-white/10 my-16" />
+
+      {/* Transaction History Section */}
+      <div className="text-white space-y-6">
+        <div>
+          <h2 className="text-2xl font-bold tracking-tight text-white">
+            Subscription Purchase History
+          </h2>
+          <p className="text-sm text-slate-400 mt-1">
+            View, search, track, and manage all your subscription plans transaction history
+          </p>
+        </div>
+
+        <div className="flex flex-wrap gap-4 items-center">
+          <SearchBar
+            value={searchQuery}
+            onSearch={handleSearch}
+            placeholder="Search transactions by plan..."
+            disabled={txLoading}
+            className="flex-grow md:max-w-md"
+          />
+
+          {/* Status Filter Dropdown */}
+          <div className="flex items-center bg-[#171c35] border border-white/10 rounded-lg px-3 py-2 text-sm text-slate-300">
+            <label htmlFor="status-select" className="mr-2 text-slate-400 text-xs font-semibold uppercase tracking-wider">
+              Status:
+            </label>
+            <select
+              id="status-select"
+              value={statusFilter}
+              onChange={handleStatusChange}
+              disabled={txLoading}
+              className="bg-transparent border-none text-white text-sm focus:outline-none cursor-pointer focus:ring-0"
+            >
+              <option value="" className="bg-slate-900 text-white">All Statuses</option>
+              <option value="success" className="bg-slate-900 text-white">Success</option>
+              <option value="pending" className="bg-slate-900 text-white">Pending</option>
+              <option value="failed" className="bg-slate-900 text-white">Failed</option>
+            </select>
+          </div>
+
+          <SortDropdown<any>
+            options={sortOptions}
+            value={sortConfig}
+            onSortChange={handleSortChange}
+            disabled={txLoading}
+            className="w-64"
+            placeholder="Sort by..."
+          />
+        </div>
+
+        {txLoading ? (
+          <div className="flex justify-center items-center py-20 text-purple-300 gap-3">
+            <div className="w-5 h-5 rounded-full border-2 border-purple-500 border-t-transparent animate-spin"></div>
+            <span>Loading transaction history...</span>
+          </div>
+        ) : (
+          <>
+            <DataTable<any>
+              columns={transactionColumns}
+              data={txResponse?.data || []}
+            />
+
+            {(!txResponse?.data || txResponse.data.length === 0) && (
+              <div className="text-center py-12 text-slate-400 border border-white/5 rounded-xl bg-white/[0.02] mt-4">
+                No subscription transactions found matching your criteria.
+              </div>
+            )}
+
+            {txResponse?.pagination && txResponse.data.length > 0 && (
+              <div className="mt-6">
+                <Pagination
+                  currentPage={Number(txResponse.pagination.currentPage)}
+                  totalPages={Number(txResponse.pagination.totalPages)}
+                  totalItems={Number(txResponse.pagination.totalItems)}
+                  itemsPerPage={Number(txResponse.pagination.itemsPerPage)}
+                  onPageChange={handlePageChange}
+                  onItemsPerPageChange={handleItemsPerPageChange}
+                  disabled={txLoading}
+                />
+              </div>
+            )}
+          </>
+        )}
+      </div>
     </div>
   );
 };

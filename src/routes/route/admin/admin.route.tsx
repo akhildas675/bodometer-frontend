@@ -15,6 +15,7 @@ import AdminSubscriptionFeatureListPage from "@/pages/admin/admin-subscription.f
 import AdminSubscriptionFeatureFormPage from "@/pages/admin/admin-subscription.featureform.page";
 import AdminSubscriptionPlanListPage from "@/pages/admin/admin-subscription.plan-list.page";
 import AdminSubscriptionPlanFormPage from "@/pages/admin/admin-subscription.plan-form.page";
+import AdminSubscriptionTransactionListPage from "@/pages/admin/admin-subscription.transaction-list.page";
 import AdminQuestionGroupListPage from "@/pages/admin/admin-question.group-list.page";
 import AdminQuestionGroupFormPage from "@/pages/admin/admin-question.group-form.page";
 import AdminQuestionListPage from "@/pages/admin/admin-question.list.page";
@@ -39,6 +40,7 @@ export const adminRoutes = (
     <Route path={ADMIN_UI_ROUTES.SUBSCRIPTION_PLANS} element={<AdminSubscriptionPlanListPage/>} />
     <Route path={ADMIN_UI_ROUTES.SUBSCRIPTION_PLAN_CREATE} element={<AdminSubscriptionPlanFormPage/>} />
     <Route path={ADMIN_UI_ROUTES.SUBSCRIPTION_PLAN_EDIT_PATH} element={<AdminSubscriptionPlanFormPage/>} />
+    <Route path={ADMIN_UI_ROUTES.SUBSCRIPTION_TRANSACTIONS} element={<AdminSubscriptionTransactionListPage/>} />
 
     <Route path={ADMIN_UI_ROUTES.QUESTION_GROUPS} element={<AdminQuestionGroupListPage />} />
     <Route path={ADMIN_UI_ROUTES.QUESTION_GROUPS_CREATE} element={<AdminQuestionGroupFormPage />} />

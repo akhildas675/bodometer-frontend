@@ -58,7 +58,7 @@ export function createProtectedAxios(role: Role): AxiosInstance {
         if (error.response?.status === 401) {
           // Clear auth and redirect
           useAuthStore.getState().clearAuth();
-          window.location.href = roleToRedirectPath[role];
+          window.location.href = `${roleToRedirectPath[role]}?expired=true`;
         }
         return Promise.reject(error);
       }
@@ -100,7 +100,7 @@ export function createProtectedAxios(role: Role): AxiosInstance {
       } catch (refreshError) {
         processQueue(refreshError as Error);
         useAuthStore.getState().clearAuth();
-        window.location.href = roleToRedirectPath[role];
+        window.location.href = `${roleToRedirectPath[role]}?expired=true`;
         return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;

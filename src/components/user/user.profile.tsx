@@ -5,7 +5,6 @@ import type {
   ProfileUpdatePayload,
   UserProfileInterface,
 } from "@/interface/user.interface";
-import type { Gender } from "@/constants/identity";
 import { useFetch } from "@/hooks/useFetch";
 import { useState, useRef, useEffect } from "react";
 import { toast } from "sonner";
@@ -31,7 +30,6 @@ const UserProfile = () => {
     userServices.getUserProfile,
     true,
   );
-
   const profile = profileResponse?.data;
 
   const [form, setForm] = useState<ProfileUpdatePayload>({
@@ -227,26 +225,13 @@ const UserProfile = () => {
      
     );
   }
-
-  const formatDateForInput = (date: Date | string | null | undefined) => {
-    if (!date) return "";
-    const d = new Date(date);
-    if (isNaN(d.getTime())) return "";
-    const year = d.getFullYear();
-    const month = String(d.getMonth() + 1).padStart(2, "0");
-    const day = String(d.getDate()).padStart(2, "0");
-    return `${year}-${month}-${day}`;
-  };
-
   const displayImage =
     previewUrl ||
     "https://images.unsplash.com/photo-1599058917212-d750089bc07a";
 
   return (
    
-      <div className="min-h-screen bg-[#050017] text-white pt-24 pb-10">
-        <div className="flex flex-1 max-w-7xl mx-auto">
-          <main className="flex-1 px-10">
+      <div className="max-w-7xl mx-auto text-white">
             <h1 className="text-lg text-slate-300 mb-6">
               WELCOME{" "}
               <span className="text-indigo-400 font-semibold">
@@ -380,27 +365,17 @@ const UserProfile = () => {
                 </div>
               </form>
               <div className="mt-6 flex gap-4">
-                <p className="text-xs text-indigo-400 cursor-pointer hover:text-indigo-300 transition">
-                  Purchase history
-                </p>
-                <span className="text-slate-600">|</span>
+                
                 <p
                   onClick={() => navigate("/change-password")}
                   className="text-xs text-indigo-400 cursor-pointer hover:text-indigo-300 transition"
                 >
                   Change Password
                 </p>
-                <span className="text-slate-600">|</span>
-                <p
-                  onClick={() => navigate("/assessment-history")}
-                  className="text-xs text-indigo-400 cursor-pointer hover:text-indigo-300 transition"
-                >
-                  Assessment History
-                </p>
+               
+                
               </div>
             </div>
-          </main>
-        </div>
       </div>
    
   );

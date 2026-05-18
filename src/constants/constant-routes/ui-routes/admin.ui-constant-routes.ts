@@ -25,6 +25,8 @@ export const ADMIN_UI_ROUTES = {
   SUBSCRIPTION_PLAN_EDIT: (id: string) => `/admin/subscription/plans/edit/${id}`,
   SUBSCRIPTION_PLAN_EDIT_PATH: "/admin/subscription/plans/edit/:id",
 
+  SUBSCRIPTION_TRANSACTIONS: "/admin/subscription/transactions",
+
   QUESTIONS_SECTION: "/admin/questions",
   QUESTION_GROUPS: "/admin/questions/groups",
   QUESTION_GROUPS_CREATE: "/admin/questions/groups/create",

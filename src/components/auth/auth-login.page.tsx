@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { Mail, Lock } from "lucide-react";
@@ -18,6 +18,17 @@ const AuthLoginPage = () => {
     email: "",
     password: "",
   });
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("expired") === "true") {
+      toast.error("Your session has expired. Please log in again to continue.", {
+        id: "session-expired",
+        duration: 5000,
+      });
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }, []);
 
   const handleChange =
     (field: keyof LoginPayload) =>

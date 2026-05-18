@@ -16,6 +16,7 @@ export const USER_API_ROUTES = {
     CREATE_CHECKOUT_SESSION: "/checkout-session",
     VERIFY_PAYMENT: "/verify-payment",
     GET_ACTIVE_SUBSCRIPTION: "/active-subscription",
+    GET_MY_TRANSACTIONS: "/transactions",
 
     //Fitness
     GET_WORKOUT_TIME: "/prefer-time",

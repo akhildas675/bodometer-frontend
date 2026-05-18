@@ -102,8 +102,8 @@ const UserFitnessProfile = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#050017] text-white pt-24 pb-10">
-      <div className="flex flex-1 max-w-7xl mx-auto gap-8 px-10">
+    <div className="max-w-7xl mx-auto text-white">
+      <div className="flex flex-1 gap-8">
         
         {/* Sidebar */}
         <aside className="w-72 shrink-0">

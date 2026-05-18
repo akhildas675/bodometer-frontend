@@ -229,4 +229,26 @@ export interface CreateQuestionData {
   validation?: { required?: boolean };
 }
 
-export interface UpdateQuestionData extends Partial<CreateQuestionData> {}
+export interface UpdateQuestionData extends Partial<CreateQuestionData> {}
+
+export interface SubscriptionTransaction {
+  _id: string;
+  userId: {
+    _id: string;
+    name: string;
+    email: string;
+  } | null;
+  subscriptionPlanId: {
+    _id: string;
+    name: string;
+  } | null;
+  amount: number;
+  currency: string;
+  paymentMethod: string;
+  paymentGateway: string;
+  transactionId?: string;
+  paymentStatus: string;
+  paidAt?: string;
+  createdAt: string;
+  updatedAt: string;
+}
