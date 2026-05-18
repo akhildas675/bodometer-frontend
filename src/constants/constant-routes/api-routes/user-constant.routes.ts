@@ -33,5 +33,6 @@ export const USER_API_ROUTES = {
     GET_ALL_QUESTIONS: "/onboarding-questions",
     GET_ONBOARDING_STATUS: "/onboarding-status",
     GET_ONBOARDING_ANSWERS: "/onboarding-answers",
+    CALCULATE_BMI_PUBLIC: "/bmi/calculate",
 
 } as const

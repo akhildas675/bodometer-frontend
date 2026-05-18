@@ -140,6 +140,27 @@ const userServices = {
     return response.data;
   },
 
+  async calculateBmiPublic(data: {
+    height?: number | null;
+    weight?: number | null;
+    unit: "metric" | "imperial";
+    heightFt?: string;
+    heightIn?: string;
+  }): Promise<ApiResponse<{
+    bmi: number;
+    heightCm: number;
+    weightKg: number;
+    category: { label: string; color: string };
+  }>> {
+    const response = await userApi.post<ApiResponse<{
+      bmi: number;
+      heightCm: number;
+      weightKg: number;
+      category: { label: string; color: string };
+    }>>(USER_API_ROUTES.CALCULATE_BMI_PUBLIC, data);
+    return response.data;
+  },
+
   async getMyTransactions(params?: TableQueryParams): Promise<PaginatedResponse<SubscriptionTransaction>> {
     const queryParams = buildQueryParams({ page: 1, limit: 10, ...params });
     const response = await userApi.get<ApiResponse<SubscriptionTransaction[]> & { pagination: PaginationMeta }>(

@@ -316,11 +316,17 @@ const UserHome = () => {
               <>
                 <button
                   onClick={() => navigate("/login")}
-                  className="bg-purple-500 text-white px-8 py-3 rounded-full text-lg font-semibold hover:bg-purple-600 transition"
+                  className="bg-purple-500 text-white px-8 py-3 rounded-full text-lg font-semibold hover:bg-purple-600 transition shadow-[0_0_15px_rgba(147,51,234,0.5)]"
                 >
                   Login
                 </button>
-                <p className="text-white text-sm mt-2">Start With Free Plan</p>
+                <p className="text-white/60 text-sm mt-2">Start With Free Plan</p>
+                <button
+                  onClick={() => navigate("/bmi")}
+                  className="mt-4 text-purple-400 hover:text-purple-300 text-sm font-semibold flex items-center gap-1.5 transition-all duration-300 hover:underline hover:scale-105"
+                >
+                  Calculate Your BMI (No login required) →
+                </button>
               </>
             ) : (
               <>

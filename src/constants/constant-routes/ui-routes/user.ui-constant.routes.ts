@@ -16,10 +16,6 @@ export const USER_UI_ROUTES = {
     ONBOARDING_INTRO: "/onboarding/intro",
     ONBOARDING_ASSESSMENT: "/onboarding/assessment",
     USER_FITNESS_PROFILE: "/fitness-profile",
-
-
-
-
-
+    USER_BMI: "/bmi",
 
 } as const
