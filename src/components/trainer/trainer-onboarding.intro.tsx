@@ -6,7 +6,7 @@ import authInitService from "@/services/auth/auth-init.service";
 import { toast } from "sonner";
 import { LogOut, Sparkles, ArrowRight, Award, Activity } from "lucide-react";
 
-const TrainerOnboardingAbout = () => {
+const TrainerOnboardingIntro = () => {
   const user = useAuthStore((state) => state.user);
   const navigate = useNavigate();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -157,4 +157,4 @@ const TrainerOnboardingAbout = () => {
   );
 };
 
-export default TrainerOnboardingAbout;
+export default TrainerOnboardingIntro;

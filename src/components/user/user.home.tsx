@@ -328,7 +328,7 @@ const UserHome = () => {
                   onClick={() => navigate(
                     user?.hasActiveSubscription && !user?.onboardingComplete 
                       ? "/onboarding/intro" 
-                      : "/trainers"
+                      : "/subscriptions"
                   )}
                   className="bg-purple-500 text-white px-8 py-3 rounded-full text-lg font-semibold hover:bg-purple-600 transition"
                 >

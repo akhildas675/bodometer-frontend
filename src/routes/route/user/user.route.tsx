@@ -36,26 +36,28 @@ export const userRoutes = (
       <Route path={USER_UI_ROUTES.USER_SUBSCRIPTIONS_SUCCESS} element={<UserSubscriptionSuccessPage/>}/>
       <Route path={USER_UI_ROUTES.USER_SUBSCRIPTIONS_CANCEL} element={<UserSubscriptionCancelPage/>}/>
 
-      {/* Premium Routes inside Main Layout */}
+      {/* Accessible to all logged-in users */}
+      <Route
+        path={USER_UI_ROUTES.USER_TRAINERS}
+        element={<UserTrainersPage />}
+      />
+      <Route
+        path={USER_UI_ROUTES.USER_TRAINER_DETAILS}
+        element={<UserTrainerDetailPage />}
+      />
+      <Route
+        path={USER_UI_ROUTES.USER_CATEGORIES}
+        element={<UserCategoriesPage />}
+      />
+      <Route 
+        path={USER_UI_ROUTES.USER_CATEGORY_DETAILS}
+        element={<UserCategoryDetailPage />}
+      />
+
+      {/* Premium Routes inside Main Layout (Subscription Required) */}
       <Route element={<SubscriptionRoute />}>
-        <Route
-          path={USER_UI_ROUTES.USER_TRAINERS}
-          element={<UserTrainersPage />}
-        />
-        <Route
-          path={USER_UI_ROUTES.USER_TRAINER_DETAILS}
-          element={<UserTrainerDetailPage />}
-        />
-        <Route
-          path={USER_UI_ROUTES.USER_CATEGORIES}
-          element={<UserCategoriesPage />}
-        />
-        <Route 
-          path={USER_UI_ROUTES.USER_CATEGORY_DETAILS}
-          element={<UserCategoryDetailPage />}
-        />
+        <Route path={USER_UI_ROUTES.USER_FITNESS_PROFILE} element={<UserFitnessProfilePage/>} />
       </Route>
-      <Route path={USER_UI_ROUTES.USER_FITNESS_PROFILE} element={<UserFitnessProfilePage/>} />
     </Route>
 
     {/*  No Sidebar Layout No Navbar */}

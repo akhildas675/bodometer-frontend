@@ -1,4 +1,5 @@
-import { QuestionType } from "@/constants/question.type";
+import { QuestionType } from "@/constants/onboarding.constant";
+
 
 export interface OnboardingQuestionOption {
   label: string;
