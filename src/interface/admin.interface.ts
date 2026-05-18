@@ -251,4 +251,33 @@ export interface SubscriptionTransaction {
   paidAt?: string;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface SubscriptionPlanPayload {
+  name: string;
+  description: string;
+  price: number;
+  durationInDays: number;
+  isPopular: boolean;
+  features: Array<{ featureId: string; limit?: number; limitType?: string }>;
+}
+
+export interface BackendSubscriptionPlan {
+  subscriptionPlanId: string;
+  name: string;
+  price: number;
+  durationInDays: number;
+  isPopular: boolean;
+  isActive: boolean;
+  features?: Array<{ featureId: string; limit?: number; limitType?: string }>;
+  description?: string;
+}
+
+export interface SubscriptionPlanDetailsResponse extends SubscriptionPlan {
+  features: Array<{
+    featureId: string;
+    type: "boolean" | "limit";
+    limit?: number;
+    limitType?: string;
+  }>;
 }

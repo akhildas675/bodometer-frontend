@@ -1,5 +1,5 @@
 import { trainerApi } from "@/api/api.instance";
-
+import { buildQueryParams, TableQueryParams } from "@/api/query.helper";
 import { TRAINER_API_ROUTES } from "@/constants/constant-routes/api-routes/trainer-constant.routes";
 
 import type { ApiResponse } from "@/interface/api-response.interface";
@@ -56,17 +56,10 @@ async submitTrainerProfile(
     return response.data
   }
 
-  async getCategories(
-    page = 1,
-    limit = 20,
-    search?: string,
-  ): Promise<ApiResponse<CategoryListItem[]> & { pagination: PaginationMeta }> {
-    const params = new URLSearchParams();
-    params.append("page", String(page));
-    params.append("limit", String(limit));
-    if (search) params.append("search", search);
+  async getCategories(params?: TableQueryParams): Promise<ApiResponse<CategoryListItem[]> & { pagination: PaginationMeta }> {
+    const queryParams = buildQueryParams({ page: 1, limit: 20, ...params });
     const response = await trainerApi.get(
-      `${TRAINER_API_ROUTES.GET_CATEGORIES}?${params.toString()}`
+      `${TRAINER_API_ROUTES.GET_CATEGORIES}?${queryParams.toString()}`
     );
     return response.data;
   }

@@ -216,7 +216,7 @@ const TrainerProfile = () => {
       } else {
         throw new Error("Failed to upload document");
       }
-    } catch (err: any) {
+    } catch  {
       toast.error("Failed to upload document. Please try again.", { id: loadingToast });
     } finally {
       setIsUploadingDoc(false);

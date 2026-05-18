@@ -4,7 +4,7 @@ import { useState, useCallback, useEffect } from "react";
 
 import { useFetch } from "@/hooks/useFetch";
 import userServices from "@/services/user/user.services";
-import { SubscriptionPlan } from "@/interface/admin.interface";
+import { SubscriptionPlan, SubscriptionTransaction, PaginatedResponse } from "@/interface/admin.interface";
 import { ActiveSubscription } from "@/interface/user.interface";
 
 import DataTable from "@/components/ui/table/data.table";
@@ -13,82 +13,8 @@ import SortDropdown, { type SortConfig } from "@/components/controls/sort/sort";
 import { extractSortOptions } from "@/components/controls/sort/sort.label";
 import Pagination from "@/components/controls/pagination/pagination";
 import { useTableFetch } from "@/hooks/useTableFetch";
-import type { TableColumn } from "@/components/ui/table/table.types";
 
-const transactionColumns: TableColumn<any>[] = [
-  {
-    key: "subscriptionPlanId",
-    label: "Plan Name",
-    render: (tx) => (
-      <span className="text-white text-xs font-semibold">
-        {tx.subscriptionPlanId?.name || "Custom Plan"}
-      </span>
-    ),
-  },
-  {
-    key: "amount",
-    label: "Amount",
-    render: (tx) => (
-      <span className="text-indigo-300 font-bold text-xs">
-        ₹{tx.amount}
-      </span>
-    ),
-  },
-  {
-    key: "paymentMethod",
-    label: "Method",
-    render: (tx) => (
-      <div className="flex flex-col">
-        <span className="text-[11px] text-slate-200 capitalize font-medium">{tx.paymentMethod}</span>
-        <span className="text-[9px] text-slate-400 capitalize">{tx.paymentGateway}</span>
-      </div>
-    ),
-  },
-  {
-    key: "createdAt",
-    label: "Paid Date",
-    render: (tx) => {
-      const dateVal = tx.paidAt || tx.createdAt;
-      return (
-        <span className="text-[11px] text-slate-300">
-          {dateVal ? new Date(dateVal).toLocaleDateString("en-IN", {
-            day: "numeric",
-            month: "short",
-            year: "numeric",
-            hour: "2-digit",
-            minute: "2-digit"
-          }) : "N/A"}
-        </span>
-      );
-    },
-  },
-  {
-    key: "paymentStatus",
-    label: "Payment Status",
-    render: (tx) => {
-      const status = tx.paymentStatus?.toLowerCase() || "pending";
-      if (status === "success" || status === "paid" || status === "completed") {
-        return (
-          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-green-500/15 text-green-400 border border-green-500/30">
-            Success
-          </span>
-        );
-      } else if (status === "failed") {
-        return (
-          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-500/15 text-red-400 border border-red-500/30">
-            Failed
-          </span>
-        );
-      } else {
-        return (
-          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-yellow-500/15 text-yellow-400 border border-yellow-500/30 animate-pulse">
-            Pending
-          </span>
-        );
-      }
-    },
-  },
-];
+import { transactionColumns } from "./user-transaction.columns";
 
 /* ── tier config (no "type" label shown to user) ── */
 const TIER_STYLES = [
@@ -127,7 +53,7 @@ const UserSubscription = () => {
   // Transaction Table State
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
-  const [sortConfig, setSortConfig] = useState<SortConfig<any>>({
+  const [sortConfig, setSortConfig] = useState<SortConfig<keyof SubscriptionTransaction>>({
     field: "createdAt",
     order: "desc",
   });
@@ -136,19 +62,19 @@ const UserSubscription = () => {
 
   const fetchTransactionsFn = useCallback(
     async () =>
-      userServices.getMyTransactions(
-        currentPage,
-        itemsPerPage,
-        searchQuery || undefined,
-        sortConfig.field ? String(sortConfig.field) : undefined,
-        sortConfig.order,
-        statusFilter || undefined,
-      ),
+      userServices.getMyTransactions({
+        page: currentPage,
+        limit: itemsPerPage,
+        search: searchQuery || undefined,
+        sortBy: sortConfig.field ? String(sortConfig.field) : undefined,
+        sortOrder: sortConfig.order,
+        status: statusFilter || undefined,
+      }),
     [searchQuery, statusFilter, sortConfig, currentPage, itemsPerPage]
   );
 
   const { data: txResponse, loading: txLoading, refetch: refetchTransactions } =
-    useTableFetch<any>(fetchTransactionsFn, false);
+    useTableFetch<PaginatedResponse<SubscriptionTransaction>>(fetchTransactionsFn, false);
 
   const handleSearch = useCallback((value: string) => {
     setSearchQuery(value);
@@ -161,7 +87,7 @@ const UserSubscription = () => {
   }, []);
 
   const handleSortChange = useCallback(
-    (sort: SortConfig<any>) => {
+    (sort: SortConfig<keyof SubscriptionTransaction>) => {
       setSortConfig(sort);
       setCurrentPage(1);
     },
@@ -270,8 +196,24 @@ const UserSubscription = () => {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5 items-start">
-          {plans.map((plan, index) => {
-            const tier = TIER_STYLES[index] ?? TIER_STYLES[0];
+          {plans.map((plan) => {
+            // Decide the tier style based on price rank dynamically
+            let tierIndex = 0;
+            if (plans.length > 1) {
+              const prices = plans.map((p) => p.price);
+              const maxPrice = Math.max(...prices);
+              const minPrice = Math.min(...prices);
+              if (plan.price === maxPrice) {
+                tierIndex = 2; // Premium style
+              } else if (plan.price === minPrice) {
+                tierIndex = 0; // Starter style
+              } else {
+                tierIndex = 1; // Pro style
+              }
+            } else {
+              tierIndex = 0;
+            }
+            const tier = TIER_STYLES[tierIndex];
             const planId =
               plan.subscriptionPlanId ||
               plan.planId ||
@@ -465,7 +407,7 @@ const UserSubscription = () => {
             </select>
           </div>
 
-          <SortDropdown<any>
+          <SortDropdown<keyof SubscriptionTransaction>
             options={sortOptions}
             value={sortConfig}
             onSortChange={handleSortChange}
@@ -482,7 +424,7 @@ const UserSubscription = () => {
           </div>
         ) : (
           <>
-            <DataTable<any>
+            <DataTable<SubscriptionTransaction>
               columns={transactionColumns}
               data={txResponse?.data || []}
             />

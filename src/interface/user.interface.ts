@@ -101,3 +101,24 @@ interface Option {
 interface Metadata {
   targetMuscleGroup: string;
 }
+
+export interface OnboardingAnswerItem {
+  questionId: string;
+  questionKey?: string;
+  key?: string;
+  answer?: string | number | string[] | number[];
+  value?: string | number | string[] | number[];
+}
+
+export interface OnboardingAnswersResponse {
+  answers: OnboardingAnswerItem[];
+}
+
+export interface GetTransactionsParams {
+  page?: number;
+  limit?: number;
+  search?: string;
+  sortBy?: string;
+  sortOrder?: "asc" | "desc";
+  status?: string;
+}

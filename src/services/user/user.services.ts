@@ -1,10 +1,7 @@
 import { userApi } from "@/api/api.instance";
-
+import { buildQueryParams, TableQueryParams } from "@/api/query.helper";
 import { USER_API_ROUTES } from "@/constants/constant-routes/api-routes/user-constant.routes";
-import { PaginationMeta, SubscriptionPlan, QuestionGroup, OnboardingQuestion as DynamicOnboardingQuestion } from "@/interface/admin.interface";
-import { OnboardingQuestion as FlatOnboardingQuestion } from "@/interface/onboarding.interface";
-import { AnswerValue } from "@/constants/answer.value";
-
+import { PaginationMeta, SubscriptionPlan, QuestionGroup, OnboardingQuestion as DynamicOnboardingQuestion, SubscriptionTransaction } from "@/interface/admin.interface";
 import type { ApiResponse } from "@/interface/api-response.interface";
 
 import type {
@@ -16,7 +13,9 @@ import type {
   UploadProfilePictureResponse,
   UserProfileInterface,
   ActiveSubscription,
+  OnboardingAnswersResponse,
 } from "@/interface/user.interface";
+import { AnswerValue } from "@/constants/onboarding.constant";
 
 const userServices = {
   async getUserProfile(): Promise<ApiResponse<UserProfileInterface>> {
@@ -51,23 +50,10 @@ const userServices = {
   },
 
 
-  async getTrainers(
-    page = 1,
-    limit = 9,
-    search?: string,
-    sortBy?: string,
-    sortOrder?: "asc" | "desc",
-    specializationId?: string,
-  ): Promise<ApiResponse<TrainerListItem[]> & { pagination: PaginationMeta }> {
-    const params = new URLSearchParams();
-    params.append("page", String(page));
-    params.append("limit", String(limit));
-    if (search) params.append("search", search);
-    if (sortBy) params.append("sortBy", sortBy);
-    if (sortOrder) params.append("sortOrder", sortOrder);
-    if (specializationId) params.append("specializationId", specializationId);
+  async getTrainers(params?: TableQueryParams): Promise<ApiResponse<TrainerListItem[]> & { pagination: PaginationMeta }> {
+    const queryParams = buildQueryParams({ page: 1, limit: 9, ...params });
     const response = await userApi.get(
-      `${USER_API_ROUTES.GET_TRAINERS}?${params.toString()}`
+      `${USER_API_ROUTES.GET_TRAINERS}?${queryParams.toString()}`
     );
     return response.data;
   },
@@ -77,21 +63,10 @@ const userServices = {
     return response.data
   },
 
-  async getCategories(
-    page = 1,
-    limit = 9,
-    search?: string,
-    sortBy?: string,
-    sortOrder?: "asc" | "desc",
-  ): Promise<ApiResponse<CategoryListItem[]> & { pagination: PaginationMeta }> {
-    const params = new URLSearchParams();
-    params.append("page", String(page));
-    params.append("limit", String(limit));
-    if (search) params.append("search", search);
-    if (sortBy) params.append("sortBy", sortBy);
-    if (sortOrder) params.append("sortOrder", sortOrder);
+  async getCategories(params?: TableQueryParams): Promise<ApiResponse<CategoryListItem[]> & { pagination: PaginationMeta }> {
+    const queryParams = buildQueryParams({ page: 1, limit: 9, ...params });
     const response = await userApi.get(
-      `${USER_API_ROUTES.GET_CATEGORIES}?${params.toString()}`
+      `${USER_API_ROUTES.GET_CATEGORIES}?${queryParams.toString()}`
     );
     return response.data;
   },
@@ -146,71 +121,9 @@ const userServices = {
     return response.data;
   },
 
-  async userOnboardingQuestions(payload: { keys: string[] }): Promise<ApiResponse<FlatOnboardingQuestion[]>> {
-    interface MapInputQuestion {
-      questionId: string;
-      key: string;
-      question: string;
-      description?: string;
-      groupId: string;
-      order: number;
-      type: string;
-      options?: { label: string; value?: string | number | boolean }[];
-      numberConfig?: { min?: number; max?: number; step?: number; unit?: string };
-      validation?: { required?: boolean };
-      isActive?: boolean;
-    }
-
-    const mapDynamicToFlat = (q: MapInputQuestion): FlatOnboardingQuestion => ({
-      id: q.questionId || "",
-      key: q.key || "",
-      schemaKey: null,
-      isCoreLocked: false,
-      question: q.question || "",
-      type: (q.type === "number" && q.numberConfig) ? "number_stepper" : q.type,
-      section: "",
-      order: q.order || 0,
-      options: q.options?.map((o: { label: string; value?: string | number | boolean }) => ({
-        label: o.label || "",
-        value: String(o.value ?? ""),
-      })),
-      config: q.numberConfig ? {
-        min: q.numberConfig.min,
-        max: q.numberConfig.max,
-        step: q.numberConfig.step,
-        unit: q.numberConfig.unit,
-      } : undefined,
-      validation: q.validation,
-      isActive: q.isActive ?? true,
-    });
-
-
-    try {
-      const { useOnboardingStore } = await import("@/stores/onboarding.store");
-      const cached = useOnboardingStore.getState().questions;
-      if (cached && cached.length > 0) {
-        console.log(`>>> Cache Hit: Loading [${payload.keys.join(", ")}] questions from Zustand store.`);
-        const filtered = cached
-          .filter((q) => payload.keys.includes(q.key))
-          .map(mapDynamicToFlat);
-        return {
-          success: true,
-          message: "Questions loaded from local cache",
-          data: filtered,
-        };
-      }
-    } catch (err) {
-      console.warn("Zustand cache not available yet, proceeding to network fetch:", err);
-    }
-
+  async userOnboardingQuestions(): Promise<ApiResponse<DynamicOnboardingQuestion[]>> {
     const response = await userApi.get<ApiResponse<DynamicOnboardingQuestion[]>>(USER_API_ROUTES.GET_ONBOARDING_QUESTIONS);
-    if (response.data.success && response.data.data) {
-      const filtered = response.data.data
-        .filter((q) => payload.keys.includes(q.key))
-        .map(mapDynamicToFlat);
-      return { ...response.data, data: filtered };
-    }
-    return response.data as unknown as ApiResponse<FlatOnboardingQuestion[]>;
+    return response.data;
   },
 
   async submitOnboarding(data: { answers: { questionId: string; key: string; value: AnswerValue }[] }): Promise<ApiResponse<unknown>> {
@@ -223,28 +136,16 @@ const userServices = {
     return response.data;
   },
 
-  async getOnboardingAnswers(): Promise<ApiResponse<{ answers: { questionId: string; questionKey?: string; key?: string; answer?: AnswerValue; value?: AnswerValue }[] }>> {
-    const response = await userApi.get<ApiResponse<{ answers: { questionId: string; questionKey?: string; key?: string; answer?: AnswerValue; value?: AnswerValue }[] }>>(USER_API_ROUTES.GET_ONBOARDING_ANSWERS);
+  async getOnboardingAnswers(): Promise<ApiResponse<OnboardingAnswersResponse>> {
+    const response = await userApi.get<ApiResponse<OnboardingAnswersResponse>>(USER_API_ROUTES.GET_ONBOARDING_ANSWERS);
     return response.data;
   },
 
-  async getMyTransactions(
-    page = 1,
-    limit = 10,
-    search?: string,
-    sortBy?: string,
-    sortOrder?: "asc" | "desc",
-    status?: string,
-  ): Promise<ApiResponse<any[]> & { pagination: PaginationMeta }> {
-    const params = new URLSearchParams();
-    params.append("page", String(page));
-    params.append("limit", String(limit));
-    if (search) params.append("search", search);
-    if (sortBy) params.append("sortBy", sortBy);
-    if (sortOrder) params.append("sortOrder", sortOrder);
-    if (status) params.append("status", status);
-    const response = await userApi.get(
-      `${USER_API_ROUTES.GET_MY_TRANSACTIONS}?${params.toString()}`
+  async getMyTransactions(params?: TableQueryParams): Promise<ApiResponse<SubscriptionTransaction[]> & { pagination: PaginationMeta }> {
+    const { page = 1, limit = 10, search, sortBy, sortOrder, status } = params || {};
+    const queryParams = buildQueryParams({ page, limit, search, sortBy, sortOrder, status });
+    const response = await userApi.get<ApiResponse<SubscriptionTransaction[]> & { pagination: PaginationMeta }>(
+      `${USER_API_ROUTES.GET_MY_TRANSACTIONS}?${queryParams.toString()}`
     );
     return response.data;
   }

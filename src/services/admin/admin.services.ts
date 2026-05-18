@@ -1,4 +1,5 @@
 import { adminApi } from "@/api/api.instance";
+import { buildQueryParams, TableQueryParams } from "@/api/query.helper";
 
 import type { TrainerWithProfile } from "@/components/ui/table/table.types";
 
@@ -17,6 +18,8 @@ import type {
   CreateQuestionData,
   UpdateQuestionData,
   SubscriptionTransaction,
+  SubscriptionPlanPayload,
+  SubscriptionPlanDetailsResponse,
 } from "@/interface/admin.interface";
 
 import type { ApiResponse } from "@/interface/api-response.interface";
@@ -26,24 +29,13 @@ import { ADMIN_API_ROUTES } from "@/constants/constant-routes/api-routes/admin-c
 
 class AdminService {
   // User Management
-  async getUsers(
-    search?: string,
-    sortBy?: string,
-    sortOrder?: 'asc' | 'desc',
-    page?: number,
-    limit?: number
-  ): Promise<PaginatedResponse<AdminGetUsersResponse>> {
-    const params: Record<string, string | number> = {};
-    if (search) params.search = search;
-    if (sortBy) params.sortBy = sortBy;
-    if (sortOrder) params.sortOrder = sortOrder;
-    if (page) params.page = page;
-    if (limit) params.limit = limit;
+  async getUsers(params?: TableQueryParams): Promise<PaginatedResponse<AdminGetUsersResponse>> {
+    const queryParams = buildQueryParams(params);
     const response = await adminApi.get<{
       success: boolean;
       data: AdminGetUsersResponse[];
       pagination: PaginationMeta;
-    }>(ADMIN_API_ROUTES.GET_USERS, { params });
+    }>(ADMIN_API_ROUTES.GET_USERS, { params: queryParams });
 
 
 
@@ -74,29 +66,13 @@ class AdminService {
 
   // Trainer Block/Unblock Management
 
-  async getTrainers(
-    search?: string,
-    sortBy?: string,
-    sortOrder?: 'asc' | 'desc',
-    page?: number,
-    limit?: number
-  ): Promise<PaginatedResponse<AdminGetTrainersResponse>> {
-    const params: Record<string, string | number> = {};
-
-    if (search) params.search = search;
-    if (sortBy) params.sortBy = sortBy;
-    if (sortOrder) params.sortOrder = sortOrder;
-    if (page) params.page = page;
-    if (limit) params.limit = limit;
-
+  async getTrainers(params?: TableQueryParams): Promise<PaginatedResponse<AdminGetTrainersResponse>> {
+    const queryParams = buildQueryParams(params);
     const response = await adminApi.get<{
       success: boolean;
       data: AdminGetTrainersResponse[];
       pagination: PaginationMeta;
-    }>(ADMIN_API_ROUTES.GET_TRAINERS, { params });
-
-
-
+    }>(ADMIN_API_ROUTES.GET_TRAINERS, { params: queryParams });
 
     return {
       data: response.data.data,
@@ -124,27 +100,13 @@ class AdminService {
 
 
   // Get all trainer appointments
-  async getTrainerAppointments(
-    search?: string,
-    sortBy?: string,
-    sortOrder?: 'asc' | 'desc',
-    page?: number,
-    limit?: number,
-    status?: string
-  ): Promise<PaginatedResponse<TrainerWithProfile>> {
-    const params: Record<string, string | number> = {};
-    if (search) params.search = search;
-    if (sortBy) params.sortBy = sortBy;
-    if (sortOrder) params.sortOrder = sortOrder;
-    if (page) params.page = page;
-    if (limit) params.limit = limit;
-    if (status) params.status = status;
-
+  async getTrainerAppointments(params?: TableQueryParams): Promise<PaginatedResponse<TrainerWithProfile>> {
+    const queryParams = buildQueryParams(params);
     const response = await adminApi.get<{
       success: boolean;
       data: TrainerWithProfile[];
       pagination: PaginationMeta;
-    }>(ADMIN_API_ROUTES.GET_TRAINER_APPOINTMENTS, { params });
+    }>(ADMIN_API_ROUTES.GET_TRAINER_APPOINTMENTS, { params: queryParams });
 
     return {
       data: response.data.data,
@@ -205,25 +167,13 @@ class AdminService {
     return response.data
   }
 
-  async getAllCategories(
-    search?: string,
-    sortBy?: string,
-    sortOrder?: "asc" | "desc",
-    page?: number,
-    limit?: number
-  ): Promise<PaginatedResponse<UpdateCategory>> {
-    const params: Record<string, string | number> = {};
-    if (search) params.search = search;
-    if (sortBy) params.sortBy = sortBy;
-    if (sortOrder) params.sortOrder = sortOrder;
-    if (page) params.page = page;
-    if (limit) params.limit = limit;
-
+  async getAllCategories(params?: TableQueryParams): Promise<PaginatedResponse<UpdateCategory>> {
+    const queryParams = buildQueryParams(params);
     const response = await adminApi.get<{
       success: boolean;
       data: UpdateCategory[];
       pagination: PaginationMeta;
-    }>(ADMIN_API_ROUTES.GET_CATEGORIES, { params });
+    }>(ADMIN_API_ROUTES.GET_CATEGORIES, { params: queryParams });
 
     return {
       data: response.data.data,
@@ -236,27 +186,13 @@ class AdminService {
     return response.data
   }
 
-  async getAllSubscriptionFeatures(
-    search?: string,
-    type?: "boolean" | "count",
-    sortBy?: string,
-    sortOrder?: "asc" | "desc",
-    page?: number,
-    limit?: number
-  ): Promise<PaginatedResponse<SubscriptionFeature>> {
-    const params: Record<string, string | number> = {};
-    if (search) params.search = search;
-    if (type) params.type = type;
-    if (sortBy) params.sortBy = sortBy;
-    if (sortOrder) params.sortOrder = sortOrder;
-    if (page) params.page = page;
-    if (limit) params.limit = limit;
-
+  async getAllSubscriptionFeatures(params?: TableQueryParams): Promise<PaginatedResponse<SubscriptionFeature>> {
+    const queryParams = buildQueryParams(params);
     const response = await adminApi.get<{
       success: boolean;
       data: SubscriptionFeature[];
       pagination: PaginationMeta;
-    }>(ADMIN_API_ROUTES.GET_SUBSCRIPTION_FEATURES, { params });
+    }>(ADMIN_API_ROUTES.GET_SUBSCRIPTION_FEATURES, { params: queryParams });
 
     return {
       data: response.data.data,
@@ -301,62 +237,21 @@ class AdminService {
     return response.data
   }
 
-  async getAllSubscriptionPlans(
-    search?: string,
-    sortBy?: string,
-    sortOrder?: "asc" | "desc",
-    page?: number,
-    limit?: number
-  ): Promise<PaginatedResponse<SubscriptionPlan>> {
-    const params: Record<string, string | number> = {};
-    if (search) params.search = search;
-    if (sortBy) params.sortBy = sortBy;
-    if (sortOrder) params.sortOrder = sortOrder;
-    if (page) params.page = page;
-    if (limit) params.limit = limit;
-
+  async getAllSubscriptionPlans(params?: TableQueryParams): Promise<PaginatedResponse<SubscriptionPlan>> {
+    const queryParams = buildQueryParams(params);
     const response = await adminApi.get<{
       success: boolean;
-      data: Array<{
-        subscriptionPlanId: string;
-        name: string;
-        price: number;
-        durationInDays: number;
-        isPopular: boolean;
-        isActive: boolean;
-        features?: Array<{ featureId: string; limit?: number; limitType?: string }>;
-        description?: string;
-      }>;
+      data: SubscriptionPlan[];
       pagination: PaginationMeta;
-    }>(ADMIN_API_ROUTES.GET_SUBSCRIPTION_PLANS, { params });
-
-    const mappedData: SubscriptionPlan[] = (response.data.data || []).map((b) => ({
-      planId: b.subscriptionPlanId,
-      name: b.name,
-      price: b.price,
-      durationInDays: b.durationInDays,
-      isPopular: b.isPopular,
-      isActive: b.isActive,
-      description: b.description || "",
-      featuresCount: b.features?.length || 0,
-      createdAt: "", 
-      updatedAt: ""
-    }));
+    }>(ADMIN_API_ROUTES.GET_SUBSCRIPTION_PLANS, { params: queryParams });
 
     return {
-      data: mappedData,
+      data: response.data.data,
       pagination: response.data.pagination,
     };
   }
 
-  async createSubscriptionPlan(payload: {
-    name: string;
-    description: string;
-    price: number;
-    durationInDays: number;
-    isPopular: boolean;
-    features: Array<{ featureId: string; limit?: number; limitType?: string }>;
-  }): Promise<ApiResponse<{ message: string }>> {
+  async createSubscriptionPlan(payload: SubscriptionPlanPayload): Promise<ApiResponse<{ message: string }>> {
     const response = await adminApi.post<ApiResponse<{ message: string }>>(
       ADMIN_API_ROUTES.CREATE_SUBSCRIPTION_PLAN,
       payload
@@ -364,21 +259,14 @@ class AdminService {
     return response.data;
   }
 
-  async getSubscriptionPlanById(id: string): Promise<ApiResponse<SubscriptionPlan & { features: Array<{ featureId: string; type: "boolean" | "limit"; limit?: number; limitType?: string }> }>> {
-    const response = await adminApi.get<ApiResponse<SubscriptionPlan & { features: Array<{ featureId: string; type: "boolean" | "limit"; limit?: number; limitType?: string }> }>>(
+  async getSubscriptionPlanById(id: string): Promise<ApiResponse<SubscriptionPlanDetailsResponse>> {
+    const response = await adminApi.get<ApiResponse<SubscriptionPlanDetailsResponse>>(
       ADMIN_API_ROUTES.GET_SUBSCRIPTION_PLAN_BY_ID(id)
     );
     return response.data;
   }
 
-  async updateSubscriptionPlan(id: string, payload: {
-    name: string;
-    description: string;
-    price: number;
-    durationInDays: number;
-    isPopular: boolean;
-    features: Array<{ featureId: string; limit?: number; limitType?: string }>;
-  }): Promise<ApiResponse<{ message: string }>> {
+  async updateSubscriptionPlan(id: string, payload: SubscriptionPlanPayload): Promise<ApiResponse<{ message: string }>> {
     const response = await adminApi.put<ApiResponse<{ message: string }>>(
       ADMIN_API_ROUTES.UPDATE_SUBSCRIPTION_PLAN(id),
       payload
@@ -394,22 +282,14 @@ class AdminService {
   }
 
   // Question Groups
-  async getQuestionGroups(
-    search?: string,
-    page?: number,
-    limit?: number
-  ): Promise<PaginatedResponse<QuestionGroup>> {
-    const params: Record<string, string | number> = {};
-    if (search) params.search = search;
-    if (page) params.page = page;
-    if (limit) params.limit = limit;
-
+  async getQuestionGroups(params?: TableQueryParams): Promise<PaginatedResponse<QuestionGroup>> {
+    const queryParams = buildQueryParams(params);
     const response = await adminApi.get<{
       success: boolean;
       data: QuestionGroup[];
       pagination: PaginationMeta;
-    }>(ADMIN_API_ROUTES.GET_QUESTION_GROUPS, { params });
-    
+    }>(ADMIN_API_ROUTES.GET_QUESTION_GROUPS, { params: queryParams });
+
     return { data: response.data.data, pagination: response.data.pagination };
   }
 
@@ -434,28 +314,14 @@ class AdminService {
   }
 
   // Questions
-  async getQuestions(
-    search?: string,
-    groupId?: string,
-    page?: number,
-    limit?: number,
-    sortBy?: string,
-    sortOrder?: "asc" | "desc"
-  ): Promise<PaginatedResponse<OnboardingQuestion>> {
-    const params: Record<string, string | number> = {};
-    if (search) params.search = search;
-    if (groupId) params.groupId = groupId;
-    if (page) params.page = page;
-    if (limit) params.limit = limit;
-    if (sortBy) params.sortBy = sortBy;
-    if (sortOrder) params.sortOrder = sortOrder;
-
+  async getQuestions(params?: TableQueryParams): Promise<PaginatedResponse<OnboardingQuestion>> {
+    const queryParams = buildQueryParams(params);
     const response = await adminApi.get<{
       success: boolean;
       data: OnboardingQuestion[];
       pagination: PaginationMeta;
-    }>(ADMIN_API_ROUTES.GET_QUESTIONS, { params });
-    
+    }>(ADMIN_API_ROUTES.GET_QUESTIONS, { params: queryParams });
+
     return { data: response.data.data, pagination: response.data.pagination };
   }
 
@@ -479,27 +345,13 @@ class AdminService {
     return response.data;
   }
 
-  async getAllSubscriptionTransactions(
-    search?: string,
-    status?: string,
-    sortBy?: string,
-    sortOrder?: "asc" | "desc",
-    page?: number,
-    limit?: number
-  ): Promise<PaginatedResponse<SubscriptionTransaction>> {
-    const params: Record<string, string | number> = {};
-    if (search) params.search = search;
-    if (status) params.status = status;
-    if (sortBy) params.sortBy = sortBy;
-    if (sortOrder) params.sortOrder = sortOrder;
-    if (page) params.page = page;
-    if (limit) params.limit = limit;
-
+  async getAllSubscriptionTransactions(params?: TableQueryParams): Promise<PaginatedResponse<SubscriptionTransaction>> {
+    const queryParams = buildQueryParams(params);
     const response = await adminApi.get<{
       success: boolean;
       data: SubscriptionTransaction[];
       pagination: PaginationMeta;
-    }>(ADMIN_API_ROUTES.GET_SUBSCRIPTION_TRANSACTIONS, { params });
+    }>(ADMIN_API_ROUTES.GET_SUBSCRIPTION_TRANSACTIONS, { params: queryParams });
 
     return {
       data: response.data.data,
