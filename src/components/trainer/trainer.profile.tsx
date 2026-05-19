@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { parseApiError } from "@/api/error.helper";
+import { STATUS } from "@/constants/statuscode";
 
 
 
@@ -341,13 +342,13 @@ const TrainerProfile = () => {
       console.error("Profile update error:", error);
       const apiError = parseApiError(error);
 
-      if (apiError.statusCode === 403) {
+      if (apiError.statusCode === STATUS.FORBIDDEN) {
         toast.error(apiError.message, {
           id: loadingToast,
           duration: 5000,
         });
-      } else if (apiError.statusCode === 401) {
-        toast.error("Session expired. Please login again.", {
+      } else if (apiError.statusCode === STATUS.UNAUTHORIZED) {
+        toast.error(apiError.message, {
           id: loadingToast,
         });
       } else {

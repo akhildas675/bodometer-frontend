@@ -8,6 +8,7 @@ import PrimaryButton from "@/components/ui/primary.button";
 import { useOtpStore } from "@/stores/otp.store";
 import authService from "@/services/auth/auth.service";
 import { parseApiError } from "@/api/error.helper";
+import { STATUS } from "@/constants/statuscode";
 
 const ResetPassword = () => {
   const [password, setPassword] = useState("");
@@ -39,7 +40,7 @@ const ResetPassword = () => {
       navigate("/login", { replace: true });
     } catch (error) {
       const apiError = parseApiError(error);
-      if (apiError.statusCode === 403) {
+      if (apiError.statusCode === STATUS.FORBIDDEN) {
         toast.error(apiError.message, {
           duration: 5000,
           style: {

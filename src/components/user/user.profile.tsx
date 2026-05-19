@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import { PenIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { parseApiError } from "@/api/error.helper";
+import { STATUS } from "@/constants/statuscode";
 
 const UserProfile = () => {
   const user = useAuthStore((state) => state.user);
@@ -160,7 +161,7 @@ const UserProfile = () => {
       console.error("Profile update error:", error);
       const apiError = parseApiError(error);
 
-      if (apiError.statusCode === 403) {
+      if (apiError.statusCode === STATUS.FORBIDDEN) {
         toast.error(apiError.message, {
           id: loadingToast,
           duration: 5000,
@@ -169,8 +170,8 @@ const UserProfile = () => {
             color: "#fff",
           },
         });
-      } else if (apiError.statusCode === 401) {
-        toast.error("Session expired. Please login again.", {
+      } else if (apiError.statusCode === STATUS.UNAUTHORIZED) {
+        toast.error(apiError.message, {
           id: loadingToast,
         });
       } else {

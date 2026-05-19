@@ -2,6 +2,7 @@ import axios, { type AxiosInstance, type InternalAxiosRequestConfig } from "axio
 import { baseUrl } from "./base.url";
 import { useAuthStore } from "@/stores/auth.store";
 import { ROLES, type Role } from "@/constants/role";
+import { STATUS } from "@/constants/statuscode";
 import { authInstance } from "./auth.instance";
 import type { ApiResponse } from "@/interface/api-response.interface";
 import type { LoginResponseData } from "@/interface/auth.interface";
@@ -53,9 +54,9 @@ export function createProtectedAxios(role: Role): AxiosInstance {
     async (error) => {
       const originalRequest = error.config;
 
-      // If error is not 401 or request already retried, reject
-      if (error.response?.status !== 401 || originalRequest._retry) {
-        if (error.response?.status === 401) {
+      // If error is not unauthorized or request already retried, reject
+      if (error.response?.status !== STATUS.UNAUTHORIZED || originalRequest._retry) {
+        if (error.response?.status === STATUS.UNAUTHORIZED) {
           // Clear auth and redirect
           useAuthStore.getState().clearAuth();
           window.location.href = `${roleToRedirectPath[role]}?expired=true`;

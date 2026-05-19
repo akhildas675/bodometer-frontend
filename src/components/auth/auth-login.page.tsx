@@ -10,6 +10,7 @@ import authService from "@/services/auth/auth.service";
 import { useAuthStore, type AuthUser } from "@/stores/auth.store";
 import { VERIFICATION_STATUS, type VerificationStatus } from "@/constants/verification.status";
 import { parseApiError } from "@/api/error.helper";
+import { STATUS } from "@/constants/statuscode";
 
 const AuthLoginPage = () => {
   const [loading, setLoading] = useState(false);
@@ -87,8 +88,8 @@ const AuthLoginPage = () => {
     } catch (error) {
       const apiError = parseApiError(error);
       toast.error(apiError.message, {
-        duration: apiError.statusCode === 403 ? 5000 : 3000,
-        style: apiError.statusCode === 403
+        duration: apiError.statusCode === STATUS.FORBIDDEN ? 5000 : 3000,
+        style: apiError.statusCode === STATUS.FORBIDDEN
           ? { background: "#ef4444", color: "#fff" }
           : undefined,
       });
@@ -106,8 +107,8 @@ const AuthLoginPage = () => {
     } catch (error) {
       const apiError = parseApiError(error);
       toast.error(apiError.message, {
-        duration: apiError.statusCode === 403 ? 5000 : 3000,
-        style: apiError.statusCode === 403
+        duration: apiError.statusCode === STATUS.FORBIDDEN ? 5000 : 3000,
+        style: apiError.statusCode === STATUS.FORBIDDEN
           ? { background: "#ef4444", color: "#fff" }
           : undefined,
       });
