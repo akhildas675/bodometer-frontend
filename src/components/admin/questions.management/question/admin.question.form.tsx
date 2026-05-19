@@ -274,7 +274,7 @@ const AdminQuestionForm = () => {
       </button>
 
       <div className="bg-[#0c0624]/70 backdrop-blur border border-purple-900/50 rounded-xl p-8 shadow-2xl">
-        <h1 className="text-2xl font-bold mb-6 bg-gradient-to-r from-white to-purple-300 bg-clip-text text-transparent">
+        <h1 className="text-2xl font-bold mb-6 bg-linear-to-r from-white to-purple-300 bg-clip-text text-transparent">
           {isEdit ? "Modify Questionnaire Item" : "Create New Question"}
         </h1>
 
@@ -322,7 +322,7 @@ const AdminQuestionForm = () => {
               <label className="block text-xs font-semibold uppercase tracking-wide text-purple-400 mb-1">Response Pattern Type</label>
               <select 
                 value={type}
-                onChange={(e) => setType(e.target.value)}
+                onChange={(e) => setType(e.target.value as QuestionType)}
                 className="w-full bg-[#050017]/70 border border-purple-900/50 rounded-lg px-4 py-2 text-white outline-none cursor-pointer"
               >
                 {QUESTION_TYPES.map((t) => (
@@ -429,7 +429,7 @@ const AdminQuestionForm = () => {
                             <div className={`w-4 h-4 rounded flex items-center justify-center border transition-all duration-200 ${
                               isSelected ? "bg-purple-500 border-purple-500" : "border-purple-900/50"
                             }`}>
-                              {isSelected && <Check size={12} className="text-white stroke-[3]" />}
+                              {isSelected && <Check size={12} className="text-white stroke-3" />}
                             </div>
                             <span className={`font-medium tracking-wide text-sm ${isSelected ? "text-white" : "text-purple-300/80"}`}>
                               {cat.name}
@@ -531,7 +531,7 @@ const AdminQuestionForm = () => {
                       </div>
                     )}
 
-                    <div className="flex-[2] min-w-[200px]">
+                    <div className="flex-2 min-w-[200px]">
                       <label className="block text-[10px] font-semibold uppercase tracking-wide text-purple-400 mb-1">Go to Question...</label>
                       <select 
                         value={jump.nextQuestionId}
@@ -581,7 +581,7 @@ const AdminQuestionForm = () => {
             <button 
               type="submit" 
               disabled={loading} 
-              className="flex-1 bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-500 py-3 rounded-lg font-semibold text-white shadow-lg shadow-purple-900/20 disabled:opacity-50 transition flex items-center justify-center"
+              className="flex-1 bg-linear-to-r from-purple-600 to-violet-600 hover:from-purple-500 py-3 rounded-lg font-semibold text-white shadow-lg shadow-purple-900/20 disabled:opacity-50 transition flex items-center justify-center"
             >
               {loading ? <Loader2 className="animate-spin h-5 w-5" /> : isEdit ? "Push Changes" : "Publish Question"}
             </button>

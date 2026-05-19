@@ -2,102 +2,9 @@ import { useNavigate } from "react-router-dom";
 import { useStandaloneBmiStore } from "@/stores/bmi.store";
 import { useAuthStore } from "@/stores/auth.store";
 import { Loader2 } from "lucide-react";
+import { StepperInput } from "@/components/user/user-fitness/stepper.input";
 
 type Unit = "metric" | "imperial";
-
-interface StepperInputProps {
-  value: number | null;
-  setter: (v: number) => void;
-  min: number;
-  max: number;
-  step: number;
-  unitLabel: string;
-  onReset: () => void;
-}
-
-const StepperInput = ({
-  value,
-  setter,
-  min,
-  max,
-  step,
-  unitLabel,
-  onReset,
-}: StepperInputProps) => {
-  const display = value ?? min;
-  const clampedDisplay = Math.min(Math.max(display, min), max);
-  const progress = ((clampedDisplay - min) / (max - min)) * 100;
-
-  const handleStep = (direction: "inc" | "dec") => {
-    const next =
-      direction === "inc"
-        ? Math.min(display + step, max)
-        : Math.max(display - step, min);
-    setter(next);
-    onReset();
-  };
-
-  return (
-    <div className="space-y-3">
-      <div className="flex items-center justify-between">
-        <div className="flex items-baseline gap-1">
-          <input
-            type="number"
-            value={value !== null ? value : ""}
-            onChange={(e) => {
-              const val = e.target.value === "" ? min : Number(e.target.value);
-              if (!isNaN(val)) {
-                setter(val);
-                onReset();
-              }
-            }}
-            className="text-4xl font-bold text-white bg-transparent border-none outline-none w-24 focus:ring-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-            placeholder={String(min)}
-          />
-          <span className="text-purple-400 text-sm">{unitLabel}</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={() => handleStep("dec")}
-            className="w-9 h-9 rounded-full bg-white/10 border border-purple-500/50 text-white text-lg font-bold hover:bg-purple-700/50 transition flex items-center justify-center"
-          >
-            −
-          </button>
-          <button
-            type="button"
-            onClick={() => handleStep("inc")}
-            className="w-9 h-9 rounded-full bg-white/10 border border-purple-500/50 text-white text-lg font-bold hover:bg-purple-700/50 transition flex items-center justify-center"
-          >
-            +
-          </button>
-        </div>
-      </div>
-
-      <div className="relative">
-        <input
-          type="range"
-          min={min}
-          max={max}
-          step={step}
-          value={clampedDisplay}
-          onChange={(e) => {
-            setter(Number(e.target.value));
-            onReset();
-          }}
-          className="w-full h-2 rounded-full appearance-none cursor-pointer accent-purple-500"
-          style={{
-            background: `linear-gradient(to right, #9333ea ${progress}%, rgba(255,255,255,0.1) ${progress}%)`,
-          }}
-        />
-        <div className="flex justify-between text-xs text-white/30 mt-1">
-          <span>{min}</span>
-          <span>{max}</span>
-        </div>
-      </div>
-    </div>
-  );
-};
 
 const getIndicatorPosition = (bmi: number): number => {
   const min = 10;
@@ -106,12 +13,6 @@ const getIndicatorPosition = (bmi: number): number => {
   return ((clamped - min) / (max - min)) * 100;
 };
 
-const BMI_CATEGORIES = [
-  { range: "< 18.5", label: "Underweight", color: "bg-blue-400" },
-  { range: "18.5 – 24.9", label: "Normal", color: "bg-green-400" },
-  { range: "25 – 29.9", label: "Overweight", color: "bg-yellow-400" },
-  { range: "≥ 30", label: "Obese", color: "bg-red-400" },
-];
 
 const UserBmi = () => {
   const navigate = useNavigate();
@@ -318,7 +219,7 @@ const UserBmi = () => {
 
                   {/* Gauge Bar */}
                   <div>
-                    <div className="relative h-3 rounded-full overflow-hidden bg-gradient-to-r from-blue-500 via-green-500 via-yellow-500 to-red-500">
+                    <div className="relative h-3 rounded-full overflow-hidden bg-linear-to-r from-blue-500 via-green-500 to-red-500">
                       <div
                         className="absolute top-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-white border-2 border-purple-500 shadow-[0_0_8px_rgba(147,51,234,0.8)] transition-all duration-500"
                         style={{ left: `calc(${getIndicatorPosition(bmi)}% - 8px)` }}
@@ -331,18 +232,6 @@ const UserBmi = () => {
                       <span>30</span>
                       <span>40+</span>
                     </div>
-                  </div>
-
-                  {/* Legend */}
-                  <div className="grid grid-cols-2 gap-2 pt-2">
-                    {BMI_CATEGORIES.map((item) => (
-                      <div key={item.label} className="flex items-center gap-2">
-                        <div className={`w-2.5 h-2.5 rounded-full ${item.color}`} />
-                        <span className="text-xs text-white/45">
-                          {item.range} — {item.label}
-                        </span>
-                      </div>
-                    ))}
                   </div>
 
                   {/* Recalculate */}
