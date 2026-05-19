@@ -8,14 +8,15 @@ import SidebarLayout from "../ui/app.sidebar/sidebar.layout";
  
 const MainLayouts = () => {
   const user = useAuthStore((state) => state.user);
+  const isUser = user?.role === "user";
  
   return (
     <div className="min-h-screen flex flex-col bg-[#050017]">
       {/* Fixed top navbar */}
-      <Navbar />
+      {isUser && <Navbar />}
  
       {/* pt-[88px] clears the fixed navbar */}
-      <div className="flex flex-1 pt-[88px]">
+      <div className={`flex flex-1 ${isUser ? "pt-[88px]" : ""}`}>
         <SidebarLayout role={(user?.role as SidebarRole) || "user"}>
           <Outlet />
         </SidebarLayout>

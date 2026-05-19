@@ -150,13 +150,15 @@ const userServices = {
     bmi: number;
     heightCm: number;
     weightKg: number;
-    category: { label: string; color: string };
+    category: { label: string; color: string; description: string; tips: string[] };
+    healthyWeightRange: { minKg: number; maxKg: number };
   }>> {
     const response = await userApi.post<ApiResponse<{
       bmi: number;
       heightCm: number;
       weightKg: number;
-      category: { label: string; color: string };
+      category: { label: string; color: string; description: string; tips: string[] };
+      healthyWeightRange: { minKg: number; maxKg: number };
     }>>(USER_API_ROUTES.CALCULATE_BMI_PUBLIC, data);
     return response.data;
   },

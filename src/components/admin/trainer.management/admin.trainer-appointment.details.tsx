@@ -9,6 +9,7 @@ import adminServices from "@/services/admin/admin.services";
 import type { TrainerWithProfile } from "@/components/ui/table/table.types";
 
 import RejectionModal from "./trainer.appointment-rejection.modal";
+import ConfirmationModal from "@/components/ui/confirm.dialog";
 import { VerificationStatus } from "@/constants/verification.status";
 
 const AdminTrainerAppointmentDetails = () => {
@@ -19,6 +20,22 @@ const AdminTrainerAppointmentDetails = () => {
   const [loading, setLoading] = useState(true);
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
+
+  const [modalConfig, setModalConfig] = useState<{
+    isOpen: boolean;
+    title: string;
+    message: string;
+    onConfirm: () => void;
+    variant?: "danger" | "primary" | "purple";
+    icon?: React.ReactNode;
+    confirmText?: string;
+    cancelText?: string;
+  }>({
+    isOpen: false,
+    title: "",
+    message: "",
+    onConfirm: () => {},
+  });
 
   const fetchTrainerDetails = async () => {
     if (!profileId) return;
@@ -54,13 +71,26 @@ const AdminTrainerAppointmentDetails = () => {
     }
   };
 
+  const confirmApprove = () => {
+    if (!trainer) return;
+    setModalConfig({
+      isOpen: true,
+      title: "Approve Trainer Application",
+      message: `Are you sure you want to approve ${trainer.user.name}'s application? This will verify their status and grant them full platform access.`,
+      variant: "purple",
+      icon: <CheckCircle className="w-6 h-6 text-purple-400" />,
+      confirmText: "Yes, approve",
+      cancelText: "Cancel",
+      onConfirm: handleApprove,
+    });
+  };
+
   const handleReject = async (reason: string) => {
     if (!trainer) return;
     try {
       setActionLoading(true);
       const res = await adminServices.rejectTrainer(trainer.profile._id, reason);
       toast.success(res.message);
-      setShowRejectModal(false);
       fetchTrainerDetails();
     } catch (error) {
       const apiError = parseApiError(error);
@@ -68,6 +98,20 @@ const AdminTrainerAppointmentDetails = () => {
     } finally {
       setActionLoading(false);
     }
+  };
+
+  const confirmReject = (reason: string) => {
+    setShowRejectModal(false);
+    setModalConfig({
+      isOpen: true,
+      title: "Reject Trainer Application",
+      message: `Are you sure you want to reject ${trainer?.user.name}'s application for the following reason: "${reason}"?`,
+      variant: "danger",
+      icon: <XCircle className="w-6 h-6 text-red-400" />,
+      confirmText: "Yes, reject",
+      cancelText: "Cancel",
+      onConfirm: () => handleReject(reason),
+    });
   };
 
   const viewCertificate = (certUrl: string) => {
@@ -123,7 +167,7 @@ const AdminTrainerAppointmentDetails = () => {
             {isPending && (
               <div className="absolute top-4 right-4 flex gap-3">
                 <button
-                  onClick={handleApprove}
+                  onClick={confirmApprove}
                   disabled={actionLoading}
                   className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition disabled:opacity-50 shadow-lg"
                 >
@@ -267,10 +311,15 @@ const AdminTrainerAppointmentDetails = () => {
       {showRejectModal && (
         <RejectionModal
           onClose={() => setShowRejectModal(false)}
-          onSubmit={handleReject}
+          onSubmit={confirmReject}
           loading={actionLoading}
         />
       )}
+
+      <ConfirmationModal
+        {...modalConfig}
+        onClose={() => setModalConfig((prev) => ({ ...prev, isOpen: false }))}
+      />
     </div>
   );
 };

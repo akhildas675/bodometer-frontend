@@ -11,8 +11,7 @@ const MainSidebarLayout = () => {
       {/* Fixed top navbar */}
     
  
-      {/* pt-[88px] clears the fixed navbar */}
-      <div className="flex flex-1 pt-[88px]">
+      <div className="flex flex-1">
         <Sidebar role={(user?.role as SidebarRole)} />
         <main className="flex-1 overflow-y-auto p-10">
           <Outlet />

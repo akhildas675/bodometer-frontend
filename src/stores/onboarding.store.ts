@@ -3,9 +3,8 @@ import userServices from "@/services/user/user.services";
 import { AnswerValue, QuestionType } from "@/constants/onboarding.constant";
 import { parseApiError } from "@/api/error.helper";
 import type { OnboardingAnswerItem } from "@/interface/user.interface";
+import { useAuthStore } from "@/stores/auth.store";
 import type { ApiResponse } from "@/interface/api-response.interface";
-
-
 
 export interface OnboardingOption {
     label: string;
@@ -189,6 +188,7 @@ export const useOnboardingStore = create<OnboardingStore>((set, get) => ({
                 }));
 
             const res = await userServices.submitOnboarding({ answers: payload });
+            useAuthStore.getState().updateUser({ onboardingComplete: true });
             set({ submitting: false, isComplete: true });
             return res;
         } catch (err) {
