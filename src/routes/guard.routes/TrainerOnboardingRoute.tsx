@@ -27,7 +27,7 @@ const TrainerOnboardingRoute = () => {
         if (status === VERIFICATION_STATUS.APPROVED) {
           try { await authInitService.logout(); } catch (e) { console.error(e); }
           useAuthStore.getState().clearAuth();
-          setRedirect("/login");
+          setRedirect("/");
         } else if (status === VERIFICATION_STATUS.PENDING) {
           
           useAuthStore.getState().setVerificationStatus(status);

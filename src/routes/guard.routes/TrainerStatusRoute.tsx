@@ -27,7 +27,7 @@ const TrainerStatusRoute = () => {
          
           try { await authInitService.logout(); } catch (e) { console.error(e); }
           useAuthStore.getState().clearAuth();
-          setRedirect("/login");
+          setRedirect("/");
         } else if (!status) {
         
           setRedirect("/trainer/onboarding/intro");

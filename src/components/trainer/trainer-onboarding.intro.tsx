@@ -28,16 +28,20 @@ const TrainerOnboardingIntro = () => {
       toast.dismiss(loadingToast);
       toast.success("Logged out successfully");
       setTimeout(() => {
-        useAuthStore.getState().clearAuth();
-        navigate("/login", { replace: true });
-      }, 2000);
+        navigate("/", { replace: true });
+        setTimeout(() => {
+          useAuthStore.getState().clearAuth();
+        }, 150);
+      }, 1500);
     } catch (error) {
       console.error("Logout error:", error);
       toast.error("Logout failed");
       setTimeout(() => {
-        useAuthStore.getState().clearAuth();
-        navigate("/login", { replace: true });
-      }, 2000);
+        navigate("/", { replace: true });
+        setTimeout(() => {
+          useAuthStore.getState().clearAuth();
+        }, 150);
+      }, 1500);
     } finally {
       setIsLoggingOut(false);
     }

@@ -25,16 +25,20 @@ const TrainerStatus = () => {
       toast.dismiss(loadingToast);
       toast.success("Logged out successfully");
       setTimeout(() => {
-        useAuthStore.getState().clearAuth();
-        navigate("/login", { replace: true });
-      }, 3000);
+        navigate("/", { replace: true });
+        setTimeout(() => {
+          useAuthStore.getState().clearAuth();
+        }, 150);
+      }, 1500);
     } catch (error) {
       console.error("Logout error:", error);
       toast.error("Logout failed");
       setTimeout(() => {
-        useAuthStore.getState().clearAuth();
-        navigate("/login", { replace: true });
-      }, 3000);
+        navigate("/", { replace: true });
+        setTimeout(() => {
+          useAuthStore.getState().clearAuth();
+        }, 150);
+      }, 1500);
     } finally {
       setIsLoggingOut(false);
     }
@@ -65,8 +69,10 @@ useEffect(() => {
     });
     setTimeout(async () => {
       try { await authInitService.logout(); } catch (e) { console.error(e); }
-      useAuthStore.getState().clearAuth();
-      navigate("/login", { replace: true });
+      navigate("/", { replace: true });
+      setTimeout(() => {
+        useAuthStore.getState().clearAuth();
+      }, 150);
     }, 4000);
   }
 }, [navigate, trainerProfileStatus]);
