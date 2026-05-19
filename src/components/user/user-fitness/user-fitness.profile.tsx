@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import userServices from '@/services/user/user.services';
 import ConfirmationModal from '@/components/ui/confirm.dialog';
+import { parseApiError } from '@/api/error.helper';
 
 const UserFitnessProfile = () => {
   const navigate = useNavigate();
@@ -178,22 +179,6 @@ const UserFitnessProfile = () => {
   }, [activeGroup]);
 
   const handleSave = async () => {
-    const unmetRequired = visibleQuestions.some((q) => {
-      if (!q.validation?.required) return false;
-      const val = answers[q.questionId]?.value;
-      if (val === undefined || val === null) return true;
-      if (typeof val === "string" && !val.trim()) return true;
-      if (Array.isArray(val) && val.length === 0) return true;
-      return false;
-    });
-
-    if (unmetRequired) {
-      toast.error("Please answer all required questions in this section.", {
-        style: { background: "#7e22ce", color: "#fff" },
-      });
-      return;
-    }
-
     if (hasActivePlan) {
       setModalConfig({ isOpen: true, mode: "save" });
     } else {
@@ -203,42 +188,24 @@ const UserFitnessProfile = () => {
 
   const performSaveDirectly = async () => {
     try {
-      await submitOnboarding();
-      toast.success("Assessment answers updated successfully!");
+      const res = await submitOnboarding();
+      toast.success(res?.message || "Assessment answers updated successfully!");
       updateOriginalAnswersSnapshot();
-    } catch {
-      toast.error("Failed to update answers.");
+    } catch (err) {
+      const apiError = parseApiError(err);
+      toast.error(apiError.message);
     }
   };
 
   const confirmSave = async () => {
     setModalConfig(prev => ({ ...prev, isOpen: false }));
     try {
-      await submitOnboarding();
+      const res = await submitOnboarding();
       updateOriginalAnswersSnapshot();
-      
-      // Dynamic effects toasts based on group type
-      if (activePolicy?.type === "program_regeneration") {
-        toast.success("Answers saved! Active AI plan has been flagged for regeneration.", {
-          description: "Go to your dashboard to regenerate your workout and meal plans.",
-          duration: 6000,
-        });
-      } else if (activePolicy?.type === "safety_review") {
-        toast.warning("Medical records updated! Immediate safety review initiated.", {
-          description: "Our health engine is scanning your answers. If any risks are flagged, you will be notified.",
-          duration: 6000,
-        });
-      } else if (activePolicy?.type === "adaptive_analysis") {
-        toast.success("Answers updated! Live adaptive analysis metrics recalculated.", {
-          duration: 4000,
-        });
-      } else {
-        toast.success("Assessment answers updated successfully!", {
-          duration: 3000,
-        });
-      }
-    } catch {
-      toast.error("Failed to update answers.");
+      toast.success(res?.message || "Assessment answers updated successfully!");
+    } catch (err) {
+      const apiError = parseApiError(err);
+      toast.error(apiError.message);
     }
   };
 

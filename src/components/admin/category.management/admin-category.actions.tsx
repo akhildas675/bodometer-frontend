@@ -4,6 +4,8 @@ import type { TableAction } from "@/components/ui/table/table.types";
 import type { UpdateCategory } from "@/interface/admin.interface";
 import adminServices from "@/services/admin/admin.services";
 
+import { parseApiError } from "@/api/error.helper";
+
 export type CategoryModalConfig = {
   isOpen: boolean;
   title: string;
@@ -38,11 +40,12 @@ export const useCategoryActions = (
         variant:"danger",
         onConfirm:async()=>{
           try{
-            await adminServices.toggleCategoryStatus(cat.categoryId)
-            toast.success("Category blocked successfully");
+            const res = await adminServices.toggleCategoryStatus(cat.categoryId)
+            toast.success(res.message);
             refetch();
-          }catch{
-            toast.error("Failed to block category");
+          }catch(error){
+            const apiError = parseApiError(error);
+            toast.error(apiError.message);
           }
         }
        })
@@ -60,11 +63,12 @@ export const useCategoryActions = (
           variant:"primary",
           onConfirm:async()=>{
             try{
-              await adminServices.toggleCategoryStatus(cat.categoryId)
-              toast.success("Category unblocked successfully");
+              const res = await adminServices.toggleCategoryStatus(cat.categoryId)
+              toast.success(res.message);
               refetch();
-            }catch{
-              toast.error("Failed to unblock category");
+            }catch(error){
+              const apiError = parseApiError(error);
+              toast.error(apiError.message);
             }
           }
         })

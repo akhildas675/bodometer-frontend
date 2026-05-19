@@ -2,10 +2,10 @@ import { GENDER } from "@/constants/identity";
 import trainerService from "@/services/trainer/trainer.service";
 import { useAuthStore } from "@/stores/auth.store";
 import { useTrainerOnboardingStore } from "@/stores/trainer-onboarding.store";
-import axios from "axios";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { parseApiError } from "@/api/error.helper";
 
 const GENDER_LABELS: Record<string, string> = {
   [GENDER.MALE]: "Male",
@@ -63,84 +63,49 @@ const TrainerOnboardingProfile = () => {
       }
     };
 
-  const validateForm = (): boolean => {
-    if (!form.profile.dateOfBirth) {
-      toast.error("Please select date of birth");
-      return false;
-    }
-
-    if (!form.profile.gender) {
-      toast.error("Please select gender");
-      return false;
-    }
-
-    if (!coverImageFile) {
-      toast.error("Please upload a cover photo");
-      return false;
-    }
-
-    if (!profileImageFile) {
-      toast.error("Please upload profile image");
-      return false;
-    }
-
-    if (
-      !form.profile.experienceInYears ||
-      form.profile.experienceInYears <= 0
-    ) {
-      toast.error("Experience must be greater than 0");
-      return false;
-    }
-
-    if (!certificateFile) {
-      toast.error("Please upload your certifications");
-      return false;
-    }
-
-    if (form.profile.bio.trim().length < 20) {
-      toast.error("Bio must be at least 20 characters");
-      return false;
-    }
-
-    return true;
-  };
-
   const handleSubmit = async () => {
     if (isSubmitting) return;
-    if (!validateForm()) return;
 
     try {
       setIsSubmitting(true);
 
-   
       const formData = new FormData();
 
-      formData.append("coverImage", coverImageFile!);
-      formData.append("profileImage", profileImageFile!);
-      formData.append("certificate", certificateFile!);
-      formData.append("dateOfBirth", form.profile.dateOfBirth);
-      formData.append("gender", form.profile.gender);
-      formData.append("experience", String(form.profile.experienceInYears));
-      formData.append("bio", form.profile.bio);
+      if (coverImageFile) {
+        formData.append("coverImage", coverImageFile);
+      }
+      if (profileImageFile) {
+        formData.append("profileImage", profileImageFile);
+      }
+      if (certificateFile) {
+        formData.append("certificate", certificateFile);
+      }
+      if (form.profile.dateOfBirth) {
+        formData.append("dateOfBirth", form.profile.dateOfBirth);
+      }
+      if (form.profile.gender) {
+        formData.append("gender", form.profile.gender);
+      }
+      if (form.profile.experienceInYears !== undefined && form.profile.experienceInYears !== null) {
+        formData.append("experience", String(form.profile.experienceInYears));
+      }
+      if (form.profile.bio) {
+        formData.append("bio", form.profile.bio);
+      }
 
       form.workout.specializationIds.forEach((id) => {
         formData.append("specializationIds", id);
       });
 
-    
-
-      await trainerService.submitTrainerProfile(formData);
+      const res = await trainerService.submitTrainerProfile(formData);
       useTrainerOnboardingStore.getState().reset();
 
       useAuthStore.getState().setVerificationStatus("pending");
-      toast.success("Profile submitted! Awaiting admin approval.");
+      toast.success(res.message);
       navigate("/trainer/status", { replace: true });
     } catch (error) {
-      if (axios.isAxiosError(error) && error.response) {
-        toast.error(error.response.data?.message || "Submission failed");
-      } else {
-        toast.error("Submission failed. Please try again.");
-      }
+      const apiError = parseApiError(error);
+      toast.error(apiError.message);
     } finally {
       setIsSubmitting(false);
     }

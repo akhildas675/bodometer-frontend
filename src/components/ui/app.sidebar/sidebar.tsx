@@ -4,6 +4,7 @@ import { useAuthStore } from "@/stores/auth.store";
 import authInitService from "@/services/auth/auth-init.service";
 import { useState } from "react";
 import { toast } from "sonner";
+import { parseApiError } from "@/api/error.helper";
 import {
   LayoutDashboard,
   Users,
@@ -159,9 +160,9 @@ const Sidebar = ({ role }: Props) => {
     try {
       setIsLoggingOut(true);
       const loadingToast = toast.loading("Logging out...");
-      await authInitService.logout();
+      const res = await authInitService.logout();
       toast.dismiss(loadingToast);
-      toast.success("Logged out successfully!");
+      toast.success(res.message);
       setTimeout(() => {
         navigator("/", { replace: true });
         setTimeout(() => {
@@ -170,7 +171,8 @@ const Sidebar = ({ role }: Props) => {
       }, 1500);
     } catch (error) {
       console.error("Logout error:", error);
-      toast.error("Logout failed, but you've been signed out locally");
+      const apiError = parseApiError(error);
+      toast.error(apiError.message);
       setTimeout(() => {
         navigator("/", { replace: true });
         setTimeout(() => {

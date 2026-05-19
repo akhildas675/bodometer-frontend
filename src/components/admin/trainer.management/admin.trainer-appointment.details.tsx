@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
 import { ArrowLeft, CheckCircle, FileText, XCircle } from "lucide-react";
+import { parseApiError } from "@/api/error.helper";
 
 import adminServices from "@/services/admin/admin.services";
 
@@ -26,8 +27,8 @@ const AdminTrainerAppointmentDetails = () => {
       const response = await adminServices.getTrainerByProfileId(profileId);
       setTrainer(response.data);
     } catch (error) {
-      toast.error("Failed to fetch trainer details");
-      console.error(error);
+      const apiError = parseApiError(error);
+      toast.error(apiError.message);
       navigate("/admin/trainers");
     } finally {
       setLoading(false);
@@ -42,12 +43,12 @@ const AdminTrainerAppointmentDetails = () => {
     if (!trainer) return;
     try {
       setActionLoading(true);
-      await adminServices.approveTrainer(trainer.profile._id);
-      toast.success("Trainer approved successfully");
+      const res = await adminServices.approveTrainer(trainer.profile._id);
+      toast.success(res.message);
       fetchTrainerDetails();
     } catch (error) {
-      toast.error("Failed to approve trainer");
-      console.error(error);
+      const apiError = parseApiError(error);
+      toast.error(apiError.message);
     } finally {
       setActionLoading(false);
     }
@@ -57,13 +58,13 @@ const AdminTrainerAppointmentDetails = () => {
     if (!trainer) return;
     try {
       setActionLoading(true);
-      await adminServices.rejectTrainer(trainer.profile._id, reason);
-      toast.success("Trainer rejected");
+      const res = await adminServices.rejectTrainer(trainer.profile._id, reason);
+      toast.success(res.message);
       setShowRejectModal(false);
       fetchTrainerDetails();
     } catch (error) {
-      toast.error("Failed to reject trainer");
-      console.error(error);
+      const apiError = parseApiError(error);
+      toast.error(apiError.message);
     } finally {
       setActionLoading(false);
     }

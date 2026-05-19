@@ -3,7 +3,6 @@ import { useAuthStore } from "@/stores/auth.store";
 
 import type { ApiResponse } from "@/interface/api-response.interface";
 import type { LoginResponseData } from "@/interface/auth.interface";
-import { toast } from "sonner";
 
 class AuthInitService {
 
@@ -27,7 +26,6 @@ class AuthInitService {
         clearAuth();
       }
     } catch  {
-     toast.error("No active session")
       clearAuth();
     } finally {
       setInitialized(true);
@@ -35,15 +33,9 @@ class AuthInitService {
   }
 
 
-  async logout(): Promise<void> {
-    try {
-      await authInstance.post("/logout");
-    } catch (error) {
-      console.error("Logout error:", error);
-    }
-    // clearAuth() is intentionally NOT called here.
-    // The caller is responsible for clearing auth AFTER navigation
-    // so the toast can display without the route guard redirecting immediately.
+  async logout(): Promise<ApiResponse<null>> {
+    const response = await authInstance.post<ApiResponse<null>>("/logout");
+    return response.data;
   }
 }
 

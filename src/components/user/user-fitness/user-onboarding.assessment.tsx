@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import { useOnboardingStore } from '@/stores/onboarding.store';
 import { useNavigate } from 'react-router-dom';
 import ConfirmationModal from '@/components/ui/confirm.dialog';
+import { parseApiError } from '@/api/error.helper';
 
 const UserOnboardingAssessment = () => {
    const navigate = useNavigate();
@@ -36,7 +37,6 @@ const UserOnboardingAssessment = () => {
   // completion
   useEffect(() => {
     if (isComplete) {
-      toast.success("Onboarding complete! Setting up your portal.");
       navigate("/");
     }
   }, [isComplete, navigate]);
@@ -46,7 +46,7 @@ const UserOnboardingAssessment = () => {
     () => (activeGroup ? getVisibleQuestionsInFlowOrder(activeGroup.groupId) : []),
     [activeGroup, groups, questions, answers, getVisibleQuestionsInFlowOrder]
   );
- 
+  
   // handler
   const handleBack = () => {
     if (currentGroupIndex === 0) navigate("/onboarding/intro");
@@ -55,23 +55,6 @@ const UserOnboardingAssessment = () => {
  
   const handleNext = async () => {
     if (!activeGroup) return;
- 
-    const unmetRequired = visibleQuestions.some((q) => {
-      if (!q.validation?.required) return false;
-      const val = answers[q.questionId]?.value;
-      if (val === undefined || val === null) return true;
-      if (typeof val === "string" && !val.trim()) return true;
-      if (Array.isArray(val) && val.length === 0) return true;
-      return false;
-    });
- 
-    if (unmetRequired) {
-      toast.error("Please answer all required questions on this page.", {
-        style: { background: "#7e22ce", color: "#fff" },
-      });
-      return;
-    }
- 
     setShowConfirmModal(true);
   };
 
@@ -80,9 +63,11 @@ const UserOnboardingAssessment = () => {
     const isLast = currentGroupIndex === groups.length - 1;
     if (isLast) {
       try {
-        await submitOnboarding();
-      } catch {
-        toast.error("Failed to save responses. Please verify your connection.");
+        const res = await submitOnboarding();
+        toast.success(res?.message || "Onboarding complete! Setting up your portal.");
+      } catch (err) {
+        const apiError = parseApiError(err);
+        toast.error(apiError.message);
       }
     } else {
       nextGroup();

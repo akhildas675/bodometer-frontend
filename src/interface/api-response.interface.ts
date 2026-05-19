@@ -1,11 +1,13 @@
 export interface ValidationError {
-  path: string;
+  field?: string;
+  path?: string;
   message: string;
 }
 
-export interface ApiResponse<T> {
+export interface ApiResponse<T = unknown> {
   success: boolean;
+  statusCode?: number;
   message: string;
   data: T;
-  errors?: string
+  errors?: ValidationError[];
 }

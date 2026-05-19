@@ -3,13 +3,13 @@ import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { Mail, Lock } from "lucide-react";
 import { GoogleLogin } from "@react-oauth/google";
-import axios from "axios";
 import InputWithIcon from "@/components/ui/input.box";
 import PrimaryButton from "@/components/ui/primary.button";
 import type { LoginPayload } from "@/interface/auth.interface";
 import authService from "@/services/auth/auth.service";
 import { useAuthStore, type AuthUser } from "@/stores/auth.store";
 import { VERIFICATION_STATUS, type VerificationStatus } from "@/constants/verification.status";
+import { parseApiError } from "@/api/error.helper";
 
 const AuthLoginPage = () => {
   const [loading, setLoading] = useState(false);
@@ -39,6 +39,7 @@ const AuthLoginPage = () => {
   const handleSuccess = (
     user: AuthUser,
     accessToken: string,
+    message: string,
     trainerStatus?: { verificationStatus?: VerificationStatus | null; profileExists?: boolean | null },
     onboardingComplete?: boolean,
     hasActiveSubscription?: boolean
@@ -50,7 +51,7 @@ const AuthLoginPage = () => {
     };
     useAuthStore.getState().setAuth({ user: userWithFlags, accessToken, trainerStatus });
 
-    toast.success(`Welcome back, ${user.name || "User"}!`);
+    toast.success(message);
 
     if (user.role === "trainer") {
       const noProfile =
@@ -78,26 +79,19 @@ const AuthLoginPage = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!form.email || !form.password) {
-      return toast.error("Please fill in all fields.");
-    }
     setLoading(true);
     try {
       const result = await authService.login(form);
       const { user, accessToken, trainerStatus, onboardingComplete, hasActiveSubscription } = result.data;
-      handleSuccess(user, accessToken, trainerStatus, onboardingComplete, hasActiveSubscription);
+      handleSuccess(user, accessToken, result.message, trainerStatus, onboardingComplete, hasActiveSubscription);
     } catch (error) {
-      if (axios.isAxiosError(error) && error.response) {
-        const errorMessage = error.response.data?.message || "Login failed";
-        toast.error(errorMessage, {
-          duration: error.response.status === 403 ? 5000 : 3000,
-          style: error.response.status === 403
-            ? { background: "#ef4444", color: "#fff" }
-            : undefined,
-        });
-      } else {
-        toast.error("Login failed. Please check your credentials.");
-      }
+      const apiError = parseApiError(error);
+      toast.error(apiError.message, {
+        duration: apiError.statusCode === 403 ? 5000 : 3000,
+        style: apiError.statusCode === 403
+          ? { background: "#ef4444", color: "#fff" }
+          : undefined,
+      });
     } finally {
       setLoading(false);
     }
@@ -108,19 +102,15 @@ const AuthLoginPage = () => {
     try {
       const result = await authService.googleLogin({ idToken: credential });
       const { user, accessToken, trainerStatus, onboardingComplete, hasActiveSubscription } = result.data;
-      handleSuccess(user, accessToken, trainerStatus, onboardingComplete, hasActiveSubscription);
+      handleSuccess(user, accessToken, result.message, trainerStatus, onboardingComplete, hasActiveSubscription);
     } catch (error) {
-      if (axios.isAxiosError(error) && error.response) {
-        const errorMessage = error.response.data?.message || "Login failed";
-        toast.error(errorMessage, {
-          duration: error.response.status === 403 ? 5000 : 3000,
-          style: error.response.status === 403
-            ? { background: "#ef4444", color: "#fff" }
-            : undefined,
-        });
-      } else {
-        toast.error("Login failed. Please check your credentials.");
-      }
+      const apiError = parseApiError(error);
+      toast.error(apiError.message, {
+        duration: apiError.statusCode === 403 ? 5000 : 3000,
+        style: apiError.statusCode === 403
+          ? { background: "#ef4444", color: "#fff" }
+          : undefined,
+      });
     } finally {
       setLoading(false);
     }

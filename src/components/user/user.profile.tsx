@@ -8,9 +8,9 @@ import type {
 import { useFetch } from "@/hooks/useFetch";
 import { useState, useRef, useEffect } from "react";
 import { toast } from "sonner";
-import axios from "axios";
 import { PenIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { parseApiError } from "@/api/error.helper";
 
 const UserProfile = () => {
   const user = useAuthStore((state) => state.user);
@@ -104,7 +104,7 @@ const UserProfile = () => {
     };
     reader.readAsDataURL(file);
 
-    toast.success("Image selected. Click Save to upload.");
+
   };
 
   const handleUpdate = async (e: React.FormEvent) => {
@@ -152,44 +152,29 @@ const UserProfile = () => {
         await refetch();
         setSelectedImage(null);
         setIsEditing(false);
-        toast.success("Profile updated successfully!", { id: loadingToast });
+        toast.success(updateResponse.message, { id: loadingToast });
       } else {
-        throw new Error("Failed to update profile");
+        throw new Error(updateResponse.message || "Failed to update profile");
       }
     } catch (error) {
       console.error("Profile update error:", error);
+      const apiError = parseApiError(error);
 
-      if (axios.isAxiosError(error) && error.response) {
-        const errorMessage =
-          error.response.data?.message || "Failed to update profile";
-        const statusCode = error.response.status;
-
-        if (statusCode === 403) {
-          toast.error(errorMessage, {
-            id: loadingToast,
-            duration: 5000,
-            style: {
-              background: "#ef4444",
-              color: "#fff",
-            },
-          });
-        } else if (statusCode === 400) {
-          toast.error(errorMessage, { id: loadingToast });
-        } else if (statusCode === 401) {
-          toast.error("Session expired. Please login again.", {
-            id: loadingToast,
-          });
-        } else if (statusCode === 409) {
-          toast.error(errorMessage, { id: loadingToast });
-        } else {
-          toast.error(errorMessage, { id: loadingToast });
-        }
-      } else if (error instanceof Error) {
-        toast.error(error.message, { id: loadingToast });
-      } else {
-        toast.error("An unexpected error occurred. Please try again.", {
+      if (apiError.statusCode === 403) {
+        toast.error(apiError.message, {
+          id: loadingToast,
+          duration: 5000,
+          style: {
+            background: "#ef4444",
+            color: "#fff",
+          },
+        });
+      } else if (apiError.statusCode === 401) {
+        toast.error("Session expired. Please login again.", {
           id: loadingToast,
         });
+      } else {
+        toast.error(apiError.message, { id: loadingToast });
       }
     } finally {
       setIsSaving(false);
@@ -198,11 +183,11 @@ const UserProfile = () => {
 
   if (loading) {
     return (
-     
+      
         <div className="min-h-screen bg-[#050017] text-white pt-24 pb-10 flex items-center justify-center">
           <p>Loading profile...</p>
         </div>
-     
+      
     );
   }
 
@@ -230,7 +215,7 @@ const UserProfile = () => {
     "https://images.unsplash.com/photo-1599058917212-d750089bc07a";
 
   return (
-   
+    
       <div className="max-w-7xl mx-auto text-white">
             <h1 className="text-lg text-slate-300 mb-6">
               WELCOME{" "}
@@ -365,15 +350,15 @@ const UserProfile = () => {
                 </div>
               </form>
               <div className="mt-6 flex gap-4">
-                
+
                 <p
                   onClick={() => navigate("/change-password")}
                   className="text-xs text-indigo-400 cursor-pointer hover:text-indigo-300 transition"
                 >
                   Change Password
                 </p>
-               
-                
+
+
               </div>
             </div>
       </div>

@@ -6,6 +6,8 @@ import { ActiveSubscription } from "@/interface/user.interface";
 import { USER_UI_ROUTES } from "@/constants/constant-routes/ui-routes/user.ui-constant.routes";
 import { useAuthStore } from "@/stores/auth.store";
 
+import { parseApiError } from "@/api/error.helper";
+
 type PageState = "loading" | "success" | "error";
 
 const UserSubscriptionSuccess = () => {
@@ -45,9 +47,8 @@ const UserSubscriptionSuccess = () => {
       } catch (err: unknown) {
         if (!isMounted) return;
 
-        const message =
-          err instanceof Error ? err.message : "Unable to confirm payment at this time.";
-        setErrorMessage(message);
+        const apiError = parseApiError(err);
+        setErrorMessage(apiError.message);
         setState("error");
       }
     };

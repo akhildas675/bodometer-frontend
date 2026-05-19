@@ -8,6 +8,8 @@ import type { TableAction } from "@/components/ui/table/table.types";
 import type { QuestionGroup } from "@/interface/admin.interface";
 import { ADMIN_UI_ROUTES } from "@/constants/constant-routes/ui-routes/admin.ui-constant-routes";
 
+import { parseApiError } from "@/api/error.helper";
+
 export type GroupModalConfig = {
   isOpen: boolean;
   title: string;
@@ -21,13 +23,14 @@ export const getQuestionGroupActions = (
   refetch: () => void,
   setModalConfig: React.Dispatch<React.SetStateAction<GroupModalConfig>>
 ): TableAction<QuestionGroup>[] => {
-  const handleToggleStatus = async (groupId: string, isBlocking: boolean) => {
+  const handleToggleStatus = async (groupId: string) => {
     try {
-      await adminServices.toggleQuestionGroupStatus(groupId);
-      toast.success(isBlocking ? "Group blocked successfully" : "Group unblocked successfully");
+      const res = await adminServices.toggleQuestionGroupStatus(groupId);
+      toast.success(res.message);
       refetch();
-    } catch {
-      toast.error(isBlocking ? "Failed to block group" : "Failed to unblock group");
+    } catch (error) {
+      const apiError = parseApiError(error);
+      toast.error(apiError.message);
     }
   };
 
@@ -48,7 +51,7 @@ export const getQuestionGroupActions = (
           message: `Are you sure you want to block this group?`,
           variant: "danger",
           onConfirm: async () => {
-            await handleToggleStatus(item.groupId, true);
+            await handleToggleStatus(item.groupId);
             setModalConfig((p) => ({ ...p, isOpen: false }));
           },
         });
@@ -64,7 +67,7 @@ export const getQuestionGroupActions = (
           message: `Are you sure you want to unblock this group?`,
           variant: "primary",
           onConfirm: async () => {
-            await handleToggleStatus(item.groupId, false);
+            await handleToggleStatus(item.groupId);
             setModalConfig((p) => ({ ...p, isOpen: false }));
           },
         });

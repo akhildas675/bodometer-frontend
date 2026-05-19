@@ -2,12 +2,12 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Lock } from "lucide-react";
 import { toast } from "sonner";
-import axios from "axios";
 
 import InputWithIcon from "@/components/ui/input.box";
 import PrimaryButton from "@/components/ui/primary.button";
 import { useAuthStore } from "@/stores/auth.store";
 import userServices from "@/services/user/user.services";
+import { parseApiError } from "@/api/error.helper";
 
 const UserChangePassword = () => {
   const user = useAuthStore((state) => state.user);
@@ -28,47 +28,24 @@ const UserChangePassword = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!form.currentPassword || !form.newPassword || !form.confirmPassword) {
-      toast.error("All fields are required");
-      return;
-    }
-
-    if (form.newPassword !== form.confirmPassword) {
-      toast.error("New passwords do not match");
-      return;
-    }
-
-    if (form.newPassword.length < 6) {
-      toast.error("New password must be at least 6 characters");
-      return;
-    }
-
-    if (form.currentPassword === form.newPassword) {
-      toast.error("New password must be different from current password");
-      return;
-    }
-
     try {
       setLoading(true);
-      await userServices.changePassword({
+      const res = await userServices.changePassword({
         currentPassword: form.currentPassword,
         newPassword: form.newPassword,
       });
-      toast.success("Password changed successfully");
+      toast.success(res.message);
       navigate("/profile");
     } catch (error) {
-      if (axios.isAxiosError(error) && error.response) {
-        toast.error(error.response.data?.message || "Failed to change password");
-      } else {
-        toast.error("Failed to change password. Please try again.");
-      }
+      const apiError = parseApiError(error);
+      toast.error(apiError.message);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-   
+    
       <div className="text-white max-w-md mx-auto mt-10">
         <div className="bg-linear-to-br from-[#140b3a] to-[#0a0624] rounded-2xl p-8 border border-white/10">
           <h1 className="text-2xl font-semibold text-indigo-300 mb-2">

@@ -8,6 +8,8 @@ import { useFetch } from "@/hooks/useFetch";
 import type { TrainerProfileStatus } from "@/interface/trainer.interface";
 import trainerService from "@/services/trainer/trainer.service";
 
+import { parseApiError } from "@/api/error.helper";
+
 const TrainerStatus = () => {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const navigate = useNavigate();
@@ -17,13 +19,9 @@ const TrainerStatus = () => {
     try {
       setIsLoggingOut(true);
       const loadingToast = toast.loading("Logging out...");
-      try {
-        await authInitService.logout();
-      } catch (error) {
-        console.error("Logout API error:", error);
-      }
+      const res = await authInitService.logout();
       toast.dismiss(loadingToast);
-      toast.success("Logged out successfully");
+      toast.success(res.message);
       setTimeout(() => {
         navigate("/", { replace: true });
         setTimeout(() => {
@@ -32,7 +30,8 @@ const TrainerStatus = () => {
       }, 1500);
     } catch (error) {
       console.error("Logout error:", error);
-      toast.error("Logout failed");
+      const apiError = parseApiError(error);
+      toast.error(apiError.message);
       setTimeout(() => {
         navigate("/", { replace: true });
         setTimeout(() => {

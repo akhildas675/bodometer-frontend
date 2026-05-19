@@ -9,6 +9,8 @@ import authInitService from "@/services/auth/auth-init.service";
 import { useAuthStore } from "@/stores/auth.store";
 import { useTrainerOnboardingStore } from "@/stores/trainer-onboarding.store";
 
+import { parseApiError } from "@/api/error.helper";
+
 const TrainerOnboardingSkills = () => {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const { form, setWorkouts } = useTrainerOnboardingStore();
@@ -41,10 +43,10 @@ const TrainerOnboardingSkills = () => {
       setIsLoggingOut(true);
       const loadingToast = toast.loading("Logging out...");
 
-      await authInitService.logout();
+      const res = await authInitService.logout();
 
       toast.dismiss(loadingToast);
-      toast.success("Logged out successfully!");
+      toast.success(res.message);
       setTimeout(() => {
         navigate("/", { replace: true });
         setTimeout(() => {
@@ -53,7 +55,8 @@ const TrainerOnboardingSkills = () => {
       }, 1500);
     } catch (error) {
       console.error("Logout error:", error);
-      toast.error("Logout failed, but you've been signed out locally");
+      const apiError = parseApiError(error);
+      toast.error(apiError.message);
       setTimeout(() => {
         navigate("/", { replace: true });
         setTimeout(() => {
@@ -66,11 +69,6 @@ const TrainerOnboardingSkills = () => {
   };
 
   const handleNext = () => {
-    if (selectedSkills.length === 0) {
-      toast.error("Select at least one category");
-      return;
-    }
-
     navigate("/trainer/onboarding/profile");
   };
 

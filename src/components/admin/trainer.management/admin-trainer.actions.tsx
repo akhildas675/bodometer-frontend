@@ -3,6 +3,7 @@ import type { AdminGetTrainersResponse } from "@/interface/admin.interface";
 import adminServices from "@/services/admin/admin.services";
 import type { TableAction } from "@/components/ui/table/table.types";
 import { Lock, Unlock } from "lucide-react";
+import { parseApiError } from "@/api/error.helper";
 
 export type TrainerModalConfig = {
   isOpen: boolean;
@@ -36,11 +37,12 @@ export const useTrainerActions = (
           cancelText: "Cancel",
           onConfirm: async () => {
             try {
-              await adminServices.blockTrainer(trainer.id);
-              toast.success("Trainer blocked");
+              const res = await adminServices.blockTrainer(trainer.id);
+              toast.success(res.message);
               refreshTrainers();
-            } catch {
-              toast.error("Failed to block user");
+            } catch (error) {
+              const apiError = parseApiError(error);
+              toast.error(apiError.message);
             }
           },
         });
@@ -60,11 +62,12 @@ export const useTrainerActions = (
           cancelText: "Cancel",
           onConfirm: async () => {
             try {
-              await adminServices.unblockTrainer(trainer.id);
-              toast.success("Trainer unblocked");
+              const res = await adminServices.unblockTrainer(trainer.id);
+              toast.success(res.message);
               refreshTrainers();
-            } catch {
-              toast.error("Failed to unblock user");
+            } catch (error) {
+              const apiError = parseApiError(error);
+              toast.error(apiError.message);
             }
           },
         });

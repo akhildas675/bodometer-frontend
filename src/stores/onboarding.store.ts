@@ -1,6 +1,9 @@
 import { create } from "zustand";
 import userServices from "@/services/user/user.services";
 import { AnswerValue, QuestionType } from "@/constants/onboarding.constant";
+import { parseApiError } from "@/api/error.helper";
+import type { OnboardingAnswerItem } from "@/interface/user.interface";
+import type { ApiResponse } from "@/interface/api-response.interface";
 
 
 
@@ -74,7 +77,7 @@ interface OnboardingStore {
     setAnswer: (questionId: string, key: string, value: AnswerValue) => void;
     nextGroup: () => void;
     prevGroup: () => void;
-    submitOnboarding: () => Promise<void>;
+    submitOnboarding: () => Promise<ApiResponse<unknown>>;
     reset: () => void;
 
     // helping functions
@@ -117,8 +120,9 @@ export const useOnboardingStore = create<OnboardingStore>((set, get) => ({
                 .sort((a: OnboardingQuestion, b: OnboardingQuestion) => a.order - b.order);
 
             set({ groups, questions, loading: false });
-        } catch {
-            set({ error: "Failed to load onboarding questions", loading: false });
+        } catch (err) {
+            const apiError = parseApiError(err);
+            set({ error: apiError.message, loading: false });
         }
     },
 
@@ -127,11 +131,11 @@ export const useOnboardingStore = create<OnboardingStore>((set, get) => ({
             const res = await userServices.getOnboardingAnswers();
             if (res?.data?.answers) {
                 const answerMap: Record<string, OnboardingAnswer> = {};
-                res.data.answers.forEach((ans: { questionId: string; questionKey?: string; key?: string; answer?: AnswerValue; value?: AnswerValue }) => {
+                (res.data.answers as OnboardingAnswerItem[]).forEach((ans: OnboardingAnswerItem) => {
                     answerMap[ans.questionId] = {
                         questionId: ans.questionId,
                         key: ans.questionKey || ans.key || "",
-                        value: ans.answer !== undefined ? ans.answer : (ans.value !== undefined ? ans.value : "")
+                        value: (ans.answer !== undefined ? ans.answer : (ans.value !== undefined ? ans.value : "")) as AnswerValue
                     };
                 });
                 set((state) => ({ answers: { ...state.answers, ...answerMap } }));
@@ -184,10 +188,13 @@ export const useOnboardingStore = create<OnboardingStore>((set, get) => ({
                     value: ans.value,
                 }));
 
-            await userServices.submitOnboarding({ answers: payload });
+            const res = await userServices.submitOnboarding({ answers: payload });
             set({ submitting: false, isComplete: true });
-        } catch {
-            set({ error: "Failed to submit onboarding", submitting: false });
+            return res;
+        } catch (err) {
+            const apiError = parseApiError(err);
+            set({ error: apiError.message, submitting: false });
+            throw err;
         }
     },
 

@@ -8,6 +8,8 @@ import { ADMIN_UI_ROUTES } from "@/constants/constant-routes/ui-routes/admin.ui-
 import type { QuestionGroup, CreateQuestionData, OnboardingQuestion, UpdateCategory } from "@/interface/admin.interface";
 import { QUESTION_TYPE, QuestionType } from "@/constants/onboarding.constant";
 
+import { parseApiError } from "@/api/error.helper";
+
 interface NextJumpData {
   condition: { operator: string; value?: string | number | boolean };
   nextQuestionId: string;
@@ -108,7 +110,10 @@ const AdminQuestionForm = () => {
             })));
           }
         })
-        .catch(() => toast.error("Load error"))
+        .catch((error) => {
+          const apiError = parseApiError(error);
+          toast.error(apiError.message);
+        })
         .finally(() => setFetching(false));
     }
   }, [isEdit, id]);
@@ -171,38 +176,8 @@ const AdminQuestionForm = () => {
     );
   };
 
-  const validate = (): boolean => {
-    if (!groupId) { toast.error("Please select a Question Group"); return false; }
-    if (!question.trim()) { toast.error("Question prompt is required"); return false; }
-    
-    if (([QUESTION_TYPE.SINGLE_SELECT, QUESTION_TYPE.MULTI_SELECT] as QuestionType[]).includes(type)) {
-      if (dataSource === "category") {
-        if (selectedCategories.length === 0) {
-          toast.error("Please select at least one category option.");
-          return false;
-        }
-      } else if (!dataSource) {
-        const invalid = options.some(opt => !opt.label.trim());
-        if (invalid) {
-          toast.error("Please fill all option labels");
-          return false;
-        }
-      }
-    }
-
-    if (nextJumps.length > 0) {
-      const invalidJump = nextJumps.some(j => !j.nextQuestionId || (j.condition.operator !== "always" && String(j.condition.value ?? "").trim() === ""));
-      if (invalidJump) {
-        toast.error("Please ensure all conditional follow-up rules have targets and values specified");
-        return false;
-      }
-    }
-    return true;
-  };
-
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!validate()) return;
 
     setLoading(true);
     try {
@@ -244,15 +219,16 @@ const AdminQuestionForm = () => {
       }
 
       if (isEdit && id) {
-        await adminServices.updateQuestion(id, payload);
-        toast.success("Question modified");
+        const res = await adminServices.updateQuestion(id, payload);
+        toast.success(res.message);
       } else {
-        await adminServices.createQuestion(payload);
-        toast.success("Question added");
+        const res = await adminServices.createQuestion(payload);
+        toast.success(res.message);
       }
       navigate(ADMIN_UI_ROUTES.QUESTIONS_LIST);
-    } catch {
-      toast.error("Save failed");
+    } catch (error) {
+      const apiError = parseApiError(error);
+      toast.error(apiError.message);
     } finally {
       setLoading(false);
     }

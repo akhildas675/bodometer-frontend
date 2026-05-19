@@ -52,6 +52,8 @@ const TIER_STYLES = [
   },
 ];
 
+import { parseApiError } from "@/api/error.helper";
+
 const UserSubscription = () => {
   const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null);
 
@@ -159,8 +161,9 @@ const UserSubscription = () => {
       setCheckoutLoading(planId);
       const res = await userServices.createCheckoutSession(planId);
       window.location.href = res.data.checkoutUrl;
-    } catch {
-      toast.error("Failed to initiate payment. Please try again.");
+    } catch (error) {
+      const apiError = parseApiError(error);
+      toast.error(apiError.message);
     } finally {
       setCheckoutLoading(null);
     }

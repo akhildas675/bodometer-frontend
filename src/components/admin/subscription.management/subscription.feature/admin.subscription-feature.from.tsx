@@ -9,6 +9,8 @@ import type { SubscriptionFeature } from "@/interface/admin.interface";
 import { FEATURE_TYPES } from "@/constants/subscription.constants";
 
 
+import { parseApiError } from "@/api/error.helper";
+
 const EMPTY_FORM: SubscriptionFeature = {
   title: "",
   description: "",
@@ -42,33 +44,26 @@ const AdminSubscriptionFeatureForm = () => {
   }, [response, isEdit]);
 
 
-  const validate = (): boolean => {
-    if (!form.title?.trim()) { toast.error("Title is required"); return false; }
-    if (!form.description?.trim()) { toast.error("Description is required"); return false; }
-    if (!form.type?.trim()) { toast.error("Please select a feature type"); return false; }
-    return true;
-  };
 const handleSubmit = async () => {
-  if (!validate()) return;
-
   const payload: SubscriptionFeature = {
-    title: form.title!.trim(),
-    description: form.description!.trim(),
-    type: form.type!,
+    title: form.title?.trim() ?? "",
+    description: form.description?.trim() ?? "",
+    type: form.type ?? "",
   };
 
   try {
     setIsSubmitting(true);
     if (isEdit && id) {
-      await adminServices.updateSubscriptionFeature(id, payload);
-      toast.success("Feature updated successfully!");
+      const res = await adminServices.updateSubscriptionFeature(id, payload);
+      toast.success(res.message);
     } else {
-      await adminServices.createSubscriptionFeature(payload);
-      toast.success("Feature created successfully!");
+      const res = await adminServices.createSubscriptionFeature(payload);
+      toast.success(res.message);
     }
     navigate("/admin/subscription/features");
-  } catch {
-    toast.error(isEdit ? "Failed to update feature" : "Failed to create feature");
+  } catch (error) {
+    const apiError = parseApiError(error);
+    toast.error(apiError.message);
   } finally {
     setIsSubmitting(false);
   }

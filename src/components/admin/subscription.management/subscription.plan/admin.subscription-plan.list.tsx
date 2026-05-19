@@ -9,6 +9,8 @@ import { LIMIT_TYPES } from "@/constants/subscription.constants";
 import { useFetch } from "@/hooks/useFetch";
 
 
+import { parseApiError } from "@/api/error.helper";
+
 const EMPTY_FORM: SubscriptionPlanFormData = {
   name: "",
   description: "",
@@ -56,8 +58,9 @@ const AdminSubscriptionPlanForm = () => {
         if (res?.success) {
           setLoadedPlan(res.data);
         }
-      } catch {
-        toast.error("Failed to load plan");
+      } catch (error) {
+        const apiError = parseApiError(error);
+        toast.error(apiError.message);
       } finally {
         setFetchLoading(false);
       }
@@ -125,24 +128,7 @@ const AdminSubscriptionPlanForm = () => {
     });
   };
 
-  const validate = (): boolean => {
-    if (!form.name.trim()) { toast.error("Plan name is required"); return false; }
-    if (!form.price || Number(form.price) < 0) { toast.error("Valid price is required"); return false; }
-    if (!form.durationInDays || Number(form.durationInDays) < 1) { toast.error("Valid duration is required"); return false; }
-    for (let i = 0; i < form.features.length; i++) {
-      const f = form.features[i];
-      if (!f.featureId) { toast.error(`Select a feature for row ${i + 1}`); return false; }
-      if (f.type === "limit") {
-        if (!f.limit || Number(f.limit) < 1) { toast.error(`Enter a valid limit for feature row ${i + 1}`); return false; }
-        if (!f.limitType) { toast.error(`Select a limit type for feature row ${i + 1}`); return false; }
-      }
-    }
-    return true;
-  };
-
   const handleSubmit = async () => {
-    if (!validate()) return;
-
     const payload = {
       name: form.name.trim(),
       description: form.description.trim(),
@@ -161,15 +147,16 @@ const AdminSubscriptionPlanForm = () => {
     try {
       setIsSubmitting(true);
       if (isEdit && id) {
-        await adminServices.updateSubscriptionPlan(id, payload);
-        toast.success("Plan updated successfully!");
+        const res = await adminServices.updateSubscriptionPlan(id, payload);
+        toast.success(res.message);
       } else {
-        await adminServices.createSubscriptionPlan(payload);
-        toast.success("Plan created successfully!");
+        const res = await adminServices.createSubscriptionPlan(payload);
+        toast.success(res.message);
       }
       navigate("/admin/subscription/plans");
-    } catch {
-      toast.error(isEdit ? "Failed to update plan" : "Failed to create plan");
+    } catch (error) {
+      const apiError = parseApiError(error);
+      toast.error(apiError.message);
     } finally {
       setIsSubmitting(false);
     }

@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { parseApiError } from "@/api/error.helper";
 
 import type { TableAction } from "@/components/ui/table/table.types";
 import type { SubscriptionFeature } from "@/interface/admin.interface";
@@ -34,15 +35,12 @@ const handleToggle = (feature: SubscriptionFeature) => {
       try {
         const featureId = feature.subscriptionFeatureId;
     
-        await adminServices.toggleSubscriptionFeatureStatus(featureId!);
-        toast.success(
-          isCurrentlyActive
-            ? "Feature deactivated successfully"
-            : "Feature activated successfully"
-        );
+        const res = await adminServices.toggleSubscriptionFeatureStatus(featureId!);
+        toast.success(res.message);
         refetch();
-      } catch {
-        toast.error("Failed to update feature status");
+      } catch (error) {
+        const apiError = parseApiError(error);
+        toast.error(apiError.message);
       }
     },
   });

@@ -18,7 +18,7 @@ import {
   Loader2
 } from "lucide-react";
 import { toast } from "sonner";
-import axios from "axios";
+import { parseApiError } from "@/api/error.helper";
 
 
 
@@ -173,8 +173,6 @@ const TrainerProfile = () => {
       setCoverPreviewUrl(reader.result as string);
     };
     reader.readAsDataURL(file);
-
-    toast.success("Cover image selected. Click Save to upload.");
   };
 
   const handleToggleSpecialization = (categoryId: string) => {
@@ -212,7 +210,7 @@ const TrainerProfile = () => {
           ...prev,
           certifications: [...prev.certifications, uploadResponse.data.url],
         }));
-        toast.success("Document uploaded successfully! Click Save to apply changes.", { id: loadingToast });
+        toast.success(uploadResponse.message, { id: loadingToast });
       } else {
         throw new Error("Failed to upload document");
       }
@@ -232,7 +230,6 @@ const TrainerProfile = () => {
       ...prev,
       certifications: prev.certifications.filter((_, idx) => idx !== indexToRemove),
     }));
-    toast.success("Document removed. Click Save to apply changes.");
   };
 
   const handleProfilePicClick = () => {
@@ -262,22 +259,10 @@ const TrainerProfile = () => {
       setPreviewUrl(reader.result as string);
     };
     reader.readAsDataURL(file);
-
-    toast.success("Image selected. Click Save to upload.");
   };
 
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (!form.gender || form.gender === "prefer_not_say") {
-      toast.error("Please select your gender before updating profile");
-      return;
-    }
-
-    if (!form.dateOfBirth) {
-      toast.error("Please enter your date of birth before updating profile");
-      return;
-    }
 
     setIsSaving(true);
     const loadingToast = toast.loading("Updating profile...");
@@ -348,40 +333,25 @@ const TrainerProfile = () => {
         setSelectedImage(null);
         setSelectedCoverImage(null);
         setIsEditing(false);
-        toast.success("Profile updated successfully!", { id: loadingToast });
+        toast.success(updateResponse.message, { id: loadingToast });
       } else {
-        throw new Error("Failed to update profile");
+        throw new Error(updateResponse.message || "Failed to update profile");
       }
     } catch (error) {
       console.error("Profile update error:", error);
+      const apiError = parseApiError(error);
 
-      if (axios.isAxiosError(error) && error.response) {
-        const errorMessage =
-          error.response.data?.message || "Failed to update profile";
-        const statusCode = error.response.status;
-
-        if (statusCode === 403) {
-          toast.error(errorMessage, {
-            id: loadingToast,
-            duration: 5000,
-          });
-        } else if (statusCode === 400) {
-          toast.error(errorMessage, { id: loadingToast });
-        } else if (statusCode === 401) {
-          toast.error("Session expired. Please login again.", {
-            id: loadingToast,
-          });
-        } else if (statusCode === 409) {
-          toast.error(errorMessage, { id: loadingToast });
-        } else {
-          toast.error(errorMessage, { id: loadingToast });
-        }
-      } else if (error instanceof Error) {
-        toast.error(error.message, { id: loadingToast });
-      } else {
-        toast.error("An unexpected error occurred. Please try again.", {
+      if (apiError.statusCode === 403) {
+        toast.error(apiError.message, {
+          id: loadingToast,
+          duration: 5000,
+        });
+      } else if (apiError.statusCode === 401) {
+        toast.error("Session expired. Please login again.", {
           id: loadingToast,
         });
+      } else {
+        toast.error(apiError.message, { id: loadingToast });
       }
     } finally {
       setIsSaving(false);

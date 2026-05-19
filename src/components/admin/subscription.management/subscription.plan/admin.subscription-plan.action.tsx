@@ -4,6 +4,7 @@ import { SubscriptionPlanListItem } from "@/interface/admin.interface";
 import adminServices from "@/services/admin/admin.services";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { parseApiError } from "@/api/error.helper";
 
 
 export type SubscriptionModalConfig = {
@@ -29,11 +30,12 @@ export const useSubscriptionActions = (
       variant: isActive ? "danger" : "primary",
       onConfirm: async () => {
         try {
-          await adminServices.toggleSubscriptionPlanStatus(plan.planId);
-          toast.success(`Plan ${isActive ? "deactivated" : "activated"} successfully`);
+          const res = await adminServices.toggleSubscriptionPlanStatus(plan.planId);
+          toast.success(res.message);
           refetch();
-        } catch {
-          toast.error(`Failed to ${isActive ? "deactivate" : "activate"} plan`);
+        } catch (error) {
+          const apiError = parseApiError(error);
+          toast.error(apiError.message);
         }
       },
     });

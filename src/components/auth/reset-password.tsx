@@ -2,12 +2,12 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Lock } from "lucide-react";
 import { toast } from "sonner";
-import axios from "axios";
 
 import InputWithIcon from "@/components/ui/input.box";
 import PrimaryButton from "@/components/ui/primary.button";
 import { useOtpStore } from "@/stores/otp.store";
 import authService from "@/services/auth/auth.service";
+import { parseApiError } from "@/api/error.helper";
 
 const ResetPassword = () => {
   const [password, setPassword] = useState("");
@@ -16,60 +16,44 @@ const ResetPassword = () => {
   const navigate=useNavigate()
 
   const handleResetPassword = async (e: React.FormEvent) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  if (!password || !confirmPassword) {
-    toast.error("All fields are required");
-    return;
-  }
+    try {
+      setLoading(true);
 
-  if (password !== confirmPassword) {
-    toast.error("Passwords do not match");
-    return;
-  }
+      const { email, purpose } = useOtpStore.getState();
 
-  try {
-    setLoading(true);
-
-    const { email, purpose } = useOtpStore.getState();
-
-    if (!email || purpose !== "FORGET_PASSWORD") {
-      toast.error("Session expired. Try again.");
-      return;
-    }
-
-    await authService.resetPassword({
-      email,
-      password,
-      purpose,
-    });
-
-    toast.success("Password reset successful");
-    useOtpStore.getState().clearOtpContext();
-    navigate("/login", { replace: true });
-  } catch (error) {
-    if (axios.isAxiosError(error) && error.response) {
-        const errorMessage = error.response.data?.message || "Reset password failed";
-        
-      
-        if (error.response.status === 403) {
-          toast.error(errorMessage, {
-            duration: 5000,
-            style: {
-              background: "#ef4444",
-              color: "#fff",
-            },
-          });
-        } else {
-          toast.error(errorMessage);
-        }
-      } else {
-        toast.error("Reset password failed. Please check your credentials.");
+      if (!email || purpose !== "FORGET_PASSWORD") {
+        toast.error("Session expired. Try again.");
+        return;
       }
-  } finally {
-    setLoading(false);
-  }
-};
+
+      const result = await authService.resetPassword({
+        email,
+        password,
+        purpose,
+      });
+
+      toast.success(result.message);
+      useOtpStore.getState().clearOtpContext();
+      navigate("/login", { replace: true });
+    } catch (error) {
+      const apiError = parseApiError(error);
+      if (apiError.statusCode === 403) {
+        toast.error(apiError.message, {
+          duration: 5000,
+          style: {
+            background: "#ef4444",
+            color: "#fff",
+          },
+        });
+      } else {
+        toast.error(apiError.message);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
 
   return (
@@ -150,4 +134,3 @@ const ResetPassword = () => {
 };
 
 export default ResetPassword;
-

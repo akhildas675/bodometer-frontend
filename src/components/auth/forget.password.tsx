@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Mail } from "lucide-react";
 import { toast } from "sonner";
+import { parseApiError } from "@/api/error.helper";
 
 import InputWithIcon from "@/components/ui/input.box";
 import PrimaryButton from "@/components/ui/primary.button";
@@ -34,7 +35,6 @@ const ForgetPassword = () => {
  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
   e.preventDefault();
   if (loading) return;
-  if (!form.email) return toast.error("Email is required");
 
   setLoading(true);
 
@@ -42,9 +42,10 @@ const ForgetPassword = () => {
     const result = await authService.forgotPassword(payload);
 
     if (result.success) {
+      toast.success(result.message);
       const role = result.data.role;
       if (!role) {
-        toast.error("No account found with this email. Please register.");
+        toast.error(result.message || "No account found");
         return;
       }
 
@@ -56,9 +57,9 @@ const ForgetPassword = () => {
 
       navigate(`/${role}-otp`, { replace: true });
     }
-  } catch  {
-    toast.error("Something went wrong. Please try again.");
-  
+  } catch (error) {
+    const apiError = parseApiError(error);
+    toast.error(apiError.message);
   } finally {
     setLoading(false); 
   }

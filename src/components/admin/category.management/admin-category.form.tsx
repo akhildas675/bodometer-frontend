@@ -2,6 +2,7 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, Image, X} from "lucide-react";
 import { toast } from "sonner";
+import { parseApiError } from "@/api/error.helper";
 
 import adminService from "@/services/admin/admin.services";
 import { useFetch } from "@/hooks/useFetch";
@@ -59,35 +60,31 @@ const AdminCategoryForm = () => {
     setImagePreview("");
   };
 
-  const validate = (): boolean => {
-    if (!form.name.trim()) { toast.error("Category name is required"); return false; }
-    if (!form.description.trim()) { toast.error("Description is required"); return false; }
-    if (!isEdit && !form.image) { toast.error("Please select an image"); return false; }
-    return true;
-  };
-
   const handleSubmit = async () => {
-    if (!validate()) return;
-
     const formData = new FormData();
-    formData.append("name", form.name.trim());
-    formData.append("description", form.description.trim());
-    if (form.image) formData.append("image", form.image);
-
+    if (form.name) {
+      formData.append("name", form.name.trim());
+    }
+    if (form.description) {
+      formData.append("description", form.description.trim());
+    }
+    if (form.image) {
+      formData.append("image", form.image);
+    }
 
     try {
       setIsSubmitting(true);
       if (isEdit && id) {
-
-        await adminService.updateCategory(id, formData);
-        toast.success("Category updated successfully!");
+        const res = await adminService.updateCategory(id, formData);
+        toast.success(res.message);
       } else {
-        await adminService.createCategory(formData);
-        toast.success("Category created successfully!");
+        const res = await adminService.createCategory(formData);
+        toast.success(res.message);
       }
       navigate("/admin/category");
-    } catch {
-      toast.error(isEdit ? "Failed to update category" : "Failed to create category");
+    } catch (error) {
+      const apiError = parseApiError(error);
+      toast.error(apiError.message);
     } finally {
       setIsSubmitting(false);
     }

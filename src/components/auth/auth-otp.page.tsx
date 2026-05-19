@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { parseApiError } from "@/api/error.helper";
 
 import PrimaryButton from "@/components/ui/primary.button";
 import { useOtpStore } from "@/stores/otp.store";
@@ -50,11 +51,6 @@ const AuthOtpPage: React.FC = () => {
 const handleVerifyOtp = async () => {
   const otpValue = otp.join("");
 
-  if (otpValue.length !== 6) {
-    toast.error("Enter valid 6 digit OTP");
-    return;
-  }
-
   try {
     setLoading(true);
 
@@ -65,13 +61,12 @@ const handleVerifyOtp = async () => {
     });
 
     if (!verifyRes.success) {
-      toast.error("OTP verification failed");
+      toast.error(verifyRes.message || "OTP verification failed");
       return;
     }
 
-    
     if (purpose === "FORGET_PASSWORD") {
-      toast.success("OTP verified");
+      toast.success(verifyRes.message);
       navigate("/reset-password", { replace: true });
       return;
     }
@@ -87,17 +82,18 @@ const handleVerifyOtp = async () => {
       return;
     }
 
-    await authService.completeRegister({
+    const completeRes = await authService.completeRegister({
       ...registerData,
       role,
     });
 
-    toast.success("Registration completed");
+    toast.success(completeRes.message);
     useOtpStore.getState().clearOtpContext();
     navigate("/login", { replace: true });
 
-  } catch {
-    toast.error("OTP verification failed");
+  } catch (error) {
+    const apiError = parseApiError(error);
+    toast.error(apiError.message);
   } finally {
     setLoading(false);
   }
@@ -130,14 +126,15 @@ const handleVerifyOtp = async () => {
       setCanResend(false);
       setSecondsLeft(RESEND_TIME);
 
-      await authService.resendOtp({
+      const resendRes = await authService.resendOtp({
         email,
         purpose,
       });
 
-      toast.success("OTP resent successfully");
-    } catch {
-      toast.error("Failed to resend OTP");
+      toast.success(resendRes.message);
+    } catch (error) {
+      const apiError = parseApiError(error);
+      toast.error(apiError.message);
     }
   };
 

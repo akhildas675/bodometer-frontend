@@ -8,6 +8,8 @@ import type { TableAction } from "@/components/ui/table/table.types";
 import type { OnboardingQuestion } from "@/interface/admin.interface";
 import { ADMIN_UI_ROUTES } from "@/constants/constant-routes/ui-routes/admin.ui-constant-routes";
 
+import { parseApiError } from "@/api/error.helper";
+
 export type QuestionModalConfig = {
   isOpen: boolean;
   title: string;
@@ -21,13 +23,14 @@ export const getQuestionActions = (
   refetch: () => void,
   setModalConfig: React.Dispatch<React.SetStateAction<QuestionModalConfig>>
 ): TableAction<OnboardingQuestion>[] => {
-  const handleToggleStatus = async (id: string, isBlocking: boolean) => {
+  const handleToggleStatus = async (id: string) => {
     try {
-      await adminServices.toggleQuestionStatus(id);
-      toast.success(isBlocking ? "Question blocked successfully" : "Question unblocked successfully");
+      const res = await adminServices.toggleQuestionStatus(id);
+      toast.success(res.message);
       refetch();
-    } catch {
-      toast.error(isBlocking ? "Failed to block question" : "Failed to unblock question");
+    } catch (error) {
+      const apiError = parseApiError(error);
+      toast.error(apiError.message);
     }
   };
 
@@ -48,7 +51,7 @@ export const getQuestionActions = (
           message: `Are you sure you want to block this question?`,
           variant: "danger",
           onConfirm: async () => {
-            await handleToggleStatus(item.questionId, true);
+            await handleToggleStatus(item.questionId);
             setModalConfig((p) => ({ ...p, isOpen: false }));
           },
         });
@@ -64,7 +67,7 @@ export const getQuestionActions = (
           message: `Are you sure you want to unblock this question?`,
           variant: "primary",
           onConfirm: async () => {
-            await handleToggleStatus(item.questionId, false);
+            await handleToggleStatus(item.questionId);
             setModalConfig((p) => ({ ...p, isOpen: false }));
           },
         });

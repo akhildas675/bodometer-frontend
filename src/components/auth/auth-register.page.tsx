@@ -2,6 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { User, Mail, Phone, Lock, CheckCircle } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { parseApiError } from "@/api/error.helper";
 
 import type {
   AuthRegisterPageProps,
@@ -45,14 +46,6 @@ const AuthRegisterPage: React.FC<AuthRegisterPageProps> = ({ role }) => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (loading) return;
-    if (!form.name) return toast.error("Name is required");
-    if (!form.email) return toast.error("Email is required");
-    if (!form.phoneNumber) return toast.error("Phone Number is required");
-    if (!form.password) return toast.error("Password is required");
-    if (!form.confirmPassword)
-      return toast.error("Confirm Password is required");
-    if (form.password !== form.confirmPassword)
-      return toast.error("Passwords do not match");
 
     setLoading(true);
 
@@ -60,6 +53,7 @@ const AuthRegisterPage: React.FC<AuthRegisterPageProps> = ({ role }) => {
       const result = await authService.register(role, payload);
 
       if (result.success) {
+        toast.success(result.message);
         useOtpStore.getState().setOtpContext({
           email: form.email,
           role,
@@ -69,8 +63,9 @@ const AuthRegisterPage: React.FC<AuthRegisterPageProps> = ({ role }) => {
 
         navigate(`/otp/${role}`);
       }
-    } catch {
-      toast.error("Registration Failed");
+    } catch (error) {
+      const apiError = parseApiError(error);
+      toast.error(apiError.message);
     } finally {
       setLoading(false);
     }
@@ -97,7 +92,7 @@ const AuthRegisterPage: React.FC<AuthRegisterPageProps> = ({ role }) => {
         </div>
 
         {/* Right form section */}
-        <div className="flex-1 relative flex items-center justify-center px-6 sm:px-10 py-10 bg-gradient-to-b from-[#03000D] to-[#190473]">
+        <div className="flex-1 relative flex items-center justify-center px-6 sm:px-10 py-10 bg-linear-to-b from-[#03000D] to-[#190473]">
           {/* Glow effects */}
           <div className="pointer-events-none absolute -top-32 -right-20 h-72 w-72 rounded-full bg-[#3a1b7a] opacity-40 blur-2xl" />
           <div className="pointer-events-none absolute bottom-[-120px] -left-10 h-80 w-80 rounded-full bg-[#24116b] opacity-40 blur-2xl" />

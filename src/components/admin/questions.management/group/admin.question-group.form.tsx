@@ -6,6 +6,8 @@ import { toast } from "sonner";
 import adminServices from "@/services/admin/admin.services";
 import { ADMIN_UI_ROUTES } from "@/constants/constant-routes/ui-routes/admin.ui-constant-routes";
 
+import { parseApiError } from "@/api/error.helper";
+
 interface FormData {
   key: string;
   title: string;
@@ -41,46 +43,38 @@ const AdminQuestionGroupForm = () => {
             });
           }
         })
-        .catch(() => toast.error("Failed to load group details"))
+        .catch((error) => {
+          const apiError = parseApiError(error);
+          toast.error(apiError.message);
+        })
         .finally(() => setFetching(false));
     }
   }, [isEdit, id]);
 
-  const validate = (): boolean => {
-    if (!form.title.trim()) {
-      toast.error("Title is required");
-      return false;
-    }
-    if (form.order < 1) {
-      toast.error("Order must be a positive number");
-      return false;
-    }
-    return true;
-  };
 
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!validate()) return;
 
     setLoading(true);
     try {
       if (isEdit && id) {
-        await adminServices.updateQuestionGroup(id, {
+        const res = await adminServices.updateQuestionGroup(id, {
           title: form.title.trim(),
           order: Number(form.order),
         });
-        toast.success("Group updated successfully");
+        toast.success(res.message);
       } else {
-        await adminServices.createQuestionGroup({
+        const res = await adminServices.createQuestionGroup({
           key: "",
           title: form.title.trim(),
           order: Number(form.order),
         });
-        toast.success("Group created successfully");
+        toast.success(res.message);
       }
       navigate(ADMIN_UI_ROUTES.QUESTION_GROUPS);
-    } catch {
-      toast.error("Operation failed");
+    } catch (error) {
+      const apiError = parseApiError(error);
+      toast.error(apiError.message);
     } finally {
       setLoading(false);
     }

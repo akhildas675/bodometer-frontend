@@ -9,6 +9,8 @@ import type { TableAction } from "@/components/ui/table/table.types";
 
 import { ADMIN_UI_ROUTES } from "@/constants/constant-routes/ui-routes/admin.ui-constant-routes";
 
+import { parseApiError } from "@/api/error.helper";
+
 interface ModalConfig {
   isOpen: boolean;
   title: string;
@@ -30,13 +32,14 @@ export const getQuestionActions = ({
 }: Props): TableAction<OnboardingQuestion>[] => {
   const handleToggleStatus = async (id: string) => {
     try {
-      await adminServices.toggleQuestionStatus(id);
+      const res = await adminServices.toggleQuestionStatus(id);
 
-      toast.success("Question status updated");
+      toast.success(res.message);
 
       refetch();
-    } catch {
-      toast.error("Failed to update question status");
+    } catch (error) {
+      const apiError = parseApiError(error);
+      toast.error(apiError.message);
     }
   };
 
