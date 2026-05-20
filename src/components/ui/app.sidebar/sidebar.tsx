@@ -18,7 +18,6 @@ import {
   TrendingUp,
   LogOut,
   ChevronRight,
-  ChevronLeft,
   Layers,
   Tag,
   HelpCircle,
@@ -281,10 +280,6 @@ const Sidebar = ({ role }: Props) => {
         )}
       </button>
 
-      {/* EXPAND/COLLAPSE INDICATOR */}
-      <div className="absolute -right-3 top-1/2 transform -translate-y-1/2 bg-purple-600 rounded-full p-1 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-        {isExpanded ? <ChevronLeft size={16} /> : <ChevronRight size={16} />}
-      </div>
     </aside>
   );
 };

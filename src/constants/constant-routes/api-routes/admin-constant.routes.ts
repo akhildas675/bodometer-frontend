@@ -55,6 +55,7 @@ export const ADMIN_API_ROUTES = {
   GET_QUESTION_BY_ID: (id: string) => `/get-question/${id}`,
   UPDATE_QUESTION: (id: string) => `/update-question/${id}`,
   TOGGLE_QUESTION_STATUS: (id: string) => `/toggle-question/${id}`,
+  GET_QUESTION_DATA_SOURCES: "/questions/data-sources",
 
   // Subscription Transactions
   GET_SUBSCRIPTION_TRANSACTIONS: "/get-subscription-transactions",

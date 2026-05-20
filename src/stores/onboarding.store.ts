@@ -2,7 +2,7 @@ import { create } from "zustand";
 import userServices from "@/services/user/user.services";
 import { AnswerValue, QuestionType } from "@/constants/onboarding.constant";
 import { parseApiError } from "@/api/error.helper";
-import type { OnboardingAnswerItem } from "@/interface/user.interface";
+import type { OnboardingAnswerItem, CategoryListItem } from "@/interface/user.interface";
 import { useAuthStore } from "@/stores/auth.store";
 import type { ApiResponse } from "@/interface/api-response.interface";
 
@@ -99,6 +99,14 @@ const initialState = {
     isComplete: false,
 };
 
+const generateOptionValue = (text: string): string => {
+    return text
+        .toLowerCase()
+        .trim()
+        .replace(/[^\w\s]/g, "")
+        .replace(/[\s-]+/g, "_");
+};
+
 export const useOnboardingStore = create<OnboardingStore>((set, get) => ({
     ...initialState,
 
@@ -114,9 +122,33 @@ export const useOnboardingStore = create<OnboardingStore>((set, get) => ({
                 .filter((g: OnboardingGroup) => g.isActive !== false)
                 .sort((a: OnboardingGroup, b: OnboardingGroup) => a.order - b.order);
 
-            const questions: OnboardingQuestion[] = (questionsRes.data ?? [])
+            let questions: OnboardingQuestion[] = (questionsRes.data ?? [])
                 .filter((q: OnboardingQuestion) => q.isActive !== false)
                 .sort((a: OnboardingQuestion, b: OnboardingQuestion) => a.order - b.order);
+
+            const hasCategorySource = questions.some(q => q.dataSource === "category");
+            let categories: CategoryListItem[] = [];
+            if (hasCategorySource) {
+                try {
+                    const catsRes = await userServices.getCategories({ page: 1, limit: 1000 });
+                    categories = (catsRes.data ?? []).filter((cat: CategoryListItem) => cat.isActive !== false);
+                } catch (catErr) {
+                    console.error("Failed to load categories for dynamic options", catErr);
+                }
+            }
+
+            questions = questions.map(q => {
+                if (q.dataSource === "category") {
+                    return {
+                        ...q,
+                        options: categories.map(cat => ({
+                            label: cat.name,
+                            value: generateOptionValue(cat.name)
+                        }))
+                    };
+                }
+                return q;
+            });
 
             set({ groups, questions, loading: false });
         } catch (err) {

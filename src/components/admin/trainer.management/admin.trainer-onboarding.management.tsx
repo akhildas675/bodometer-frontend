@@ -35,14 +35,14 @@ const AdminTrainerOnboardingManagement = () => {
 
   const { data: response, loading, refetch } = useTableFetch<PaginatedResponse<TrainerWithProfile>>(
     () =>
-      adminServices.getTrainerAppointments(
-        searchQuery,
-        sortConfig.field ? String(sortConfig.field) : undefined,
-        sortConfig.order,
-        currentPage,
-        itemsPerPage,
-        filter !== 'all' ? filter : undefined  
-      ),
+      adminServices.getTrainerAppointments({
+        search: searchQuery,
+        sortBy: sortConfig.field ? String(sortConfig.field) : undefined,
+        sortOrder: sortConfig.order,
+        page: currentPage,
+        limit: itemsPerPage,
+        status: filter !== 'all' ? filter : undefined,
+      }),
     false
   );
 

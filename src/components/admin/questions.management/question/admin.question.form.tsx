@@ -1,13 +1,12 @@
 import { useEffect, useState, FormEvent } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ChevronLeft, Loader2, Plus, Trash2, Check, AlertTriangle } from "lucide-react";
+import { ChevronLeft, Loader2, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 import adminServices from "@/services/admin/admin.services";
 import { ADMIN_UI_ROUTES } from "@/constants/constant-routes/ui-routes/admin.ui-constant-routes";
-import type { QuestionGroup, CreateQuestionData, OnboardingQuestion, UpdateCategory } from "@/interface/admin.interface";
+import type { QuestionGroup, CreateQuestionData, OnboardingQuestion } from "@/interface/admin.interface";
 import { QUESTION_TYPE, QuestionType } from "@/constants/onboarding.constant";
-
 import { parseApiError } from "@/api/error.helper";
 
 interface NextJumpData {
@@ -39,9 +38,7 @@ const AdminQuestionForm = () => {
   const [fetching, setFetching] = useState(isEdit);
   const [groups, setGroups] = useState<QuestionGroup[]>([]);
   const [questionsList, setQuestionsList] = useState<OnboardingQuestion[]>([]);
-  const [categories, setCategories] = useState<UpdateCategory[]>([]);
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [hasInitializedCategories, setHasInitializedCategories] = useState(false);
+  const [dataSources, setDataSources] = useState<{ label: string; value: string }[]>([]);
 
   // Form state
   const [key, setKey] = useState("");
@@ -68,14 +65,8 @@ const AdminQuestionForm = () => {
       .then((res) => setQuestionsList(res.data || []))
       .catch((e) => console.error(e));
 
-    adminServices.getAllCategories({ sortOrder: "asc", page: 1, limit: 1000 })
-      .then((res) => {
-        const loadedCats = res.data || [];
-        setCategories(loadedCats);
-        if (!isEdit) {
-          setSelectedCategories(loadedCats.filter(c => c.isActive !== false).map(c => c.categoryId));
-        }
-      })
+    adminServices.getQuestionDataSources()
+      .then((res) => setDataSources(res || []))
       .catch((e) => console.error(e));
 
     if (isEdit && id) {
@@ -118,24 +109,7 @@ const AdminQuestionForm = () => {
     }
   }, [isEdit, id]);
 
-  useEffect(() => {
-    if (isEdit && !hasInitializedCategories && categories.length > 0 && dataSource === "category") {
-      const matchedIds = categories
-        .filter(cat => options.some(opt => opt.label.trim().toLowerCase() === (cat.name || "").trim().toLowerCase()))
-        .map(cat => cat.categoryId);
-      
-      setSelectedCategories(matchedIds);
-      setHasInitializedCategories(true);
-    }
-  }, [categories, options, isEdit, dataSource, hasInitializedCategories]);
 
-  const handleToggleCategory = (categoryId: string) => {
-    setSelectedCategories((prev) =>
-      prev.includes(categoryId)
-        ? prev.filter((id) => id !== categoryId)
-        : [...prev, categoryId]
-    );
-  };
 
   const handleAddOption = () => {
     setOptions([...options, { label: "", value: "" }]);
@@ -200,11 +174,7 @@ const AdminQuestionForm = () => {
 
       if (([QUESTION_TYPE.SINGLE_SELECT, QUESTION_TYPE.MULTI_SELECT] as QuestionType[]).includes(type)) {
         if (dataSource === "category") {
-          const selectedCats = categories.filter((c) => selectedCategories.includes(c.categoryId));
-          payload.options = selectedCats.map((c) => ({
-            label: (c.name || "").trim(),
-            value: "",
-          }));
+          payload.options = undefined;
         } else if (!dataSource) {
           payload.options = options.map((o) => ({ label: o.label.trim(), value: "" }));
         }
@@ -329,7 +299,11 @@ const AdminQuestionForm = () => {
                   className="w-full bg-[#050017]/70 border border-purple-900/50 rounded-lg px-3 py-2 text-white text-sm outline-none cursor-pointer focus:border-purple-500"
                 >
                   <option value="">Manual / Static List</option>
-                  <option value="category">Dynamic - Load from Workout Categories</option>
+                  {dataSources.map((ds) => (
+                    <option key={ds.value} value={ds.value}>
+                      Dynamic - Load from {ds.label}
+                    </option>
+                  ))}
                 </select>
               </div>
 
@@ -369,62 +343,9 @@ const AdminQuestionForm = () => {
                 </div>
               ) : (
                 <div className="space-y-3 pt-2 border-t border-purple-950">
-                  <div className="flex justify-between items-center mb-1">
-                    <h3 className="text-xs font-semibold text-purple-200 uppercase tracking-wider">Select Categories for Options</h3>
-                    <div className="flex gap-3 text-[11px]">
-                      <button 
-                        type="button" 
-                        onClick={() => setSelectedCategories(categories.filter(c => c.isActive !== false).map(c => c.categoryId))}
-                        className="text-purple-400 hover:text-purple-200 underline cursor-pointer transition bg-transparent border-none p-0"
-                      >
-                        Select All
-                      </button>
-                      <button 
-                        type="button" 
-                        onClick={() => setSelectedCategories([])}
-                        className="text-gray-400 hover:text-gray-200 underline cursor-pointer transition bg-transparent border-none p-0"
-                      >
-                        Clear All
-                      </button>
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2 max-h-60 overflow-y-auto pr-1 mt-2">
-                    {categories.filter(c => c.isActive !== false).map((cat) => {
-                      const isSelected = selectedCategories.includes(cat.categoryId);
-                      return (
-                        <div 
-                          key={cat.categoryId} 
-                          onClick={() => handleToggleCategory(cat.categoryId)}
-                          className={`flex items-center justify-between gap-3 cursor-pointer px-4 py-3 rounded-xl border transition-all duration-200 select-none ${
-                            isSelected 
-                              ? "bg-purple-600/20 border-purple-500 shadow-[0_0_15px_rgba(147,51,234,0.15)]" 
-                              : "bg-black/20 border-purple-900/30 hover:bg-purple-950/20 hover:border-purple-800/50"
-                          }`}
-                        >
-                          <div className="flex items-center gap-3">
-                            <div className={`w-4 h-4 rounded flex items-center justify-center border transition-all duration-200 ${
-                              isSelected ? "bg-purple-500 border-purple-500" : "border-purple-900/50"
-                            }`}>
-                              {isSelected && <Check size={12} className="text-white stroke-3" />}
-                            </div>
-                            <span className={`font-medium tracking-wide text-sm ${isSelected ? "text-white" : "text-purple-300/80"}`}>
-                              {cat.name}
-                            </span>
-                          </div>
-                          <span className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${isSelected ? "bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]" : "bg-emerald-800/20"}`} />
-                        </div>
-                      );
-                    })}
-                    {categories.filter(c => c.isActive !== false).length === 0 && (
-                      <div className="col-span-2 text-xs text-gray-500 italic py-4 flex flex-col items-center gap-2 bg-black/10 border border-dashed border-purple-900/20 rounded-xl">
-                        <AlertTriangle className="w-8 h-8 text-amber-500 animate-pulse" />
-                        <span>No active workout categories found. Please create active categories first.</span>
-                      </div>
-                    )}
-                  </div>
-                  <div className="p-3 bg-purple-950/10 border border-purple-900/30 rounded text-[11px] text-purple-400/80 italic flex items-center gap-2 pt-2 mt-1">
-                    <span className="w-1.5 h-1.5 rounded-full bg-purple-500 animate-pulse" />
-                    The selected categories will be populated as static selectable options upon saving.
+                  <div className="p-4 bg-purple-950/10 border border-purple-900/30 rounded-xl text-sm text-purple-300 italic flex items-center gap-3">
+                    <span className="w-2.5 h-2.5 rounded-full bg-purple-500 animate-pulse shrink-0" />
+                    <span>Options will be loaded dynamically from active workout categories in the database. No static options are required.</span>
                   </div>
                 </div>
               )}

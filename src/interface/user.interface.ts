@@ -54,9 +54,11 @@ export interface TrainerDetail {
 
 export interface CategoryListItem {
   categoryId: string;
+  _id?: string;
   name: string;
   description: string;
   media?: { image?: { url: string } };
+  image?: string;
   isActive: boolean;
   createdAt: string;
 }

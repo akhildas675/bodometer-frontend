@@ -1,5 +1,5 @@
 import type { Role } from "@/constants/role";
-import { QuestionType } from "@/constants/question.type";
+import { QuestionType } from "@/constants/onboarding.constant";
 export interface AdminGetUsersRequest {
   page?: number;
   limit?: number;

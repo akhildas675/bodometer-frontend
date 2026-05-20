@@ -61,7 +61,7 @@ export default function DataTable<T>({
                             }
                             disabled:opacity-50`}
                         >
-                          {action.label}
+                          {typeof action.label === "function" ? action.label(row) : action.label}
                         </button>
                       ))}
                   </div>

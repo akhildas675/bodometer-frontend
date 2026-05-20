@@ -21,14 +21,14 @@ const AdminSubscriptionTransactionList = () => {
 
   const fetchFn = useCallback(
     async () =>
-      adminServices.getAllSubscriptionTransactions(
-        searchQuery,
-        statusFilter || undefined,
-        sortConfig.field ? String(sortConfig.field) : undefined,
-        sortConfig.order,
-        currentPage,
-        itemsPerPage
-      ),
+      adminServices.getAllSubscriptionTransactions({
+        search: searchQuery,
+        status: statusFilter || undefined,
+        sortBy: sortConfig.field ? String(sortConfig.field) : undefined,
+        sortOrder: sortConfig.order,
+        page: currentPage,
+        limit: itemsPerPage,
+      }),
     [searchQuery, statusFilter, sortConfig, currentPage, itemsPerPage]
   );
 

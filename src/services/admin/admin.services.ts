@@ -368,6 +368,14 @@ class AdminService {
       pagination: response.data.pagination,
     };
   }
+
+  async getQuestionDataSources(): Promise<{ label: string; value: string }[]> {
+    const response = await adminApi.get<{
+      success: boolean;
+      data: { label: string; value: string }[];
+    }>(ADMIN_API_ROUTES.GET_QUESTION_DATA_SOURCES);
+    return response.data.data;
+  }
 }
 
 export default new AdminService();
