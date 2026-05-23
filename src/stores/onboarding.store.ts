@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import userServices from "@/services/user/user.services";
-import { AnswerValue, QuestionType } from "@/constants/onboarding.constant";
+import { AnswerValue, QuestionType, CONDITION_OPERATOR, ConditionOperator } from "@/constants/onboarding.constant";
 import { parseApiError } from "@/api/error.helper";
 import type { OnboardingAnswerItem, CategoryListItem } from "@/interface/user.interface";
 import type { UpdateEquipment } from "@/interface/equipment.interface";
@@ -24,7 +24,7 @@ export interface OnboardingQuestion {
     dataSource?: string;
     next?: {
         condition: {
-            operator: string;
+            operator: ConditionOperator | string;
             value?: AnswerValue;
         };
         nextQuestionId: string;
@@ -127,45 +127,54 @@ export const useOnboardingStore = create<OnboardingStore>((set, get) => ({
                 .filter((q: OnboardingQuestion) => q.isActive !== false)
                 .sort((a: OnboardingQuestion, b: OnboardingQuestion) => a.order - b.order);
 
-            const hasCategorySource = questions.some(q => q.dataSource === "category");
-            let categories: CategoryListItem[] = [];
-            if (hasCategorySource) {
-                try {
-                    const catsRes = await userServices.getCategories({ page: 1, limit: 1000 });
-                    categories = (catsRes.data ?? []).filter((cat: CategoryListItem) => cat.isActive !== false);
-                } catch (catErr) {
-                    console.error("Failed to load categories for dynamic options", catErr);
-                }
-            }
-
-            const hasEquipmentSource = questions.some(q => q.dataSource === "equipment");
-            let equipments: UpdateEquipment[] = [];
-            if (hasEquipmentSource) {
-                try {
-                    const equipRes = await userServices.getEquipment({ page: 1, limit: 1000 });
-                    equipments = (equipRes.data ?? []).filter((eq: UpdateEquipment) => eq.isActive !== false);
-                } catch (eqErr) {
-                    console.error("Failed to load equipment for dynamic options", eqErr);
-                }
-            }
-
-            questions = questions.map(q => {
-                if (q.dataSource === "category") {
-                    return {
-                        ...q,
-                        options: categories.map(cat => ({
+            // Strongly typed fetcher map
+            type FetchFunction = () => Promise<OnboardingOption[]>;
+            const dataSourceFetchers: Record<string, FetchFunction> = {
+                category: async () => {
+                    const res = await userServices.getCategories({ page: 1, limit: 1000 });
+                    return (res.data ?? [])
+                        .filter((cat: CategoryListItem) => cat.isActive !== false)
+                        .map((cat: CategoryListItem) => ({
                             label: cat.name,
                             value: generateOptionValue(cat.name)
-                        }))
-                    };
-                }
-                if (q.dataSource === "equipment") {
-                    return {
-                        ...q,
-                        options: equipments.map(eq => ({
+                        }));
+                },
+                equipment: async () => {
+                    const res = await userServices.getEquipment({ page: 1, limit: 1000 });
+                    return (res.data ?? [])
+                        .filter((eq: UpdateEquipment) => eq.isActive !== false)
+                        .map((eq: UpdateEquipment) => ({
                             label: eq.title,
                             value: generateOptionValue(eq.title)
-                        }))
+                        }));
+                }
+            };
+
+            const dataSourcesToFetch = Array.from(
+                new Set(questions.map(q => q.dataSource).filter(Boolean))
+            ) as string[];
+
+            const dynamicOptionsMap: Record<string, OnboardingOption[]> = {};
+
+            await Promise.all(
+                dataSourcesToFetch.map(async (source) => {
+                    if (dataSourceFetchers[source]) {
+                        try {
+                            dynamicOptionsMap[source] = await dataSourceFetchers[source]();
+                        } catch (err) {
+                            console.error(`Failed to load data source: ${source}`, err);
+                        }
+                    } else {
+                        console.warn(`No fetcher defined for data source: ${source}`);
+                    }
+                })
+            );
+
+            questions = questions.map(q => {
+                if (q.dataSource && dynamicOptionsMap[q.dataSource]) {
+                    return {
+                        ...q,
+                        options: dynamicOptionsMap[q.dataSource]
                     };
                 }
                 return q;
@@ -282,7 +291,7 @@ export const useOnboardingStore = create<OnboardingStore>((set, get) => ({
             }
             visited.add(target.questionId);
 
-            // 1. Scan for all rule sets across all questions that point to this target question
+            //Scan for all rule sets across all questions that point to this target question
             const parentsWithRules = questions.filter((p) =>
                 p.next?.some((rule) => rule.nextQuestionId === target.questionId)
             ).flatMap((parent) =>
@@ -291,13 +300,13 @@ export const useOnboardingStore = create<OnboardingStore>((set, get) => ({
                     .map((r) => ({ parent, rule: r }))
             );
 
-            // 2. If no other question defines a rule pointing to this target, it is a default root question -> Visible!
+            //  If no other question defines a rule pointing to this target, it is a default root question -> Visible!
             if (parentsWithRules.length === 0) {
                 visited.delete(target.questionId);
                 return true;
             }
 
-            // 3. If rules exist, evaluate if at least one rule condition is currently met
+            //  If rules exist, evaluate if at least one rule condition is currently met
             const result = parentsWithRules.some(({ parent, rule }) => {
                 // The parent question must itself be visible recursively
                 if (!checkVisibility(parent, visited)) {
@@ -310,15 +319,15 @@ export const useOnboardingStore = create<OnboardingStore>((set, get) => ({
                 }
 
                 const { operator, value } = rule.condition;
-                if (operator === "always") {
+                if (operator === CONDITION_OPERATOR.ALWAYS) {
                     return true;
                 }
 
                 const valStr = String(value);
-                if (operator === "equals") {
+                if (operator === CONDITION_OPERATOR.EQUALS) {
                     return String(parentAns) === valStr;
                 }
-                if (operator === "includes") {
+                if (operator === CONDITION_OPERATOR.INCLUDES) {
                     if (Array.isArray(parentAns)) {
                         return parentAns.map(String).includes(valStr);
                     }
@@ -355,11 +364,11 @@ export const useOnboardingStore = create<OnboardingStore>((set, get) => ({
                     if (parentAns === undefined || parentAns === null) return false;
 
                     const { operator, value } = rule.condition;
-                    if (operator === "always") return true;
+                    if (operator === CONDITION_OPERATOR.ALWAYS) return true;
 
                     const valStr = String(value);
-                    if (operator === "equals") return String(parentAns) === valStr;
-                    if (operator === "includes") {
+                    if (operator === CONDITION_OPERATOR.EQUALS) return String(parentAns) === valStr;
+                    if (operator === CONDITION_OPERATOR.INCLUDES) {
                         if (Array.isArray(parentAns)) return parentAns.map(String).includes(valStr);
                         return String(parentAns).includes(valStr);
                     }

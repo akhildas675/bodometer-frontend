@@ -8,11 +8,13 @@ import { ADMIN_UI_ROUTES } from "@/constants/constant-routes/ui-routes/admin.ui-
 import type { QuestionGroup, CreateQuestionData, OnboardingQuestion } from "@/interface/admin.interface";
 import { QUESTION_TYPE, QuestionType } from "@/constants/onboarding.constant";
 import { parseApiError } from "@/api/error.helper";
+import { generateOptionValue } from "@/utils/option-key.generate";
 
 interface NextJumpData {
   condition: { operator: string; value?: string | number | boolean };
   nextQuestionId: string;
 }
+
 
 const QUESTION_TYPES = [
   { label: "Yes / No (Boolean)", value: QUESTION_TYPE.BOOLEAN },
@@ -418,13 +420,39 @@ const AdminQuestionForm = () => {
                     {jump.condition.operator !== "always" && (
                       <div className="flex-1 min-w-[120px]">
                         <label className="block text-[10px] font-semibold uppercase tracking-wide text-purple-400 mb-1">To Value...</label>
-                        <input 
-                          value={String(jump.condition.value ?? "")}
-                          onChange={(e) => handleJumpChange(index, "value", e.target.value)}
-                          placeholder="e.g. yes, true, 10" 
-                          required
-                          className="w-full bg-[#050017]/70 border border-purple-900/50 rounded px-2 py-1.5 text-xs text-white outline-none focus:border-purple-500" 
-                        />
+                        {type === QUESTION_TYPE.BOOLEAN ? (
+                          <select 
+                            value={String(jump.condition.value ?? "")}
+                            onChange={(e) => handleJumpChange(index, "value", e.target.value)}
+                            required
+                            className="w-full bg-[#050017]/70 border border-purple-900/50 rounded px-2 py-1.5 text-xs text-white outline-none cursor-pointer focus:border-purple-500"
+                          >
+                            <option value="">Select answer...</option>
+                            <option value="true">True / Yes</option>
+                            <option value="false">False / No</option>
+                          </select>
+                        ) : ([QUESTION_TYPE.SINGLE_SELECT, QUESTION_TYPE.MULTI_SELECT] as QuestionType[]).includes(type) && !dataSource && options.some(o => o.label.trim() !== "") ? (
+                          <select 
+                            value={String(jump.condition.value ?? "")}
+                            onChange={(e) => handleJumpChange(index, "value", e.target.value)}
+                            required
+                            className="w-full bg-[#050017]/70 border border-purple-900/50 rounded px-2 py-1.5 text-xs text-white outline-none cursor-pointer focus:border-purple-500"
+                          >
+                            <option value="">Select option...</option>
+                            {options.filter(o => o.label.trim() !== "").map((opt, i) => {
+                               const val = generateOptionValue(opt.label);
+                               return <option key={i} value={val}>{opt.label}</option>;
+                            })}
+                          </select>
+                        ) : (
+                          <input 
+                            value={String(jump.condition.value ?? "")}
+                            onChange={(e) => handleJumpChange(index, "value", e.target.value)}
+                            placeholder="e.g. yes, true, 10" 
+                            required
+                            className="w-full bg-[#050017]/70 border border-purple-900/50 rounded px-2 py-1.5 text-xs text-white outline-none focus:border-purple-500" 
+                          />
+                        )}
                       </div>
                     )}
 

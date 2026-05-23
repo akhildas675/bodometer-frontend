@@ -9,6 +9,15 @@ export const QUESTION_TYPE = {
   NUMBER_STEPPER: "number_stepper",
 } as const;
 
+export const CONDITION_OPERATOR = {
+  ALWAYS: "always",
+  EQUALS: "equals",
+  INCLUDES: "includes",
+} as const;
+
+export type ConditionOperator =
+  (typeof CONDITION_OPERATOR)[keyof typeof CONDITION_OPERATOR];
+
 export type QuestionType =
   (typeof QUESTION_TYPE)[keyof typeof QUESTION_TYPE];
 
