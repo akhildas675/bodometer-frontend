@@ -3,6 +3,7 @@ import userServices from "@/services/user/user.services";
 import { AnswerValue, QuestionType } from "@/constants/onboarding.constant";
 import { parseApiError } from "@/api/error.helper";
 import type { OnboardingAnswerItem, CategoryListItem } from "@/interface/user.interface";
+import type { UpdateEquipment } from "@/interface/equipment.interface";
 import { useAuthStore } from "@/stores/auth.store";
 import type { ApiResponse } from "@/interface/api-response.interface";
 
@@ -137,6 +138,17 @@ export const useOnboardingStore = create<OnboardingStore>((set, get) => ({
                 }
             }
 
+            const hasEquipmentSource = questions.some(q => q.dataSource === "equipment");
+            let equipments: UpdateEquipment[] = [];
+            if (hasEquipmentSource) {
+                try {
+                    const equipRes = await userServices.getEquipment({ page: 1, limit: 1000 });
+                    equipments = (equipRes.data ?? []).filter((eq: UpdateEquipment) => eq.isActive !== false);
+                } catch (eqErr) {
+                    console.error("Failed to load equipment for dynamic options", eqErr);
+                }
+            }
+
             questions = questions.map(q => {
                 if (q.dataSource === "category") {
                     return {
@@ -144,6 +156,15 @@ export const useOnboardingStore = create<OnboardingStore>((set, get) => ({
                         options: categories.map(cat => ({
                             label: cat.name,
                             value: generateOptionValue(cat.name)
+                        }))
+                    };
+                }
+                if (q.dataSource === "equipment") {
+                    return {
+                        ...q,
+                        options: equipments.map(eq => ({
+                            label: eq.title,
+                            value: generateOptionValue(eq.title)
                         }))
                     };
                 }

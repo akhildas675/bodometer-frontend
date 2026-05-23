@@ -18,4 +18,8 @@ export const USER_UI_ROUTES = {
     USER_FITNESS_PROFILE: "/fitness-profile",
     USER_BMI: "/bmi",
 
+    // Exercises (premium)
+    USER_EXERCISES: "/exercises",
+    USER_EXERCISE_DETAIL: "/exercises/:exerciseId",
+
 } as const

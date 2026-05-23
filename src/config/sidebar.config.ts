@@ -32,6 +32,15 @@ export const sidebarConfig: Record<SidebarRole, SidebarItem[]> = {
         { label: "List", path: "/admin/questions/list" },
       ],
     },
+    {
+      label: "Workouts",
+      path: "/admin/workouts",
+      children: [
+        { label: "Exercise", path: "/admin/exercises" },
+        { label: "Equipment", path: "/admin/equipment" },
+        { label: "Target Muscle", path: "/admin/target-muscles" },
+      ],
+    }
   ],
 
   trainer: [
@@ -47,6 +56,7 @@ export const sidebarConfig: Record<SidebarRole, SidebarItem[]> = {
   user: [
     { label: "Dashboard", path: "/" },
     { label: "Fitness Profile", path: "/fitness-profile" },
+    { label: "Exercises", path: "/exercises" },
     { label: "BMI Calculator", path: "/bmi" },
     { label: "Food Log", path: "/food-log" },
     { label: "Progress", path: "/progress" },

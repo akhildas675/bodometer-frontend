@@ -142,7 +142,8 @@ const UserSubscription = () => {
       .then((res) =>
         Array.isArray(res.data)
           ? res.data
-          : ([] as unknown as SubscriptionPlan[]),
+          : ([] as SubscriptionPlan[]),
+
       ),
   );
 

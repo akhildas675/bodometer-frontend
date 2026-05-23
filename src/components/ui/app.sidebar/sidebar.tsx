@@ -26,6 +26,8 @@ import {
   Heart,
   List,
   CreditCard,
+  BicepsFlexed,
+  Dumbbell,
 } from "lucide-react";
 
 type Props = {
@@ -44,6 +46,7 @@ const iconMap: Record<string, React.ReactNode> = {
   "/admin/questions": <HelpCircle size={20} />,
   "/admin/questions/groups": <Layers size={20} />,
   "/admin/questions/list": <List size={20} />,
+  "/admin/target-muscles": <BicepsFlexed size={20}/>,
 
   "/trainer": <LayoutDashboard size={20} />,
   "/trainer/sessions": <Calendar size={20} />,
@@ -55,6 +58,7 @@ const iconMap: Record<string, React.ReactNode> = {
 
   "/": <LayoutDashboard size={20} />,
   "/fitness-profile": <Heart size={20} />,
+  "/exercises": <Dumbbell size={20} />,
   "/food-log": <Apple size={20} />,
   "/progress": <TrendingUp size={20} />,
   "/profile": <UserCircle size={20} />,

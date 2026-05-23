@@ -8,7 +8,8 @@ export function extractSortOptions<T>(
     .filter((col) => col.sortable !== false) 
     .map((col) => ({
       label: col.label,
-      value: col.key as unknown as keyof T,
+      value: col.key as keyof T,
+
     }));
 }
 

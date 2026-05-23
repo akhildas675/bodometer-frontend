@@ -16,6 +16,8 @@ import UserSubscriptionCancelPage from "@/pages/user/user-subscription/user.subs
 import UserOnboardingIntroPage from "@/pages/user/user-fitness/user.onboarding-intro.page";
 import UserOnboardingAssessmentPage from "@/pages/user/user-fitness/user.onboarding-assessment.page";
 import UserFitnessProfilePage from "@/pages/user/user-fitness/user.fitness-profile.page";
+import UserExercisesPage from "@/pages/user/user-fitness/user-exercises.page";
+import UserExerciseDetailPage from "@/pages/user/user-fitness/user-exercise.detail.page";
 
 
 export const userRoutes = (
@@ -57,6 +59,8 @@ export const userRoutes = (
       {/* Premium Routes inside Main Layout (Subscription Required) */}
       <Route element={<SubscriptionRoute />}>
         <Route path={USER_UI_ROUTES.USER_FITNESS_PROFILE} element={<UserFitnessProfilePage/>} />
+        <Route path={USER_UI_ROUTES.USER_EXERCISES} element={<UserExercisesPage />} />
+        <Route path={USER_UI_ROUTES.USER_EXERCISE_DETAIL} element={<UserExerciseDetailPage />} />
       </Route>
     </Route>
 

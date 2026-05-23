@@ -2,6 +2,7 @@ import { userApi } from "@/api/api.instance";
 import { buildQueryParams, TableQueryParams } from "@/api/query.helper";
 import { USER_API_ROUTES } from "@/constants/constant-routes/api-routes/user-constant.routes";
 import { PaginationMeta, SubscriptionPlan, QuestionGroup, OnboardingQuestion as DynamicOnboardingQuestion, SubscriptionTransaction, PaginatedResponse } from "@/interface/admin.interface";
+import { UpdateEquipment } from "@/interface/equipment.interface";
 import type { ApiResponse } from "@/interface/api-response.interface";
 
 import type {
@@ -16,6 +17,15 @@ import type {
   OnboardingAnswersResponse,
 } from "@/interface/user.interface";
 import { AnswerValue } from "@/constants/onboarding.constant";
+import type { ExerciseRow } from "@/interface/exercise.interface";
+
+// ── Client-side TTL caches for exercises ────────────────────────────────────
+interface CacheEntry<T> { data: T; expiresAt: number }
+const EXERCISE_LIST_TTL = 30_000;   // 30 seconds
+const EXERCISE_DETAIL_TTL = 60_000; // 60 seconds
+const exerciseListCache = new Map<string, CacheEntry<{ data: ExerciseRow[]; pagination: PaginationMeta }>>();
+const exerciseDetailCache = new Map<string, CacheEntry<ExerciseRow>>();
+// ────────────────────────────────────────────────────────────────────────────
 
 const userServices = {
   async getUserProfile(): Promise<ApiResponse<UserProfileInterface>> {
@@ -59,8 +69,8 @@ const userServices = {
   },
 
   async getTrainerById(id: string): Promise<ApiResponse<TrainerDetail>> {
-    const response = await userApi.get<ApiResponse<TrainerDetail>>(USER_API_ROUTES.GET_TRAINER_BY_ID(id),);
-    return response.data
+    const response = await userApi.get<ApiResponse<TrainerDetail>>(USER_API_ROUTES.GET_TRAINER_BY_ID(id));
+    return response.data;
   },
 
   async getCategories(params?: TableQueryParams): Promise<ApiResponse<CategoryListItem[]> & { pagination: PaginationMeta }> {
@@ -78,17 +88,24 @@ const userServices = {
     return response.data;
   },
 
+  async getEquipment(params?: TableQueryParams): Promise<ApiResponse<UpdateEquipment[]> & { pagination: PaginationMeta }> {
+    const queryParams = buildQueryParams({ page: 1, limit: 1000, ...params });
+    const response = await userApi.get(
+      `${USER_API_ROUTES.GET_EQUIPMENT}?${queryParams.toString()}`
+    );
+    return response.data;
+  },
 
   async getMySubscriptions(): Promise<ApiResponse<SubscriptionPlan>> {
     const response = await userApi.get<ApiResponse<SubscriptionPlan>>(USER_API_ROUTES.GET_MY_SUBSCRIPTION);
-    return response.data
+    return response.data;
   },
 
   async createCheckoutSession(planId: string): Promise<ApiResponse<{ checkoutUrl: string }>> {
     const response = await userApi.post<ApiResponse<{ checkoutUrl: string }>>(USER_API_ROUTES.CREATE_CHECKOUT_SESSION, {
       planId: planId
     });
-    return response.data
+    return response.data;
   },
 
   async verifyPayment(sessionId: string): Promise<ApiResponse<ActiveSubscription>> {
@@ -172,7 +189,41 @@ const userServices = {
       data: response.data.data,
       pagination: response.data.pagination,
     };
-  }
+  },
+
+  // ── Exercises (premium) ─────────────────────────────────────────────────
+  async getExercises(
+    params?: TableQueryParams & { difficulty?: string; targetMuscleId?: string; categoryId?: string }
+  ): Promise<{ data: ExerciseRow[]; pagination: PaginationMeta }> {
+    const queryParams = buildQueryParams({ page: 1, limit: 12, ...params });
+    if (params?.difficulty) queryParams.set("difficulty", params.difficulty);
+    if (params?.targetMuscleId) queryParams.set("targetMuscleId", params.targetMuscleId);
+    if (params?.categoryId) queryParams.set("categoryId", params.categoryId);
+
+    const cacheKey = queryParams.toString();
+    const cached = exerciseListCache.get(cacheKey);
+    if (cached && Date.now() < cached.expiresAt) {
+      return cached.data;
+    }
+
+    const response = await userApi.get<ApiResponse<ExerciseRow[]> & { pagination: PaginationMeta }>(
+      `${USER_API_ROUTES.GET_EXERCISES}?${cacheKey}`
+    );
+    const result = { data: response.data.data, pagination: response.data.pagination };
+    exerciseListCache.set(cacheKey, { data: result, expiresAt: Date.now() + EXERCISE_LIST_TTL });
+    return result;
+  },
+
+  async getExerciseById(id: string): Promise<ExerciseRow> {
+    const cached = exerciseDetailCache.get(id);
+    if (cached && Date.now() < cached.expiresAt) {
+      return cached.data;
+    }
+
+    const response = await userApi.get<ApiResponse<ExerciseRow>>(USER_API_ROUTES.GET_EXERCISE_BY_ID(id));
+    exerciseDetailCache.set(id, { data: response.data.data, expiresAt: Date.now() + EXERCISE_DETAIL_TTL });
+    return response.data.data;
+  },
 };
 
 export default userServices;

@@ -5,12 +5,10 @@ import { toast } from "sonner";
 
 import InputWithIcon from "@/components/ui/input.box";
 import PrimaryButton from "@/components/ui/primary.button";
-import { useAuthStore } from "@/stores/auth.store";
 import userServices from "@/services/user/user.services";
 import { parseApiError } from "@/api/error.helper";
 
 const UserChangePassword = () => {
-  const user = useAuthStore((state) => state.user);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({

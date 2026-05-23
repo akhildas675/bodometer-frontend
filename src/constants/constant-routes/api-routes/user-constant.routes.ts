@@ -7,6 +7,7 @@ export const USER_API_ROUTES = {
     GET_TRAINERS: "/trainers",
     GET_TRAINER_BY_ID: (id: string) => `/trainers/${id}`,
     GET_CATEGORIES: "/categories",
+    GET_EQUIPMENT: "/equipment",
     GET_CATEGORY_BY_ID: (id: string) => `/categories/${id}`,
 
 
@@ -34,5 +35,9 @@ export const USER_API_ROUTES = {
     GET_ONBOARDING_STATUS: "/onboarding-status",
     GET_ONBOARDING_ANSWERS: "/onboarding-answers",
     CALCULATE_BMI_PUBLIC: "/bmi/calculate",
+
+    // Exercises (premium)
+    GET_EXERCISES: "/exercises",
+    GET_EXERCISE_BY_ID: (id: string) => `/exercises/${id}`,
 
 } as const

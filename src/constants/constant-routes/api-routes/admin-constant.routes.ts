@@ -41,6 +41,7 @@ export const ADMIN_API_ROUTES = {
   GET_SUBSCRIPTION_PLAN_BY_ID: (id: string) => `/get-subscription-plan/${id}`,
   UPDATE_SUBSCRIPTION_PLAN: (id: string) => `/update-subscription-plan/${id}`,
   TOGGLE_SUBSCRIPTION_PLAN_STATUS: (id: string) => `/toggle-subscription-plan/${id}`,
+  GET_SUBSCRIPTION_TRANSACTIONS: "/get-subscription-transactions",
 
   // Question Groups
   GET_QUESTION_GROUPS: "/get-question-groups",
@@ -57,6 +58,26 @@ export const ADMIN_API_ROUTES = {
   TOGGLE_QUESTION_STATUS: (id: string) => `/toggle-question/${id}`,
   GET_QUESTION_DATA_SOURCES: "/questions/data-sources",
 
-  // Subscription Transactions
-  GET_SUBSCRIPTION_TRANSACTIONS: "/get-subscription-transactions",
+  // Target Muscles
+  CREATE_TARGET_MUSCLE: "/create-target-muscle",
+  GET_TARGET_MUSCLES: "/get-target-muscles",
+  GET_TARGET_MUSCLE_BY_ID: (id: string) => `/get-target-muscle/${id}`,
+  UPDATE_TARGET_MUSCLE: (id: string) => `/update-target-muscle/${id}`,
+  DELETE_TARGET_MUSCLE: (id: string) => `/delete-target-muscle/${id}`,
+  TOGGLE_TARGET_MUSCLE_STATUS: (id: string) => `/toggle-target-muscle/${id}`,
+
+  // Equipment
+  CREATE_EQUIPMENT: "/create-equipment",
+  GET_EQUIPMENT: "/get-equipment",
+  GET_EQUIPMENT_BY_ID: (id: string) => `/get-equipment/${id}`,
+  UPDATE_EQUIPMENT: (id: string) => `/update-equipment/${id}`,
+  TOGGLE_EQUIPMENT_STATUS: (id: string) => `/toggle-equipment/${id}`,
+
+  // Exercises
+  CREATE_EXERCISE: "/create-exercise",
+  GET_EXERCISES: "/get-exercises",
+  GET_EXERCISE_BY_ID: (id: string) => `/get-exercise/${id}`,
+  UPDATE_EXERCISE: (id: string) => `/update-exercise/${id}`,
+  TOGGLE_EXERCISE_STATUS: (id: string) => `/toggle-exercise/${id}`,
+
 } as const;

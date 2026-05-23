@@ -38,4 +38,13 @@ export const ADMIN_UI_ROUTES = {
   QUESTION_EDIT: (id: string) => `/admin/questions/list/edit/${id}`,
   QUESTION_EDIT_PATH: "/admin/questions/list/edit/:id",
 
+  TARGET_MUSCLES: "/admin/target-muscles",
+  TARGET_MUSCLES_FORM: "/admin/target-muscles-form",
+
+  EQUIPMENT: "/admin/equipment",
+  EQUIPMENT_FORM: "/admin/equipment-form",
+
+  EXERCISES: "/admin/exercises",
+  EXERCISES_FORM: "/admin/exercises-form",
+
 } as const;

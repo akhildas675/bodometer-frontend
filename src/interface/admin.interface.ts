@@ -229,7 +229,7 @@ export interface CreateQuestionData {
   validation?: { required?: boolean };
 }
 
-export interface UpdateQuestionData extends Partial<CreateQuestionData> {}
+export type UpdateQuestionData = Partial<CreateQuestionData>;
 
 export interface SubscriptionTransaction {
   _id: string;
