@@ -55,6 +55,8 @@ const AdminQuestionForm = () => {
   const [maxNum, setMaxNum] = useState<number | undefined>(undefined);
   const [unitNum, setUnitNum] = useState("");
   const [dataSource, setDataSource] = useState("");
+  const [previewOptions, setPreviewOptions] = useState<string[]>([]);
+  const [previewLoading, setPreviewLoading] = useState(false);
 
   const [nextJumps, setNextJumps] = useState<NextJumpData[]>([]);
 
@@ -110,6 +112,45 @@ const AdminQuestionForm = () => {
         .finally(() => setFetching(false));
     }
   }, [isEdit, id]);
+
+  useEffect(() => {
+    if (!dataSource) {
+      setPreviewOptions([]);
+      return;
+    }
+
+    setPreviewLoading(true);
+    if (dataSource === "category") {
+      adminServices.getAllCategories({ page: 1, limit: 1000 })
+        .then((res) => {
+          const names = (res.data || [])
+            .filter((c) => c.isActive !== false && c.name)
+            .map((c) => c.name as string);
+          setPreviewOptions(names);
+        })
+        .catch((error: unknown) => {
+          const apiError = parseApiError(error);
+          toast.error(`Failed to load preview for categories: ${apiError.message}`);
+        })
+        .finally(() => setPreviewLoading(false));
+    } else if (dataSource === "equipment") {
+      adminServices.getAllEquipment({ page: 1, limit: 1000 })
+        .then((res) => {
+          const titles = (res.data || [])
+            .filter((eq) => eq.isActive !== false && eq.title)
+            .map((eq) => eq.title);
+          setPreviewOptions(titles);
+        })
+        .catch((error: unknown) => {
+          const apiError = parseApiError(error);
+          toast.error(`Failed to load preview for equipment: ${apiError.message}`);
+        })
+        .finally(() => setPreviewLoading(false));
+    } else {
+      setPreviewOptions([]);
+      setPreviewLoading(false);
+    }
+  }, [dataSource]);
 
 
 
@@ -175,9 +216,9 @@ const AdminQuestionForm = () => {
       };
 
       if (([QUESTION_TYPE.SINGLE_SELECT, QUESTION_TYPE.MULTI_SELECT] as QuestionType[]).includes(type)) {
-        if (dataSource === "category") {
+        if (dataSource) {
           payload.options = undefined;
-        } else if (!dataSource) {
+        } else {
           payload.options = options.map((o) => ({ label: o.label.trim(), value: "" }));
         }
       }
@@ -344,11 +385,40 @@ const AdminQuestionForm = () => {
                   </div>
                 </div>
               ) : (
-                <div className="space-y-3 pt-2 border-t border-purple-950">
-                  <div className="p-4 bg-purple-950/10 border border-purple-900/30 rounded-xl text-sm text-purple-300 italic flex items-center gap-3">
-                    <span className="w-2.5 h-2.5 rounded-full bg-purple-500 animate-pulse shrink-0" />
-                    <span>Options will be loaded dynamically from active workout categories in the database. No static options are required.</span>
+                <div className="space-y-3 pt-4 border-t border-purple-950/50">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-xs font-semibold text-purple-300 uppercase tracking-wider flex items-center gap-2">
+                      <span>Datasource Preview ({dataSource})</span>
+                      <span className="text-[10px] bg-purple-900/50 text-purple-200 px-2 py-0.5 rounded-full border border-purple-800/30 normal-case">
+                        Read-only Single Source of Truth
+                      </span>
+                    </h3>
                   </div>
+
+                  {previewLoading ? (
+                    <div className="flex items-center gap-2 text-sm text-purple-400 italic py-2">
+                      <Loader2 className="animate-spin h-4 w-4" />
+                      <span>Loading datasource values...</span>
+                    </div>
+                  ) : previewOptions.length === 0 ? (
+                    <div className="p-4 bg-purple-950/10 border border-purple-900/20 rounded-lg text-sm text-purple-400 italic">
+                      No active options found for this datasource.
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-48 overflow-y-auto pr-1">
+                      {previewOptions.map((opt, i) => (
+                        <div 
+                          key={i} 
+                          className="bg-[#050017]/60 border border-purple-900/30 rounded-lg px-3 py-2 text-xs text-purple-200 flex items-center gap-2 hover:border-purple-800 transition"
+                        >
+                          <span className="w-1.5 h-1.5 rounded-full bg-purple-500 shrink-0" />
+                          <span className="truncate">{opt}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                 
                 </div>
               )}
             </div>
