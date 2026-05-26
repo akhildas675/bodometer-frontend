@@ -204,7 +204,7 @@ const TrainerProfile = () => {
       const formData = new FormData();
       formData.append("file", file);
 
-      const uploadResponse = await trainerService.uploadProfilePicture(formData);
+      const uploadResponse = await trainerService.uploadTrainerDocument(formData);
 
       if (uploadResponse.success && uploadResponse.data.url) {
         setForm((prev) => ({

@@ -39,6 +39,19 @@ class TrainerService {
     return response.data;
   }
 
+  async uploadTrainerDocument(data: FormData): Promise<ApiResponse<UploadProfilePictureResponse>> {
+    const response = await trainerApi.post<ApiResponse<UploadProfilePictureResponse>>(
+      TRAINER_API_ROUTES.UPLOAD_DOCUMENT,
+      data,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+    return response.data;
+  }
+
 
 async submitTrainerProfile(
   formData: FormData
