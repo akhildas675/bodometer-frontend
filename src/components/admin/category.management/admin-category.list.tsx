@@ -42,17 +42,7 @@ const AdminCategoryList = () => {
     data: response,
     loading,
     refetch,
-  } = useTableFetch<PaginatedResponse<UpdateCategory>>(
-    () =>
-      adminServices.getAllCategories({
-        search: searchQuery || undefined,
-        sortBy: sortConfig.field ? String(sortConfig.field) : undefined,
-        sortOrder: sortConfig.order,
-        page: currentPage,
-        limit: itemsPerPage
-      }),
-    false
-  );
+  } = useTableFetch<PaginatedResponse<UpdateCategory>>(fetchFn, false);
 
   useEffect(() => {
     refetch();
@@ -88,10 +78,6 @@ const AdminCategoryList = () => {
     setItemsPerPage(items);
     setCurrentPage(1);
   }, []);
-
-  useEffect(() => {
-    refetch();
-  }, [searchQuery, sortConfig, currentPage, itemsPerPage, refetch]);
 
   const sortOptions = extractSortOptions(categoryColumns);
 
