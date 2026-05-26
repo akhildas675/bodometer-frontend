@@ -28,7 +28,7 @@ const TrainerStatus = () => {
           useAuthStore.getState().clearAuth();
         }, 150);
       }, 1500);
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("Logout error:", error);
       const apiError = parseApiError(error);
       toast.error(apiError.message);
@@ -67,7 +67,7 @@ useEffect(() => {
       duration: 4000,
     });
     setTimeout(async () => {
-      try { await authInitService.logout(); } catch (e) { console.error(e); }
+      try { await authInitService.logout(); } catch (e: unknown) { console.error(e); }
       navigate("/", { replace: true });
       setTimeout(() => {
         useAuthStore.getState().clearAuth();

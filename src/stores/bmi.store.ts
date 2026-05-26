@@ -67,7 +67,7 @@ export const useStandaloneBmiStore = create<BmiState>((set, get) => ({
       } else {
         set({ error: "Failed to calculate BMI", loading: false });
       }
-    } catch {
+    } catch (error: unknown) {
       set({
         error: "Failed to calculate BMI",
         loading: false,

@@ -87,7 +87,7 @@ const AdminTargetMuscleForm = () => {
       }
       navigate(ADMIN_UI_ROUTES.TARGET_MUSCLES)
 
-    } catch (error) {
+    } catch (error: unknown) {
       const apiError = parseApiError(error);
       toast.error(apiError.message)
 

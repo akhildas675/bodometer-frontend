@@ -91,7 +91,7 @@ const handleVerifyOtp = async () => {
     useOtpStore.getState().clearOtpContext();
     navigate("/login", { replace: true });
 
-  } catch (error) {
+  } catch (error: unknown) {
     const apiError = parseApiError(error);
     toast.error(apiError.message);
   } finally {
@@ -132,7 +132,7 @@ const handleVerifyOtp = async () => {
       });
 
       toast.success(resendRes.message);
-    } catch (error) {
+    } catch (error: unknown) {
       const apiError = parseApiError(error);
       toast.error(apiError.message);
     }

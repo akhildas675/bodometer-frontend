@@ -44,7 +44,7 @@ export const useEquipmentActions = (
               const res = await adminServices.toggleEquipmentStatus(equipment.equipmentId);
               toast.success(res.message);
               refetch();
-            } catch (error) {
+            } catch (error: unknown) {
               const apiError = parseApiError(error);
               toast.error(apiError.message);
             }
@@ -67,7 +67,7 @@ export const useEquipmentActions = (
               const res = await adminServices.toggleEquipmentStatus(equipment.equipmentId);
               toast.success(res.message);
               refetch();
-            } catch (error) {
+            } catch (error: unknown) {
               const apiError = parseApiError(error);
               toast.error(apiError.message);
             }

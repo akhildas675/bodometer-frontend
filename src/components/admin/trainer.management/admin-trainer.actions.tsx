@@ -40,7 +40,7 @@ export const useTrainerActions = (
               const res = await adminServices.blockTrainer(trainer.id);
               toast.success(res.message);
               refreshTrainers();
-            } catch (error) {
+            } catch (error: unknown) {
               const apiError = parseApiError(error);
               toast.error(apiError.message);
             }
@@ -65,7 +65,7 @@ export const useTrainerActions = (
               const res = await adminServices.unblockTrainer(trainer.id);
               toast.success(res.message);
               refreshTrainers();
-            } catch (error) {
+            } catch (error: unknown) {
               const apiError = parseApiError(error);
               toast.error(apiError.message);
             }

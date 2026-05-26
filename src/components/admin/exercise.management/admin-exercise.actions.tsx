@@ -43,7 +43,7 @@ export const useExerciseActions = (
               const res = await adminServices.toggleExerciseStatus(exercise.exerciseId);
               toast.success(res.message);
               refetch();
-            } catch (error) {
+            } catch (error: unknown) {
               const apiError = parseApiError(error);
               toast.error(apiError.message);
             }
@@ -66,7 +66,7 @@ export const useExerciseActions = (
               const res = await adminServices.toggleExerciseStatus(exercise.exerciseId);
               toast.success(res.message);
               refetch();
-            } catch (error) {
+            } catch (error: unknown) {
               const apiError = parseApiError(error);
               toast.error(apiError.message);
             }

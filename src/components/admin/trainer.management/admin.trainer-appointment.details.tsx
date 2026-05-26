@@ -43,7 +43,7 @@ const AdminTrainerAppointmentDetails = () => {
       setLoading(true);
       const response = await adminServices.getTrainerByProfileId(profileId);
       setTrainer(response.data);
-    } catch (error) {
+    } catch (error: unknown) {
       const apiError = parseApiError(error);
       toast.error(apiError.message);
       navigate("/admin/trainers");
@@ -63,7 +63,7 @@ const AdminTrainerAppointmentDetails = () => {
       const res = await adminServices.approveTrainer(trainer.profile._id);
       toast.success(res.message);
       fetchTrainerDetails();
-    } catch (error) {
+    } catch (error: unknown) {
       const apiError = parseApiError(error);
       toast.error(apiError.message);
     } finally {
@@ -92,7 +92,7 @@ const AdminTrainerAppointmentDetails = () => {
       const res = await adminServices.rejectTrainer(trainer.profile._id, reason);
       toast.success(res.message);
       fetchTrainerDetails();
-    } catch (error) {
+    } catch (error: unknown) {
       const apiError = parseApiError(error);
       toast.error(apiError.message);
     } finally {

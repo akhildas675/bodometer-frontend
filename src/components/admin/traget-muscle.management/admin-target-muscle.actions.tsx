@@ -43,7 +43,7 @@ export const useTargetMuscleActions = (
               const res = await adminServices.toggleTargetMuscleStatus(muscle.targetMuscleId);
               toast.success(res.message);
               refetch();
-            } catch (error) {
+            } catch (error: unknown) {
               const apiError = parseApiError(error);
               toast.error(apiError.message);
             }
@@ -66,7 +66,7 @@ export const useTargetMuscleActions = (
               const res = await adminServices.toggleTargetMuscleStatus(muscle.targetMuscleId);
               toast.success(res.message);
               refetch();
-            } catch (error) {
+            } catch (error: unknown) {
               const apiError = parseApiError(error);
               toast.error(apiError.message);
             }

@@ -57,7 +57,7 @@ const ForgetPassword = () => {
 
       navigate(`/${role}-otp`, { replace: true });
     }
-  } catch (error) {
+  } catch (error: unknown) {
     const apiError = parseApiError(error);
     toast.error(apiError.message);
   } finally {

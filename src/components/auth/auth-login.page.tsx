@@ -85,7 +85,7 @@ const AuthLoginPage = () => {
       const result = await authService.login(form);
       const { user, accessToken, trainerStatus, onboardingComplete, hasActiveSubscription } = result.data;
       handleSuccess(user, accessToken, result.message, trainerStatus, onboardingComplete, hasActiveSubscription);
-    } catch (error) {
+    } catch (error: unknown) {
       const apiError = parseApiError(error);
       toast.error(apiError.message, {
         duration: apiError.statusCode === STATUS.FORBIDDEN ? 5000 : 3000,
@@ -104,7 +104,7 @@ const AuthLoginPage = () => {
       const result = await authService.googleLogin({ idToken: credential });
       const { user, accessToken, trainerStatus, onboardingComplete, hasActiveSubscription } = result.data;
       handleSuccess(user, accessToken, result.message, trainerStatus, onboardingComplete, hasActiveSubscription);
-    } catch (error) {
+    } catch (error: unknown) {
       const apiError = parseApiError(error);
       toast.error(apiError.message, {
         duration: apiError.statusCode === STATUS.FORBIDDEN ? 5000 : 3000,

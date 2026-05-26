@@ -63,7 +63,7 @@ const AuthRegisterPage: React.FC<AuthRegisterPageProps> = ({ role }) => {
 
         navigate(`/otp/${role}`);
       }
-    } catch (error) {
+    } catch (error: unknown) {
       const apiError = parseApiError(error);
       toast.error(apiError.message);
     } finally {

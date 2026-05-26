@@ -80,7 +80,7 @@ const AdminEquipmentForm = () => {
       
       navigate(ADMIN_UI_ROUTES.EQUIPMENT);
 
-    } catch (error) {
+    } catch (error: unknown) {
       const apiError = parseApiError(error);
       toast.error(apiError.message);
     } finally {

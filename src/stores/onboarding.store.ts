@@ -161,7 +161,7 @@ export const useOnboardingStore = create<OnboardingStore>((set, get) => ({
                     if (dataSourceFetchers[source]) {
                         try {
                             dynamicOptionsMap[source] = await dataSourceFetchers[source]();
-                        } catch (err) {
+                        } catch (err: unknown) {
                             console.error(`Failed to load data source: ${source}`, err);
                         }
                     } else {
@@ -181,7 +181,7 @@ export const useOnboardingStore = create<OnboardingStore>((set, get) => ({
             });
 
             set({ groups, questions, loading: false });
-        } catch (err) {
+        } catch (err: unknown) {
             const apiError = parseApiError(err);
             set({ error: apiError.message, loading: false });
         }
@@ -201,7 +201,7 @@ export const useOnboardingStore = create<OnboardingStore>((set, get) => ({
                 });
                 set((state) => ({ answers: { ...state.answers, ...answerMap } }));
             }
-        } catch (err) {
+        } catch (err: unknown) {
             console.error("Failed to load user answers", err);
         }
     },
@@ -253,7 +253,7 @@ export const useOnboardingStore = create<OnboardingStore>((set, get) => ({
             useAuthStore.getState().updateUser({ onboardingComplete: true });
             set({ submitting: false, isComplete: true });
             return res;
-        } catch (err) {
+        } catch (err: unknown) {
             const apiError = parseApiError(err);
             set({ error: apiError.message, submitting: false });
             throw err;

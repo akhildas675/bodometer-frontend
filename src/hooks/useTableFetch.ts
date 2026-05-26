@@ -19,7 +19,7 @@ export function useTableFetch<T>(fetchFn: FetchFn<T>, auto = true) {
       setError(null);
       const res = await fetchFnRef.current();
       setData(res);
-    } catch (error) {
+    } catch (error: unknown) {
       setError(error);
     } finally {
       setLoading(false);

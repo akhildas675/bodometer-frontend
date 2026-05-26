@@ -38,7 +38,7 @@ const ResetPassword = () => {
       toast.success(result.message);
       useOtpStore.getState().clearOtpContext();
       navigate("/login", { replace: true });
-    } catch (error) {
+    } catch (error: unknown) {
       const apiError = parseApiError(error);
       if (apiError.statusCode === STATUS.FORBIDDEN) {
         toast.error(apiError.message, {

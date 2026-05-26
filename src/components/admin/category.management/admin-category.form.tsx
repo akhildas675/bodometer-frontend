@@ -82,7 +82,7 @@ const AdminCategoryForm = () => {
         toast.success(res.message);
       }
       navigate("/admin/category");
-    } catch (error) {
+    } catch (error: unknown) {
       const apiError = parseApiError(error);
       toast.error(apiError.message);
     } finally {

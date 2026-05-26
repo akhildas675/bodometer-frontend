@@ -28,7 +28,7 @@ export const getQuestionGroupActions = (
       const res = await adminServices.toggleQuestionGroupStatus(groupId);
       toast.success(res.message);
       refetch();
-    } catch (error) {
+    } catch (error: unknown) {
       const apiError = parseApiError(error);
       toast.error(apiError.message);
     }

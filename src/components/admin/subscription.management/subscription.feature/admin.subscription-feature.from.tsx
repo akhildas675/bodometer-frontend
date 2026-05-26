@@ -61,7 +61,7 @@ const handleSubmit = async () => {
       toast.success(res.message);
     }
     navigate("/admin/subscription/features");
-  } catch (error) {
+  } catch (error: unknown) {
     const apiError = parseApiError(error);
     toast.error(apiError.message);
   } finally {

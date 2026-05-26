@@ -34,7 +34,7 @@ const UserChangePassword = () => {
       });
       toast.success(res.message);
       navigate("/profile");
-    } catch (error) {
+    } catch (error: unknown) {
       const apiError = parseApiError(error);
       toast.error(apiError.message);
     } finally {

@@ -157,7 +157,7 @@ const UserProfile = () => {
       } else {
         throw new Error(updateResponse.message || "Failed to update profile");
       }
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("Profile update error:", error);
       const apiError = parseApiError(error);
 

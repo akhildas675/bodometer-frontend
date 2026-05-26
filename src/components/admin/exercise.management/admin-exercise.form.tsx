@@ -241,7 +241,7 @@ const AdminExerciseForm = () => {
         toast.success(res.message || "Exercise created successfully");
       }
       navigate(ADMIN_UI_ROUTES.EXERCISES);
-    } catch (error) {
+    } catch (error: unknown) {
       const apiError = parseApiError(error);
       toast.error(apiError.message);
     } finally {

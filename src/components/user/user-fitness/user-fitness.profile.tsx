@@ -42,7 +42,7 @@ const UserFitnessProfile = () => {
         } else {
           setHasActivePlan(true);
         }
-      } catch (err) {
+      } catch (err: unknown) {
         console.error("Failed to check onboarding status", err);
       }
     };
@@ -191,7 +191,7 @@ const UserFitnessProfile = () => {
       const res = await submitOnboarding();
       toast.success(res?.message || "Assessment answers updated successfully!");
       updateOriginalAnswersSnapshot();
-    } catch (err) {
+    } catch (err: unknown) {
       const apiError = parseApiError(err);
       toast.error(apiError.message);
     }
@@ -203,7 +203,7 @@ const UserFitnessProfile = () => {
       const res = await submitOnboarding();
       updateOriginalAnswersSnapshot();
       toast.success(res?.message || "Assessment answers updated successfully!");
-    } catch (err) {
+    } catch (err: unknown) {
       const apiError = parseApiError(err);
       toast.error(apiError.message);
     }

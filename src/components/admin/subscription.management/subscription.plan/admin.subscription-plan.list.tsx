@@ -58,7 +58,7 @@ const AdminSubscriptionPlanForm = () => {
         if (res?.success) {
           setLoadedPlan(res.data);
         }
-      } catch (error) {
+      } catch (error: unknown) {
         const apiError = parseApiError(error);
         toast.error(apiError.message);
       } finally {
@@ -154,7 +154,7 @@ const AdminSubscriptionPlanForm = () => {
         toast.success(res.message);
       }
       navigate("/admin/subscription/plans");
-    } catch (error) {
+    } catch (error: unknown) {
       const apiError = parseApiError(error);
       toast.error(apiError.message);
     } finally {

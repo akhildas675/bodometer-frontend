@@ -31,7 +31,7 @@ const TrainerOnboardingIntro = () => {
           useAuthStore.getState().clearAuth();
         }, 150);
       }, 1500);
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("Logout error:", error);
       const apiError = parseApiError(error);
       toast.error(apiError.message);

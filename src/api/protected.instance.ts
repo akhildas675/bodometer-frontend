@@ -74,7 +74,7 @@ export function createProtectedAxios(role: Role): AxiosInstance {
             originalRequest.headers.Authorization = `Bearer ${accessToken}`;
             return instance(originalRequest);
           })
-          .catch((err) => Promise.reject(err));
+          .catch((err: unknown) => Promise.reject(err));
       }
 
       originalRequest._retry = true;
@@ -98,11 +98,12 @@ export function createProtectedAxios(role: Role): AxiosInstance {
         } else {
           throw new Error("Token refresh failed");
         }
-      } catch (refreshError) {
-        processQueue(refreshError as Error);
+      } catch (refreshError: unknown) {
+        const errorToPropagate = refreshError instanceof Error ? refreshError : new Error("Unknown error occurred");
+        processQueue(errorToPropagate);
         useAuthStore.getState().clearAuth();
         window.location.href = `${roleToRedirectPath[role]}?expired=true`;
-        return Promise.reject(refreshError);
+        return Promise.reject(errorToPropagate);
       } finally {
         isRefreshing = false;
       }

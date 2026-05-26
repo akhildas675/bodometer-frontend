@@ -33,7 +33,7 @@ export const useSubscriptionActions = (
           const res = await adminServices.toggleSubscriptionPlanStatus(plan.planId);
           toast.success(res.message);
           refetch();
-        } catch (error) {
+        } catch (error: unknown) {
           const apiError = parseApiError(error);
           toast.error(apiError.message);
         }

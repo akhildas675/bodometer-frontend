@@ -65,7 +65,7 @@ const UserOnboardingAssessment = () => {
       try {
         const res = await submitOnboarding();
         toast.success(res?.message || "Onboarding complete! Setting up your portal.");
-      } catch (err) {
+      } catch (err: unknown) {
         const apiError = parseApiError(err);
         toast.error(apiError.message);
       }

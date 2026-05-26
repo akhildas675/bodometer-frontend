@@ -46,7 +46,7 @@ const SubscriptionRoute = () => {
             setIsOnboarded(!!onboardingRes.data?.completed);
           }
         }
-      } catch (err) {
+      } catch (err: unknown) {
         console.error("Failed to verify account status:", err);
       } finally {
         if (isMounted) {

@@ -103,7 +103,7 @@ const TrainerOnboardingProfile = () => {
       useAuthStore.getState().setVerificationStatus("pending");
       toast.success(res.message);
       navigate("/trainer/status", { replace: true });
-    } catch (error) {
+    } catch (error: unknown) {
       const apiError = parseApiError(error);
       toast.error(apiError.message);
     } finally {

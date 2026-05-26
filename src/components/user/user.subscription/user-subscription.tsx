@@ -162,7 +162,7 @@ const UserSubscription = () => {
       setCheckoutLoading(planId);
       const res = await userServices.createCheckoutSession(planId);
       window.location.href = res.data.checkoutUrl;
-    } catch (error) {
+    } catch (error: unknown) {
       const apiError = parseApiError(error);
       toast.error(apiError.message);
     } finally {

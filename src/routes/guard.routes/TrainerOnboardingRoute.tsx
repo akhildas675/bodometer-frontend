@@ -25,7 +25,7 @@ const TrainerOnboardingRoute = () => {
         // const profileExists = result?.data?.profileExists;
 
         if (status === VERIFICATION_STATUS.APPROVED) {
-          try { await authInitService.logout(); } catch (e) { console.error(e); }
+          try { await authInitService.logout(); } catch (e: unknown) { console.error(e); }
           useAuthStore.getState().clearAuth();
           setRedirect("/");
         } else if (status === VERIFICATION_STATUS.PENDING) {
@@ -34,7 +34,7 @@ const TrainerOnboardingRoute = () => {
           setRedirect("/trainer/status");
         }
        
-      } catch (e) {
+      } catch (e: unknown) {
         console.error(e);
       } finally {
         setChecking(false);

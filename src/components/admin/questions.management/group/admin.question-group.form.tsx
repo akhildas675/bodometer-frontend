@@ -72,7 +72,7 @@ const AdminQuestionGroupForm = () => {
         toast.success(res.message);
       }
       navigate(ADMIN_UI_ROUTES.QUESTION_GROUPS);
-    } catch (error) {
+    } catch (error: unknown) {
       const apiError = parseApiError(error);
       toast.error(apiError.message);
     } finally {

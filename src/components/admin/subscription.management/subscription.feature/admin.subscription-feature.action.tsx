@@ -38,7 +38,7 @@ const handleToggle = (feature: SubscriptionFeature) => {
         const res = await adminServices.toggleSubscriptionFeatureStatus(featureId!);
         toast.success(res.message);
         refetch();
-      } catch (error) {
+      } catch (error: unknown) {
         const apiError = parseApiError(error);
         toast.error(apiError.message);
       }

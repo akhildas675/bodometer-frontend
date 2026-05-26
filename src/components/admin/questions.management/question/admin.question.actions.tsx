@@ -28,7 +28,7 @@ export const getQuestionActions = (
       const res = await adminServices.toggleQuestionStatus(id);
       toast.success(res.message);
       refetch();
-    } catch (error) {
+    } catch (error: unknown) {
       const apiError = parseApiError(error);
       toast.error(apiError.message);
     }
