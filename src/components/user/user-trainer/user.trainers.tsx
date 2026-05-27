@@ -8,7 +8,7 @@ import { Search, SlidersHorizontal } from "lucide-react";
 import Pagination from "@/components/controls/pagination/pagination";
 import LazyImage from "@/components/ui/lazy.image";
 
-const ITEMS_PER_PAGE = 9;
+const ITEMS_PER_PAGE = 1;
 const SEARCH_DEBOUNCE_MS = 400;
 
 const TRAINER_SORT_OPTIONS = [

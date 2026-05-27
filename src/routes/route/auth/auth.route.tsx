@@ -20,6 +20,9 @@ export const authRoutes = (
       <Route path={AUTH_UI_ROUTES.TRAINER_REGISTER_PAGE} element={<TrainerRegisterPage />} />
       <Route path={AUTH_UI_ROUTES.USER_OTP_PAGE} element={<UserOtpPage />} />
       <Route path={AUTH_UI_ROUTES.TRAINER_OTP_PAGE} element={<TrainerOtpPage />} />
+      <Route path="/otp" element={<UserOtpPage />} />
+      <Route path="/otp/user" element={<UserOtpPage />} />
+      <Route path="/otp/trainer" element={<TrainerOtpPage />} />
       <Route path={AUTH_UI_ROUTES.FORGET_PASSWORD_PAGE} element={<UserForgetPasswordPage />} />
       <Route path={AUTH_UI_ROUTES.RESET_PASSWORD_PAGE} element={<AuthResetPasswordPage />} />
     </Route>

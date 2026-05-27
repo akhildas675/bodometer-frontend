@@ -61,7 +61,7 @@ const AuthRegisterPage: React.FC<AuthRegisterPageProps> = ({ role }) => {
           registerData: payload,
         });
 
-        navigate(`/otp/${role}`);
+        navigate(`/${role}-otp`);
       }
     } catch (error: unknown) {
       const apiError = parseApiError(error);

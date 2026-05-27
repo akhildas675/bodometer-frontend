@@ -32,6 +32,7 @@ const UserChangePassword = () => {
         currentPassword: form.currentPassword,
         newPassword: form.newPassword,
       });
+      
       toast.success(res.message);
       navigate("/profile");
     } catch (error: unknown) {
