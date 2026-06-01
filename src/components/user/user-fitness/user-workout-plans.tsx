@@ -20,17 +20,17 @@ import {
   Target,
   ListChecks,
 } from "lucide-react";
-import userServices, { WorkoutPlanResponse, GenerateWorkoutDay, AiWorkoutExercise } from "@/services/user/user.services";
+import userServices, { WorkoutPlanResponse, GenerateWorkoutDay, AiWorkoutExercise, GetWorkoutPlansResponse } from "@/services/user/user.services";
 import { USER_UI_ROUTES } from "@/constants/constant-routes/ui-routes/user.ui-constant.routes";
 
 
 
 const AI_STEPS = [
-  { icon: Brain,      label: "Analysing your fitness profile…"    },
+  { icon: Brain,      label: "Analyzing your fitness profile…"    },
   { icon: Activity,   label: "Building your weekly structure…"     },
   { icon: Target,     label: "Selecting optimal exercises…"        },
-  { icon: ListChecks, label: "Finalising sets, reps & rest times…" },
-  { icon: Sparkles,   label: "Polishing your personalised plan…"   },
+  { icon: ListChecks, label: "Finalizing sets, reps & rest times…" },
+  { icon: Sparkles,   label: "Polishing your personalized plan…"   },
 ];
 
 const WorkoutGeneratingModal = ({ isOpen }: { isOpen: boolean }) => {
@@ -66,7 +66,7 @@ const WorkoutGeneratingModal = ({ isOpen }: { isOpen: boolean }) => {
         {/* Title */}
         <div className="text-center space-y-1">
           <h3 className="text-xl font-bold text-white">Building Your AI Plan</h3>
-          <p className="text-white/50 text-sm">Our AI is crafting a personalised week for you</p>
+          <p className="text-white/50 text-sm">Our AI is crafting a personalized week for you</p>
         </div>
 
         {/* Step label */}
@@ -188,7 +188,7 @@ const ExerciseItem = ({
           
           {ex.notes && (
             <div className="mt-1.5 flex items-start gap-1.5 bg-purple-500/10 border border-purple-500/20 px-2.5 py-1.5 rounded-md w-full">
-              <p className="text-[10px] text-purple-200/90 leading-relaxed whitespace-normal break-words text-left">
+              <p className="text-[10px] text-purple-200/90 leading-relaxed whitespace-normal wrap-break-word text-left">
                 {ex.notes}
               </p>
             </div>
@@ -287,6 +287,13 @@ const ExerciseItem = ({
 const UserWorkoutPlans = () => {
   const navigate = useNavigate();
   const [plans, setPlans] = useState<WorkoutPlanResponse[]>([]);
+  const [generationStatus, setGenerationStatus] = useState<GetWorkoutPlansResponse["generationStatus"]>({
+    canGenerate: false,
+    isInactive: false,
+    pendingDaysCount: 0,
+    hasCompletedWorkoutToday: false,
+    firstPendingDayNumber: -1
+  });
   const [generating, setGenerating] = useState(false);
   const [expandedPlanId, setExpandedPlanId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<"plans" | "history">("plans");
@@ -303,13 +310,14 @@ const UserWorkoutPlans = () => {
   const fetchPlansFn = useCallback(async () => {
     const response = await userServices.getWorkoutPlans();
     if (response.success && response.data) {
-      setPlans(response.data);
-      if (response.data.length > 0) {
-        setExpandedPlanId(response.data[0].workoutPlanId);
+      setPlans(response.data.plans);
+      setGenerationStatus(response.data.generationStatus);
+      if (response.data.plans.length > 0 && !expandedPlanId) {
+        setExpandedPlanId(response.data.plans[0].workoutPlanId);
       }
     }
     return response;
-  }, []);
+  }, [expandedPlanId]);
 
   const { loading } = useFetch(fetchPlansFn);
 
@@ -318,15 +326,7 @@ const UserWorkoutPlans = () => {
       setGenerating(true);
       const response = await userServices.generateWorkout();
       if (response.success && response.data) {
-        // Refresh the full list so the new week appears correctly
-        const refreshed = await userServices.getWorkoutPlans();
-        if (refreshed.success && refreshed.data) {
-          setPlans(refreshed.data);
-          setExpandedPlanId(refreshed.data[0]?.workoutPlanId ?? null);
-        } else {
-          setPlans((prev) => [response.data!, ...prev]);
-          setExpandedPlanId(response.data.workoutPlanId);
-        }
+        await fetchPlansFn();
       }
     } catch (error) {
       console.error(error);
@@ -340,10 +340,8 @@ const UserWorkoutPlans = () => {
       setTogglingDay({ planId, dayNumber });
       const newStatus = currentStatus === "COMPLETED" ? false : true;
       const response = await userServices.markDayCompleted(planId, dayNumber, newStatus);
-      if (response.success && response.data) {
-        setPlans((prev) =>
-          prev.map((p) => (p.workoutPlanId === planId ? response.data! : p))
-        );
+      if (response.success) {
+        await fetchPlansFn();
       }
     } catch (error) {
       console.error("Failed to toggle day completion:", error);
@@ -356,10 +354,8 @@ const UserWorkoutPlans = () => {
     try {
       setTogglingExercise(exerciseId);
       const response = await userServices.markExerciseStatus(planId, dayNumber, exerciseId, status);
-      if (response.success && response.data) {
-        setPlans((prev) =>
-          prev.map((p) => (p.workoutPlanId === planId ? response.data! : p))
-        );
+      if (response.success) {
+        await fetchPlansFn();
       }
     } catch (error) {
       console.error("Failed to set exercise status:", error);
@@ -367,13 +363,6 @@ const UserWorkoutPlans = () => {
       setTogglingExercise(null);
     }
   };
-
-  const formatDate = (dateStr: string) =>
-    new Date(dateStr).toLocaleDateString("en-GB", {
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-    });
 
   const getCompletedDaysCount = (days: GenerateWorkoutDay[]) =>
     days.filter((d) => d.status === "COMPLETED").length;
@@ -396,8 +385,6 @@ const UserWorkoutPlans = () => {
   };
 
   const completedHistory = getAllCompletedDays();
-  const todayStr = new Date().toDateString();
-  const hasCompletedWorkoutToday = completedHistory.some(h => h.date.toDateString() === todayStr);
 
   if (loading) {
     return (
@@ -430,45 +417,51 @@ const UserWorkoutPlans = () => {
 
         {(() => {
           if (plans.length === 0) return null;
-          const latestPlan = plans[0];
-          const daysUntilEnd = latestPlan?.endDate
-            ? Math.max(
-                0,
-                Math.ceil(
-                  (new Date(latestPlan.endDate).getTime() - Date.now()) /
-                    (1000 * 60 * 60 * 24)
-                )
-              )
-            : 0;
-          const canGenerate = daysUntilEnd === 0;
+          
+          // Pure backend-driven logic
+          const { canGenerate, isInactive, pendingDaysCount } = generationStatus;
 
           return (
-            <button
-              onClick={handleGenerate}
-              disabled={generating || !canGenerate}
-              className={`inline-flex items-center justify-center gap-2 font-bold text-sm px-6 py-3 rounded-full transition-all shrink-0 ${
-                generating || !canGenerate
-                  ? "bg-purple-950/40 border border-purple-500/30 text-purple-300 cursor-not-allowed"
-                  : "bg-linear-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white shadow-[0_0_20px_rgba(147,51,234,0.3)] hover:scale-[1.02]"
-              }`}
-            >
-              {generating ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  Generating...
-                </>
-              ) : !canGenerate ? (
-                <>
-                  <Clock className="w-4 h-4" />
-                  Next Plan in {daysUntilEnd} {daysUntilEnd === 1 ? "day" : "days"}
-                </>
-              ) : (
-                <>
-                  <Sparkles className="w-4 h-4" />
-                  Generate New Plan
-                </>
+            <div className="flex flex-col items-end gap-2 shrink-0">
+              {isInactive && (
+                <div className="text-xs font-bold text-rose-400 bg-rose-500/10 border border-rose-500/20 px-3 py-1 rounded-full animate-pulse">
+                  ⚠️ Inactive for 4+ days
+                </div>
               )}
-            </button>
+              <button
+                onClick={handleGenerate}
+                disabled={generating || !canGenerate}
+                className={`inline-flex items-center justify-center gap-2 font-bold text-sm px-6 py-3 rounded-full transition-all ${
+                  generating || !canGenerate
+                    ? "bg-purple-950/40 border border-purple-500/30 text-purple-300 cursor-not-allowed"
+                    : isInactive
+                    ? "bg-linear-to-r from-rose-600 to-pink-600 hover:from-rose-500 hover:to-pink-500 text-white shadow-[0_0_20px_rgba(225,29,72,0.3)] hover:scale-[1.02]"
+                    : "bg-linear-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white shadow-[0_0_20px_rgba(147,51,234,0.3)] hover:scale-[1.02]"
+                }`}
+              >
+                {generating ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Generating...
+                  </>
+                ) : !canGenerate ? (
+                  <>
+                    <Clock className="w-4 h-4" />
+                    Complete {pendingDaysCount} more {pendingDaysCount === 1 ? "day" : "days"}
+                  </>
+                ) : isInactive ? (
+                  <>
+                    <Sparkles className="w-4 h-4" />
+                    Regenerate Fresh Plan
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="w-4 h-4" />
+                    Generate Next Plan
+                  </>
+                )}
+              </button>
+            </div>
           );
         })()}
       </div>
@@ -530,7 +523,6 @@ const UserWorkoutPlans = () => {
               const isExpanded = expandedPlanId === plan.workoutPlanId;
               const completedCount = getCompletedDaysCount(plan.days);
               const progressPct = Math.round((completedCount / plan.days.length) * 100) || 0;
-              const firstPendingDayNumber = plan.days.find(d => d.status === "PENDING")?.dayNumber;
 
               return (
                 <div
@@ -565,7 +557,7 @@ const UserWorkoutPlans = () => {
                         </div>
                         <p className="text-white/50 text-sm mt-0.5 flex items-center gap-2">
                           <Clock className="w-3.5 h-3.5" />
-                          {formatDate(plan.startDate)} — {formatDate(plan.endDate)}
+                          {plan.formattedStartDate || plan.startDate} — {plan.formattedEndDate || plan.endDate || ""}
                         </p>
                       </div>
                     </div>
@@ -594,7 +586,7 @@ const UserWorkoutPlans = () => {
                       {plan.days.map((day) => {
                         const isCompleted = day.status === "COMPLETED";
                         const isToggling = togglingDay?.planId === plan.workoutPlanId && togglingDay?.dayNumber === day.dayNumber;
-                        const isLocked = !isCompleted && (hasCompletedWorkoutToday || day.dayNumber !== firstPendingDayNumber);
+                        const isLocked = !isCompleted && (generationStatus.hasCompletedWorkoutToday || day.dayNumber !== generationStatus.firstPendingDayNumber);
 
                         return (
                           <div
