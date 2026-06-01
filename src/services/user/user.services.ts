@@ -227,10 +227,12 @@ export interface AiWorkoutExercise {
 export interface GenerateWorkoutDay {
   dayNumber: number;
   day: string;
+  scheduledDate: string;
   type: "workout" | "rest";
   focus: string;
   estimatedDurationMinutes: number;
   status: string;
+  startedAt?: string;
   completedAt?: string;
   exercises: AiWorkoutExercise[];
 }
