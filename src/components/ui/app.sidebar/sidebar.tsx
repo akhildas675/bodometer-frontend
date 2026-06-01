@@ -66,6 +66,7 @@ const iconMap: Record<string, React.ReactNode> = {
   "/": <LayoutDashboard size={20} />,
   "/fitness-profile": <Heart size={20} />,
   "/exercises": <Dumbbell size={20} />,
+  "/generate-workout": <Sparkles size={20} />,
   "/food-log": <Apple size={20} />,
   "/progress": <TrendingUp size={20} />,
   "/profile": <UserCircle size={20} />,
@@ -212,9 +213,11 @@ const Sidebar = ({ role }: Props) => {
               className="h-8 w-auto object-contain drop-shadow-lg transition-opacity duration-300"
             />
           ) : (
-            <div className="h-10 w-10 rounded-lg bg-purple-600 flex items-center justify-center text-xl font-bold">
-              B
-            </div>
+           <img
+              src="https://bodometer-assets.s3.eu-north-1.amazonaws.com/Bodometer+Icon.png"
+              alt="Bodometer Logo"
+              className="h-8 w-auto object-contain drop-shadow-lg transition-opacity duration-300"
+            />
           )}
         </div>
 

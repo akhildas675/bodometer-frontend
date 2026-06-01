@@ -57,7 +57,7 @@ const UserExerciseDetail = () => {
   const navigate = useNavigate();
 
   const { data: exercise, loading, error } = useFetch<ExerciseRow>(
-    useCallback(() => userServices.getExerciseById(exerciseId!), [exerciseId]),
+    useCallback(() => userServices.getExerciseById(exerciseId!).then((res) => res.data), [exerciseId]),
     !!exerciseId
   );
 

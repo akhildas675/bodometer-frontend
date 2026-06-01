@@ -15,17 +15,13 @@ import type {
   UserProfileInterface,
   ActiveSubscription,
   OnboardingAnswersResponse,
+  CalculateBmiPayload,
+  BmiCalculationResult,
 } from "@/interface/user.interface";
 import { AnswerValue } from "@/constants/onboarding.constant";
 import type { ExerciseRow } from "@/interface/exercise.interface";
 
-// ── Client-side TTL caches for exercises ────────────────────────────────────
-interface CacheEntry<T> { data: T; expiresAt: number }
-const EXERCISE_LIST_TTL = 30_000;   // 30 seconds
-const EXERCISE_DETAIL_TTL = 60_000; // 60 seconds
-const exerciseListCache = new Map<string, CacheEntry<{ data: ExerciseRow[]; pagination: PaginationMeta }>>();
-const exerciseDetailCache = new Map<string, CacheEntry<ExerciseRow>>();
-// ────────────────────────────────────────────────────────────────────────────
+
 
 const userServices = {
   async getUserProfile(): Promise<ApiResponse<UserProfileInterface>> {
@@ -41,12 +37,7 @@ const userServices = {
   async uploadProfilePicture(data: FormData): Promise<ApiResponse<UploadProfilePictureResponse>> {
     const response = await userApi.post<ApiResponse<UploadProfilePictureResponse>>(
       USER_API_ROUTES.PROFILE_PICTURE,
-      data,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      }
+      data
     );
     return response.data;
   },
@@ -157,73 +148,105 @@ const userServices = {
     return response.data;
   },
 
-  async calculateBmiPublic(data: {
-    height?: number | null;
-    weight?: number | null;
-    unit: "metric" | "imperial";
-    heightFt?: string;
-    heightIn?: string;
-  }): Promise<ApiResponse<{
-    bmi: number;
-    heightCm: number;
-    weightKg: number;
-    category: { label: string; color: string; description: string; tips: string[] };
-    healthyWeightRange: { minKg: number; maxKg: number };
-  }>> {
-    const response = await userApi.post<ApiResponse<{
-      bmi: number;
-      heightCm: number;
-      weightKg: number;
-      category: { label: string; color: string; description: string; tips: string[] };
-      healthyWeightRange: { minKg: number; maxKg: number };
-    }>>(USER_API_ROUTES.CALCULATE_BMI_PUBLIC, data);
+  async calculateBmiPublic(data: CalculateBmiPayload): Promise<ApiResponse<BmiCalculationResult>> {
+    const response = await userApi.post<ApiResponse<BmiCalculationResult>>(USER_API_ROUTES.CALCULATE_BMI_PUBLIC, data);
     return response.data;
   },
 
-  async getMyTransactions(params?: TableQueryParams): Promise<PaginatedResponse<SubscriptionTransaction>> {
+  async getMyTransactions(params?: TableQueryParams): Promise<ApiResponse<SubscriptionTransaction[]> & { pagination: PaginationMeta }> {
     const queryParams = buildQueryParams({ page: 1, limit: 10, ...params });
     const response = await userApi.get<ApiResponse<SubscriptionTransaction[]> & { pagination: PaginationMeta }>(
       `${USER_API_ROUTES.GET_MY_TRANSACTIONS}?${queryParams.toString()}`
     );
-    return {
-      data: response.data.data,
-      pagination: response.data.pagination,
-    };
+    return response.data;
   },
 
-  // ── Exercises (premium) ─────────────────────────────────────────────────
   async getExercises(
     params?: TableQueryParams & { difficulty?: string; targetMuscleId?: string; categoryId?: string }
-  ): Promise<{ data: ExerciseRow[]; pagination: PaginationMeta }> {
+  ): Promise<ApiResponse<ExerciseRow[]> & { pagination: PaginationMeta }> {
     const queryParams = buildQueryParams({ page: 1, limit: 12, ...params });
-    if (params?.difficulty) queryParams.set("difficulty", params.difficulty);
-    if (params?.targetMuscleId) queryParams.set("targetMuscleId", params.targetMuscleId);
-    if (params?.categoryId) queryParams.set("categoryId", params.categoryId);
-
-    const cacheKey = queryParams.toString();
-    const cached = exerciseListCache.get(cacheKey);
-    if (cached && Date.now() < cached.expiresAt) {
-      return cached.data;
-    }
 
     const response = await userApi.get<ApiResponse<ExerciseRow[]> & { pagination: PaginationMeta }>(
-      `${USER_API_ROUTES.GET_EXERCISES}?${cacheKey}`
+      `${USER_API_ROUTES.GET_EXERCISES}?${queryParams.toString()}`
     );
-    const result = { data: response.data.data, pagination: response.data.pagination };
-    exerciseListCache.set(cacheKey, { data: result, expiresAt: Date.now() + EXERCISE_LIST_TTL });
-    return result;
+    return response.data;
   },
 
-  async getExerciseById(id: string): Promise<ExerciseRow> {
-    const cached = exerciseDetailCache.get(id);
-    if (cached && Date.now() < cached.expiresAt) {
-      return cached.data;
-    }
-
+  async getExerciseById(id: string): Promise<ApiResponse<ExerciseRow>> {
     const response = await userApi.get<ApiResponse<ExerciseRow>>(USER_API_ROUTES.GET_EXERCISE_BY_ID(id));
-    exerciseDetailCache.set(id, { data: response.data.data, expiresAt: Date.now() + EXERCISE_DETAIL_TTL });
-    return response.data.data;
+    return response.data;
+  },
+
+  async generateWorkout(): Promise<ApiResponse<WorkoutPlanResponse>> {
+    const response = await userApi.post<ApiResponse<WorkoutPlanResponse>>(USER_API_ROUTES.GENERATE_WORKOUT);
+    return response.data;
+  },
+
+  async getWorkoutPlan(): Promise<ApiResponse<WorkoutPlanResponse | null>> {
+    const response = await userApi.get<ApiResponse<WorkoutPlanResponse | null>>(USER_API_ROUTES.GET_WORKOUT_PLAN);
+    return response.data;
+  },
+
+  async getWorkoutPlans(): Promise<ApiResponse<WorkoutPlanResponse[]>> {
+    const response = await userApi.get<ApiResponse<WorkoutPlanResponse[]>>(USER_API_ROUTES.GET_WORKOUT_PLANS);
+    return response.data;
+  },
+
+  async markDayCompleted(planId: string, dayNumber: number, completed: boolean): Promise<ApiResponse<WorkoutPlanResponse>> {
+    const response = await userApi.patch<ApiResponse<WorkoutPlanResponse>>(
+      USER_API_ROUTES.MARK_WORKOUT_DAY(planId, dayNumber),
+      { completed }
+    );
+    return response.data;
+  },
+
+  async markExerciseStatus(planId: string, dayNumber: number, exerciseId: string, status: "PENDING" | "ACTIVE" | "COMPLETED" | "SKIPPED"): Promise<ApiResponse<WorkoutPlanResponse>> {
+    const response = await userApi.patch<ApiResponse<WorkoutPlanResponse>>(
+      USER_API_ROUTES.MARK_WORKOUT_EXERCISE(planId, dayNumber, exerciseId),
+      { status }
+    );
+    return response.data;
   },
 };
+
+export interface AiWorkoutExercise {
+  order: number;
+  exerciseId: string;
+  exerciseTitle?: string;
+  exerciseImage?: string;
+  sets: number;
+  reps?: number;
+  durationSeconds?: number;
+  restSeconds: number;
+  notes: string;
+  status?: "PENDING" | "ACTIVE" | "COMPLETED" | "SKIPPED";
+  startedAt?: string;
+  timeTakenSeconds?: number;
+}
+
+export interface GenerateWorkoutDay {
+  dayNumber: number;
+  day: string;
+  type: "workout" | "rest";
+  focus: string;
+  estimatedDurationMinutes: number;
+  status: string;
+  completedAt?: string;
+  exercises: AiWorkoutExercise[];
+}
+
+export interface WorkoutPlan {
+  workoutPlanId: string;
+  days: GenerateWorkoutDay[];
+  planType: 'general' | 'custom';
+}
+
+export interface WorkoutPlanResponse extends WorkoutPlan {
+  weekNumber: number;
+  startDate: string;
+  endDate: string;
+  status: string;
+  autoGenerated?: boolean;
+}
 
 export default userServices;

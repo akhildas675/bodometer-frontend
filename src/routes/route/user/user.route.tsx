@@ -19,6 +19,8 @@ import UserFitnessProfilePage from "@/pages/user/user-fitness/user.fitness-profi
 import UserExercisesPage from "@/pages/user/user-fitness/user-exercises.page";
 import UserExerciseDetailPage from "@/pages/user/user-fitness/user-exercise.detail.page";
 
+import UserWorkoutPlansPage from "@/pages/user/user-fitness/user-workout-plans.page";
+
 
 export const userRoutes = (
   <Route element={<ProtectedRoute allowedRoles={[ROLES.USER]} />}>
@@ -61,6 +63,7 @@ export const userRoutes = (
         <Route path={USER_UI_ROUTES.USER_FITNESS_PROFILE} element={<UserFitnessProfilePage/>} />
         <Route path={USER_UI_ROUTES.USER_EXERCISES} element={<UserExercisesPage />} />
         <Route path={USER_UI_ROUTES.USER_EXERCISE_DETAIL} element={<UserExerciseDetailPage />} />
+        <Route path={USER_UI_ROUTES.USER_WORKOUT_PLANS} element={<UserWorkoutPlansPage />} />
       </Route>
     </Route>
 

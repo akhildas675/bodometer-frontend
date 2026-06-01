@@ -55,6 +55,36 @@ const UserOnboardingAssessment = () => {
  
   const handleNext = async () => {
     if (!activeGroup) return;
+
+    for (const q of visibleQuestions) {
+      const ans = answers[q.questionId]?.value;
+
+      if (
+        q.validation?.required &&
+        (ans === undefined ||
+          ans === null ||
+          ans === "" ||
+          (Array.isArray(ans) && ans.length === 0))
+      ) {
+        toast.error(`"${q.question}" is required.`);
+        return;
+      }
+
+      if (q.type === "date" && ans) {
+        const dob = new Date(ans as string);
+        const today = new Date();
+        const limitDate = new Date(
+          today.getFullYear() - 18,
+          today.getMonth(),
+          today.getDate()
+        );
+        if (dob > limitDate) {
+          toast.error("You must be at least 18 years old to proceed.");
+          return;
+        }
+      }
+    }
+
     setShowConfirmModal(true);
   };
 

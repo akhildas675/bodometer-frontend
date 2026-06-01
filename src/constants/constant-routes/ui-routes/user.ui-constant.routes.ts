@@ -21,5 +21,7 @@ export const USER_UI_ROUTES = {
     // Exercises (premium)
     USER_EXERCISES: "/exercises",
     USER_EXERCISE_DETAIL: "/exercises/:exerciseId",
+    USER_GENERATE_WORKOUT: "/generate-workout",
+    USER_WORKOUT_PLANS: "/workout-plans",
 
 } as const
