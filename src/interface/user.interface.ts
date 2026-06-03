@@ -42,6 +42,14 @@ export interface TrainerListItem {
   specializations: { _id: string; name: string }[];
 }
 
+export interface RelatedTrainer {
+  _id: string;
+  name: string;
+  profilePic: string | null;
+  experienceInYears: number;
+  bio: string;
+}
+
 export interface TrainerDetail {
   _id: string;
   name: string;
@@ -50,6 +58,7 @@ export interface TrainerDetail {
   bio: string;
   experienceInYears: number;
   specializations: { _id: string; name: string }[];
+  relatedTrainers?: RelatedTrainer[];
 }
 
 export interface CategoryListItem {

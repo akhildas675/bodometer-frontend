@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import userServices from "@/services/user/user.services";
 import type { TrainerDetail } from "@/interface/user.interface";
@@ -11,10 +11,17 @@ const UserTrainerDetails = () => {
   const navigate = useNavigate();
 
 
-  const { data, loading } = useFetch<ApiResponse<TrainerDetail>>(
+  const { data, loading, refetch } = useFetch<ApiResponse<TrainerDetail>>(
     useCallback(() => userServices.getTrainerById(id!), [id]),
     !!id,
   );
+
+  useEffect(() => {
+    if (id) {
+      refetch();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [id, refetch]);
 
   const trainer = data?.data ?? null;
 
@@ -37,7 +44,8 @@ const UserTrainerDetails = () => {
             Trainer not found.
           </div>
         ) : (
-          <div className="bg-[#0d0b1f] border border-white/5 rounded-2xl overflow-hidden">
+          <>
+            <div className="bg-[#0d0b1f] border border-white/5 rounded-2xl overflow-hidden">
             {/* Cover Photo */}
             <div className="relative h-48 w-full">
               {trainer.coverPhoto ? (
@@ -118,6 +126,38 @@ const UserTrainerDetails = () => {
               )}
             </div>
           </div>
+          
+          {/* Related Trainers */}
+          {trainer.relatedTrainers && trainer.relatedTrainers.length > 0 && (
+            <div className="mt-10 mb-10">
+              <h2 className="text-white/80 text-xl font-bold tracking-wide mb-6">
+                Related Trainers
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                {trainer.relatedTrainers.map((rt) => (
+                  <div 
+                    key={rt._id}
+                    onClick={() => navigate(`/trainers/${rt._id}`)}
+                    className="flex items-center gap-4 p-4 bg-[#0d0b1f] hover:bg-[#13102b] rounded-2xl border border-white/5 hover:border-purple-500/40 cursor-pointer transition-all shadow-md hover:shadow-purple-900/20 hover:-translate-y-1"
+                  >
+                    <img 
+                      src={rt.profilePic || "https://via.placeholder.com/64"}
+                      alt={rt.name}
+                      className="w-16 h-16 rounded-full object-cover border-2 border-[#2a264f]"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-white text-lg font-bold truncate">{rt.name}</h3>
+                      <div className="flex items-center gap-1.5 text-purple-400 text-sm mt-1">
+                        <Clock size={14} />
+                        <span>{rt.experienceInYears} yrs experience</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+          </>
         )}
       </div>
    
