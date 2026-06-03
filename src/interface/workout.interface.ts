@@ -148,3 +148,4 @@ export interface WorkoutProgressResponse {
   muscleDistribution: MuscleDistributionDto[];
   recentActivities: RecentActivityDto[];
 }
+
