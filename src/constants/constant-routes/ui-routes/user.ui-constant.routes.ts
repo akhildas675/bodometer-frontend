@@ -23,5 +23,6 @@ export const USER_UI_ROUTES = {
     USER_EXERCISE_DETAIL: "/exercises/:exerciseId",
     USER_GENERATE_WORKOUT: "/generate-workout",
     USER_WORKOUT_PLANS: "/workout-plans",
+    USER_PROGRESS: "/progress",
 
 } as const

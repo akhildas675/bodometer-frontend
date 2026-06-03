@@ -28,10 +28,10 @@ export const USER_API_ROUTES = {
     GET_ONBOARDING_GROUPS: "/onboarding-groups",
     SUBMIT_ONBOARDING: "/submit-onboarding",
     GENERATE_WORKOUT: "/generate-workout",
-    GET_WORKOUT_PLAN: "/workout-plan",
     GET_WORKOUT_PLANS: "/workout-plans",
     MARK_WORKOUT_DAY: (planId: string, dayNumber: number) => `/workout-plan/${planId}/day/${dayNumber}/complete`,
     MARK_WORKOUT_EXERCISE: (planId: string, dayNumber: number, exerciseId: string) => `/workout-plan/${planId}/day/${dayNumber}/exercise/${exerciseId}/complete`,
+    GET_WORKOUT_PROGRESS: "/workout-progress",
 
 
     //onboarding Questions
