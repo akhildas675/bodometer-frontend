@@ -20,7 +20,8 @@ import type {
 } from "@/interface/user.interface";
 import { AnswerValue } from "@/constants/onboarding.constant";
 import type { ExerciseRow } from "@/interface/exercise.interface";
-import { GetWorkoutPlansResponse, WorkoutPlanResponse, MarkDayCompletedPayload, MarkExerciseStatusPayload } from "@/interface/workout.interface";
+import { GetWorkoutPlansResponse, WorkoutPlanResponse, MarkDayCompletedPayload, MarkExerciseStatusPayload, WorkoutProgressResponse } from "@/interface/workout.interface";
+import { Timeframe } from "@/constants/fitness.constant";
 
 
 
@@ -201,6 +202,10 @@ const userServices = {
       USER_API_ROUTES.MARK_WORKOUT_EXERCISE(data.planId, data.dayNumber, data.exerciseId),
       { status: data.status }
     );
+    return response.data;
+  },
+  async getWorkoutProgress(timeframe: Timeframe): Promise<ApiResponse<WorkoutProgressResponse>> {
+    const response = await userApi.get<ApiResponse<WorkoutProgressResponse>>(`${USER_API_ROUTES.GET_WORKOUT_PROGRESS}?timeframe=${timeframe}`);
     return response.data;
   },
 };

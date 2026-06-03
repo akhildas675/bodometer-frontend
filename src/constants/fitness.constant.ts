@@ -20,3 +20,10 @@ export const WORKOUT_ENVIRONMENT = {
   OUTDOOR: "outdoor",
 } as const;
 export type WorkoutEnvironment = typeof WORKOUT_ENVIRONMENT[keyof typeof WORKOUT_ENVIRONMENT];
+
+export const TIMEFRAME = {
+  DAILY: "daily",
+  WEEKLY: "weekly",
+  MONTHLY: "monthly",
+} as const;
+export type Timeframe = typeof TIMEFRAME[keyof typeof TIMEFRAME];

@@ -3,6 +3,7 @@ import { Activity, Flame, Clock3, Dumbbell, Trophy } from "lucide-react";
 import { useFetch } from "@/hooks/useFetch";
 import userServices from "@/services/user/user.services";
 import { WorkoutProgressResponse } from "@/interface/workout.interface";
+import { TIMEFRAME, Timeframe } from "@/constants/fitness.constant";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -44,7 +45,7 @@ const PIE_COLORS = ['#a855f7', '#4b5563']; // Purple for completed, Gray for ski
 
 const UserWorkoutProgression = () => {
   const [progressData, setProgressData] = useState<WorkoutProgressResponse | null>(null);
-  const [trendType, setTrendType] = useState<"daily" | "weekly" | "monthly">("weekly");
+  const [trendType, setTrendType] = useState<Timeframe>(TIMEFRAME.WEEKLY);
 
   const fetchProgress = useCallback(async () => {
     const response = await userServices.getWorkoutProgress(trendType);
@@ -74,8 +75,8 @@ const UserWorkoutProgression = () => {
     : [1, 0];
   const pieDataLabels = totalPie > 0 ? ['Completed', 'Skipped'] : ['No Data', ''];
 
-  const trendDataSrc = trendType === "daily" ? progressData.dailyCompletionTrend :
-                       trendType === "weekly" ? progressData.weeklyCompletionTrend :
+  const trendDataSrc = trendType === TIMEFRAME.DAILY ? progressData.dailyCompletionTrend :
+                       trendType === TIMEFRAME.WEEKLY ? progressData.weeklyCompletionTrend :
                        progressData.monthlyCompletionTrend;
   
   type TrendData = {
@@ -85,7 +86,7 @@ const UserWorkoutProgression = () => {
     completionRate: number;
   };
 
-  const trendLabels = trendDataSrc.map((d: TrendData) => trendType === "daily" ? d.dayName : trendType === "weekly" ? `Week ${d.weekNumber}` : d.monthName);
+  const trendLabels = trendDataSrc.map((d: TrendData) => trendType === TIMEFRAME.DAILY ? d.dayName : trendType === TIMEFRAME.WEEKLY ? `Week ${d.weekNumber}` : d.monthName);
   const trendValues = trendDataSrc.map((d: TrendData) => d.completionRate);
 
   const muscleLabels = progressData.muscleDistribution.map(d => d.muscleName);
@@ -108,20 +109,20 @@ const UserWorkoutProgression = () => {
         {/* Global Timeframe Filter */}
         <div className="flex space-x-2 bg-white/5 p-1 rounded-lg shrink-0 self-start sm:self-center">
           <button 
-            onClick={() => setTrendType("daily")}
-            className={`px-4 py-2 text-sm font-medium rounded-md transition-all ${trendType === "daily" ? "bg-purple-600 text-white shadow-md" : "text-white/60 hover:text-white"}`}
+            onClick={() => setTrendType(TIMEFRAME.DAILY)}
+            className={`px-4 py-2 text-sm font-medium rounded-md transition-all ${trendType === TIMEFRAME.DAILY ? "bg-purple-600 text-white shadow-md" : "text-white/60 hover:text-white"}`}
           >
             Daily
           </button>
           <button 
-            onClick={() => setTrendType("weekly")}
-            className={`px-4 py-2 text-sm font-medium rounded-md transition-all ${trendType === "weekly" ? "bg-purple-600 text-white shadow-md" : "text-white/60 hover:text-white"}`}
+            onClick={() => setTrendType(TIMEFRAME.WEEKLY)}
+            className={`px-4 py-2 text-sm font-medium rounded-md transition-all ${trendType === TIMEFRAME.WEEKLY ? "bg-purple-600 text-white shadow-md" : "text-white/60 hover:text-white"}`}
           >
             Weekly
           </button>
           <button 
-            onClick={() => setTrendType("monthly")}
-            className={`px-4 py-2 text-sm font-medium rounded-md transition-all ${trendType === "monthly" ? "bg-purple-600 text-white shadow-md" : "text-white/60 hover:text-white"}`}
+            onClick={() => setTrendType(TIMEFRAME.MONTHLY)}
+            className={`px-4 py-2 text-sm font-medium rounded-md transition-all ${trendType === TIMEFRAME.MONTHLY ? "bg-purple-600 text-white shadow-md" : "text-white/60 hover:text-white"}`}
           >
             Monthly
           </button>
