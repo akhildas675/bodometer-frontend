@@ -20,8 +20,10 @@ import {
   Target,
   ListChecks,
 } from "lucide-react";
-import userServices, { WorkoutPlanResponse, GenerateWorkoutDay, AiWorkoutExercise, GetWorkoutPlansResponse } from "@/services/user/user.services";
+
 import { USER_UI_ROUTES } from "@/constants/constant-routes/ui-routes/user.ui-constant.routes";
+import { AiWorkoutExercise, GenerateWorkoutDay, GetWorkoutPlansResponse, WorkoutPlanResponse, WorkoutExerciseStatus } from "@/interface/workout.interface";
+import userServices from "@/services/user/user.services";
 
 
 
@@ -104,6 +106,8 @@ const ExerciseItem = ({
   dayNumber,
   isLocked,
   isExToggling,
+  isGlobalResting,
+  setGlobalResting,
   handleSetExerciseStatus,
   navigate
 }: {
@@ -112,19 +116,37 @@ const ExerciseItem = ({
   dayNumber: number;
   isLocked: boolean;
   isExToggling: boolean;
-  handleSetExerciseStatus: (planId: string, dayNumber: number, exerciseId: string, status: "PENDING" | "ACTIVE" | "COMPLETED" | "SKIPPED") => void;
+  isGlobalResting: boolean;
+  setGlobalResting: (resting: boolean) => void;
+  handleSetExerciseStatus: (planId: string, dayNumber: number, instanceId: string, status: "PENDING" | "ACTIVE" | "COMPLETED" | "SKIPPED") => void;
   navigate: (path: string) => void;
 }) => {
   const [elapsed, setElapsed] = useState(0);
   const [isResting, setIsResting] = useState(false);
-  const [restRemaining, setRestRemaining] = useState(30);
+  const [restRemaining, setRestRemaining] = useState(ex.restSeconds || 30);
+
+  const estimatedTime = ex.estimatedDurationSeconds || (ex.durationSeconds || (ex.reps ? ex.reps * 4 : 60));
+
+  useEffect(() => {
+    setGlobalResting(isResting);
+    return () => {
+      if (isResting) setGlobalResting(false);
+    };
+  }, [isResting, setGlobalResting]);
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
     if (ex.status === "ACTIVE" && !isResting) {
       const start = ex.startedAt ? new Date(ex.startedAt).getTime() : Date.now();
       interval = setInterval(() => {
-        setElapsed(Math.floor((Date.now() - start) / 1000));
+        const diffSeconds = Math.floor((Date.now() - start) / 1000);
+        setElapsed(diffSeconds);
+        
+        if (diffSeconds >= estimatedTime) {
+          clearInterval(interval);
+          setIsResting(true);
+          handleSetExerciseStatus(planId, dayNumber, ex.instanceId, "COMPLETED");
+        }
       }, 1000);
     } else if (isResting) {
       interval = setInterval(() => {
@@ -139,7 +161,7 @@ const ExerciseItem = ({
       }, 1000);
     }
     return () => clearInterval(interval);
-  }, [ex.status, ex.startedAt, isResting, planId, dayNumber, ex.exerciseId]);
+  }, [ex.status, ex.startedAt, isResting, planId, dayNumber, ex.instanceId, estimatedTime, handleSetExerciseStatus]);
 
   const formatTime = (secs: number) => {
     const m = Math.floor(secs / 60);
@@ -150,6 +172,7 @@ const ExerciseItem = ({
   const isCompleted = ex.status === "COMPLETED";
   const isSkipped = ex.status === "SKIPPED";
   const isActive = ex.status === "ACTIVE";
+  const activeRemaining = Math.max(estimatedTime - elapsed, 0);
 
   return (
     <div
@@ -182,9 +205,26 @@ const ExerciseItem = ({
           <p className={`text-sm font-bold text-white truncate w-full ${isSkipped ? "line-through" : ""}`}>
             {ex.exerciseTitle || "Exercise"}
           </p>
-          <p className="text-xs text-white/50 truncate w-full">
-            {ex.sets} sets {ex.durationSeconds ? `× ${ex.durationSeconds}s` : ex.reps ? `× ${ex.reps} reps` : ""}
-          </p>
+          <div className="flex items-center gap-2">
+            <p className="text-xs text-white/50 truncate">
+              {ex.sets} sets {ex.durationSeconds ? `× ${ex.durationSeconds}s` : ex.reps ? `× ${ex.reps} reps` : ""}
+            </p>
+            {estimatedTime > 0 && !isCompleted && !isActive && (
+              <span className="text-[10px] text-white/40 bg-white/5 px-1.5 py-0.5 rounded-sm border border-white/10">
+                ~{formatTime(estimatedTime)}
+              </span>
+            )}
+          </div>
+          
+          {ex.targetMuscles && ex.targetMuscles.length > 0 && (
+            <div className="flex flex-wrap gap-1 mt-1.5">
+              {ex.targetMuscles.map((muscle, idx) => (
+                <span key={idx} className="text-[9px] px-1.5 py-0.5 rounded-full bg-blue-500/20 text-blue-300 border border-blue-500/30">
+                  {muscle}
+                </span>
+              ))}
+            </div>
+          )}
           
           {ex.notes && (
             <div className="mt-1.5 flex items-start gap-1.5 bg-purple-500/10 border border-purple-500/20 px-2.5 py-1.5 rounded-md w-full">
@@ -209,12 +249,12 @@ const ExerciseItem = ({
           <div className="flex items-center gap-3 px-3 py-1.5 bg-purple-500/20 rounded-lg border border-purple-500/30 w-full sm:w-auto justify-between sm:justify-start">
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-purple-400 animate-pulse" />
-              <span className="font-mono text-sm font-bold text-purple-300 w-12 text-center">{formatTime(elapsed)}</span>
+              <span className="font-mono text-sm font-bold text-purple-300 w-12 text-center">{formatTime(activeRemaining)}</span>
             </div>
             <button
               onClick={() => {
                 setIsResting(true);
-                handleSetExerciseStatus(planId, dayNumber, ex.exerciseId, "COMPLETED");
+                handleSetExerciseStatus(planId, dayNumber, ex.instanceId, "COMPLETED");
               }}
               disabled={isExToggling}
               className="text-xs font-bold bg-white text-purple-900 px-4 py-1 rounded-md hover:bg-white/90 transition-colors"
@@ -241,9 +281,13 @@ const ExerciseItem = ({
 
         {!isActive && !isCompleted && !isLocked && !isSkipped && (
           <button
-            onClick={() => handleSetExerciseStatus(planId, dayNumber, ex.exerciseId, "ACTIVE")}
-            disabled={isExToggling}
-            className="flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs transition-colors"
+            onClick={() => handleSetExerciseStatus(planId, dayNumber, ex.instanceId, "ACTIVE")}
+            disabled={isExToggling || isGlobalResting}
+            className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full font-bold text-xs transition-colors ${
+              isGlobalResting
+                ? "bg-white/5 text-white/20 cursor-not-allowed"
+                : "bg-purple-600 hover:bg-purple-500 text-white"
+            }`}
           >
             {isExToggling ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Zap className="w-3.5 h-3.5" />}
             Start
@@ -253,8 +297,8 @@ const ExerciseItem = ({
         {/* Skip Button */}
         {ex.status !== "COMPLETED" && !isActive && !isLocked && (
           <button
-            onClick={() => handleSetExerciseStatus(planId, dayNumber, ex.exerciseId, isSkipped ? "PENDING" : "SKIPPED")}
-            disabled={isExToggling}
+            onClick={() => handleSetExerciseStatus(planId, dayNumber, ex.instanceId, isSkipped ? "PENDING" : "SKIPPED")}
+            disabled={isExToggling || isGlobalResting}
             className="p-2 rounded-full hover:bg-white/10 transition-colors group/skip"
             title={isSkipped ? "Undo Skip" : "Skip Exercise"}
           >
@@ -265,8 +309,15 @@ const ExerciseItem = ({
         {/* Completed Toggle */}
         {!isLocked && !isActive && (
           <button
-            onClick={() => handleSetExerciseStatus(planId, dayNumber, ex.exerciseId, isCompleted ? "PENDING" : "COMPLETED")}
-            disabled={isExToggling}
+            onClick={() => {
+              if (!isCompleted) {
+                setIsResting(true);
+              } else {
+                setIsResting(false);
+              }
+              handleSetExerciseStatus(planId, dayNumber, ex.instanceId, isCompleted ? "PENDING" : "COMPLETED");
+            }}
+            disabled={isExToggling || isGlobalResting}
             className="p-2 rounded-full hover:bg-white/10 transition-colors"
             title={isCompleted ? "Mark Pending" : "Mark Completed"}
           >
@@ -300,6 +351,7 @@ const UserWorkoutPlans = () => {
   const [togglingDay, setTogglingDay] = useState<{ planId: string; dayNumber: number } | null>(null);
   const [togglingExercise, setTogglingExercise] = useState<string | null>(null);
   const [expandedDays, setExpandedDays] = useState<string[]>([]);
+  const [globalResting, setGlobalResting] = useState(false);
 
   const toggleDayExpansion = (dayId: string) => {
     setExpandedDays(prev => 
@@ -339,7 +391,7 @@ const UserWorkoutPlans = () => {
     try {
       setTogglingDay({ planId, dayNumber });
       const newStatus = currentStatus === "COMPLETED" ? false : true;
-      const response = await userServices.markDayCompleted(planId, dayNumber, newStatus);
+      const response = await userServices.markDayCompleted({ planId, dayNumber, completed: newStatus });
       if (response.success) {
         await fetchPlansFn();
       }
@@ -350,10 +402,10 @@ const UserWorkoutPlans = () => {
     }
   };
 
-  const handleSetExerciseStatus = async (planId: string, dayNumber: number, exerciseId: string, status: "PENDING" | "ACTIVE" | "COMPLETED" | "SKIPPED") => {
+  const handleSetExerciseStatus = async (planId: string, dayNumber: number, exerciseId: string, status: WorkoutExerciseStatus) => {
     try {
       setTogglingExercise(exerciseId);
-      const response = await userServices.markExerciseStatus(planId, dayNumber, exerciseId, status);
+      const response = await userServices.markExerciseStatus({ planId, dayNumber, exerciseId, status });
       if (response.success) {
         await fetchPlansFn();
       }
@@ -678,16 +730,18 @@ const UserWorkoutPlans = () => {
                                 {(() => {
                                   const firstPendingExOrder = day.exercises.find(e => e.status !== "COMPLETED" && e.status !== "SKIPPED")?.order ?? 9999;
                                   return day.exercises.map((ex) => {
-                                    const isExToggling = togglingExercise === ex.exerciseId;
+                                    const isExToggling = togglingExercise === ex.instanceId;
                                     const isExLocked = isLocked || ex.order > firstPendingExOrder;
                                     return (
                                       <ExerciseItem
-                                        key={ex.exerciseId}
+                                        key={ex.instanceId}
                                         ex={ex}
                                         planId={plan.workoutPlanId}
                                         dayNumber={day.dayNumber}
                                         isLocked={isExLocked}
                                         isExToggling={isExToggling}
+                                        isGlobalResting={globalResting}
+                                        setGlobalResting={setGlobalResting}
                                         handleSetExerciseStatus={handleSetExerciseStatus}
                                         navigate={navigate}
                                       />
