@@ -156,23 +156,30 @@ const UserWorkoutProgression = () => {
         </Card>
       </div>
 
-      {/* ── Progress Bars ── */}
+      {/* ── Progress Bar ── */}
       <Card>
-        <h3 className="text-lg font-bold mb-1">Current Week Progress</h3>
+        <h3 className="text-lg font-bold mb-1">
+          {trendType === TIMEFRAME.DAILY ? "Today's Workout Progress" :
+           trendType === TIMEFRAME.WEEKLY ? "Current Week Progress" :
+           "Monthly Workout Progress"}
+        </h3>
         <div className="flex justify-between text-sm text-white/60">
-          <span>Weekly Goal</span>
-          <span className="font-bold text-white">{progressData.currentWeekProgress}%</span>
+          <span>
+            {trendType === TIMEFRAME.DAILY ? "Daily Goal" :
+             trendType === TIMEFRAME.WEEKLY ? "Weekly Goal" :
+             "Monthly Goal"}
+          </span>
+          <span className="font-bold text-white">
+            {trendType === TIMEFRAME.DAILY ? `${progressData.todayWorkoutProgress}% Completed` :
+             trendType === TIMEFRAME.WEEKLY ? `${progressData.currentWeekProgress}%` :
+             `${progressData.completionRate}%`}
+          </span>
         </div>
-        <ProgressBar value={progressData.currentWeekProgress} />
-      </Card>
-
-      <Card>
-        <h3 className="text-lg font-bold mb-1">Today's Workout Progress</h3>
-        <div className="flex justify-between text-sm text-white/60">
-          <span>Daily Goal</span>
-          <span className="font-bold text-white">{progressData.todayWorkoutProgress}% Completed</span>
-        </div>
-        <ProgressBar value={progressData.todayWorkoutProgress} />
+        <ProgressBar value={
+          trendType === TIMEFRAME.DAILY ? progressData.todayWorkoutProgress :
+          trendType === TIMEFRAME.WEEKLY ? progressData.currentWeekProgress :
+          progressData.completionRate
+        } />
       </Card>
 
       {/* ── Combined Trend Chart ── */}
