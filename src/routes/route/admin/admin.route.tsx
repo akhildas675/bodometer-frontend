@@ -21,6 +21,8 @@ import AdminQuestionListPage from "@/pages/admin/admin-question.list.page";
 import AdminQuestionFormPage from "@/pages/admin/admin-question.form.page";
 import AdminEquipmentListPage from "@/pages/admin/admin.equipment-list.page";
 import AdminEquipmentFormPage from "@/pages/admin/admin.equipment-form.page";
+import AdminMealCategoryListPage from "@/pages/admin/admin.meal-category.list-page";
+import AdminMealCategoryFormPage from "@/pages/admin/admin.meal-category.form-page";
 const AdminTargetMuscleListPage = lazy(() => import("@/pages/admin/admin-target.muscle-list.page"));
 const AdminTargetMuscleFormPage = lazy(() => import("@/pages/admin/admin.target-muscle.form-page"));
 const AdminExerciseListPage = lazy(() => import("@/pages/admin/admin.exercise-list.page"));
@@ -68,6 +70,9 @@ export const adminRoutes = (
       {/* Exercises */}
       <Route path={ADMIN_UI_ROUTES.EXERCISES} element={<AdminExerciseListPage />} />
       <Route path={ADMIN_UI_ROUTES.EXERCISES_FORM} element={<AdminExerciseFormPage />} />
+
+      <Route path={ADMIN_UI_ROUTES.MEAL_CATEGORY} element={<AdminMealCategoryListPage/>} />\
+      <Route path={ADMIN_UI_ROUTES.MEAL_CATEGORY_FORM} element={<AdminMealCategoryFormPage/>} />
 
     </Route>
   </Route>

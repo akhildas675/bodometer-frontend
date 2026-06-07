@@ -80,4 +80,12 @@ export const ADMIN_API_ROUTES = {
   UPDATE_EXERCISE: (id: string) => `/update-exercise/${id}`,
   TOGGLE_EXERCISE_STATUS: (id: string) => `/toggle-exercise/${id}`,
 
+  //meal category
+
+  CREATE_MEAL_CATEGORY:"/create-meal-category",
+  GET_MEAL_CATEGORIES: "/meal-category",
+  GET_MEAL_CATEGORY_BY_ID: (id: string) => `/meal-category/${id}`,
+  UPDATE_MEAL_CATEGORY: (id: string) => `/meal-category/${id}`,
+  TOGGLE_MEAL_CATEGORY_STATUS: (id: string) => `/meal-category/${id}/toggle-status`,
+
 } as const;

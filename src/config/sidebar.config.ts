@@ -14,7 +14,7 @@ export const sidebarConfig: Record<SidebarRole, SidebarItem[]> = {
     { label: "Users", path: "/admin/users" },
     { label: "Trainers", path: "/admin/trainers" },
     { label: "Trainer Appointment", path: "/admin/appointments" },
-    { label: "Category", path: "/admin/category" },
+  
     {
       label: "Subscription",
       path: "/admin/subscription",
@@ -33,12 +33,14 @@ export const sidebarConfig: Record<SidebarRole, SidebarItem[]> = {
       ],
     },
     {
-      label: "Workouts",
+      label: "Fitness",
       path: "/admin/workouts",
       children: [
         { label: "Exercise", path: "/admin/exercises" },
         { label: "Equipment", path: "/admin/equipment" },
         { label: "Target Muscle", path: "/admin/target-muscles" },
+        { label: "Category", path: "/admin/category" },
+        { label: "Meal Category", path: "/admin/meal-category" },
       ],
     }
   ],

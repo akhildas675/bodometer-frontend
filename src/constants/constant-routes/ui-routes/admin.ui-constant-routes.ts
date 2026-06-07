@@ -47,4 +47,7 @@ export const ADMIN_UI_ROUTES = {
   EXERCISES: "/admin/exercises",
   EXERCISES_FORM: "/admin/exercises-form",
 
+  MEAL_CATEGORY:"/admin/meal-category",
+  MEAL_CATEGORY_FORM:"/admin/meal-category/create",
+
 } as const;
