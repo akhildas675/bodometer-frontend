@@ -9,6 +9,10 @@ export const USER_API_ROUTES = {
     GET_CATEGORIES: "/categories",
     GET_EQUIPMENT: "/equipment",
     GET_CATEGORY_BY_ID: (id: string) => `/categories/${id}`,
+    GET_MEAL_CATEGORIES: "/meal-categories",
+    GET_HEALTH_LOG: "/health-log",
+    UPSERT_HEALTH_LOG: "/health-log",
+    GET_HEALTH_LOG_PROGRESS: "/health-log/progress",
 
 
     //subscription

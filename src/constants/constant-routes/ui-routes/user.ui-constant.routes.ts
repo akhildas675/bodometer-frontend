@@ -24,5 +24,7 @@ export const USER_UI_ROUTES = {
     USER_GENERATE_WORKOUT: "/generate-workout",
     USER_WORKOUT_PLANS: "/workout-plans",
     USER_PROGRESS: "/progress",
+    USER_HEALTH_LOG: "/food-log",
+    USER_HEALTH_PROGRESS: "/health-progress",
 
 } as const
