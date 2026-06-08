@@ -1,5 +1,13 @@
-import React, { useCallback, useState } from "react";
-import { Activity, Flame, Clock3, Dumbbell, Trophy } from "lucide-react";
+import React, { useCallback, useEffect, useState } from "react";
+import {
+  Activity,
+  Flame,
+  Clock3,
+  Dumbbell,
+  Trophy,
+  TrendingUp,
+  Target
+} from "lucide-react";
 import { useFetch } from "@/hooks/useFetch";
 import userServices from "@/services/user/user.services";
 import { WorkoutProgressResponse } from "@/interface/workout.interface";
@@ -8,28 +16,43 @@ import {
   Chart as ChartJS,
   CategoryScale,
   LinearScale,
+  PointElement,
+  LineElement,
   BarElement,
+  ArcElement,
   Title,
   Tooltip,
   Legend,
-  ArcElement
-} from 'chart.js';
-import { Bar, Pie } from 'react-chartjs-2';
+  Filler,
+} from "chart.js";
+import { Line, Bar, Pie } from "react-chartjs-2";
+
+import {
+  Card,
+  StatCard,
+  ChartCard,
+  TIME_TABS,
+  baseScales,
+  baseLegend,
+  gridColor,
+  tickColor,
+  PIE_COLORS,
+  PIE_COLORS_DIM,
+  lineDataset,
+  barDataset
+} from "../shared/dashboard-components";
 
 ChartJS.register(
   CategoryScale,
   LinearScale,
+  PointElement,
+  LineElement,
   BarElement,
+  ArcElement,
   Title,
   Tooltip,
   Legend,
-  ArcElement
-);
-
-const Card = ({ children, className = "" }: { children: React.ReactNode, className?: string }) => (
-  <div className={`bg-white/5 border border-white/10 rounded-2xl p-6 flex flex-col ${className}`}>
-    {children}
-  </div>
+  Filler
 );
 
 const ProgressBar = ({ value }: { value: number }) => (
@@ -41,199 +64,151 @@ const ProgressBar = ({ value }: { value: number }) => (
   </div>
 );
 
-const PIE_COLORS = ['#a855f7', '#4b5563']; // Purple for completed, Gray for skipped
-
 const UserWorkoutProgression = () => {
-  const [progressData, setProgressData] = useState<WorkoutProgressResponse | null>(null);
-  const [trendType, setTrendType] = useState<Timeframe>(TIMEFRAME.WEEKLY);
+  const [data, setData] = useState<WorkoutProgressResponse | null>(null);
+  const [timeframe, setTimeframe] = useState<Timeframe>(TIMEFRAME.WEEKLY);
+  const [loading, setLoading] = useState(true);
 
   const fetchProgress = useCallback(async () => {
-    const response = await userServices.getWorkoutProgress(trendType);
-    if (response.success && response.data) {
-      setProgressData(response.data);
+    setLoading(true);
+    try {
+      const res = await userServices.getWorkoutProgress(timeframe);
+      if (res.success && res.data) setData(res.data);
+    } catch (e) {
+      console.error("Workout progress fetch failed", e);
+    } finally {
+      setLoading(false);
     }
-  }, [trendType]);
+  }, [timeframe]);
 
   const { refetch } = useFetch(fetchProgress);
+  useEffect(() => { refetch(); }, [timeframe, refetch]);
 
-  // Auto-refetch when trendType changes
-  React.useEffect(() => {
-    refetch();
-  }, [trendType, refetch]);
+  const currentTab = TIME_TABS.find(t => t.value === timeframe)!;
 
-  if (!progressData) {
+  if (loading) {
     return (
       <div className="flex justify-center items-center h-96 text-purple-400">
-        <Activity className="w-8 h-8 animate-pulse" />
+        <Activity className="w-10 h-10 animate-pulse" />
       </div>
     );
   }
 
-  const totalPie = progressData.completedWorkouts + progressData.skippedWorkouts;
+  // ── Derived chart arrays ─────────────────────────────────────────────────
+  const trendLabels = data?.trendData.map(d => d.label) ?? [];
+  const trendValues = data?.trendData.map(d => d.completionRate) ?? [];
+
+  const muscleLabels = data?.muscleDistribution.map(d => `${d.muscleName} (${d.percentage}%)`) ?? [];
+  const muscleValues = data?.muscleDistribution.map(d => d.count) ?? [];
+
+  const totalPie = (data?.completedWorkouts ?? 0) + (data?.skippedWorkouts ?? 0);
   const pieDataValues = totalPie > 0 
-    ? [progressData.completedWorkouts, progressData.skippedWorkouts]
+    ? [data?.completedWorkouts ?? 0, data?.skippedWorkouts ?? 0]
     : [1, 0];
   const pieDataLabels = totalPie > 0 ? ['Completed', 'Skipped'] : ['No Data', ''];
-
-  const trendDataSrc = trendType === TIMEFRAME.DAILY ? progressData.dailyCompletionTrend :
-                       trendType === TIMEFRAME.WEEKLY ? progressData.weeklyCompletionTrend :
-                       progressData.monthlyCompletionTrend;
-  
-  type TrendData = {
-    dayName?: string;
-    weekNumber?: number;
-    monthName?: string;
-    completionRate: number;
-  };
-
-  const trendLabels = trendDataSrc.map((d: TrendData) => trendType === TIMEFRAME.DAILY ? d.dayName : trendType === TIMEFRAME.WEEKLY ? `Week ${d.weekNumber}` : d.monthName);
-  const trendValues = trendDataSrc.map((d: TrendData) => d.completionRate);
-
-  const muscleLabels = progressData.muscleDistribution.map(d => d.muscleName);
-  const muscleValues = progressData.muscleDistribution.map(d => d.count);
+  const STATUS_PIE_COLORS = ['#a855f7', '#4b5563'];
 
   return (
-    <div className="max-w-7xl mx-auto text-white w-full px-4 md:px-8 py-6 space-y-6">
-      {/* ── Header ── */}
-      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+    <div className="max-w-7xl mx-auto text-white w-full px-4 md:px-8 py-6 space-y-8">
+
+      {/* ── Page Header ── */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-black uppercase tracking-wide bg-linear-to-r from-white to-purple-400 bg-clip-text text-transparent flex items-center gap-2">
-            <Activity className="w-8 h-8 text-purple-400" />
-            Workout Progression
+          <h1 className="text-3xl font-black tracking-tight flex items-center gap-3">
+            <TrendingUp className="w-8 h-8 text-purple-400" />
+            <span className="bg-gradient-to-r from-white to-purple-400 bg-clip-text text-transparent">
+              Workout Progress
+            </span>
           </h1>
-          <p className="text-white/50 text-sm mt-1">
-            Track your fitness milestones and analyze your growth over time.
+          <p className="text-white/45 text-sm mt-1">
+            Track your fitness milestones and analyze your growth — {currentTab.sub}
           </p>
         </div>
 
-        {/* Global Timeframe Filter */}
-        <div className="flex space-x-2 bg-white/5 p-1 rounded-lg shrink-0 self-start sm:self-center">
-          <button 
-            onClick={() => setTrendType(TIMEFRAME.DAILY)}
-            className={`px-4 py-2 text-sm font-medium rounded-md transition-all ${trendType === TIMEFRAME.DAILY ? "bg-purple-600 text-white shadow-md" : "text-white/60 hover:text-white"}`}
-          >
-            Daily
-          </button>
-          <button 
-            onClick={() => setTrendType(TIMEFRAME.WEEKLY)}
-            className={`px-4 py-2 text-sm font-medium rounded-md transition-all ${trendType === TIMEFRAME.WEEKLY ? "bg-purple-600 text-white shadow-md" : "text-white/60 hover:text-white"}`}
-          >
-            Weekly
-          </button>
-          <button 
-            onClick={() => setTrendType(TIMEFRAME.MONTHLY)}
-            className={`px-4 py-2 text-sm font-medium rounded-md transition-all ${trendType === TIMEFRAME.MONTHLY ? "bg-purple-600 text-white shadow-md" : "text-white/60 hover:text-white"}`}
-          >
-            Monthly
-          </button>
+        {/* Timeframe tabs */}
+        <div className="flex space-x-1 bg-white/5 border border-white/10 p-1 rounded-xl shrink-0">
+          {TIME_TABS.map(tab => (
+            <button
+              key={tab.value}
+              onClick={() => setTimeframe(tab.value)}
+              className={`px-4 py-2 text-sm font-semibold rounded-lg transition-all ${
+                timeframe === tab.value
+                  ? "bg-purple-600 text-white shadow"
+                  : "text-white/50 hover:text-white"
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
         </div>
       </div>
 
-      {/* ── Top Stats Row ── */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="items-center justify-center text-center">
-          <Flame className="w-8 h-8 text-orange-500 mb-2" />
-          <p className="text-white/60 text-sm font-medium">Current Streak</p>
-          <h2 className="text-2xl font-bold">{progressData.currentStreak} Days</h2>
-        </Card>
-        
-        <Card className="items-center justify-center text-center">
-          <Trophy className="w-8 h-8 text-yellow-500 mb-2" />
-          <p className="text-white/60 text-sm font-medium">Completion Rate</p>
-          <h2 className="text-2xl font-bold">{progressData.completionRate}%</h2>
-        </Card>
-
-        <Card className="items-center justify-center text-center">
-          <Dumbbell className="w-8 h-8 text-blue-400 mb-2" />
-          <p className="text-white/60 text-sm font-medium">Workouts Completed</p>
-          <h2 className="text-2xl font-bold">{progressData.workoutsCompleted}</h2>
-        </Card>
-
-        <Card className="items-center justify-center text-center">
-          <Clock3 className="w-8 h-8 text-green-400 mb-2" />
-          <p className="text-white/60 text-sm font-medium">Total Training Time</p>
-          <h2 className="text-2xl font-bold">{progressData.totalTrainingMinutes} min</h2>
-        </Card>
+      {/* ── Summary Cards ── */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <StatCard icon={<Flame className="w-5 h-5 text-orange-500" />} iconClass="bg-orange-500/10" label="Current Streak" value={`${data?.currentStreak ?? 0}`} sub="Days" />
+        <StatCard icon={<Trophy className="w-5 h-5 text-yellow-500" />} iconClass="bg-yellow-500/10" label="Completion Rate" value={`${data?.completionRate ?? 0}%`} sub="overall" />
+        <StatCard icon={<Dumbbell className="w-5 h-5 text-blue-400" />} iconClass="bg-blue-400/10" label="Workouts Completed" value={`${data?.workoutsCompleted ?? 0}`} sub="sessions" />
+        <StatCard icon={<Clock3 className="w-5 h-5 text-green-400" />} iconClass="bg-green-400/10" label="Training Time" value={`${data?.totalTrainingMinutes ?? 0}`} sub="minutes" />
       </div>
 
       {/* ── Progress Bar ── */}
       <Card>
-        <h3 className="text-lg font-bold mb-1">
-          {trendType === TIMEFRAME.DAILY ? "Today's Workout Progress" :
-           trendType === TIMEFRAME.WEEKLY ? "Current Week Progress" :
+        <h3 className="text-lg font-bold mb-1 flex items-center gap-2">
+          <Target className="w-5 h-5 text-purple-400" />
+          {timeframe === TIMEFRAME.DAILY ? "Today's Workout Progress" :
+           timeframe === TIMEFRAME.WEEKLY ? "Current Week Progress" :
            "Monthly Workout Progress"}
         </h3>
         <div className="flex justify-between text-sm text-white/60">
           <span>
-            {trendType === TIMEFRAME.DAILY ? "Daily Goal" :
-             trendType === TIMEFRAME.WEEKLY ? "Weekly Goal" :
+            {timeframe === TIMEFRAME.DAILY ? "Daily Goal" :
+             timeframe === TIMEFRAME.WEEKLY ? "Weekly Goal" :
              "Monthly Goal"}
           </span>
           <span className="font-bold text-white">
-            {trendType === TIMEFRAME.DAILY ? `${progressData.todayWorkoutProgress}% Completed` :
-             trendType === TIMEFRAME.WEEKLY ? `${progressData.currentWeekProgress}%` :
-             `${progressData.completionRate}%`}
+            {timeframe === TIMEFRAME.DAILY ? `${data?.todayWorkoutProgress ?? 0}% Completed` :
+             timeframe === TIMEFRAME.WEEKLY ? `${data?.currentWeekProgress ?? 0}%` :
+             `${data?.completionRate ?? 0}%`}
           </span>
         </div>
         <ProgressBar value={
-          trendType === TIMEFRAME.DAILY ? progressData.todayWorkoutProgress :
-          trendType === TIMEFRAME.WEEKLY ? progressData.currentWeekProgress :
-          progressData.completionRate
+          timeframe === TIMEFRAME.DAILY ? (data?.todayWorkoutProgress ?? 0) :
+          timeframe === TIMEFRAME.WEEKLY ? (data?.currentWeekProgress ?? 0) :
+          (data?.completionRate ?? 0)
         } />
       </Card>
 
-      {/* ── Combined Trend Chart ── */}
-      <Card className="h-[450px] flex flex-col">
-        <div className="flex justify-between items-center mb-4 shrink-0">
-          <h3 className="text-lg font-bold">Completion Trend (%)</h3>
-        </div>
-        <div className="w-full flex-grow relative">
-          <Bar 
-            options={{
-              responsive: true,
-              maintainAspectRatio: false,
-              scales: {
-                y: { min: 0, max: 100, grid: { color: '#ffffff20' }, ticks: { color: '#ffffff60' } },
-                x: { grid: { display: false }, ticks: { color: '#ffffff60' } }
-              },
-              plugins: { legend: { display: false } }
-            }}
-            data={{
-              labels: trendLabels,
-              datasets: [{
-                label: 'Completion Rate',
-                data: trendValues,
-                backgroundColor: '#a855f7',
-                borderRadius: 4
-              }]
-            }}
-          />
-        </div>
-      </Card>
+      {/* ── Line: Completion Trend ── */}
+      <ChartCard title="Completion Trend (%)" height="h-64">
+        <Line
+          options={{ responsive: true, maintainAspectRatio: false, scales: { ...baseScales, y: { min: 0, max: 100, grid: { color: gridColor }, ticks: { color: tickColor } } }, plugins: { legend: baseLegend } }}
+          data={{
+            labels: trendLabels,
+            datasets: [lineDataset("Completion Rate (%)", trendValues, "rgb(168,85,247)")], // Purple
+          }}
+        />
+      </ChartCard>
 
-      {/* ── Bottom Row: Pie Chart & Horizontal Bar Chart ── */}
+      {/* ── Bottom Row: Pie Charts ── */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         
-        <Card className="h-80 flex flex-col">
-          <h3 className="text-lg font-bold mb-4 shrink-0">Completed vs Skipped</h3>
-          <div className="w-full flex-grow relative mx-auto flex items-center justify-center">
+        {/* Completed vs Skipped */}
+        <Card className="h-80">
+          <h3 className="text-sm font-bold text-white/60 uppercase tracking-widest mb-4">Completed vs Skipped</h3>
+          <div className="flex-grow relative flex items-center justify-center">
             <Pie
               options={{
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
-                  legend: {
-                    display: true,
-                    position: 'bottom',
-                    labels: { color: '#ffffff60' }
-                  }
+                  legend: { display: true, position: 'bottom', labels: { color: tickColor, padding: 20 } }
                 }
               }}
               data={{
                 labels: pieDataLabels,
                 datasets: [{
                   data: pieDataValues,
-                  backgroundColor: PIE_COLORS,
+                  backgroundColor: STATUS_PIE_COLORS,
                   borderWidth: 0
                 }]
               }}
@@ -241,44 +216,38 @@ const UserWorkoutProgression = () => {
           </div>
         </Card>
 
-        <Card className="h-80 flex flex-col">
-          <h3 className="text-lg font-bold mb-4 shrink-0">Muscle Group Distribution</h3>
-          <div className="w-full flex-grow relative">
-            {(progressData.muscleDistribution.length > 1 || (progressData.muscleDistribution.length === 1 && progressData.muscleDistribution[0].muscleName !== 'General')) ? (
-              <Bar 
+        {/* Muscle Group Distribution */}
+        <Card className="h-80">
+          <h3 className="text-sm font-bold text-white/60 uppercase tracking-widest mb-4">Muscle Group Distribution</h3>
+          <div className="flex-grow relative flex items-center justify-center">
+            {muscleValues.length > 0 && (muscleValues.length > 1 || muscleLabels[0]?.indexOf('General') === -1) ? (
+              <Pie
                 options={{
                   responsive: true,
                   maintainAspectRatio: false,
-                  indexAxis: 'y',
-                  scales: {
-                    y: { grid: { display: false }, ticks: { color: '#ffffff60', autoSkip: false } },
-                    x: { grid: { color: '#ffffff20' }, ticks: { color: '#ffffff60' } }
-                  },
-                  plugins: { 
-                    legend: { display: false },
-                    tooltip: { enabled: true },
-                    title: { display: true, text: 'Exercises by Muscle Group', color: '#ffffff90' }
+                  plugins: {
+                    legend: { display: true, position: 'bottom', labels: { color: tickColor, padding: 20 } },
+                    tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${ctx.raw} exercises` } }
                   }
                 }}
                 data={{
                   labels: muscleLabels,
                   datasets: [{
-                    label: 'Exercises',
                     data: muscleValues,
-                    backgroundColor: '#3b82f6',
-                    borderRadius: 4
+                    backgroundColor: PIE_COLORS,
+                    hoverBackgroundColor: PIE_COLORS_DIM,
+                    borderWidth: 0
                   }]
                 }}
               />
             ) : (
-              <div className="w-full h-full flex items-center justify-center text-white/50 text-sm">
-                No muscle distribution data available.
-              </div>
+              <p className="text-white/35 text-sm">No specific muscle data available yet.</p>
             )}
           </div>
         </Card>
-
+        
       </div>
+
     </div>
   );
 };

@@ -30,6 +30,20 @@ import {
 } from "chart.js";
 import { Line, Bar, Pie } from "react-chartjs-2";
 
+import {
+  Card,
+  StatCard,
+  ChartCard,
+  TIME_TABS,
+  baseScales,
+  baseLegend,
+  tickColor,
+  PIE_COLORS,
+  PIE_COLORS_DIM,
+  lineDataset,
+  barDataset
+} from "../shared/dashboard-components";
+
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -41,79 +55,6 @@ ChartJS.register(
   Tooltip,
   Legend,
   Filler
-);
-
-// ── Shared chart styling ─────────────────────────────────────────────────────
-const gridColor  = "rgba(255,255,255,0.08)";
-const tickColor  = "rgba(255,255,255,0.45)";
-const baseScales = {
-  x: { grid: { display: false }, ticks: { color: tickColor } },
-  y: { min: 0, grid: { color: gridColor }, ticks: { color: tickColor } },
-};
-const baseLegend = { display: false };
-
-// ── Reusable Card ────────────────────────────────────────────────────────────
-const Card = ({
-  children,
-  className = "",
-}: {
-  children: React.ReactNode;
-  className?: string;
-}) => (
-  <div
-    className={`bg-white/5 border border-white/10 rounded-2xl p-5 flex flex-col ${className}`}
-  >
-    {children}
-  </div>
-);
-
-// ── Summary Stat Card ────────────────────────────────────────────────────────
-const StatCard = ({
-  icon,
-  label,
-  value,
-  sub,
-  iconClass,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  value: string | number;
-  sub?: string;
-  iconClass: string;
-}) => (
-  <Card className="items-center justify-center text-center gap-2">
-    <div className={`p-3 rounded-xl ${iconClass} mb-1`}>{icon}</div>
-    <p className="text-white/55 text-xs font-medium uppercase tracking-widest">{label}</p>
-    <h2 className="text-2xl font-extrabold text-white">{value}</h2>
-    {sub && <p className="text-white/40 text-xs">{sub}</p>}
-  </Card>
-);
-
-// ── Macro colour palette ─────────────────────────────────────────────────────
-const PIE_COLORS      = ["#ef4444", "#f59e0b", "#3b82f6"];
-const PIE_COLORS_DIM  = ["#ef444480", "#f59e0b80", "#3b82f680"];
-
-// ── Timeframe selector ───────────────────────────────────────────────────────
-const TABS: { label: string; value: Timeframe; sub: string }[] = [
-  { label: "7 Days",   value: TIMEFRAME.DAILY,   sub: "last 7 days"  },
-  { label: "30 Days",  value: TIMEFRAME.WEEKLY,  sub: "last 30 days" },
-  { label: "12 Months", value: TIMEFRAME.MONTHLY, sub: "last 12 months" },
-];
-
-// ── Chart helper ─────────────────────────────────────────────────────────────
-const ChartCard = ({
-  title,
-  height = "h-56",
-  children,
-}: {
-  title: string;
-  height?: string;
-  children: React.ReactNode;
-}) => (
-  <Card className={`${height}`}>
-    <h3 className="text-sm font-bold text-white/70 mb-3 uppercase tracking-wider">{title}</h3>
-    <div className="flex-grow relative">{children}</div>
-  </Card>
 );
 
 // ── Main component ───────────────────────────────────────────────────────────
@@ -148,26 +89,7 @@ const UserHealthProgression = () => {
   const macroLabels = data?.macroDistribution.map(d => `${d.macroName} (${d.percentage}%)`) ?? [];
   const macroValues = data?.macroDistribution.map(d => d.amount) ?? [];
 
-  const lineDataset = (label: string, values: number[], color: string) => ({
-    label,
-    data: values,
-    borderColor: color,
-    backgroundColor: color.replace(")", ", 0.15)").replace("rgb", "rgba"),
-    fill: true,
-    tension: 0.4,
-    pointRadius: 3,
-    pointHoverRadius: 5,
-  });
-
-  const barDataset = (label: string, values: number[], color: string) => ({
-    label,
-    data: values,
-    backgroundColor: color,
-    borderRadius: 5,
-    barPercentage: 0.55,
-  });
-
-  const currentTab = TABS.find(t => t.value === timeframe)!;
+  const currentTab = TIME_TABS.find(t => t.value === timeframe)!;
 
   // ── Loading state ────────────────────────────────────────────────────────
   if (loading) {
@@ -197,7 +119,7 @@ const UserHealthProgression = () => {
 
         {/* Timeframe tabs */}
         <div className="flex space-x-1 bg-white/5 border border-white/10 p-1 rounded-xl shrink-0">
-          {TABS.map(tab => (
+          {TIME_TABS.map(tab => (
             <button
               key={tab.value}
               onClick={() => setTimeframe(tab.value)}
