@@ -178,9 +178,9 @@ const UserWorkoutProgression = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         
         {/* Completed vs Skipped */}
-        <Card className="h-80">
+        <Card className="min-h-[28rem]">
           <h3 className="text-sm font-bold text-white/60 uppercase tracking-widest mb-4">Completed vs Skipped</h3>
-          <div className="flex-grow relative flex items-center justify-center">
+          <div className="w-full min-h-[22rem] relative flex items-center justify-center">
             <Pie
               options={{
                 responsive: true,
@@ -202,9 +202,9 @@ const UserWorkoutProgression = () => {
         </Card>
 
         {/* Muscle Group Distribution */}
-        <Card className="h-80">
+        <Card className="min-h-[28rem]">
           <h3 className="text-sm font-bold text-white/60 uppercase tracking-widest mb-4">Muscle Group Distribution</h3>
-          <div className="flex-grow relative flex items-center justify-center">
+          <div className="w-full min-h-[22rem] relative flex items-center justify-center">
             {muscleValues.length > 0 && (muscleValues.length > 1 || muscleLabels[0]?.indexOf('General') === -1) ? (
               <Pie
                 options={{

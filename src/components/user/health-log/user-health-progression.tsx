@@ -227,11 +227,11 @@ const UserHealthProgression = () => {
       </div>
 
       {/* ── Pie: Macronutrient Distribution ── */}
-      <Card className="h-80">
+      <Card className="min-h-[28rem]">
         <h3 className="text-sm font-bold text-white/60 uppercase tracking-widest mb-4">
           Macronutrient Distribution (avg per day)
         </h3>
-        <div className="flex-grow relative flex items-center justify-center">
+        <div className="w-full min-h-[22rem] relative flex items-center justify-center">
           {macroValues.some(v => v > 0) ? (
             <Pie
               options={{

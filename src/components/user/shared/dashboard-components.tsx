@@ -11,8 +11,16 @@ export const baseScales = {
 export const baseLegend = { display: false };
 
 // ── Macro/Pie colour palette ─────────────────────────────────────────────────
-export const PIE_COLORS      = ["#ef4444", "#f59e0b", "#3b82f6", "#a855f7", "#10b981", "#6366f1"];
-export const PIE_COLORS_DIM  = ["#ef444480", "#f59e0b80", "#3b82f680", "#a855f780", "#10b98180", "#6366f180"];
+export const PIE_COLORS = [
+  "#ef4444", "#f59e0b", "#3b82f6", "#a855f7", "#10b981", "#6366f1",
+  "#ec4899", "#06b6d4", "#84cc16", "#14b8a6", "#f43f5e", "#d946ef",
+  "#0ea5e9", "#8b5cf6"
+];
+export const PIE_COLORS_DIM = [
+  "#ef444480", "#f59e0b80", "#3b82f680", "#a855f780", "#10b98180", "#6366f180",
+  "#ec489980", "#06b6d480", "#84cc1680", "#14b8a680", "#f43f5e80", "#d946ef80",
+  "#0ea5e980", "#8b5cf680"
+];
 
 // ── Timeframe selector ───────────────────────────────────────────────────────
 export const TIME_TABS: { label: string; value: Timeframe; sub: string }[] = [
