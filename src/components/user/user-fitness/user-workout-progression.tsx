@@ -206,22 +206,28 @@ const UserWorkoutProgression = () => {
           <h3 className="text-sm font-bold text-white/60 uppercase tracking-widest mb-4">Muscle Group Distribution</h3>
           <div className="w-full min-h-[22rem] relative flex items-center justify-center">
             {muscleValues.length > 0 && (muscleValues.length > 1 || muscleLabels[0]?.indexOf('General') === -1) ? (
-              <Pie
+              <Bar
                 options={{
+                  indexAxis: 'y',
                   responsive: true,
                   maintainAspectRatio: false,
+                  scales: {
+                    x: { grid: { color: gridColor }, ticks: { color: tickColor, stepSize: 1, precision: 0 } },
+                    y: { grid: { display: false }, ticks: { color: tickColor } }
+                  },
                   plugins: {
-                    legend: { display: true, position: 'bottom', labels: { color: tickColor, padding: 20 } },
-                    tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${ctx.raw} exercises` } }
+                    legend: { display: false },
+                    tooltip: { callbacks: { label: ctx => ` ${ctx.raw} exercises` } }
                   }
                 }}
                 data={{
                   labels: muscleLabels,
                   datasets: [{
+                    label: "Exercises",
                     data: muscleValues,
-                    backgroundColor: PIE_COLORS,
-                    hoverBackgroundColor: PIE_COLORS_DIM,
-                    borderWidth: 0
+                    backgroundColor: "rgba(168, 85, 247, 0.8)",
+                    hoverBackgroundColor: "rgba(168, 85, 247, 1)",
+                    borderRadius: 4,
                   }]
                 }}
               />
