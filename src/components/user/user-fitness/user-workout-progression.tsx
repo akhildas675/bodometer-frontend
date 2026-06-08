@@ -101,11 +101,8 @@ const UserWorkoutProgression = () => {
   const muscleLabels = data?.muscleDistribution.map(d => `${d.muscleName} (${d.percentage}%)`) ?? [];
   const muscleValues = data?.muscleDistribution.map(d => d.count) ?? [];
 
-  const totalPie = (data?.completedWorkouts ?? 0) + (data?.skippedWorkouts ?? 0);
-  const pieDataValues = totalPie > 0 
-    ? [data?.completedWorkouts ?? 0, data?.skippedWorkouts ?? 0]
-    : [1, 0];
-  const pieDataLabels = totalPie > 0 ? ['Completed', 'Skipped'] : ['No Data', ''];
+  const pieDataValues = data?.pieChart?.values ?? [1, 0];
+  const pieDataLabels = data?.pieChart?.labels ?? ['No Data', ''];
   const STATUS_PIE_COLORS = ['#a855f7', '#4b5563'];
 
   return (
@@ -155,27 +152,15 @@ const UserWorkoutProgression = () => {
       <Card>
         <h3 className="text-lg font-bold mb-1 flex items-center gap-2">
           <Target className="w-5 h-5 text-purple-400" />
-          {timeframe === TIMEFRAME.DAILY ? "Today's Workout Progress" :
-           timeframe === TIMEFRAME.WEEKLY ? "Current Week Progress" :
-           "Monthly Workout Progress"}
+          {data?.progressBar?.title ?? "Workout Progress"}
         </h3>
         <div className="flex justify-between text-sm text-white/60">
-          <span>
-            {timeframe === TIMEFRAME.DAILY ? "Daily Goal" :
-             timeframe === TIMEFRAME.WEEKLY ? "Weekly Goal" :
-             "Monthly Goal"}
-          </span>
+          <span>{data?.progressBar?.goalLabel ?? "Goal"}</span>
           <span className="font-bold text-white">
-            {timeframe === TIMEFRAME.DAILY ? `${data?.todayWorkoutProgress ?? 0}% Completed` :
-             timeframe === TIMEFRAME.WEEKLY ? `${data?.currentWeekProgress ?? 0}%` :
-             `${data?.completionRate ?? 0}%`}
+            {data?.progressBar?.valueLabel ?? "0%"}
           </span>
         </div>
-        <ProgressBar value={
-          timeframe === TIMEFRAME.DAILY ? (data?.todayWorkoutProgress ?? 0) :
-          timeframe === TIMEFRAME.WEEKLY ? (data?.currentWeekProgress ?? 0) :
-          (data?.completionRate ?? 0)
-        } />
+        <ProgressBar value={data?.progressBar?.value ?? 0} />
       </Card>
 
       {/* ── Line: Completion Trend ── */}
