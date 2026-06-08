@@ -5,6 +5,8 @@ import { HealthLogDto, MealEntry, MealEntryDto } from '@/interface/health-log.in
 import { MealCategory } from '@/interface/admin.interface';
 import { useFetch } from '@/hooks/useFetch';
 import userServices from '@/services/user/user.services';
+import { toast } from 'sonner';
+import { parseApiError } from '@/api/error.helper';
 
 // ── Dirty-state snapshot ─────────────────────────────────────────────────────
 // Serialises the user-editable inputs so we can detect unsaved changes
@@ -96,6 +98,20 @@ const UserHealthLog = () => {
     fetchLog();
   }, [date]);
 
+  // ── Date Change Handler ────────────────────────────────────────────────────
+  const handleDateChange = (newDate: string) => {
+    const selected = new Date(newDate);
+    const today = new Date();
+    today.setHours(23, 59, 59, 999);
+
+    if (selected > today) {
+      toast.error("You cannot log meals for a future date.");
+      return; // Do not update the date
+    }
+
+    setDate(newDate);
+  };
+
   // ── Save ───────────────────────────────────────────────────────────────────
   const handleSave = async () => {
     setIsSaving(true);
@@ -118,9 +134,11 @@ const UserHealthLog = () => {
         setSavedSnapshot({
           sleepHours, waterLiters, steps, mealsKey: buildMealsKey(saved),
         });
+        toast.success("Health log saved successfully");
       }
-    } catch (err) {
+    } catch (err: unknown) {
       console.error('Failed to save health log:', err);
+      toast.error(parseApiError(err).message);
     } finally {
       setIsSaving(false);
     }
@@ -164,7 +182,7 @@ const UserHealthLog = () => {
             <input
               type="date"
               value={date}
-              onChange={e => setDate(e.target.value)}
+              onChange={e => handleDateChange(e.target.value)}
               className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500 transition"
             />
           </div>
