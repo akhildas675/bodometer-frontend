@@ -471,23 +471,16 @@ const UserWorkoutPlans = () => {
           if (plans.length === 0) return null;
           
           // Pure backend-driven logic
-          const { canGenerate, isInactive, pendingDaysCount } = generationStatus;
+          const { canGenerate, pendingDaysCount } = generationStatus;
 
           return (
             <div className="flex flex-col items-end gap-2 shrink-0">
-              {isInactive && (
-                <div className="text-xs font-bold text-rose-400 bg-rose-500/10 border border-rose-500/20 px-3 py-1 rounded-full animate-pulse">
-                  ⚠️ Inactive for 4+ days
-                </div>
-              )}
               <button
                 onClick={handleGenerate}
                 disabled={generating || !canGenerate}
                 className={`inline-flex items-center justify-center gap-2 font-bold text-sm px-6 py-3 rounded-full transition-all ${
                   generating || !canGenerate
                     ? "bg-purple-950/40 border border-purple-500/30 text-purple-300 cursor-not-allowed"
-                    : isInactive
-                    ? "bg-linear-to-r from-rose-600 to-pink-600 hover:from-rose-500 hover:to-pink-500 text-white shadow-[0_0_20px_rgba(225,29,72,0.3)] hover:scale-[1.02]"
                     : "bg-linear-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white shadow-[0_0_20px_rgba(147,51,234,0.3)] hover:scale-[1.02]"
                 }`}
               >
@@ -500,11 +493,6 @@ const UserWorkoutPlans = () => {
                   <>
                     <Clock className="w-4 h-4" />
                     Complete {pendingDaysCount} more {pendingDaysCount === 1 ? "day" : "days"}
-                  </>
-                ) : isInactive ? (
-                  <>
-                    <Sparkles className="w-4 h-4" />
-                    Regenerate Fresh Plan
                   </>
                 ) : (
                   <>
