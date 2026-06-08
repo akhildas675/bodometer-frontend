@@ -128,10 +128,10 @@ const AdminMealCategoryList = () => {
     <>
       <div className="text-white">
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-indigo-400">Meal Categories</h1>
+          <h1 className="text-2xl font-semibold text-transparent bg-clip-text bg-linear-to-r from-purple-400 to-indigo-400">Meal Categories</h1>
           <button
             onClick={() => navigate(ADMIN_UI_ROUTES.MEAL_CATEGORY_FORM)}
-            className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white px-5 py-2.5 rounded-xl font-medium shadow-[0_0_20px_rgba(139,92,246,0.3)] transition-all duration-300 hover:scale-[1.02]"
+            className="flex items-center gap-2 bg-linear-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white px-5 py-2.5 rounded-xl font-medium shadow-[0_0_20px_rgba(139,92,246,0.3)] transition-all duration-300 hover:scale-[1.02]"
           >
             <Plus size={18} />
             Create
