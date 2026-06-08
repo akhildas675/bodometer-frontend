@@ -62,10 +62,25 @@ const UserHealthLog = () => {
   // ── Loading flags ──────────────────────────────────────────────────────────
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving,  setIsSaving]  = useState(false);
+  const [subStartDate, setSubStartDate] = useState<string | null>(null);
 
-  // ── Fetch meal categories ──────────────────────────────────────────────────
+  // ── Fetch meal categories & subscription ───────────────────────────────────
   const { data: categoryResponse } = useFetch(() => userServices.getMealCategory({ limit: 100 }));
   const mealCategories = categoryResponse?.data ?? [];
+
+  useEffect(() => {
+    const fetchSub = async () => {
+      try {
+        const res = await userServices.getActiveSubscription();
+        if (res.data?.startDate) {
+          setSubStartDate(new Date(res.data.startDate).toISOString().split('T')[0]);
+        }
+      } catch (err) {
+        console.error("Failed to fetch subscription:", err);
+      }
+    };
+    fetchSub();
+  }, []);
 
   // ── Load health log whenever date changes ──────────────────────────────────
   useEffect(() => {
@@ -106,6 +121,11 @@ const UserHealthLog = () => {
 
     if (selected > today) {
       toast.error("You cannot log meals for a future date.");
+      return; // Do not update the date
+    }
+
+    if (subStartDate && newDate < subStartDate) {
+      toast.error("You cannot log meals for a date before your subscription started.");
       return; // Do not update the date
     }
 
@@ -182,6 +202,8 @@ const UserHealthLog = () => {
             <input
               type="date"
               value={date}
+              min={subStartDate || undefined}
+              max={new Date().toISOString().split('T')[0]}
               onChange={e => handleDateChange(e.target.value)}
               className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500 transition"
             />
