@@ -21,6 +21,12 @@ export const TIME_TABS: { label: string; value: Timeframe; sub: string }[] = [
   { label: "12 Months", value: TIMEFRAME.MONTHLY, sub: "last 12 months" },
 ];
 
+export const WORKOUT_TIME_TABS: { label: string; value: Timeframe; sub: string }[] = [
+  { label: "Daily",    value: TIMEFRAME.DAILY,   sub: "daily progress"  },
+  { label: "Weekly",   value: TIMEFRAME.WEEKLY,  sub: "weekly progress" },
+  { label: "Monthly", value: TIMEFRAME.MONTHLY, sub: "monthly progress" },
+];
+
 // ── Reusable Card ────────────────────────────────────────────────────────────
 export const Card = ({ children, className = "" }: { children: React.ReactNode; className?: string }) => (
   <div className={`bg-white/5 border border-white/10 rounded-2xl p-5 flex flex-col ${className}`}>

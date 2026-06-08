@@ -31,7 +31,7 @@ import {
   Card,
   StatCard,
   ChartCard,
-  TIME_TABS,
+  WORKOUT_TIME_TABS,
   baseScales,
   baseLegend,
   gridColor,
@@ -84,7 +84,7 @@ const UserWorkoutProgression = () => {
   const { refetch } = useFetch(fetchProgress);
   useEffect(() => { refetch(); }, [timeframe, refetch]);
 
-  const currentTab = TIME_TABS.find(t => t.value === timeframe)!;
+  const currentTab = WORKOUT_TIME_TABS.find(t => t.value === timeframe)!;
 
   if (loading) {
     return (
@@ -127,7 +127,7 @@ const UserWorkoutProgression = () => {
 
         {/* Timeframe tabs */}
         <div className="flex space-x-1 bg-white/5 border border-white/10 p-1 rounded-xl shrink-0">
-          {TIME_TABS.map(tab => (
+          {WORKOUT_TIME_TABS.map(tab => (
             <button
               key={tab.value}
               onClick={() => setTimeframe(tab.value)}
