@@ -19,15 +19,20 @@ import {
   Activity,
   Target,
   ListChecks,
+  Lock,
+  Crown,
+  ArrowRight,
 } from "lucide-react";
 
 import { USER_UI_ROUTES } from "@/constants/constant-routes/ui-routes/user.ui-constant.routes";
 import { AiWorkoutExercise, GenerateWorkoutDay, GetWorkoutPlansResponse, WorkoutPlanResponse, WorkoutExerciseStatus } from "@/interface/workout.interface";
 import userServices from "@/services/user/user.services";
+import { useAuthStore } from "@/stores/auth.store";
+import { toast } from "sonner";
 
 
 
-const AI_STEPS = [
+const PREMIUM_STEPS = [
   { icon: Brain,      label: "Analyzing your fitness profile…"    },
   { icon: Activity,   label: "Building your weekly structure…"     },
   { icon: Target,     label: "Selecting optimal exercises…"        },
@@ -35,28 +40,34 @@ const AI_STEPS = [
   { icon: Sparkles,   label: "Polishing your personalized plan…"   },
 ];
 
-const WorkoutGeneratingModal = ({ isOpen }: { isOpen: boolean }) => {
-  const [stepIdx, setStepIdx] = useState(0);
+const FREE_STEPS = [
+  { icon: Activity,   label: "Selecting standard exercises…"       },
+  { icon: Target,     label: "Building a basic weekly routine…"    },
+  { icon: ListChecks, label: "Organizing your daily workout…"      },
+  { icon: Dumbbell,   label: "Setting up your fitness plan…"       },
+  { icon: Sparkles,   label: "Finalizing your free plan…"          },
+];
 
-  
+const WorkoutGeneratingModal = ({ isOpen, isPremium }: { isOpen: boolean; isPremium: boolean }) => {
+  const [stepIdx, setStepIdx] = useState(0);
+  const steps = isPremium ? PREMIUM_STEPS : FREE_STEPS;
+
   useEffect(() => {
     if (!isOpen) return;
     const id = setInterval(() => {
-      setStepIdx((prev) => (prev + 1) % AI_STEPS.length);
+      setStepIdx((prev) => (prev + 1) % steps.length);
     }, 2000);
     return () => clearInterval(id);
-  }, [isOpen]);
+  }, [isOpen, steps.length]);
 
   if (!isOpen) return null;
 
-  const CurrentIcon = AI_STEPS[stepIdx].icon;
+  const CurrentIcon = steps[stepIdx].icon;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
-      {/* No click-outside close — generation must finish first */}
       <div className="relative bg-linear-to-br from-[#140b3a] to-[#0a0624] border border-white/10 p-10 rounded-3xl w-full max-w-md shadow-2xl animate-in zoom-in-95 duration-200 flex flex-col items-center gap-6">
 
-        {/* Animated orbit ring */}
         <div className="relative w-24 h-24 flex items-center justify-center">
           <div className="absolute inset-0 rounded-full border-2 border-purple-500/30 animate-spin" style={{ animationDuration: "3s" }} />
           <div className="absolute inset-2 rounded-full border border-purple-400/20 animate-spin" style={{ animationDuration: "2s", animationDirection: "reverse" }} />
@@ -65,25 +76,26 @@ const WorkoutGeneratingModal = ({ isOpen }: { isOpen: boolean }) => {
           </div>
         </div>
 
-        {/* Title */}
         <div className="text-center space-y-1">
-          <h3 className="text-xl font-bold text-white">Building Your AI Plan</h3>
-          <p className="text-white/50 text-sm">Our AI is crafting a personalized week for you</p>
+          <h3 className="text-xl font-bold text-white">
+            {isPremium ? "Building Your AI Plan" : "Building Your Free Plan"}
+          </h3>
+          <p className="text-white/50 text-sm">
+            {isPremium ? "Our AI is crafting a personalized week for you" : "We are preparing a basic workout plan for you"}
+          </p>
         </div>
 
-        {/* Step label */}
         <div className="w-full px-2">
           <div
             key={stepIdx}
             className="bg-white/5 border border-white/10 rounded-xl px-5 py-3 text-sm text-purple-200 font-medium text-center animate-in fade-in slide-in-from-bottom-2 duration-300"
           >
-            {AI_STEPS[stepIdx].label}
+            {steps[stepIdx].label}
           </div>
         </div>
 
-        {/* Step dots */}
         <div className="flex gap-2">
-          {AI_STEPS.map((_, i) => (
+          {steps.map((_, i) => (
             <div
               key={i}
               className={`h-1.5 rounded-full transition-all duration-500 ${
@@ -109,7 +121,8 @@ const ExerciseItem = ({
   isGlobalResting,
   setGlobalResting,
   handleSetExerciseStatus,
-  navigate
+  navigate,
+  planType
 }: {
   ex: AiWorkoutExercise;
   planId: string;
@@ -120,6 +133,7 @@ const ExerciseItem = ({
   setGlobalResting: (resting: boolean) => void;
   handleSetExerciseStatus: (planId: string, dayNumber: number, instanceId: string, status: "PENDING" | "ACTIVE" | "COMPLETED" | "SKIPPED") => void;
   navigate: (path: string) => void;
+  planType: "FREE" | "PREMIUM";
 }) => {
   const [elapsed, setElapsed] = useState(0);
   const [isResting, setIsResting] = useState(false);
@@ -244,6 +258,7 @@ const ExerciseItem = ({
       </div>
 
       {/* Bottom Section: Actions */}
+      {planType !== "FREE" ? (
       <div className="flex items-center justify-end gap-2 w-full mt-auto pt-2 border-t border-white/5">
         {isActive && !isResting && (
           <div className="flex items-center gap-3 px-3 py-1.5 bg-purple-500/20 rounded-lg border border-purple-500/30 w-full sm:w-auto justify-between sm:justify-start">
@@ -331,13 +346,35 @@ const ExerciseItem = ({
           </button>
         )}
       </div>
+      ) : (
+        /* Fix 6: Free plan — show "Track with Premium" lock prompt instead of nothing */
+        <div className="mt-auto pt-2 border-t border-white/5">
+          <button
+            onClick={() => navigate("/subscriptions")}
+            className="w-full flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-[11px] font-semibold text-yellow-400/70 hover:text-yellow-300 bg-yellow-500/5 hover:bg-yellow-500/10 border border-yellow-500/15 hover:border-yellow-500/30 transition-all group"
+          >
+            <Lock className="w-3 h-3" />
+            Track progress with Premium
+            <ArrowRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+          </button>
+        </div>
+      )}
     </div>
   );
 };
 
 const UserWorkoutPlans = () => {
   const navigate = useNavigate();
+  const { user } = useAuthStore();
+  const [isPremium, setIsPremium] = useState(user?.hasActiveSubscription ?? false);
   const [plans, setPlans] = useState<WorkoutPlanResponse[]>([]);
+
+  useEffect(() => {
+    if (user?.hasActiveSubscription !== undefined) {
+      setIsPremium(user.hasActiveSubscription);
+    }
+  }, [user?.hasActiveSubscription]);
+
   const [generationStatus, setGenerationStatus] = useState<GetWorkoutPlansResponse["generationStatus"]>({
     canGenerate: false,
     isInactive: false,
@@ -362,14 +399,27 @@ const UserWorkoutPlans = () => {
   const fetchPlansFn = useCallback(async () => {
     const response = await userServices.getWorkoutPlans();
     if (response.success && response.data) {
-      setPlans(response.data.plans);
+      const currentIsPremium = response.data.isPremium !== undefined ? response.data.isPremium : (user?.hasActiveSubscription ?? false);
+      setIsPremium(currentIsPremium);
+      if (user && user.hasActiveSubscription !== currentIsPremium) {
+        useAuthStore.getState().updateUser({ hasActiveSubscription: currentIsPremium });
+      }
+
+      const targetPlanType = currentIsPremium ? "PREMIUM" : "FREE";
+      const filteredPlans = response.data.plans.filter(p => p.planType === targetPlanType);
+
+      setPlans(filteredPlans);
       setGenerationStatus(response.data.generationStatus);
-      if (response.data.plans.length > 0 && !expandedPlanId) {
-        setExpandedPlanId(response.data.plans[0].workoutPlanId);
+      if (filteredPlans.length > 0) {
+        if (!expandedPlanId || !filteredPlans.some(p => p.workoutPlanId === expandedPlanId)) {
+          setExpandedPlanId(filteredPlans[0].workoutPlanId);
+        }
+      } else {
+        setExpandedPlanId(null);
       }
     }
     return response;
-  }, [expandedPlanId]);
+  }, [expandedPlanId, user]);
 
   const { loading } = useFetch(fetchPlansFn);
 
@@ -379,9 +429,18 @@ const UserWorkoutPlans = () => {
       const response = await userServices.generateWorkout();
       if (response.success && response.data) {
         await fetchPlansFn();
+      } else if (response.message) {
+        toast.error(response.message);
       }
     } catch (error) {
       console.error(error);
+      const err = error as { response?: { data?: { message?: string } } };
+      const errorMessage = err?.response?.data?.message || "Failed to generate workout plan";
+      toast.error(errorMessage);
+      
+      if (errorMessage.toLowerCase().includes("complete onboarding")) {
+        navigate(USER_UI_ROUTES.ONBOARDING_INTRO);
+      }
     } finally {
       setGenerating(false);
     }
@@ -452,18 +511,32 @@ const UserWorkoutPlans = () => {
   return (
     <>
     
-      <WorkoutGeneratingModal isOpen={generating} />
+      <WorkoutGeneratingModal isOpen={generating} isPremium={isPremium} />
 
       <div className="max-w-7xl mx-auto text-white w-full px-4 md:px-8 py-6 space-y-8">
       {/* ── Header ── */}
       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-black uppercase tracking-wide bg-linear-to-r from-white to-purple-400 bg-clip-text text-transparent flex items-center gap-2">
-            <CalendarDays className="w-8 h-8 text-purple-400" />
-            Workout Plans
-          </h1>
+          <div className="flex items-center gap-3 flex-wrap">
+            <h1 className="text-3xl font-black uppercase tracking-wide bg-linear-to-r from-white to-purple-400 bg-clip-text text-transparent flex items-center gap-2">
+              <CalendarDays className="w-8 h-8 text-purple-400" />
+              Workout Plans
+            </h1>
+            {/* Clear plan tier badge so there is no confusion */}
+            <span
+              className={`px-3 py-1 rounded-full text-xs font-black uppercase tracking-widest border ${
+                isPremium
+                  ? "bg-purple-500/20 text-purple-300 border-purple-500/40"
+                  : "bg-blue-500/15 text-blue-400 border-blue-500/30"
+              }`}
+            >
+              {isPremium ? "✦ Premium" : "Free Plan"}
+            </span>
+          </div>
           <p className="text-white/50 text-sm mt-1">
-            Track your progress and generate new weekly plans.
+            {isPremium
+              ? "AI-personalized weekly plans based on your fitness profile. Track progress and generate each week."
+              : "Basic weekly workout plans. Upgrade to Premium for personalized AI coaching and progress tracking."}
           </p>
         </div>
 
@@ -475,6 +548,14 @@ const UserWorkoutPlans = () => {
 
           return (
             <div className="flex flex-col items-end gap-2 shrink-0">
+              {isPremium && (
+                <button
+                  onClick={() => navigate(USER_UI_ROUTES.ONBOARDING_INTRO)}
+                  className="text-xs text-purple-400 hover:text-purple-300 underline underline-offset-4 font-medium transition-colors"
+                >
+                  Update Fitness Profile
+                </button>
+              )}
               <button
                 onClick={handleGenerate}
                 disabled={generating || !canGenerate}
@@ -497,7 +578,7 @@ const UserWorkoutPlans = () => {
                 ) : (
                   <>
                     <Sparkles className="w-4 h-4" />
-                    Generate Next Plan
+                    {isPremium ? "Generate AI Plan" : "Generate Free Plan"}
                   </>
                 )}
               </button>
@@ -519,31 +600,38 @@ const UserWorkoutPlans = () => {
           <CalendarDays className="w-4 h-4" />
           Weekly Plans
         </button>
-        <button
-          onClick={() => setActiveTab("history")}
-          className={`px-5 py-2.5 rounded-full text-sm font-bold transition-all flex items-center gap-2 ${
-            activeTab === "history"
-              ? "bg-white/10 text-white"
-              : "text-white/50 hover:bg-white/5 hover:text-white/80"
-          }`}
-        >
-          <History className="w-4 h-4" />
-          Completed History
-          <span className="bg-purple-500/20 text-purple-300 px-2 py-0.5 rounded-full text-[10px]">
-            {completedHistory.length}
-          </span>
-        </button>
+        {isPremium && (
+          <button
+            onClick={() => setActiveTab("history")}
+            className={`px-5 py-2.5 rounded-full text-sm font-bold transition-all flex items-center gap-2 ${
+              activeTab === "history"
+                ? "bg-white/10 text-white"
+                : "text-white/50 hover:bg-white/5 hover:text-white/80"
+            }`}
+          >
+            <History className="w-4 h-4" />
+            Completed History
+            <span className="bg-purple-500/20 text-purple-300 px-2 py-0.5 rounded-full text-[10px]">
+              {completedHistory.length}
+            </span>
+          </button>
+        )}
       </div>
 
       {/* ── Content ── */}
       {activeTab === "plans" ? (
         <div className="space-y-4">
           {plans.length === 0 ? (
+            /* Fix 4: Separate empty state messaging for Free vs Premium */
             <div className="text-center py-20 bg-white/5 rounded-3xl border border-white/10">
               <Dumbbell className="w-12 h-12 text-white/20 mx-auto mb-4" />
-              <h3 className="text-lg font-bold text-white mb-2">No Plans Yet</h3>
+              <h3 className="text-lg font-bold text-white mb-2">
+                {isPremium ? "No Plans Yet" : "Start Your Free Plan"}
+              </h3>
               <p className="text-white/50 text-sm max-w-sm mx-auto mb-6">
-                You haven't generated any workout plans yet. Create your first tailored plan to get started.
+                {isPremium
+                  ? "Generate your first AI-personalized weekly plan based on your fitness profile."
+                  : "Generate a free beginner-friendly workout plan to get started. Upgrade anytime for AI-personalized coaching."}
               </p>
               <button
                 onClick={handleGenerate}
@@ -555,8 +643,17 @@ const UserWorkoutPlans = () => {
                 ) : (
                   <Sparkles className="w-4 h-4" />
                 )}
-                {generating ? "Generating..." : "Generate Plan"}
+                {generating ? "Generating..." : isPremium ? "Generate AI Plan" : "Generate Free Plan"}
               </button>
+              {!isPremium && (
+                <button
+                  onClick={() => navigate("/subscriptions")}
+                  className="mt-4 flex items-center gap-2 mx-auto text-sm text-yellow-400 hover:text-yellow-300 font-semibold underline underline-offset-4 transition-colors"
+                >
+                  <Crown className="w-4 h-4" />
+                  Unlock Premium for a personalized plan
+                </button>
+              )}
             </div>
           ) : (
             plans.map((plan) => {
@@ -587,6 +684,15 @@ const UserWorkoutPlans = () => {
                           </h3>
                           <span
                             className={`px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider ${
+                              plan.planType === "FREE"
+                                ? "bg-blue-500/15 text-blue-400 border border-blue-500/30"
+                                : "bg-purple-500/15 text-purple-400 border border-purple-500/30"
+                            }`}
+                          >
+                            {plan.planType} WORKOUT PLAN
+                          </span>
+                          <span
+                            className={`px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider ${
                               plan.status === "ACTIVE"
                                 ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
                                 : "bg-white/10 text-white/50 border border-white/10"
@@ -603,17 +709,19 @@ const UserWorkoutPlans = () => {
                     </div>
 
                     <div className="flex items-center gap-6">
-                      <div className="flex flex-col items-end">
-                        <span className="text-xs font-bold text-white/70 uppercase tracking-wider">
-                          {completedCount} / {plan.days.length} Days
-                        </span>
-                        <div className="w-32 h-1.5 bg-white/10 rounded-full mt-2 overflow-hidden">
-                          <div
-                            className="h-full bg-purple-500 rounded-full transition-all duration-500"
-                            style={{ width: `${progressPct}%` }}
-                          />
+                      {plan.planType !== "FREE" && (
+                        <div className="flex flex-col items-end">
+                          <span className="text-xs font-bold text-white/70 uppercase tracking-wider">
+                            {completedCount} / {plan.days.length} Days
+                          </span>
+                          <div className="w-32 h-1.5 bg-white/10 rounded-full mt-2 overflow-hidden">
+                            <div
+                              className="h-full bg-purple-500 rounded-full transition-all duration-500"
+                              style={{ width: `${progressPct}%` }}
+                            />
+                          </div>
                         </div>
-                      </div>
+                      )}
                       <div className="text-white/30 p-2">
                         {isExpanded ? <ChevronUp /> : <ChevronDown />}
                       </div>
@@ -626,7 +734,7 @@ const UserWorkoutPlans = () => {
                       {plan.days.map((day) => {
                         const isCompleted = day.status === "COMPLETED";
                         const isToggling = togglingDay?.planId === plan.workoutPlanId && togglingDay?.dayNumber === day.dayNumber;
-                        const isLocked = !isCompleted && (generationStatus.hasCompletedWorkoutToday || day.dayNumber !== generationStatus.firstPendingDayNumber);
+                        const isLocked = plan.planType !== "FREE" && !isCompleted && (generationStatus.hasCompletedWorkoutToday || day.dayNumber !== generationStatus.firstPendingDayNumber);
 
                         return (
                           <div
@@ -686,7 +794,7 @@ const UserWorkoutPlans = () => {
                                       <CheckCircle2 className="w-4 h-4" />
                                       Completed
                                     </div>
-                                  ) : day.type === "rest" && !isLocked ? (
+                                  ) : day.type === "rest" && !isLocked && plan.planType !== "FREE" ? (
                                     <button
                                       onClick={(e) => {
                                         e.stopPropagation();
@@ -726,6 +834,7 @@ const UserWorkoutPlans = () => {
                                         ex={ex}
                                         planId={plan.workoutPlanId}
                                         dayNumber={day.dayNumber}
+                                        planType={plan.planType}
                                         isLocked={isExLocked}
                                         isExToggling={isExToggling}
                                         isGlobalResting={globalResting}
@@ -746,6 +855,31 @@ const UserWorkoutPlans = () => {
                 </div>
               );
             })
+          )}
+          {/* Fix 5: Show upgrade CTA below the free plan list for non-premium users */}
+          {plans.length > 0 && !isPremium && (
+            <div className="relative overflow-hidden rounded-2xl border border-yellow-500/20 bg-gradient-to-br from-yellow-500/5 to-orange-500/5 p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="absolute inset-0 bg-gradient-to-r from-yellow-500/3 to-transparent pointer-events-none" />
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-xl bg-yellow-500/10 border border-yellow-500/20 flex items-center justify-center shrink-0">
+                  <Crown className="w-6 h-6 text-yellow-400" />
+                </div>
+                <div>
+                  <h4 className="font-bold text-white text-sm">Unlock Your Full Potential</h4>
+                  <p className="text-white/50 text-xs mt-0.5 max-w-xs">
+                    Upgrade to Premium for AI-personalized plans, progress tracking, analytics, and more.
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => navigate("/subscriptions")}
+                className="shrink-0 flex items-center gap-2 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-400 hover:to-orange-400 text-black font-bold text-sm px-5 py-2.5 rounded-full transition-all hover:scale-105 shadow-[0_0_20px_rgba(234,179,8,0.25)]"
+              >
+                <Crown className="w-4 h-4" />
+                Upgrade to Premium
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            </div>
           )}
         </div>
       ) : (

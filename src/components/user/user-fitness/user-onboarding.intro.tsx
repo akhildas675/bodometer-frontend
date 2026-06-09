@@ -3,24 +3,28 @@ import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/stores/auth.store";
 import { USER_UI_ROUTES } from "@/constants/constant-routes/ui-routes/user.ui-constant.routes";
 import { useOnboardingStore } from "@/stores/onboarding.store";
+import { RefreshCw, Pencil } from "lucide-react";
 
 
 const UserOnboardingIntro = () => {
   const user = useAuthStore((state) => state.user);
   const navigate = useNavigate();
   const loadOnboarding = useOnboardingStore((state) => state.loadOnboarding);
+  const loadUserAnswers = useOnboardingStore((state) => state.loadUserAnswers);
   const groups = useOnboardingStore((state) => state.groups);
+  const answers = useOnboardingStore((state) => state.answers);
 
+  // Fix 7: Detect update mode — if user already has saved answers, this is an update not a first-time setup
+  const hasExistingAnswers = Object.keys(answers).length > 0;
 
   useEffect(() => {
     loadOnboarding();
-  }, [loadOnboarding]);
+    loadUserAnswers();
+  }, [loadOnboarding, loadUserAnswers]);
 
   const handleStart = () => {
     navigate(USER_UI_ROUTES.ONBOARDING_ASSESSMENT);
   };
-
-
 
   return (
     <div className="min-h-screen bg-linear-to-b from-[#03000D] to-[#190473] flex flex-col items-center justify-center p-8">
@@ -31,6 +35,14 @@ const UserOnboardingIntro = () => {
           alt="Bodometer"
           className="h-10 object-contain"
         />
+        {hasExistingAnswers && (
+          <button
+            onClick={() => navigate(-1)}
+            className="text-white/40 hover:text-white/80 text-sm font-medium transition-colors"
+          >
+            ← Go Back
+          </button>
+        )}
       </div>
 
       <div className="max-w-6xl w-full bg-linear-to-b from-[#03000D] to-[#190473] rounded-3xl p-12 relative overflow-hidden min-h-[480px] flex items-center">
@@ -41,24 +53,44 @@ const UserOnboardingIntro = () => {
 
         <div className="relative z-10 w-full flex flex-col items-center text-center gap-8">
 
-          {/* PREMIUM BADGE */}
+          {/* BADGE — changes based on mode */}
           <div className="inline-flex items-center gap-2 border border-purple-400/40 bg-purple-500/10 rounded-full px-4 py-1.5">
             <span className="w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse" />
             <span className="text-purple-300 text-xs font-semibold uppercase tracking-widest">
-              Premium Member
+              {hasExistingAnswers ? "Update Fitness Profile" : "Premium Member"}
             </span>
           </div>
 
-          {/* WELCOME */}
+          {/* HEADING — changes based on mode */}
           <div className="space-y-3">
-            <h1 className="text-white text-5xl font-bold leading-tight">
-              Welcome,{" "}
-              <span className="text-purple-400">{user?.name}</span>
-            </h1>
-            <p className="text-white/50 text-lg font-light max-w-xl">
-              Your transformation starts here. Let's build a plan that's
-              perfectly tailored to <span className="text-white/80">you</span>.
-            </p>
+            {hasExistingAnswers ? (
+              <>
+                <div className="flex items-center justify-center gap-3 mb-2">
+                  <div className="w-12 h-12 rounded-2xl bg-purple-500/20 border border-purple-500/30 flex items-center justify-center">
+                    <Pencil className="w-6 h-6 text-purple-300" />
+                  </div>
+                </div>
+                <h1 className="text-white text-5xl font-bold leading-tight">
+                  Update Your{" "}
+                  <span className="text-purple-400">Fitness Profile</span>
+                </h1>
+                <p className="text-white/50 text-lg font-light max-w-xl">
+                  Your previous answers are pre-filled. Update anything that&apos;s changed and we&apos;ll generate a fresh personalized plan for{" "}
+                  <span className="text-white/80">{user?.name}</span>.
+                </p>
+              </>
+            ) : (
+              <>
+                <h1 className="text-white text-5xl font-bold leading-tight">
+                  Welcome,{" "}
+                  <span className="text-purple-400">{user?.name}</span>
+                </h1>
+                <p className="text-white/50 text-lg font-light max-w-xl">
+                  Your transformation starts here. Let&apos;s build a plan that&apos;s
+                  perfectly tailored to <span className="text-white/80">you</span>.
+                </p>
+              </>
+            )}
           </div>
 
           {/* SLOGAN */}
@@ -67,7 +99,7 @@ const UserOnboardingIntro = () => {
               Bodometer
             </p>
             <p className="text-white text-xl font-semibold tracking-wide">
-              "Track. Train. Transform."
+              &quot;Track. Train. Transform.&quot;
             </p>
           </div>
 
@@ -90,16 +122,25 @@ const UserOnboardingIntro = () => {
             </div>
           )}
 
-          {/* LET'S GO BUTTON */}
+          {/* CTA BUTTON — changes based on mode */}
           <button
             onClick={handleStart}
-            className="mt-2 border-2 border-white text-white px-12 py-3 rounded-full font-bold text-lg tracking-wide transition-all hover:bg-white hover:text-purple-900 hover:scale-105 active:scale-95"
+            className="mt-2 border-2 border-white text-white px-12 py-3 rounded-full font-bold text-lg tracking-wide transition-all hover:bg-white hover:text-purple-900 hover:scale-105 active:scale-95 flex items-center gap-2"
           >
-            Let's Go →
+            {hasExistingAnswers ? (
+              <>
+                <RefreshCw className="w-5 h-5" />
+                Update My Profile →
+              </>
+            ) : (
+              "Let's Go →"
+            )}
           </button>
 
           <p className="text-white/20 text-xs">
-            Takes about 3 minutes to complete
+            {hasExistingAnswers
+              ? "Your previous answers are pre-filled — just update what's changed"
+              : "Takes about 3 minutes to complete"}
           </p>
 
         </div>

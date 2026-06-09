@@ -79,7 +79,7 @@ export interface GenerateWorkoutDay {
 export interface WorkoutPlan {
   workoutPlanId: string;
   days: GenerateWorkoutDay[];
-  planType: 'general' | 'custom';
+  planType: 'FREE' | 'PREMIUM';
 }
 
 export interface WorkoutPlanResponse extends WorkoutPlan {
@@ -101,6 +101,7 @@ export interface GetWorkoutPlansResponse {
     hasCompletedWorkoutToday: boolean;
     firstPendingDayNumber: number;
   };
+  isPremium?: boolean;
 }
 
 export interface WorkoutTrendDataDto {

@@ -59,13 +59,15 @@ export const userRoutes = (
         path={USER_UI_ROUTES.USER_CATEGORY_DETAILS}
         element={<UserCategoryDetailPage />}
       />
+      
+      {/* Free workout plans accessible without subscription */}
+      <Route path={USER_UI_ROUTES.USER_WORKOUT_PLANS} element={<UserWorkoutPlansPage />} />
 
       {/* Premium Routes inside Main Layout (Subscription Required) */}
       <Route element={<SubscriptionRoute />}>
         <Route path={USER_UI_ROUTES.USER_FITNESS_PROFILE} element={<UserFitnessProfilePage/>} />
         <Route path={USER_UI_ROUTES.USER_EXERCISES} element={<UserExercisesPage />} />
         <Route path={USER_UI_ROUTES.USER_EXERCISE_DETAIL} element={<UserExerciseDetailPage />} />
-        <Route path={USER_UI_ROUTES.USER_WORKOUT_PLANS} element={<UserWorkoutPlansPage />} />
         <Route path={USER_UI_ROUTES.USER_PROGRESS} element={<UserWorkoutProgressionPage />} />
         <Route path={USER_UI_ROUTES.USER_HEALTH_LOG} element={<UserHealthLogPage />} />
         <Route path={USER_UI_ROUTES.USER_HEALTH_PROGRESS} element={<UserHealthProgressionPage />} />
