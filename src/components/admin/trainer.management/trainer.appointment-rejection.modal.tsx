@@ -5,9 +5,17 @@ interface RejectionModalProps {
   onClose: () => void;
   onSubmit: (reason: string) => void;
   loading: boolean;
+  title?: string;
+  message?: string;
 }
 
-const RejectionModal: React.FC<RejectionModalProps> = ({ onClose, onSubmit, loading }) => {
+const RejectionModal: React.FC<RejectionModalProps> = ({ 
+  onClose, 
+  onSubmit, 
+  loading,
+  title = "Reject Trainer",
+  message = "Please provide a reason for rejecting this trainer application"
+}) => {
   const [reason, setReason] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -27,9 +35,9 @@ const RejectionModal: React.FC<RejectionModalProps> = ({ onClose, onSubmit, load
           <X size={24} />
         </button>
 
-        <h2 className="text-2xl font-bold text-white mb-2">Reject Trainer</h2>
+        <h2 className="text-2xl font-bold text-white mb-2">{title}</h2>
         <p className="text-slate-400 text-sm mb-6">
-          Please provide a reason for rejecting this trainer application
+          {message}
         </p>
 
         <form onSubmit={handleSubmit}>

@@ -27,6 +27,7 @@ const AdminTargetMuscleListPage = lazy(() => import("@/pages/admin/admin-target.
 const AdminTargetMuscleFormPage = lazy(() => import("@/pages/admin/admin.target-muscle.form-page"));
 const AdminExerciseListPage = lazy(() => import("@/pages/admin/admin.exercise-list.page"));
 const AdminExerciseFormPage = lazy(() => import("@/pages/admin/admin.exercise-form.page"));
+const AdminBookingsPage = lazy(() => import("@/pages/admin/admin-booking/admin-bookings.page"));
 
 
 export const adminRoutes = (
@@ -71,8 +72,11 @@ export const adminRoutes = (
       <Route path={ADMIN_UI_ROUTES.EXERCISES} element={<AdminExerciseListPage />} />
       <Route path={ADMIN_UI_ROUTES.EXERCISES_FORM} element={<AdminExerciseFormPage />} />
 
-      <Route path={ADMIN_UI_ROUTES.MEAL_CATEGORY} element={<AdminMealCategoryListPage/>} />\
+      <Route path={ADMIN_UI_ROUTES.MEAL_CATEGORY} element={<AdminMealCategoryListPage/>} />
       <Route path={ADMIN_UI_ROUTES.MEAL_CATEGORY_FORM} element={<AdminMealCategoryFormPage/>} />
+
+      {/* Bookings */}
+      <Route path={ADMIN_UI_ROUTES.BOOKINGS} element={<AdminBookingsPage />} />
 
     </Route>
   </Route>

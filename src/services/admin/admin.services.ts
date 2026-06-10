@@ -24,6 +24,7 @@ import type {
   MealCategoryQueryDto,
   UpdateMealCategory
 } from "@/interface/admin.interface";
+import type { TrainerBooking } from "@/interface/user.interface";
 
 import type { ApiResponse } from "@/interface/api-response.interface";
 import type { UpdateTargetMuscles } from "@/interface/target-muscle.interface";
@@ -582,6 +583,19 @@ class AdminService {
     const response = await adminApi.patch<ApiResponse<{ message: string }>>(
       ADMIN_API_ROUTES.TOGGLE_MEAL_CATEGORY_STATUS(id)
     );
+    return response.data;
+  }
+
+  // Bookings
+  async getAllBookings(params?: TableQueryParams & { status?: string; date?: string }): Promise<ApiResponse<TrainerBooking[]> & { pagination: PaginationMeta }> {
+    const queryParams = buildQueryParams({ page: 1, limit: 10, ...params });
+    const response = await adminApi.get(`${ADMIN_API_ROUTES.GET_ALL_BOOKINGS}?${queryParams.toString()}`);
+    return response.data;
+  }
+
+  async cancelBooking(bookingId: string): Promise<ApiResponse<TrainerBooking>> {
+    const url = ADMIN_API_ROUTES.CANCEL_BOOKING.replace(":bookingId", bookingId);
+    const response = await adminApi.patch(url);
     return response.data;
   }
 }

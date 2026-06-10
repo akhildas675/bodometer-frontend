@@ -10,9 +10,11 @@ import type {
   TrainerProfileInterface,
   TrainerProfileStatus,
   UploadProfilePictureResponse,
-
+  TrainerAvailability,
+  CreateAvailabilityPayload,
+  UpdateAvailabilityPayload,
 } from "@/interface/trainer.interface";
-import type { CategoryListItem } from "@/interface/user.interface";
+import type { CategoryListItem, TrainerBooking } from "@/interface/user.interface";
 import { PaginationMeta } from "@/interface/admin.interface";
 
 class TrainerService {
@@ -74,6 +76,54 @@ async submitTrainerProfile(
     const response = await trainerApi.get(
       `${TRAINER_API_ROUTES.GET_CATEGORIES}?${queryParams.toString()}`
     );
+    return response.data;
+  }
+
+  // Availability & Slots
+  async createAvailability(data: CreateAvailabilityPayload): Promise<ApiResponse<{ message: string; generatedSlots: number }>> {
+    const response = await trainerApi.post("/availability", data);
+    return response.data;
+  }
+
+  async getAvailabilities(params?: TableQueryParams & { status?: string }): Promise<ApiResponse<TrainerAvailability[]> & { pagination: PaginationMeta }> {
+    const queryParams = buildQueryParams({ page: 1, limit: 10, ...params });
+    const response = await trainerApi.get(`/availability?${queryParams.toString()}`);
+    return response.data;
+  }
+
+  async updateAvailabilityStatus(availabilityId: string, data: UpdateAvailabilityPayload): Promise<ApiResponse<TrainerAvailability>> {
+    const response = await trainerApi.patch(`/availability/${availabilityId}/status`, data);
+    return response.data;
+  }
+
+  // Bookings
+  async getMyBookings(params?: TableQueryParams & { status?: string; date?: string }): Promise<ApiResponse<TrainerBooking[]> & { pagination: PaginationMeta }> {
+    const queryParams = buildQueryParams({ page: 1, limit: 10, ...params });
+    const response = await trainerApi.get(`${TRAINER_API_ROUTES.GET_MY_BOOKINGS}?${queryParams.toString()}`);
+    return response.data;
+  }
+
+  async confirmBooking(bookingId: string): Promise<ApiResponse<TrainerBooking>> {
+    const url = TRAINER_API_ROUTES.CONFIRM_BOOKING.replace(":bookingId", bookingId);
+    const response = await trainerApi.patch(url);
+    return response.data;
+  }
+
+  async rejectBooking(bookingId: string, reason: string): Promise<ApiResponse<TrainerBooking>> {
+    const url = TRAINER_API_ROUTES.REJECT_BOOKING.replace(":bookingId", bookingId);
+    const response = await trainerApi.patch(url, { reason });
+    return response.data;
+  }
+
+  async completeBooking(bookingId: string): Promise<ApiResponse<TrainerBooking>> {
+    const url = TRAINER_API_ROUTES.COMPLETE_BOOKING.replace(":bookingId", bookingId);
+    const response = await trainerApi.patch(url);
+    return response.data;
+  }
+
+  async cancelBooking(bookingId: string, reason: string): Promise<ApiResponse<TrainerBooking>> {
+    const url = TRAINER_API_ROUTES.CANCEL_BOOKING.replace(":bookingId", bookingId);
+    const response = await trainerApi.patch(url, { reason });
     return response.data;
   }
 }

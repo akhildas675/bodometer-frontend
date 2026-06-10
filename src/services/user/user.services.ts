@@ -18,6 +18,9 @@ import type {
   OnboardingAnswersResponse,
   CalculateBmiPayload,
   BmiCalculationResult,
+  TrainerDynamicSlot,
+  TrainerBooking,
+  CreateBookingPayload,
 } from "@/interface/user.interface";
 import { AnswerValue } from "@/constants/onboarding.constant";
 import type { ExerciseRow } from "@/interface/exercise.interface";
@@ -235,11 +238,34 @@ const userServices = {
     return response.data;
   },
   async getWorkoutProgress(timeframe: Timeframe): Promise<ApiResponse<WorkoutProgressResponse>> {
-    const response = await userApi.get<ApiResponse<WorkoutProgressResponse>>(`${USER_API_ROUTES.GET_WORKOUT_PROGRESS}?timeframe=${timeframe}`);
+    const response = await userApi.get<ApiResponse<WorkoutProgressResponse>>(`${USER_API_ROUTES.GET_WORKOUT_PROGRESS}?timeframe=${timeframe}`    );
+    return response.data;
+  },
+
+  // Bookings
+  async getTrainerSlots(trainerId: string, params?: { from?: string; to?: string }): Promise<ApiResponse<TrainerDynamicSlot[]>> {
+    const queryParams = buildQueryParams(params || {});
+    const url = USER_API_ROUTES.GET_TRAINER_SLOTS.replace(":id", trainerId);
+    const response = await userApi.get(`${url}?${queryParams.toString()}`);
+    return response.data;
+  },
+
+  async createBooking(data: CreateBookingPayload): Promise<ApiResponse<TrainerBooking>> {
+    const response = await userApi.post(USER_API_ROUTES.CREATE_BOOKING, data);
+    return response.data;
+  },
+
+  async getUserBookings(params?: TableQueryParams & { status?: string; date?: string }): Promise<ApiResponse<TrainerBooking[]> & { pagination: PaginationMeta }> {
+    const queryParams = buildQueryParams({ page: 1, limit: 10, ...params });
+    const response = await userApi.get(`${USER_API_ROUTES.GET_USER_BOOKINGS}?${queryParams.toString()}`);
+    return response.data;
+  },
+
+  async cancelBooking(bookingId: string, reason: string): Promise<ApiResponse<TrainerBooking>> {
+    const url = USER_API_ROUTES.CANCEL_BOOKING.replace(":bookingId", bookingId);
+    const response = await userApi.patch(url, { reason });
     return response.data;
   },
 };
-
-
 
 export default userServices;

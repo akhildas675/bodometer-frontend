@@ -23,6 +23,8 @@ import UserWorkoutPlansPage from "@/pages/user/user-fitness/user-workout-plans.p
 import UserWorkoutProgressionPage from "@/pages/user/user-fitness/user-workout-progression.page";
 import UserHealthLogPage from "@/pages/user/user-fitness/user-health-log.page";
 import UserHealthProgressionPage from "@/pages/user/health-log/user-health-progression.page";
+import UserBookTrainerPage from "@/pages/user/user-booking/user-book-trainer.page";
+import UserMyBookingsPage from "@/pages/user/user-booking/user-my-bookings.page";
 
 export const userRoutes = (
   <Route element={<ProtectedRoute allowedRoles={[ROLES.USER]} />}>
@@ -71,6 +73,10 @@ export const userRoutes = (
         <Route path={USER_UI_ROUTES.USER_PROGRESS} element={<UserWorkoutProgressionPage />} />
         <Route path={USER_UI_ROUTES.USER_HEALTH_LOG} element={<UserHealthLogPage />} />
         <Route path={USER_UI_ROUTES.USER_HEALTH_PROGRESS} element={<UserHealthProgressionPage />} />
+        
+        {/* Bookings */}
+        <Route path={USER_UI_ROUTES.USER_BOOK_TRAINER} element={<UserBookTrainerPage />} />
+        <Route path={USER_UI_ROUTES.USER_MY_BOOKINGS} element={<UserMyBookingsPage />} />
       </Route>
     </Route>
 

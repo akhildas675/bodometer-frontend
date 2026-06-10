@@ -7,4 +7,7 @@ export const TRAiNER_UI_ROUTES = {
     TRAINER_PENDING: "/trainer/status",
     TRAINER_CATEGORIES: "/trainer/categories",
 
+    // Slots & Bookings
+    TRAINER_SLOTS: "/trainer/slots",
+    TRAINER_BOOKINGS: "/trainer/bookings",
 } as const

@@ -59,3 +59,29 @@ export interface TrainerProfileStatus{
 }
 
 
+export interface TimeWindow {
+  startTime: string;
+  endTime: string;
+}
+
+export interface TrainerAvailability {
+  _id: string;
+  trainerId: string;
+  startDate: string;
+  endDate: string;
+  timeWindows: TimeWindow[];
+  sessionDuration: number;
+  isActive: boolean;
+  createdAt: string;
+}
+
+export interface CreateAvailabilityPayload {
+  startDate: string;
+  endDate: string;
+  timeWindows: TimeWindow[];
+  sessionDuration: number;
+}
+
+export interface UpdateAvailabilityPayload {
+  isActive: boolean;
+}

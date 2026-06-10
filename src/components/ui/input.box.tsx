@@ -1,12 +1,9 @@
 import React, { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 
-interface InputWithIconProps {
+interface InputWithIconProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange'> {
   icon?: React.ReactNode;
-  type?: string;
-  placeholder?: string;
-  value: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 const InputWithIcon: React.FC<InputWithIconProps> = ({
@@ -15,6 +12,8 @@ const InputWithIcon: React.FC<InputWithIconProps> = ({
   placeholder,
   value,
   onChange,
+  className,
+  ...rest
 }) => {
   const [showPassword, setShowPassword] = useState(false);
   const isPassword = type === "password";
@@ -28,7 +27,8 @@ const InputWithIcon: React.FC<InputWithIconProps> = ({
         placeholder={placeholder}
         value={value}
         onChange={onChange}
-        className="w-full bg-transparent outline-none text-sm text-slate-100 placeholder:text-slate-300"
+        className={`w-full bg-transparent outline-none text-sm text-slate-100 placeholder:text-slate-300 ${className || ''}`}
+        {...rest}
       />
       {isPassword && (
         <button

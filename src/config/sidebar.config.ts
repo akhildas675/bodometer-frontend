@@ -14,6 +14,7 @@ export const sidebarConfig: Record<SidebarRole, SidebarItem[]> = {
     { label: "Users", path: "/admin/users" },
     { label: "Trainers", path: "/admin/trainers" },
     { label: "Trainer Appointment", path: "/admin/appointments" },
+    { label: "Bookings", path: "/admin/bookings" },
   
     {
       label: "Subscription",
@@ -47,7 +48,7 @@ export const sidebarConfig: Record<SidebarRole, SidebarItem[]> = {
 
   trainer: [
     { label: "Dashboard", path: "/trainer" },
-    { label: "Sessions", path: "/trainer/sessions" },
+    { label: "Bookings", path: "/trainer/bookings" },
     { label: "Clients", path: "/trainer/clients" },
     { label: "Messages", path: "/trainer/messages" },
     { label: "Slots", path: "/trainer/slots" },
@@ -60,6 +61,8 @@ export const sidebarConfig: Record<SidebarRole, SidebarItem[]> = {
     { label: "Fitness Profile", path: "/fitness-profile" },
     { label: "Exercises", path: "/exercises" },
     { label: "Workout Plans", path: "/workout-plans" },
+    { label: "Trainers", path: "/trainers" },
+    { label: "My Bookings", path: "/my-bookings" },
     { label: "BMI Calculator", path: "/bmi" },
     { label: "Food Log", path: "/food-log" },
     { label: "Health Progress", path: "/health-progress" },

@@ -27,4 +27,7 @@ export const USER_UI_ROUTES = {
     USER_HEALTH_LOG: "/food-log",
     USER_HEALTH_PROGRESS: "/health-progress",
 
+    // Bookings
+    USER_BOOK_TRAINER: "/trainers/:id/book",
+    USER_MY_BOOKINGS: "/my-bookings",
 } as const

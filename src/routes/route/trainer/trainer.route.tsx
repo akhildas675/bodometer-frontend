@@ -14,6 +14,8 @@ import TrainerOnboardingIntroPage from "@/pages/trainer/trainer.onboarding-intro
 import TrainerOnboardingProfilePage from "@/pages/trainer/trainer.onboarding-experience.page";
 import MainLayouts from "@/components/layouts/MainLayouts";
 import TrainerOnboardingSkillPage from "@/pages/trainer/trainer.onboarding-skill.page";
+import TrainerSlotsPage from "@/pages/trainer/trainer-booking/trainer-slots.page";
+import TrainerBookingsPage from "@/pages/trainer/trainer-booking/trainer-bookings.page";
 
 export const trainerRoutes = (
   <Route element={<ProtectedRoute allowedRoles={["trainer"]} />}>
@@ -37,6 +39,10 @@ export const trainerRoutes = (
     <Route element={<ApprovedTrainerRoute />}>
       <Route path={TRAiNER_UI_ROUTES.TRAINER_DASHBOARD} element={<TrainerDashboardPage />} />
       <Route path={TRAiNER_UI_ROUTES.TRAINER_PROFILE}   element={<TrainerProfilePage />} />
+      
+      {/* Slots & Bookings */}
+      <Route path={TRAiNER_UI_ROUTES.TRAINER_SLOTS} element={<TrainerSlotsPage />} />
+      <Route path={TRAiNER_UI_ROUTES.TRAINER_BOOKINGS} element={<TrainerBookingsPage />} />
     </Route>
 
     </Route>

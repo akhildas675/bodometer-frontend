@@ -102,6 +102,13 @@ export interface GetWorkoutPlansResponse {
     firstPendingDayNumber: number;
   };
   isPremium?: boolean;
+  completedHistory?: CompletedHistoryItem[];
+}
+
+export interface CompletedHistoryItem {
+  date: string;
+  planWeek: number;
+  day: GenerateWorkoutDay;
 }
 
 export interface WorkoutTrendDataDto {

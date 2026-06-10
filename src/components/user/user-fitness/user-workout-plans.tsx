@@ -368,6 +368,7 @@ const UserWorkoutPlans = () => {
   const { user } = useAuthStore();
   const [isPremium, setIsPremium] = useState(user?.hasActiveSubscription ?? false);
   const [plans, setPlans] = useState<WorkoutPlanResponse[]>([]);
+  const [completedHistory, setCompletedHistory] = useState<CompletedHistoryItem[]>([]);
 
   useEffect(() => {
     if (user?.hasActiveSubscription !== undefined) {
@@ -410,6 +411,10 @@ const UserWorkoutPlans = () => {
 
       setPlans(filteredPlans);
       setGenerationStatus(response.data.generationStatus);
+      if (response.data.completedHistory) {
+        setCompletedHistory(response.data.completedHistory);
+      }
+      
       if (filteredPlans.length > 0) {
         if (!expandedPlanId || !filteredPlans.some(p => p.workoutPlanId === expandedPlanId)) {
           setExpandedPlanId(filteredPlans[0].workoutPlanId);
@@ -477,25 +482,6 @@ const UserWorkoutPlans = () => {
 
   const getCompletedDaysCount = (days: GenerateWorkoutDay[]) =>
     days.filter((d) => d.status === "COMPLETED").length;
-
-  const getAllCompletedDays = () => {
-    const allDays: { date: Date; planWeek: number; day: GenerateWorkoutDay }[] = [];
-    plans.forEach((plan) => {
-      plan.days.forEach((day) => {
-        if (day.status === "COMPLETED" && day.completedAt) {
-          allDays.push({
-            date: new Date(day.completedAt),
-            planWeek: plan.weekNumber,
-            day,
-          });
-        }
-      });
-    });
-    // Sort newest first
-    return allDays.sort((a, b) => b.date.getTime() - a.date.getTime());
-  };
-
-  const completedHistory = getAllCompletedDays();
 
   if (loading) {
     return (
@@ -658,8 +644,9 @@ const UserWorkoutPlans = () => {
           ) : (
             plans.map((plan) => {
               const isExpanded = expandedPlanId === plan.workoutPlanId;
-              const completedCount = getCompletedDaysCount(plan.days);
-              const progressPct = Math.round((completedCount / plan.days.length) * 100) || 0;
+              const displayedDays = plan.days.slice(0, 7);
+              const completedCount = getCompletedDaysCount(displayedDays);
+              const progressPct = Math.round((completedCount / displayedDays.length) * 100) || 0;
 
               return (
                 <div
@@ -712,7 +699,7 @@ const UserWorkoutPlans = () => {
                       {plan.planType !== "FREE" && (
                         <div className="flex flex-col items-end">
                           <span className="text-xs font-bold text-white/70 uppercase tracking-wider">
-                            {completedCount} / {plan.days.length} Days
+                            {completedCount} / {displayedDays.length} Days
                           </span>
                           <div className="w-32 h-1.5 bg-white/10 rounded-full mt-2 overflow-hidden">
                             <div
@@ -731,7 +718,7 @@ const UserWorkoutPlans = () => {
                   {/* Expanded Days List */}
                   {isExpanded && (
                     <div className="border-t border-white/5 bg-black/20 p-6 space-y-3">
-                      {plan.days.map((day) => {
+                      {displayedDays.map((day) => {
                         const isCompleted = day.status === "COMPLETED";
                         const isToggling = togglingDay?.planId === plan.workoutPlanId && togglingDay?.dayNumber === day.dayNumber;
                         const isLocked = plan.planType !== "FREE" && !isCompleted && (generationStatus.hasCompletedWorkoutToday || day.dayNumber !== generationStatus.firstPendingDayNumber);
@@ -907,7 +894,7 @@ const UserWorkoutPlans = () => {
                   {completedHistory.map((item, idx) => (
                     <tr key={idx} className="hover:bg-white/2 transition-colors">
                       <td className="p-4 whitespace-nowrap text-sm text-white/80">
-                        {item.date.toLocaleDateString("en-GB", {
+                        {new Date(item.date).toLocaleDateString("en-GB", {
                           weekday: "short",
                           day: "numeric",
                           month: "short",

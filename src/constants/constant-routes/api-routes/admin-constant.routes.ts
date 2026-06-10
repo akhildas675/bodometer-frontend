@@ -88,4 +88,8 @@ export const ADMIN_API_ROUTES = {
   UPDATE_MEAL_CATEGORY: (id: string) => `/meal-category/${id}`,
   TOGGLE_MEAL_CATEGORY_STATUS: (id: string) => `/meal-category/${id}/toggle-status`,
 
+  // Bookings
+  GET_ALL_BOOKINGS: "/bookings",
+  CANCEL_BOOKING: "/bookings/:bookingId/cancel",
+
 } as const;

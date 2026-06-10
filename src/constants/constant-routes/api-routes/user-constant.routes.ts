@@ -49,4 +49,9 @@ export const USER_API_ROUTES = {
     GET_EXERCISES: "/exercises",
     GET_EXERCISE_BY_ID: (id: string) => `/exercises/${id}`,
 
+    // Bookings
+    GET_TRAINER_SLOTS: "/trainers/:id/slots",
+    CREATE_BOOKING: "/bookings",
+    GET_USER_BOOKINGS: "/bookings",
+    CANCEL_BOOKING: "/bookings/:bookingId/cancel",
 } as const
