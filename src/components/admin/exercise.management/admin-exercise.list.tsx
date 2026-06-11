@@ -19,7 +19,7 @@ import { ADMIN_UI_ROUTES } from "@/constants/constant-routes/ui-routes/admin.ui-
 import { exerciseColumns } from "./admin-exercise.columns";
 import { useExerciseActions, type ExerciseModalConfig } from "./admin-exercise.actions";
 
-/* ── status filter options ── */
+
 const STATUS_FILTERS = [
   { label: "All", value: "" },
   { label: "Active", value: "true" },

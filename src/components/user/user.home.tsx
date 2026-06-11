@@ -97,7 +97,6 @@ const STATS = [
   { value: "4.9★", label: "Average Rating" },
 ];
 
-// ── Sub-components ─────────────────────────────────────────────────────────
 
 const StatsBanner = () => (
   <div className="w-full bg-purple-900/30 border-y border-purple-700/30 py-8">
@@ -279,7 +278,7 @@ const UserHome = () => {
       className="min-h-screen w-full text-white"
       style={{ background: "linear-gradient(to bottom, #190473 0%, #03000D 60%, #03000D 100%)" }}
     >
-      {/* ── Hero ── */}
+
       <div className="relative w-full h-[90vh] overflow-hidden flex items-center">
 
         {/* Static image layer */}
@@ -347,19 +346,19 @@ const UserHome = () => {
         </div>
       </div>
 
-      {/* ── Stats Banner ── */}
+      {/*  Stats Banner  */}
       <StatsBanner />
 
-      {/* ── Why Bodometer ── */}
+      {/*  Why Bodometer  */}
       <WhySection />
 
-      {/* ── How It Works ── */}
+      {/*  How It Works  */}
       <HowItWorksSection />
 
-      {/* ── Testimonials ── */}
+      {/*  Testimonials  */}
       <TestimonialsSection />
 
-      {/* ── CTA Banner ── */}
+      {/*  CTA Banner  */}
       <CtaBanner isAuthenticated={isAuthenticated} user={user} navigate={navigate} />
     </div>
   );

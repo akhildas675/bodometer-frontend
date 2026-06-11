@@ -13,7 +13,7 @@ import { useFetch } from "@/hooks/useFetch";
 import type { ExerciseRow } from "@/interface/exercise.interface";
 import LazyImage from "@/components/ui/lazy.image";
 
-// ── Helpers ──────────────────────────────────────────────────────────────────
+//  Helpers
 
 const DIFFICULTY_BADGE: Record<string, { label: string; color: string; bg: string }> = {
   beginner:     { label: "Beginner",     color: "text-emerald-400", bg: "bg-emerald-900/40 border-emerald-700/40" },
@@ -28,7 +28,7 @@ const ENV_LABELS: Record<string, string> = {
   outdoor:            "Outdoor",
 };
 
-// ── Skeleton ──────────────────────────────────────────────────────────────────
+//  Skeleton
 const DetailSkeleton = () => (
   <div className="animate-pulse max-w-4xl mx-auto">
     <div className="w-full rounded-2xl bg-[#140b3a] mb-8" style={{ height: "400px" }} />
@@ -43,7 +43,7 @@ const DetailSkeleton = () => (
   </div>
 );
 
-// ── Section card helper ────────────────────────────────────────────────────────
+//  Section card helper
 const SectionCard = ({ title, children }: { title: string; children: React.ReactNode }) => (
   <div className="bg-indigo-900/30 border border-purple-800/30 rounded-2xl p-6 backdrop-blur">
     <h2 className="text-purple-300 text-xs font-semibold uppercase tracking-widest mb-4">{title}</h2>
@@ -51,7 +51,7 @@ const SectionCard = ({ title, children }: { title: string; children: React.React
   </div>
 );
 
-// ── Page ──────────────────────────────────────────────────────────────────────
+//  Page
 const UserExerciseDetail = () => {
   const { exerciseId } = useParams<{ exerciseId: string }>();
   const navigate = useNavigate();
@@ -88,7 +88,7 @@ const UserExerciseDetail = () => {
       {!loading && !error && exercise && (
         <div className="max-w-5xl mx-auto pb-16">
           
-          {/* ── Page Header ────────────────────────────────────────────────── */}
+          {/*  Page Header */}
           <div className="mb-12 pt-4">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tight text-white mb-5 drop-shadow-sm">
               {exercise.title}
@@ -108,7 +108,7 @@ const UserExerciseDetail = () => {
             </div>
           </div>
 
-          {/* ── Media Showcase (Top Center) ────────────────────────────────── */}
+          {/*  Media Showcase (Top Center)*/}
           <div className="flex flex-col md:flex-row justify-center items-center gap-8 mb-16">
             
             {/* 9:16 Vertical Video */}
@@ -146,7 +146,7 @@ const UserExerciseDetail = () => {
             
           </div>
 
-          {/* ── Text Content Layout ────────────────────────────────────────── */}
+          {/*  Text Content Layout─ */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             
             {/* LEFT: About & Instructions */}

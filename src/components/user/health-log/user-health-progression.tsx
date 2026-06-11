@@ -57,7 +57,7 @@ ChartJS.register(
   Filler
 );
 
-// ── Main component ───────────────────────────────────────────────────────────
+//  Main component
 const UserHealthProgression = () => {
   const [data, setData] = useState<HealthLogProgressResponseDto | null>(null);
   const [timeframe, setTimeframe] = useState<Timeframe>(TIMEFRAME.DAILY);
@@ -78,7 +78,7 @@ const UserHealthProgression = () => {
   const { refetch } = useFetch(fetchProgress);
   useEffect(() => { refetch(); }, [timeframe, refetch]);
 
-  // ── Derived chart arrays ─────────────────────────────────────────────────
+  //  Derived chart arrays
   const labels         = data?.trendData.map(d => d.label)   ?? [];
   const caloriesSeries = data?.trendData.map(d => d.calories) ?? [];
   const proteinSeries  = data?.trendData.map(d => d.protein)  ?? [];
@@ -91,7 +91,7 @@ const UserHealthProgression = () => {
 
   const currentTab = TIME_TABS.find(t => t.value === timeframe)!;
 
-  // ── Loading state ────────────────────────────────────────────────────────
+  //  Loading state
   if (loading) {
     return (
       <div className="flex justify-center items-center h-96 text-emerald-400">
@@ -103,7 +103,7 @@ const UserHealthProgression = () => {
   return (
     <div className="max-w-7xl mx-auto text-white w-full px-4 md:px-8 py-6 space-y-8">
 
-      {/* ── Page Header ── */}
+      {/*  Page Header  */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-3xl font-black tracking-tight flex items-center gap-3">
@@ -135,7 +135,7 @@ const UserHealthProgression = () => {
         </div>
       </div>
 
-      {/* ── Summary Cards ── */}
+      {/*  Summary Cards  */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
         <StatCard icon={<Flame  className="w-5 h-5 text-orange-400"  />} iconClass="bg-orange-400/10" label="Avg Calories" value={`${data?.averageCalories ?? 0}`}  sub="kcal / day"  />
         <StatCard icon={<Utensils className="w-5 h-5 text-rose-400"  />} iconClass="bg-rose-400/10"   label="Avg Protein"  value={`${data?.averageProtein  ?? 0} g`} sub="per day"    />
@@ -145,7 +145,7 @@ const UserHealthProgression = () => {
         <StatCard icon={<CalendarDays className="w-5 h-5 text-purple-400" />} iconClass="bg-purple-400/10" label="Streak" value={`${data?.currentStreak ?? 0}`} sub="days logged" />
       </div>
 
-      {/* ── Daily Nutrition Summary ── */}
+      {/*  Daily Nutrition Summary  */}
       {data?.dailySummary && (
         <Card>
           <h3 className="text-sm font-bold text-white/60 uppercase tracking-widest mb-4">
@@ -170,7 +170,7 @@ const UserHealthProgression = () => {
         </Card>
       )}
 
-      {/* ── Line: Calories Trend ── */}
+      {/*  Line: Calories Trend  */}
       <ChartCard title="Daily Calories Trend (kcal)" height="h-64">
         <Line
           options={{ responsive: true, maintainAspectRatio: false, scales: baseScales, plugins: { legend: baseLegend } }}
@@ -181,7 +181,7 @@ const UserHealthProgression = () => {
         />
       </ChartCard>
 
-      {/* ── Line: Protein Trend ── */}
+      {/*  Line: Protein Trend  */}
       <ChartCard title="Protein Intake Trend (g)" height="h-64">
         <Line
           options={{ responsive: true, maintainAspectRatio: false, scales: baseScales, plugins: { legend: baseLegend } }}
@@ -192,7 +192,7 @@ const UserHealthProgression = () => {
         />
       </ChartCard>
 
-      {/* ── Line: Sleep Trend ── */}
+      {/*  Line: Sleep Trend  */}
       <ChartCard title="Sleep Duration Trend (hours)" height="h-64">
         <Line
           options={{ responsive: true, maintainAspectRatio: false, scales: baseScales, plugins: { legend: baseLegend } }}
@@ -203,7 +203,7 @@ const UserHealthProgression = () => {
         />
       </ChartCard>
 
-      {/* ── Bar: Water + Steps side by side ── */}
+      {/*  Bar: Water + Steps side by side  */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <ChartCard title="Water Intake (L)" height="h-64">
           <Bar
@@ -226,7 +226,7 @@ const UserHealthProgression = () => {
         </ChartCard>
       </div>
 
-      {/* ── Pie: Macronutrient Distribution ── */}
+      {/*  Pie: Macronutrient Distribution  */}
       <Card className="min-h-[28rem]">
         <h3 className="text-sm font-bold text-white/60 uppercase tracking-widest mb-4">
           Macronutrient Distribution (avg per day)

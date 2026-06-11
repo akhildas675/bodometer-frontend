@@ -19,7 +19,7 @@ import { ADMIN_UI_ROUTES } from "@/constants/constant-routes/ui-routes/admin.ui-
 import { equipmentColumns } from "./admin-equipment.columns";
 import { useEquipmentActions, type EquipmentModalConfig } from "./admin-equipment.actions";
 
-/* ── status filter options ── */
+
 const STATUS_FILTERS = [
   { label: "All", value: "" },
   { label: "Active", value: "true" },

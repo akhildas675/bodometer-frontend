@@ -25,7 +25,7 @@ import {
 } from "lucide-react";
 
 import { USER_UI_ROUTES } from "@/constants/constant-routes/ui-routes/user.ui-constant.routes";
-import { AiWorkoutExercise, GenerateWorkoutDay, GetWorkoutPlansResponse, WorkoutPlanResponse, WorkoutExerciseStatus } from "@/interface/workout.interface";
+import { AiWorkoutExercise, GenerateWorkoutDay, GetWorkoutPlansResponse, WorkoutPlanResponse, WorkoutExerciseStatus, CompletedHistoryItem } from "@/interface/workout.interface";
 import userServices from "@/services/user/user.services";
 import { useAuthStore } from "@/stores/auth.store";
 import { toast } from "sonner";
@@ -500,7 +500,7 @@ const UserWorkoutPlans = () => {
       <WorkoutGeneratingModal isOpen={generating} isPremium={isPremium} />
 
       <div className="max-w-7xl mx-auto text-white w-full px-4 md:px-8 py-6 space-y-8">
-      {/* ── Header ── */}
+      {/*  Header  */}
       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
         <div>
           <div className="flex items-center gap-3 flex-wrap">
@@ -573,7 +573,7 @@ const UserWorkoutPlans = () => {
         })()}
       </div>
 
-      {/* ── Tabs ── */}
+      {/*  Tabs  */}
       <div className="flex items-center gap-2 border-b border-white/10 pb-4">
         <button
           onClick={() => setActiveTab("plans")}
@@ -604,7 +604,7 @@ const UserWorkoutPlans = () => {
         )}
       </div>
 
-      {/* ── Content ── */}
+      {/*  Content  */}
       {activeTab === "plans" ? (
         <div className="space-y-4">
           {plans.length === 0 ? (

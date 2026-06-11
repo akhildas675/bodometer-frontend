@@ -1,7 +1,7 @@
 import React from "react";
 import { TIMEFRAME, Timeframe } from "@/constants/fitness.constant";
 
-// ── Shared chart styling ─────────────────────────────────────────────────────
+//  Shared chart styling
 export const gridColor  = "rgba(255,255,255,0.08)";
 export const tickColor  = "rgba(255,255,255,0.45)";
 export const baseScales = {
@@ -10,7 +10,7 @@ export const baseScales = {
 };
 export const baseLegend = { display: false };
 
-// ── Macro/Pie colour palette ─────────────────────────────────────────────────
+//  Macro/Pie colour palette
 export const PIE_COLORS = [
   "#ef4444", "#f59e0b", "#3b82f6", "#a855f7", "#10b981", "#6366f1",
   "#ec4899", "#06b6d4", "#84cc16", "#14b8a6", "#f43f5e", "#d946ef",
@@ -22,7 +22,7 @@ export const PIE_COLORS_DIM = [
   "#0ea5e980", "#8b5cf680"
 ];
 
-// ── Timeframe selector ───────────────────────────────────────────────────────
+//  Timeframe selector
 export const TIME_TABS: { label: string; value: Timeframe; sub: string }[] = [
   { label: "7 Days",    value: TIMEFRAME.DAILY,   sub: "last 7 days"  },
   { label: "30 Days",   value: TIMEFRAME.WEEKLY,  sub: "last 30 days" },
@@ -35,14 +35,14 @@ export const WORKOUT_TIME_TABS: { label: string; value: Timeframe; sub: string }
   { label: "Monthly", value: TIMEFRAME.MONTHLY, sub: "monthly progress" },
 ];
 
-// ── Reusable Card ────────────────────────────────────────────────────────────
+//  Reusable Card
 export const Card = ({ children, className = "" }: { children: React.ReactNode; className?: string }) => (
   <div className={`bg-white/5 border border-white/10 rounded-2xl p-5 flex flex-col ${className}`}>
     {children}
   </div>
 );
 
-// ── Summary Stat Card ────────────────────────────────────────────────────────
+//  Summary Stat Card
 export const StatCard = ({
   icon,
   label,
@@ -64,7 +64,7 @@ export const StatCard = ({
   </Card>
 );
 
-// ── Chart helper ─────────────────────────────────────────────────────────────
+//  Chart helper
 export const ChartCard = ({
   title,
   height = "h-56",
@@ -80,7 +80,7 @@ export const ChartCard = ({
   </Card>
 );
 
-// ── Dataset Builders ─────────────────────────────────────────────────────────
+//  Dataset Builders
 export const lineDataset = (label: string, values: number[], color: string) => ({
   label,
   data: values,

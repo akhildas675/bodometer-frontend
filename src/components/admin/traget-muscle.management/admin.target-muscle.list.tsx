@@ -19,7 +19,7 @@ import { ADMIN_UI_ROUTES } from "@/constants/constant-routes/ui-routes/admin.ui-
 import { targetMuscleColumns } from "./admin-target-muscle.columns";
 import { useTargetMuscleActions, type TargetMuscleModalConfig } from "./admin-target-muscle.actions";
 
-/* ── status filter options ── */
+
 const STATUS_FILTERS = [
   { label: "All", value: "" },
   { label: "Active", value: "true" },

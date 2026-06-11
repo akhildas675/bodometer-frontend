@@ -10,7 +10,7 @@ import type { ApiResponse } from "@/interface/api-response.interface";
 const resolveImage = (cat: CategoryDetail): string =>
   cat.media?.image?.url ?? cat.image ?? "";
 
-// ── Skeleton ──────────────────────────────────────────────────────────────
+//  Skeleton
 const DetailSkeleton = () => (
   <div className="animate-pulse">
     {/* Hero */}
@@ -26,7 +26,7 @@ const DetailSkeleton = () => (
   </div>
 );
 
-// ── Page ──────────────────────────────────────────────────────────────────
+//  Page
 const UserCategoryDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();

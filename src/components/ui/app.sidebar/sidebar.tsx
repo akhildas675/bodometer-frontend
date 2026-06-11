@@ -76,7 +76,7 @@ const iconMap: Record<string, React.ReactNode> = {
   "/profile": <UserCircle size={20} />,
 };
 
-/* ── active dot indicator for collapsed sidebar ── */
+
 const CollapsedActiveDot = ({ show }: { show: boolean }) => {
   if (!show) return null;
   return (
@@ -86,7 +86,7 @@ const CollapsedActiveDot = ({ show }: { show: boolean }) => {
   );
 };
 
-/* ── collapsible group ── */
+
 const NavGroup = ({
   item,
   isExpanded,
@@ -163,7 +163,7 @@ const NavGroup = ({
   );
 };
 
-/* ── main sidebar ── */
+
 const Sidebar = ({ role }: Props) => {
   const menuItems = sidebarConfig[role];
   const navigator = useNavigate();

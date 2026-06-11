@@ -1,4 +1,4 @@
-// ── Frontend mirror of backend DTOs ───────────────────────────────────────
+//  Frontend mirror of backend DTOs
 
 export interface MealEntry {
     id: string;

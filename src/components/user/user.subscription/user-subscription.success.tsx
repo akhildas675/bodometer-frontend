@@ -84,7 +84,7 @@ const UserSubscriptionSuccess = () => {
     );
   }
 
-  // ── Error ────────────────────────────────────────────────────────────────
+  //  Error
   if (state === "error") {
     return (
       <div className="w-full flex-1 min-h-[calc(100vh-80px)] flex items-center justify-center px-6 bg-transparent">
@@ -115,7 +115,7 @@ const UserSubscriptionSuccess = () => {
     );
   }
 
-  // ── Success
+  //  Success
   return (
     <div className="w-full flex-1 min-h-[calc(100vh-80px)] flex items-center justify-center px-6 bg-transparent">
       <div className="w-full max-w-md text-white text-center bg-linear-to-b from-[#140b3a] to-[#0a0624] p-8 rounded-3xl border border-white/5 shadow-2xl">

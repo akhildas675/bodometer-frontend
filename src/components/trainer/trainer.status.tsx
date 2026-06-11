@@ -137,7 +137,7 @@ useEffect(() => {
 
         <div className="flex flex-col items-center justify-center px-10 py-16 text-white relative z-10">
 
-          {/* ── ICON ── */}
+          {/* icon */}
           <div className="mb-8 relative">
             {isRejected ? (
               <>

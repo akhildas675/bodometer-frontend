@@ -20,7 +20,7 @@ import { useTableFetch } from "@/hooks/useTableFetch";
 
 import { transactionColumns } from "./user-transaction.columns";
 
-/* ── tier config (no "type" label shown to user) ── */
+/*  tier config (no "type" label shown to user)  */
 const TIER_STYLES = [
   {
     icon: <Zap size={20} className="text-slate-300" />,

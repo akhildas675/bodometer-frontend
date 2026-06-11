@@ -18,7 +18,7 @@ import { FeatureModalConfig, useSubscriptionFeatureActions } from "./admin.subsc
 import { subscriptionFeatureColumns } from "./admin.subscription-feature.columns";
 
 
-/* ── type filter options ── */
+
 const TYPE_FILTERS = [
   { label: "All", value: "" },
   { label: "Boolean", value: "boolean" },

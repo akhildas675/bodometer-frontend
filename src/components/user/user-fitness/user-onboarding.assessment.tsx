@@ -145,7 +145,7 @@ const UserOnboardingAssessment = () => {
  
   return (
     <div className="min-h-screen bg-linear-to-b from-[#03000D] to-[#190473] flex flex-col items-center p-6 sm:p-10">
-      {/* ── Header */}
+      {/*  Header */}
       <div className="w-full max-w-4xl mb-8 flex items-center justify-between">
         <img
           src="https://bodometer-assets.s3.eu-north-1.amazonaws.com/Bodometer+Logo+corrected+1.png"
@@ -165,14 +165,14 @@ const UserOnboardingAssessment = () => {
         </div>
       </div>
  
-      {/* ── Card */}
+      {/*  Card */}
       <div className="w-full max-w-4xl bg-linear-to-b from-[#03000D]/80 to-[#190473]/40 border border-white/10 rounded-3xl p-8 sm:p-12 relative overflow-hidden shadow-2xl backdrop-blur-xl">
         {/* Ambient blobs */}
         <div className="absolute top-0 left-0 w-96 h-96 bg-purple-600/10 rounded-full blur-3xl -translate-x-1/3 -translate-y-1/3 pointer-events-none" />
         <div className="absolute bottom-0 right-0 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl translate-x-1/3 translate-y-1/3 pointer-events-none" />
  
         <div className="relative z-10">
-          {/* ── Group title */}
+          {/*  Group title */}
           <div className="mb-10 border-b border-white/10 pb-6">
             <div className="flex items-center gap-2 mb-2">
               <span className="px-3 py-1 bg-purple-500/20 text-purple-300 text-[10px] tracking-[0.2em] uppercase font-bold rounded-full border border-purple-500/30">
@@ -184,7 +184,7 @@ const UserOnboardingAssessment = () => {
             </h1>
           </div>
  
-          {/* ── Questions */}
+          {/*  Questions */}
           <div className="space-y-10 mb-12">
             {visibleQuestions.map((item, index) => {
               const currentVal = answers[item.questionId]?.value;
@@ -225,7 +225,7 @@ const UserOnboardingAssessment = () => {
             })}
           </div>
  
-          {/* ── Navigation footer */}
+          {/*  Navigation footer */}
           <div className="flex items-center justify-between pt-8 border-t border-white/10 gap-4">
             <button
               onClick={handleBack}

@@ -8,7 +8,7 @@ import userServices from '@/services/user/user.services';
 import { toast } from 'sonner';
 import { parseApiError } from '@/api/error.helper';
 
-// ── Dirty-state snapshot ─────────────────────────────────────────────────────
+//  Dirty-state snapshot
 // Serialises the user-editable inputs so we can detect unsaved changes
 // without running any business logic on the frontend.
 interface EditSnapshot {
@@ -21,7 +21,7 @@ interface EditSnapshot {
 const buildMealsKey = (meals: MealEntry[]): string =>
   JSON.stringify(meals.map(m => ({ categoryId: m.categoryId, description: m.description })));
 
-// ── Helpers for mapping server meals → local MealEntry ───────────────────────
+//  Helpers for mapping server meals → local MealEntry
 const mapDtoToEntry = (m: MealEntryDto, index: number): MealEntry => ({
   id:                `meal-${index}-${Date.now()}`,
   categoryId:        m.mealCategoryId,
@@ -33,20 +33,20 @@ const mapDtoToEntry = (m: MealEntryDto, index: number): MealEntry => ({
   estimatedFat:      m.estimatedFat      ?? 0,
 });
 
-// ── Component ────────────────────────────────────────────────────────────────
+//  Component
 const UserHealthLog = () => {
 
-  // ── Form state (user inputs only) ─────────────────────────────────────────
+  //  Form state (user inputs only)
   const [date,        setDate]        = useState<string>(new Date().toISOString().split('T')[0]);
   const [sleepHours,  setSleepHours]  = useState<number | null>(null);
   const [waterLiters, setWaterLiters] = useState<number | null>(null);
   const [steps,       setSteps]       = useState<number | null>(null);
   const [meals,       setMeals]       = useState<MealEntry[]>([]);
 
-  // ── Backend-sourced display values (no frontend calculations) ──────────────
+  //  Backend-sourced display values (no frontend calculations)
   const [savedLog, setSavedLog] = useState<HealthLogDto | null>(null);
 
-  // ── Dirty detection ────────────────────────────────────────────────────────
+  //  Dirty detection
   const [savedSnapshot, setSavedSnapshot] = useState<EditSnapshot>({
     sleepHours: null, waterLiters: null, steps: null, mealsKey: '[]',
   });
@@ -59,12 +59,12 @@ const UserHealthLog = () => {
     return false;
   }, [sleepHours, waterLiters, steps, meals, savedSnapshot]);
 
-  // ── Loading flags ──────────────────────────────────────────────────────────
+  //  Loading flags
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving,  setIsSaving]  = useState(false);
   const [subStartDate, setSubStartDate] = useState<string | null>(null);
 
-  // ── Fetch meal categories & subscription ───────────────────────────────────
+  //  Fetch meal categories & subscription
   const { data: categoryResponse } = useFetch(() => userServices.getMealCategory({ limit: 100 }));
   const mealCategories = categoryResponse?.data ?? [];
 
@@ -82,7 +82,7 @@ const UserHealthLog = () => {
     fetchSub();
   }, []);
 
-  // ── Load health log whenever date changes ──────────────────────────────────
+  //  Load health log whenever date change
   useEffect(() => {
     const fetchLog = async () => {
       setIsLoading(true);
@@ -113,7 +113,7 @@ const UserHealthLog = () => {
     fetchLog();
   }, [date]);
 
-  // ── Date Change Handler ────────────────────────────────────────────────────
+  //  Date Change Handler
   const handleDateChange = (newDate: string) => {
     const selected = new Date(newDate);
     const today = new Date();
@@ -132,7 +132,7 @@ const UserHealthLog = () => {
     setDate(newDate);
   };
 
-  // ── Save ───────────────────────────────────────────────────────────────────
+  //  Save
   const handleSave = async () => {
     setIsSaving(true);
     try {
@@ -164,7 +164,7 @@ const UserHealthLog = () => {
     }
   };
 
-  // ── Meal list mutations ────────────────────────────────────────────────────
+  //  Meal list mutations
   const handleAddMeal = () =>
     setMeals(prev => [
       ...prev,
@@ -178,7 +178,7 @@ const UserHealthLog = () => {
   const handleMealChange = (id: string, field: keyof MealEntry, value: string | number) =>
     setMeals(prev => prev.map(m => m.id === id ? { ...m, [field]: value } : m));
 
-  // ── Render ─────────────────────────────────────────────────────────────────
+  //  Render
   return (
     <div className="max-w-5xl mx-auto text-white pb-16">
       {/* Header */}
@@ -193,7 +193,7 @@ const UserHealthLog = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
-        {/* ── Left: Date + Metrics ── */}
+        {/*  Left: Date + Metrics  */}
         <div className="space-y-6 lg:col-span-1">
           {/* Date */}
           <div className="bg-linear-to-br from-[#140b3a] to-[#0a0624] rounded-3xl p-6 shadow-xl border border-white/5 relative overflow-hidden">
@@ -237,7 +237,7 @@ const UserHealthLog = () => {
           </div>
         </div>
 
-        {/* ── Right: Macro bar + Meals ── */}
+        {/*  Right: Macro bar + Meals  */}
         <div className="lg:col-span-2 space-y-6">
 
           {/* Macro summary — values come from backend, never calculated here */}

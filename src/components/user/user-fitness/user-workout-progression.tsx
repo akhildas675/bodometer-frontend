@@ -35,11 +35,8 @@ import {
   baseScales,
   baseLegend,
   gridColor,
-  tickColor,
-  PIE_COLORS,
-  PIE_COLORS_DIM,
   lineDataset,
-  barDataset
+  tickColor,
 } from "../shared/dashboard-components";
 
 ChartJS.register(
@@ -94,7 +91,7 @@ const UserWorkoutProgression = () => {
     );
   }
 
-  // ── Derived chart arrays ─────────────────────────────────────────────────
+  //  Derived chart arrays
   const trendLabels = data?.trendData.map(d => d.label) ?? [];
   const trendValues = data?.trendData.map(d => d.completionRate) ?? [];
 
@@ -108,7 +105,7 @@ const UserWorkoutProgression = () => {
   return (
     <div className="max-w-7xl mx-auto text-white w-full px-4 md:px-8 py-6 space-y-8">
 
-      {/* ── Page Header ── */}
+      {/*  Page Header  */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-3xl font-black tracking-tight flex items-center gap-3">
@@ -140,7 +137,7 @@ const UserWorkoutProgression = () => {
         </div>
       </div>
 
-      {/* ── Summary Cards ── */}
+      {/*  Summary Cards  */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         <StatCard icon={<Flame className="w-5 h-5 text-orange-500" />} iconClass="bg-orange-500/10" label="Current Streak" value={`${data?.currentStreak ?? 0}`} sub="Days" />
         <StatCard icon={<Trophy className="w-5 h-5 text-yellow-500" />} iconClass="bg-yellow-500/10" label="Completion Rate" value={`${data?.completionRate ?? 0}%`} sub="overall" />
@@ -148,7 +145,7 @@ const UserWorkoutProgression = () => {
         <StatCard icon={<Clock3 className="w-5 h-5 text-green-400" />} iconClass="bg-green-400/10" label="Training Time" value={`${data?.totalTrainingMinutes ?? 0}`} sub="minutes" />
       </div>
 
-      {/* ── Progress Bar ── */}
+      {/*  Progress Bar  */}
       <Card>
         <h3 className="text-lg font-bold mb-1 flex items-center gap-2">
           <Target className="w-5 h-5 text-purple-400" />
@@ -163,7 +160,7 @@ const UserWorkoutProgression = () => {
         <ProgressBar value={data?.progressBar?.value ?? 0} />
       </Card>
 
-      {/* ── Line: Completion Trend ── */}
+      {/*  Line: Completion Trend  */}
       <ChartCard title="Completion Trend (%)" height="h-64">
         <Line
           options={{ responsive: true, maintainAspectRatio: false, scales: { ...baseScales, y: { min: 0, max: 100, grid: { color: gridColor }, ticks: { color: tickColor } } }, plugins: { legend: baseLegend } }}
@@ -174,7 +171,7 @@ const UserWorkoutProgression = () => {
         />
       </ChartCard>
 
-      {/* ── Bottom Row: Pie Charts ── */}
+      {/*  Bottom Row: Pie Charts  */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         
         {/* Completed vs Skipped */}
