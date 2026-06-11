@@ -2,30 +2,14 @@ import { adminApi } from "@/api/api.instance";
 import { buildQueryParams, TableQueryParams } from "@/api/query.helper";
 
 import type { TrainerWithProfile } from "@/components/ui/table/table.types";
-
-import type {
-  AdminGetTrainersResponse,
-  AdminGetUsersResponse,
-  PaginatedResponse,
-  PaginationMeta,
-  SubscriptionFeature,
-  SubscriptionPlan,
-  UpdateCategory,
-  QuestionGroup,
-  OnboardingQuestion,
-  CreateQuestionGroupData,
-  UpdateQuestionGroupData,
-  CreateQuestionData,
-  UpdateQuestionData,
-  SubscriptionTransaction,
-  SubscriptionPlanPayload,
-  SubscriptionPlanDetailsResponse,
-  MealCategory,
-  MealCategoryQueryDto,
-  UpdateMealCategory
-} from "@/interface/admin.interface";
-import type { TrainerBooking } from "@/interface/user.interface";
-
+import { MealCategory, MealCategoryQueryDto, UpdateMealCategory } from "@/interface/health-log.interface";
+import { QuestionGroup, OnboardingQuestion, CreateQuestionGroupData, UpdateQuestionGroupData, CreateQuestionData, UpdateQuestionData } from "@/interface/onboarding.interface";
+import { UpdateCategory } from "@/interface/category.interface";
+import { SubscriptionFeature, SubscriptionPlan, SubscriptionTransaction, SubscriptionPlanPayload, SubscriptionPlanDetailsResponse } from "@/interface/subscription.interface";
+import { PaginatedResponse, PaginationMeta } from "@/interface/common.interface";
+import { AdminGetUsersResponse } from "@/interface/user.interface";
+import { AdminGetTrainersResponse } from "@/interface/trainer.interface";
+import { TrainerBooking } from "@/interface/booking.interface";
 import type { ApiResponse } from "@/interface/api-response.interface";
 import type { UpdateTargetMuscles } from "@/interface/target-muscle.interface";
 import type { UpdateEquipment } from "@/interface/equipment.interface";

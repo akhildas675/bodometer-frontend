@@ -3,7 +3,7 @@ import { toast } from "sonner";
 import { parseApiError } from "@/api/error.helper";
 
 import type { TableAction } from "@/components/ui/table/table.types";
-import type { SubscriptionFeature } from "@/interface/admin.interface";
+import { SubscriptionFeature } from "@/interface/subscription.interface";
 import adminServices from "@/services/admin/admin.services";
 import { ADMIN_UI_ROUTES } from "@/constants/constant-routes/ui-routes/admin.ui-constant-routes";
 

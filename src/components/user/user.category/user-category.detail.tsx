@@ -3,8 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, Dumbbell } from "lucide-react";
 import userServices from "@/services/user/user.services";
 import { useFetch } from "@/hooks/useFetch";
-
-import type { CategoryDetail } from "@/interface/user.interface";
+import { CategoryDetail } from "@/interface/category.interface";
 import type { ApiResponse } from "@/interface/api-response.interface";
 
 const resolveImage = (cat: CategoryDetail): string =>

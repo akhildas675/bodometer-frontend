@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import type { TableAction } from "@/components/ui/table/table.types";
-import type { MealCategory } from "@/interface/admin.interface";
+import { MealCategory } from "@/interface/health-log.interface";
 import adminServices from "@/services/admin/admin.services";
 import { parseApiError } from "@/api/error.helper";
 import { ADMIN_UI_ROUTES } from "@/constants/constant-routes/ui-routes/admin.ui-constant-routes";

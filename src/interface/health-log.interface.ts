@@ -1,4 +1,4 @@
-//  Frontend mirror of backend DTOs
+
 
 export interface MealEntry {
     id: string;
@@ -28,7 +28,6 @@ export interface HealthLogDto {
     waterLiters?: number;
     steps?: number;
     meals: MealEntryDto[];
-    // Computed by the backend — never calculate on the frontend
     totalCalories: number;
     totalProtein: number;
     totalCarbs: number;
@@ -62,7 +61,7 @@ export interface MacroDistributionDto {
     percentage: number;
 }
 
-// Today's (or most-recent) macros for the Daily Nutrition Summary section
+
 export interface DailyNutritionSummaryDto {
     date: string;
     totalCalories: number;
@@ -88,4 +87,52 @@ export interface HealthLogProgressResponseDto {
 
     // Daily Nutrition Summary section
     dailySummary: DailyNutritionSummaryDto | null;
+}
+
+export interface MealCategory {
+  mealCategoryId?: string;
+  title: string;
+  description: string;
+  isActive?: boolean;
+}
+
+export interface UpdateMealCategory {
+  mealCategoryId: string;
+  title?: string;
+  description?: string;
+  isActive?: boolean;
+}
+
+export interface MealCategoryQueryDto {
+  page?: number;
+  limit?: number;
+  search?: string;
+  sortBy?: string;
+  sortOrder?: "asc" | "desc";
+  status?: string;
+  [key: string]: string | number | boolean | undefined | null;
+}
+
+export interface CalculateBmiPayload {
+  height?: number | null;
+  weight?: number | null;
+  unit: "metric" | "imperial";
+  heightFt?: string;
+  heightIn?: string;
+}
+
+export interface BmiCalculationResult {
+  bmi: number;
+  heightCm: number;
+  weightKg: number;
+  category: {
+    label: string;
+    color: string;
+    description: string;
+    tips: string[];
+  };
+  healthyWeightRange: {
+    minKg: number;
+    maxKg: number;
+  };
 }

@@ -5,7 +5,7 @@ import type { NavigateFunction } from "react-router-dom";
 
 import adminServices from "@/services/admin/admin.services";
 import type { TableAction } from "@/components/ui/table/table.types";
-import type { QuestionGroup } from "@/interface/admin.interface";
+import { QuestionGroup } from "@/interface/onboarding.interface";
 import { ADMIN_UI_ROUTES } from "@/constants/constant-routes/ui-routes/admin.ui-constant-routes";
 
 import { parseApiError } from "@/api/error.helper";

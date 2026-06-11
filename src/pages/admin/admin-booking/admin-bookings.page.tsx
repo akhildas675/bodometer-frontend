@@ -3,7 +3,7 @@ import adminServices from "@/services/admin/admin.services";
 import { parseApiError } from "@/api/error.helper";
 import DataTable from "@/components/ui/table/data.table";
 import type { TableColumn, TableAction } from "@/components/ui/table/table.types";
-import type { TrainerBooking } from "@/interface/user.interface";
+import { TrainerBooking } from "@/interface/booking.interface";
 import { format } from "date-fns";
 import { toast } from "sonner";
 import { ScreenLoader } from "@/components/ui/screen-loader";

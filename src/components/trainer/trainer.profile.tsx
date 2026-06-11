@@ -28,12 +28,9 @@ import { useFetch } from "@/hooks/useFetch";
 
 import { GENDER } from "@/constants/identity";
 import type { Gender } from "@/constants/identity";
-import type {
-  ProfileUpdatePayload,
-  TrainerProfileInterface,
-} from "@/interface/trainer.interface";
-import type { CategoryListItem } from "@/interface/user.interface";
-
+import { TrainerProfileInterface } from "@/interface/trainer.interface";
+import { ProfileUpdatePayload } from "@/interface/user.interface";
+import { CategoryListItem } from "@/interface/category.interface";
 import trainerService from "@/services/trainer/trainer.service";
 
 const GENDER_LABELS: Record<string, string> = {

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { CheckCircle, Loader2, AlertCircle, Calendar, Clock, Zap } from "lucide-react";
 import userServices from "@/services/user/user.services";
-import { ActiveSubscription } from "@/interface/user.interface";
+import { ActiveSubscription } from "@/interface/subscription.interface";
 import { USER_UI_ROUTES } from "@/constants/constant-routes/ui-routes/user.ui-constant.routes";
 import { useAuthStore } from "@/stores/auth.store";
 

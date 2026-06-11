@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { Activity, Droplets, Moon, Utensils, Plus, Trash2, CheckCircle2 } from 'lucide-react';
 import { StepperInput } from '../user-fitness/stepper.input';
 import { HealthLogDto, MealEntry, MealEntryDto } from '@/interface/health-log.interface';
-import { MealCategory } from '@/interface/admin.interface';
+import { MealCategory } from "@/interface/health-log.interface";
 import { useFetch } from '@/hooks/useFetch';
 import userServices from '@/services/user/user.services';
 import { toast } from 'sonner';

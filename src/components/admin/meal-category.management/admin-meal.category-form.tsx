@@ -1,6 +1,6 @@
 import { parseApiError } from "@/api/error.helper";
 import { ADMIN_UI_ROUTES } from "@/constants/constant-routes/ui-routes/admin.ui-constant-routes";
-import { MealCategory } from "@/interface/admin.interface";
+import { MealCategory } from "@/interface/health-log.interface";
 import adminServices from "@/services/admin/admin.services";
 import { ArrowLeft } from "lucide-react";
 import { useEffect, useState } from "react";

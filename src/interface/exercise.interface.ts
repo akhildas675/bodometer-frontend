@@ -13,7 +13,7 @@ export interface ExerciseFormData {
 
   isCompound: boolean;
   video: File | null;
-  videoUrl?: string; // For existing preview
+  videoUrl?: string; 
   image: File | null;
 
 }

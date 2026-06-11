@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { useFetch } from "@/hooks/useFetch";
-import type { CategoryListItem } from "@/interface/user.interface";
+import { CategoryListItem } from "@/interface/category.interface";
 import trainerService from "@/services/trainer/trainer.service";
 import { toast } from "sonner";
 import authInitService from "@/services/auth/auth-init.service";

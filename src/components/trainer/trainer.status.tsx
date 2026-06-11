@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { Clock, LogOut, XCircle, RefreshCw, AlertTriangle } from "lucide-react";
 import authInitService from "@/services/auth/auth-init.service";
 import { useFetch } from "@/hooks/useFetch";
-import type { TrainerProfileStatus } from "@/interface/trainer.interface";
+import { TrainerProfileStatus } from "@/interface/trainer.interface";
 import trainerService from "@/services/trainer/trainer.service";
 
 import { parseApiError } from "@/api/error.helper";

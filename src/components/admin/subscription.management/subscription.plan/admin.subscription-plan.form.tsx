@@ -11,7 +11,8 @@ import Pagination from "@/components/controls/pagination/pagination";
 
 import { useTableFetch } from "@/hooks/useTableFetch";
 import adminServices from "@/services/admin/admin.services";
-import { PaginatedResponse, SubscriptionPlan, SubscriptionPlanListItem } from "@/interface/admin.interface";
+import { SubscriptionPlan, SubscriptionPlanListItem } from "@/interface/subscription.interface";
+import { PaginatedResponse } from "@/interface/common.interface";
 import { SubscriptionModalConfig, useSubscriptionActions } from "./admin.subscription-plan.action";
 import { subscriptionColumns } from "./admin.subscription-plan.columns";
 import { ADMIN_UI_ROUTES } from "@/constants/constant-routes/ui-routes/admin.ui-constant-routes";

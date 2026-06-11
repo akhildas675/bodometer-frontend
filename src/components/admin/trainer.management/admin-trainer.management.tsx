@@ -1,11 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useAuthStore } from "@/stores/auth.store";
-
-import type {
-  AdminGetTrainersResponse,
-  PaginatedResponse,
-} from "@/interface/admin.interface";
-
+import { PaginatedResponse } from "@/interface/common.interface";
+import { AdminGetTrainersResponse } from "@/interface/trainer.interface";
 import adminServices from "@/services/admin/admin.services";
 
 import DataTable from "@/components/ui/table/data.table";

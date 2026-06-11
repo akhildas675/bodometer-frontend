@@ -1,7 +1,5 @@
 import type { TableColumn } from "@/components/ui/table/table.types";
-import { SubscriptionFeature } from "@/interface/admin.interface";
-
-
+import { SubscriptionFeature } from "@/interface/subscription.interface";
 export const subscriptionFeatureColumns: TableColumn<SubscriptionFeature>[] = [
   {
     key: "title",

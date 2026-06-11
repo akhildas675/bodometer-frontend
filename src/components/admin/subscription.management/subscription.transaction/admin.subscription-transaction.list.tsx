@@ -6,7 +6,8 @@ import { extractSortOptions } from "@/components/controls/sort/sort.label";
 import Pagination from "@/components/controls/pagination/pagination";
 import { useTableFetch } from "@/hooks/useTableFetch";
 import adminServices from "@/services/admin/admin.services";
-import type { SubscriptionTransaction, PaginatedResponse } from "@/interface/admin.interface";
+import { PaginatedResponse } from "@/interface/common.interface";
+import { SubscriptionTransaction } from "@/interface/subscription.interface";
 import { transactionColumns } from "./admin.subscription-transaction.columns";
 
 const AdminSubscriptionTransactionList = () => {

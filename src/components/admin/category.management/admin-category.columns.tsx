@@ -1,6 +1,5 @@
 import type { TableColumn } from "@/components/ui/table/table.types";
-import type { UpdateCategory } from "@/interface/admin.interface";
-
+import { UpdateCategory } from "@/interface/category.interface";
 export const categoryColumns: TableColumn<UpdateCategory>[] = [
   {
     key: "image",

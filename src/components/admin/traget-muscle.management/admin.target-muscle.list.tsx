@@ -11,8 +11,7 @@ import Pagination from "@/components/controls/pagination/pagination";
 
 import { useTableFetch } from "@/hooks/useTableFetch";
 import adminServices from "@/services/admin/admin.services";
-
-import type { PaginatedResponse } from "@/interface/admin.interface";
+import { PaginatedResponse } from "@/interface/common.interface";
 import type { UpdateTargetMuscles } from "@/interface/target-muscle.interface";
 import { ADMIN_UI_ROUTES } from "@/constants/constant-routes/ui-routes/admin.ui-constant-routes";
 

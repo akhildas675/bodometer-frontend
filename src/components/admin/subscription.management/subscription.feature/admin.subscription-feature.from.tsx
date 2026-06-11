@@ -5,7 +5,7 @@ import { toast } from "sonner";
 
 import adminServices from "@/services/admin/admin.services";
 import { useFetch } from "@/hooks/useFetch";
-import type { SubscriptionFeature } from "@/interface/admin.interface";
+import { SubscriptionFeature } from "@/interface/subscription.interface";
 import { FEATURE_TYPES } from "@/constants/subscription.constants";
 
 

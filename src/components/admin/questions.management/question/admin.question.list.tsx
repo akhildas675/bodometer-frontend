@@ -14,7 +14,8 @@ import { useTableFetch } from "@/hooks/useTableFetch";
 import adminServices from "@/services/admin/admin.services";
 
 import { getQuestionActions, type QuestionModalConfig } from "./admin.question.actions";
-import type { OnboardingQuestion, PaginatedResponse, QuestionGroup } from "@/interface/admin.interface";
+import { PaginatedResponse } from "@/interface/common.interface";
+import { OnboardingQuestion, QuestionGroup } from "@/interface/onboarding.interface";
 import { ADMIN_UI_ROUTES } from "@/constants/constant-routes/ui-routes/admin.ui-constant-routes";
 import { questionColumns } from "./admin.question.columns";
 

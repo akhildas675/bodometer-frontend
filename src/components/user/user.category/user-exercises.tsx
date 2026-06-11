@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTableFetch } from "@/hooks/useTableFetch";
 import userServices from "@/services/user/user.services";
-import type { PaginationMeta } from "@/interface/admin.interface";
+import { PaginationMeta } from "@/interface/common.interface";
 import type { ExerciseRow } from "@/interface/exercise.interface";
 import { Search, SlidersHorizontal, Dumbbell, Zap, ChevronRight } from "lucide-react";
 import Pagination from "@/components/controls/pagination/pagination";

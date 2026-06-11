@@ -11,9 +11,8 @@ import Pagination from "@/components/controls/pagination/pagination";
 
 import { useTableFetch } from "@/hooks/useTableFetch";
 import adminServices from "@/services/admin/admin.services";
-
-import type { UpdateCategory, PaginatedResponse } from "@/interface/admin.interface";
-
+import { PaginatedResponse } from "@/interface/common.interface";
+import { UpdateCategory } from "@/interface/category.interface";
 import { categoryColumns } from "./admin-category.columns";
 import { useCategoryActions, type CategoryModalConfig } from "./admin-category.actions";
 

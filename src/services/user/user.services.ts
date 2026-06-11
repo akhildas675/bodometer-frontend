@@ -1,27 +1,21 @@
 import { userApi } from "@/api/api.instance";
 import { buildQueryParams, TableQueryParams } from "@/api/query.helper";
 import { USER_API_ROUTES } from "@/constants/constant-routes/api-routes/user-constant.routes";
-import { PaginationMeta, SubscriptionPlan, QuestionGroup, OnboardingQuestion as DynamicOnboardingQuestion, SubscriptionTransaction, MealCategory } from "@/interface/admin.interface";
+import { MealCategory } from "@/interface/health-log.interface";
+import { QuestionGroup, OnboardingQuestion as DynamicOnboardingQuestion } from "@/interface/onboarding.interface";
+import { SubscriptionPlan, SubscriptionTransaction } from "@/interface/subscription.interface";
+import { PaginationMeta } from "@/interface/common.interface";
 import { HealthLogDto, UpsertHealthLogDto, HealthLogProgressResponseDto } from "@/interface/health-log.interface";
 import { UpdateEquipment } from "@/interface/equipment.interface";
 import type { ApiResponse } from "@/interface/api-response.interface";
-
-import type {
-  ProfileUpdatePayload,
-  TrainerDetail,
-  TrainerListItem,
-  CategoryListItem,
-  CategoryDetail,
-  UploadProfilePictureResponse,
-  UserProfileInterface,
-  ActiveSubscription,
-  OnboardingAnswersResponse,
-  CalculateBmiPayload,
-  BmiCalculationResult,
-  TrainerDynamicSlot,
-  TrainerBooking,
-  CreateBookingPayload,
-} from "@/interface/user.interface";
+import { TrainerDynamicSlot, TrainerBooking, CreateBookingPayload } from "@/interface/booking.interface";
+import { CalculateBmiPayload, BmiCalculationResult } from "@/interface/health-log.interface";
+import { OnboardingAnswersResponse } from "@/interface/onboarding.interface";
+import { ActiveSubscription } from "@/interface/subscription.interface";
+import { UploadProfilePictureResponse } from "@/interface/common.interface";
+import { CategoryListItem, CategoryDetail } from "@/interface/category.interface";
+import { TrainerDetail, TrainerListItem } from "@/interface/trainer.interface";
+import { ProfileUpdatePayload, UserProfileInterface } from "@/interface/user.interface";
 import { AnswerValue } from "@/constants/onboarding.constant";
 import type { ExerciseRow } from "@/interface/exercise.interface";
 import { GetWorkoutPlansResponse, WorkoutPlanResponse, MarkDayCompletedPayload, MarkExerciseStatusPayload, WorkoutProgressResponse } from "@/interface/workout.interface";

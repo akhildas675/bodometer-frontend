@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import type { TableAction } from "@/components/ui/table/table.types";
-import type { UpdateCategory } from "@/interface/admin.interface";
+import { UpdateCategory } from "@/interface/category.interface";
 import adminServices from "@/services/admin/admin.services";
 
 import { parseApiError } from "@/api/error.helper";

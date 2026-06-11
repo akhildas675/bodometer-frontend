@@ -1,7 +1,7 @@
 import { useCallback, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import userServices from "@/services/user/user.services";
-import type { TrainerDetail } from "@/interface/user.interface";
+import { TrainerDetail } from "@/interface/trainer.interface";
 import { Dumbbell, ArrowLeft, Clock } from "lucide-react";
 import { useFetch } from "@/hooks/useFetch";
 import type { ApiResponse } from "@/interface/api-response.interface";

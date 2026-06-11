@@ -1,6 +1,6 @@
 import adminServices from "@/services/admin/admin.services";
 import type { TableAction } from "@/components/ui/table/table.types";
-import type { AdminGetUsersResponse } from "@/interface/admin.interface";
+import { AdminGetUsersResponse } from "@/interface/user.interface";
 import { toast } from "sonner";
 import { Lock, Unlock } from "lucide-react";
 import { parseApiError } from "@/api/error.helper";

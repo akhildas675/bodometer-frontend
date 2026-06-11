@@ -5,8 +5,7 @@ import { useTrainerOnboardingActions } from "./admin.trainer-onboarding.actions"
 import { trainerOnboardingColumns } from "./admin.trainer-onboarding.columns";
 
 import type { TrainerWithProfile } from "@/components/ui/table/table.types";
-import type { PaginatedResponse } from "@/interface/admin.interface";
-
+import { PaginatedResponse } from "@/interface/common.interface";
 import adminServices from "@/services/admin/admin.services";
 import { useAuthStore } from "@/stores/auth.store";
 import { useTableFetch } from "@/hooks/useTableFetch";

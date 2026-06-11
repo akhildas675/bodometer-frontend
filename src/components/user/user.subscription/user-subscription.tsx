@@ -4,13 +4,9 @@ import { useState, useCallback, useEffect } from "react";
 
 import { useFetch } from "@/hooks/useFetch";
 import userServices from "@/services/user/user.services";
-import {
-  SubscriptionPlan,
-  SubscriptionTransaction,
-  PaginatedResponse,
-} from "@/interface/admin.interface";
-import { ActiveSubscription } from "@/interface/user.interface";
-
+import { PaginatedResponse } from "@/interface/common.interface";
+import { SubscriptionPlan, SubscriptionTransaction } from "@/interface/subscription.interface";
+import { ActiveSubscription } from "@/interface/subscription.interface";
 import DataTable from "@/components/ui/table/data.table";
 import SearchBar from "@/components/controls/search/search";
 import SortDropdown, { type SortConfig } from "@/components/controls/sort/sort";

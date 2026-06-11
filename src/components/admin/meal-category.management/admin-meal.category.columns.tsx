@@ -1,6 +1,5 @@
 import type { TableColumn } from "@/components/ui/table/table.types";
-import type { MealCategory } from "@/interface/admin.interface";
-
+import { MealCategory } from "@/interface/health-log.interface";
 export const mealCategoryColumns: TableColumn<MealCategory>[] = [
   {
     key: "title",

@@ -1,9 +1,29 @@
 import type { Gender } from "@/constants/identity";
 import type { VerificationStatus } from "@/constants/verification.status";
+import type { UsersListRequest, UsersListResponse, UserProfileInterface } from "./user.interface";
 
+export interface TrainerListRequest extends UsersListRequest {
+  role?: "trainer";
+}
+
+export interface TrainerListResponse extends UsersListResponse {
+  role: "trainer";
+}
+
+// Backward compatible aliases
+export type AdminGetTrainersRequest = TrainerListRequest;
+export type AdminGetTrainersResponse = TrainerListResponse;
+
+export interface TrainerProfileInterface extends UserProfileInterface {
+  experienceInYears?: number;
+  bio?: string;
+  specializations?: string[];
+  coverPhoto?: string;
+  certifications?: string[];
+}
 
 export interface TrainerProfileForm {
-  experience: number | ""
+  experience: number | "";
   gender: Gender;
   dateOfBirth: string;
   bio: string;
@@ -16,72 +36,38 @@ export interface TrainerOnboardingResponse {
   message: string;
 }
 
-
-export interface TrainerProfileInterface {
-  id: string;
-  name: string;
-  email: string;
-  userName: string;
-  phoneNumber: string | null;
-  gender: Gender;
-  profilePic: string | null;
-  dateOfBirth: Date | null;
-  experienceInYears?: number;
-  bio?: string;
-  specializations?: string[];
-  coverPhoto?: string;
-  certifications?: string[];
-}
-
-export interface ProfileUpdatePayload {
-  name: string;
-  userName: string;
-  phoneNumber: string | null;
-  gender: Gender;
-  profilePic?: string;
-  dateOfBirth: Date | null;
-  experienceInYears?: number;
-  bio?: string;
-  specializations?: string[];
-  coverPhoto?: string;
-  certifications?: string[];
-}
-
-export interface UploadProfilePictureResponse {
-  url: string;
-}
-
-
-export interface TrainerProfileStatus{
+export interface TrainerProfileStatus {
   name: string;
   verificationStatus: VerificationStatus;
-  rejectionReason?: string | null
+  rejectionReason?: string | null;
 }
 
-
-export interface TimeWindow {
-  startTime: string;
-  endTime: string;
-}
-
-export interface TrainerAvailability {
+export interface TrainerListItem {
   _id: string;
-  trainerId: string;
-  startDate: string;
-  endDate: string;
-  timeWindows: TimeWindow[];
-  sessionDuration: number;
-  isActive: boolean;
-  createdAt: string;
+  profileId: string;
+  name: string;
+  profilePic: string | null;
+  experienceInYears: number;
+  coverPhoto: string | null;
+  bio: string;
+  specializations: { _id: string; name: string }[];
 }
 
-export interface CreateAvailabilityPayload {
-  startDate: string;
-  endDate: string;
-  timeWindows: TimeWindow[];
-  sessionDuration: number;
+export interface RelatedTrainer {
+  _id: string;
+  name: string;
+  profilePic: string | null;
+  experienceInYears: number;
+  bio: string;
 }
 
-export interface UpdateAvailabilityPayload {
-  isActive: boolean;
+export interface TrainerDetail {
+  _id: string;
+  name: string;
+  profilePic: string | null;
+  coverPhoto: string;
+  bio: string;
+  experienceInYears: number;
+  specializations: { _id: string; name: string }[];
+  relatedTrainers?: RelatedTrainer[];
 }

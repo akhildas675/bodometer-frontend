@@ -5,7 +5,7 @@ import { toast } from "sonner";
 
 import adminServices from "@/services/admin/admin.services";
 import { ADMIN_UI_ROUTES } from "@/constants/constant-routes/ui-routes/admin.ui-constant-routes";
-import type { QuestionGroup, CreateQuestionData, OnboardingQuestion } from "@/interface/admin.interface";
+import { QuestionGroup, CreateQuestionData, OnboardingQuestion } from "@/interface/onboarding.interface";
 import { QUESTION_TYPE, QuestionType } from "@/constants/onboarding.constant";
 import { parseApiError } from "@/api/error.helper";
 import { generateOptionValue } from "@/utils/option-key.generate";

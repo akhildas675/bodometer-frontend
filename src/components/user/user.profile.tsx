@@ -1,10 +1,7 @@
 import { useAuthStore } from "@/stores/auth.store";
 
 import userServices from "@/services/user/user.services";
-import type {
-  ProfileUpdatePayload,
-  UserProfileInterface,
-} from "@/interface/user.interface";
+import { ProfileUpdatePayload, UserProfileInterface } from "@/interface/user.interface";
 import { useFetch } from "@/hooks/useFetch";
 import { useState, useRef, useEffect } from "react";
 import { toast } from "sonner";

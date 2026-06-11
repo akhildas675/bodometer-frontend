@@ -7,11 +7,7 @@ import { parseApiError } from "@/api/error.helper";
 import adminService from "@/services/admin/admin.services";
 import { useFetch } from "@/hooks/useFetch";
 import { useEffect, useState } from "react";
-import { Category } from "@/interface/admin.interface";
-
-
-
-
+import { Category } from "@/interface/category.interface";
 const EMPTY_FORM: Category = {
   name: "",
   description: "",

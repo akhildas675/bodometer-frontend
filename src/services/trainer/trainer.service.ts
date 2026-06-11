@@ -3,19 +3,13 @@ import { buildQueryParams, TableQueryParams } from "@/api/query.helper";
 import { TRAINER_API_ROUTES } from "@/constants/constant-routes/api-routes/trainer-constant.routes";
 
 import type { ApiResponse } from "@/interface/api-response.interface";
-
-import type {
-  ProfileUpdatePayload,
-  TrainerOnboardingResponse,
-  TrainerProfileInterface,
-  TrainerProfileStatus,
-  UploadProfilePictureResponse,
-  TrainerAvailability,
-  CreateAvailabilityPayload,
-  UpdateAvailabilityPayload,
-} from "@/interface/trainer.interface";
-import type { CategoryListItem, TrainerBooking } from "@/interface/user.interface";
-import { PaginationMeta } from "@/interface/admin.interface";
+import { TrainerAvailability, CreateAvailabilityPayload, UpdateAvailabilityPayload } from "@/interface/booking.interface";
+import { UploadProfilePictureResponse } from "@/interface/common.interface";
+import { TrainerOnboardingResponse, TrainerProfileInterface, TrainerProfileStatus } from "@/interface/trainer.interface";
+import { ProfileUpdatePayload } from "@/interface/user.interface";
+import { TrainerBooking } from "@/interface/booking.interface";
+import { CategoryListItem } from "@/interface/category.interface";
+import { PaginationMeta } from "@/interface/common.interface";
 
 class TrainerService {
   async getTrainerProfile(): Promise<ApiResponse<TrainerProfileInterface>> {

@@ -13,12 +13,8 @@ import { useAuthStore } from "@/stores/auth.store";
 import { useTableFetch } from "@/hooks/useTableFetch";
 
 import adminServices from "@/services/admin/admin.services";
-
-import type {
-  AdminGetUsersResponse,
-  PaginatedResponse,
-} from "@/interface/admin.interface";
-
+import { PaginatedResponse } from "@/interface/common.interface";
+import { AdminGetUsersResponse } from "@/interface/user.interface";
 import { userColumns } from "./admin-users.columns";
 import { useUserActions } from "./admin-users.actions";
 

@@ -1,6 +1,6 @@
 import { TableAction } from "@/components/ui/table/table.types";
 import { ADMIN_UI_ROUTES } from "@/constants/constant-routes/ui-routes/admin.ui-constant-routes";
-import { SubscriptionPlanListItem } from "@/interface/admin.interface";
+import { SubscriptionPlanListItem } from "@/interface/subscription.interface";
 import adminServices from "@/services/admin/admin.services";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";

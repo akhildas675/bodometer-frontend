@@ -4,7 +4,7 @@ import { ArrowLeft, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 import adminServices from "@/services/admin/admin.services";
-import { type FeatureListItem, type SubscriptionPlanFormData, type SubscriptionPlanDetailsResponse } from "@/interface/admin.interface";
+import { FeatureListItem, SubscriptionPlanFormData, SubscriptionPlanDetailsResponse } from "@/interface/subscription.interface";
 import { LIMIT_TYPES } from "@/constants/subscription.constants";
 import { useFetch } from "@/hooks/useFetch";
 
