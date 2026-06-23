@@ -1,10 +1,11 @@
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import type { TableAction } from "@/components/ui/table/table.types";
-import { UpdateCategory } from "@/interface/category.interface";
-import adminServices from "@/services/admin/admin.services";
+import { UpdateCategory } from "@/modules/category/types/category.interface";
+
 
 import { parseApiError } from "@/api/error.helper";
+import { categoryService } from "@/modules/category/service/category.service";
 
 export type CategoryModalConfig = {
   isOpen: boolean;
@@ -40,7 +41,7 @@ export const useCategoryActions = (
         variant:"danger",
         onConfirm:async()=>{
           try{
-            const res = await adminServices.toggleCategoryStatus(cat.categoryId)
+            const res = await categoryService.toggleCategoryStatus(cat.categoryId)
             toast.success(res.message);
             refetch();
           }catch (error: unknown) {
@@ -63,7 +64,7 @@ export const useCategoryActions = (
           variant:"primary",
           onConfirm:async()=>{
             try{
-              const res = await adminServices.toggleCategoryStatus(cat.categoryId)
+              const res = await categoryService.toggleCategoryStatus(cat.categoryId)
               toast.success(res.message);
               refetch();
             }catch (error: unknown) {

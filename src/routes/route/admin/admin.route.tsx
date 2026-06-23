@@ -8,8 +8,8 @@ import AdminTrainerOnboardingPage from "@/pages/admin/admin-trainer-onboarding.p
 import AdminAppointmentDetailsPage from "@/pages/admin/admin.appointment-details.page";
 import { ADMIN_UI_ROUTES } from "@/constants/constant-routes/ui-routes/admin.ui-constant-routes";
 import MainSidebarLayout from "@/components/layouts/main-sidebar.layout";
-import AdminCategoryListPage from "@/pages/admin/admin.category-list.page";
-import AdminCategoryFormPage from "@/pages/admin/admin.category-form.page";
+import AdminCategoryListPage from "@/features/admin/pages/admin.category-list.page";
+import AdminCategoryFormPage from "@/features/admin/pages/admin.category-form.page";
 import AdminSubscriptionFeatureListPage from "@/pages/admin/admin-subscription.feature-list.page";
 import AdminSubscriptionFeatureFormPage from "@/pages/admin/admin.subscription-feature.form.page";
 import AdminSubscriptionPlanListPage from "@/pages/admin/admin-subscription.plan-list.page";

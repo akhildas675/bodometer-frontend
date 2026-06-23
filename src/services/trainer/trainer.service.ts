@@ -8,7 +8,7 @@ import { UploadProfilePictureResponse } from "@/interface/common.interface";
 import { TrainerOnboardingResponse, TrainerProfileInterface, TrainerProfileStatus } from "@/interface/trainer.interface";
 import { ProfileUpdatePayload } from "@/interface/user.interface";
 import { TrainerBooking } from "@/interface/booking.interface";
-import { CategoryListItem } from "@/interface/category.interface";
+
 import { PaginationMeta } from "@/interface/common.interface";
 
 class TrainerService {
@@ -63,14 +63,6 @@ async submitTrainerProfile(
   async getTrainerProfileStatus(): Promise<ApiResponse<TrainerProfileStatus>> {
     const response = await trainerApi.get<ApiResponse<TrainerProfileStatus>>("/profile/status");
     return response.data
-  }
-
-  async getCategories(params?: TableQueryParams): Promise<ApiResponse<CategoryListItem[]> & { pagination: PaginationMeta }> {
-    const queryParams = buildQueryParams({ page: 1, limit: 20, ...params });
-    const response = await trainerApi.get(
-      `${TRAINER_API_ROUTES.GET_CATEGORIES}?${queryParams.toString()}`
-    );
-    return response.data;
   }
 
   // Availability & Slots

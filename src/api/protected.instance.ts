@@ -27,20 +27,20 @@ const processQueue = (error: Error | null = null) => {
       prom.resolve();
     }
   });
-
   failedQueue = [];
 };
 
+// ----------------------------------------------------
+// A. RESTORE ORIGINAL ROLE-SPECIFIC AXIOS INSTANCES
+// ----------------------------------------------------
 export function createProtectedAxios(role: Role): AxiosInstance {
   const instance = axios.create({
-  baseURL: `${baseUrl}/api/${role}`,
-  withCredentials: true,
-});
+    baseURL: `${baseUrl}/api/${role}`, // Keeps role-specific prefixes intact!
+    withCredentials: true,
+  });
 
-  // Request interceptor
   instance.interceptors.request.use((config: InternalAxiosRequestConfig) => {
     const { accessToken } = useAuthStore.getState();
-
     if (accessToken) {
       config.headers = config.headers ?? {};
       config.headers.Authorization = `Bearer ${accessToken}`;
@@ -48,23 +48,18 @@ export function createProtectedAxios(role: Role): AxiosInstance {
     return config;
   });
 
-  // Response interceptor with token refresh
   instance.interceptors.response.use(
     (response) => response,
     async (error) => {
       const originalRequest = error.config;
-
-      // If error is not unauthorized or request already retried, reject
       if (error.response?.status !== STATUS.UNAUTHORIZED || originalRequest._retry) {
         if (error.response?.status === STATUS.UNAUTHORIZED) {
-          // Clear auth and redirect
           useAuthStore.getState().clearAuth();
           window.location.href = `${roleToRedirectPath[role]}?expired=true`;
         }
         return Promise.reject(error);
       }
 
-      // If already refreshing, queue this request
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject });
@@ -81,18 +76,11 @@ export function createProtectedAxios(role: Role): AxiosInstance {
       isRefreshing = true;
 
       try {
-        // Try to refresh the token
-        const response = await authInstance.post<ApiResponse<LoginResponseData>>(
-          "/refresh-token"
-        );
-
+        const response = await authInstance.post<ApiResponse<LoginResponseData>>("/refresh-token");
         if (response.data.success && response.data.data) {
           const { accessToken, user } = response.data.data;
           useAuthStore.getState().setAuth({ accessToken, user });
-
-          // Update the failed request with new token
           originalRequest.headers.Authorization = `Bearer ${accessToken}`;
-
           processQueue(null);
           return instance(originalRequest);
         } else {
@@ -112,3 +100,71 @@ export function createProtectedAxios(role: Role): AxiosInstance {
 
   return instance;
 }
+
+
+export const api = axios.create({
+  baseURL: `${baseUrl}/api`, // Prefixed with just /api
+  withCredentials: true,
+});
+
+api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
+  const { accessToken } = useAuthStore.getState();
+  if (accessToken) {
+    config.headers = config.headers ?? {};
+    config.headers.Authorization = `Bearer ${accessToken}`;
+  }
+  return config;
+});
+
+api.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+    const { user, clearAuth } = useAuthStore.getState();
+    const role = user?.role || ROLES.USER;
+
+    if (error.response?.status !== STATUS.UNAUTHORIZED || originalRequest._retry) {
+      if (error.response?.status === STATUS.UNAUTHORIZED) {
+        clearAuth();
+        window.location.href = `${roleToRedirectPath[role]}?expired=true`;
+      }
+      return Promise.reject(error);
+    }
+
+    if (isRefreshing) {
+      return new Promise((resolve, reject) => {
+        failedQueue.push({ resolve, reject });
+      })
+        .then(() => {
+          const { accessToken } = useAuthStore.getState();
+          originalRequest.headers.Authorization = `Bearer ${accessToken}`;
+          return api(originalRequest);
+        })
+        .catch((err: unknown) => Promise.reject(err));
+    }
+
+    originalRequest._retry = true;
+    isRefreshing = true;
+
+    try {
+      const response = await authInstance.post<ApiResponse<LoginResponseData>>("/refresh-token");
+      if (response.data.success && response.data.data) {
+        const { accessToken, user: refreshedUser } = response.data.data;
+        useAuthStore.getState().setAuth({ accessToken, user: refreshedUser });
+        originalRequest.headers.Authorization = `Bearer ${accessToken}`;
+        processQueue(null);
+        return api(originalRequest);
+      } else {
+        throw new Error("Token refresh failed");
+      }
+    } catch (refreshError: unknown) {
+      const errorToPropagate = refreshError instanceof Error ? refreshError : new Error("Unknown error occurred");
+      processQueue(errorToPropagate);
+      clearAuth();
+      window.location.href = `${roleToRedirectPath[role]}?expired=true`;
+      return Promise.reject(errorToPropagate);
+    } finally {
+      isRefreshing = false;
+    }
+  }
+);

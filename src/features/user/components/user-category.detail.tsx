@@ -1,10 +1,10 @@
 import { useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, Dumbbell } from "lucide-react";
-import userServices from "@/services/user/user.services";
 import { useFetch } from "@/hooks/useFetch";
-import { CategoryDetail } from "@/interface/category.interface";
+import { CategoryDetail } from "@/modules/category/types/category.interface";
 import type { ApiResponse } from "@/interface/api-response.interface";
+import { categoryService } from "@/modules/category/service/category.service";
 
 const resolveImage = (cat: CategoryDetail): string =>
   cat.media?.image?.url ?? cat.image ?? "";
@@ -31,7 +31,7 @@ const UserCategoryDetail = () => {
   const navigate = useNavigate();
 
   const { data, loading, error } = useFetch<ApiResponse<CategoryDetail>>(
-    useCallback(() => userServices.getCategoryById(id!), [id]),
+    useCallback(() => categoryService.getCategoryById(id!), [id]),
     !!id
   );
 
@@ -81,7 +81,7 @@ const UserCategoryDetail = () => {
               )}
 
               {/* Gradient */}
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0a0624]/80 via-transparent to-transparent" />
+              <div className="absolute inset-0 bg-linear-to-t from-[#0a0624]/80 via-transparent to-transparent" />
 
               {/* Name overlay on image */}
               <div className="absolute bottom-0 left-0 right-0 px-8 pb-7">

@@ -1,4 +1,4 @@
-import AdminCategoryList from '@/components/admin/category.management/admin-category.list';
+import AdminCategoryList from '@/features/admin/components/admin-category.list';
 
 
 const AdminCategoryListPage = () => {

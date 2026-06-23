@@ -13,7 +13,7 @@ import { TRAiNER_UI_ROUTES } from "@/constants/constant-routes/ui-routes/trainer
 import TrainerOnboardingIntroPage from "@/pages/trainer/trainer.onboarding-intro.page";
 import TrainerOnboardingProfilePage from "@/pages/trainer/trainer.onboarding-experience.page";
 import MainLayouts from "@/components/layouts/MainLayouts";
-import TrainerOnboardingSkillPage from "@/pages/trainer/trainer.onboarding-skill.page";
+import TrainerOnboardingSkillPage from "@/features/trainer/page/trainer.onboarding-category.page";
 import TrainerSlotsPage from "@/pages/trainer/trainer-booking/trainer-slots.page";
 import TrainerBookingsPage from "@/pages/trainer/trainer-booking/trainer-bookings.page";
 

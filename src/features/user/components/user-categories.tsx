@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTableFetch } from "@/hooks/useTableFetch";
-import userServices from "@/services/user/user.services";
 import { PaginationMeta } from "@/interface/common.interface";
-import { CategoryListItem } from "@/interface/category.interface";
+import { CategoryListItem } from "@/modules/category/types/category.interface";
 import { Search, SlidersHorizontal, Dumbbell } from "lucide-react";
 import Pagination from "@/components/controls/pagination/pagination";
 import LazyImage from "@/components/ui/lazy.image";
+import { categoryService } from "@/modules/category/service/category.service";
 
 const ITEMS_PER_PAGE = 9;
 const SEARCH_DEBOUNCE_MS = 400;
@@ -16,13 +16,11 @@ const CATEGORY_SORT_OPTIONS = [
   { label: "Latest", value: "createdAt" },
 ];
 
-/** Helper — resolve the image url from either shape the backend may return */
+
 const resolveImage = (cat: CategoryListItem): string =>
   cat.media?.image?.url ?? cat.image ?? "";
 
-// ---------------------------------------------------------------------------
-// Skeleton
-// ---------------------------------------------------------------------------
+
 const CategoryCardSkeleton = () => (
   <div
     className="relative rounded-2xl overflow-hidden border border-purple-700/20 animate-pulse bg-[#140b3a]"
@@ -65,7 +63,7 @@ const CategoryCard = ({ category }: { category: CategoryListItem }) => {
       )}
 
       {/* Gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-t from-[#0a0624] via-[#0a0624]/60 to-transparent" />
+      <div className="absolute inset-0 bg-linear-to-t from-[#0a0624] via-[#0a0624]/60 to-transparent" />
 
       {/* Content */}
       <div className="absolute bottom-0 left-0 right-0 px-5 pb-5 text-center">
@@ -135,7 +133,7 @@ const UserCategories = () => {
   // Fetch
   const fetchFn = useCallback(
     () =>
-      userServices
+      categoryService
         .getCategories({
           page: currentPage,
           limit: ITEMS_PER_PAGE,

@@ -30,7 +30,7 @@ import { GENDER } from "@/constants/identity";
 import type { Gender } from "@/constants/identity";
 import { TrainerProfileInterface } from "@/interface/trainer.interface";
 import { ProfileUpdatePayload } from "@/interface/user.interface";
-import { CategoryListItem } from "@/interface/category.interface";
+import { CategoryListItem } from "@/modules/category/types/category.interface";
 import trainerService from "@/services/trainer/trainer.service";
 
 const GENDER_LABELS: Record<string, string> = {

@@ -4,7 +4,6 @@ import { buildQueryParams, TableQueryParams } from "@/api/query.helper";
 import type { TrainerWithProfile } from "@/components/ui/table/table.types";
 import { MealCategory, MealCategoryQueryDto, UpdateMealCategory } from "@/interface/health-log.interface";
 import { QuestionGroup, OnboardingQuestion, CreateQuestionGroupData, UpdateQuestionGroupData, CreateQuestionData, UpdateQuestionData } from "@/interface/onboarding.interface";
-import { UpdateCategory } from "@/interface/category.interface";
 import { SubscriptionFeature, SubscriptionPlan, SubscriptionTransaction, SubscriptionPlanPayload, SubscriptionPlanDetailsResponse } from "@/interface/subscription.interface";
 import { PaginatedResponse, PaginationMeta } from "@/interface/common.interface";
 import { AdminGetUsersResponse } from "@/interface/user.interface";
@@ -136,47 +135,6 @@ class AdminService {
     );
     return response.data;
   }
-
-  async createCategory(
-    categoryData: FormData
-  ): Promise<ApiResponse<{ message: string }>> {
-
-    const response = await adminApi.post<ApiResponse<{ message: string }>>(
-      ADMIN_API_ROUTES.CREATE_CATEGORY,
-      categoryData
-    );
-    return response.data;
-  }
-
-  async updateCategory(id: string, categoryData: FormData): Promise<ApiResponse<{ message: string }>> {
-    const response = await adminApi.put<ApiResponse<{ message: string }>>(ADMIN_API_ROUTES.UPDATE_CATEGORY(id), categoryData);
-    return response.data
-  }
-
-  async getCategoryById(id: string): Promise<ApiResponse<UpdateCategory>> {
-    const response = await adminApi.get<ApiResponse<UpdateCategory>>(ADMIN_API_ROUTES.GET_CATEGORY_BY_ID(id));
-    return response.data
-  }
-
-  async getAllCategories(params?: TableQueryParams): Promise<PaginatedResponse<UpdateCategory>> {
-    const queryParams = buildQueryParams(params);
-    const response = await adminApi.get<{
-      success: boolean;
-      data: UpdateCategory[];
-      pagination: PaginationMeta;
-    }>(ADMIN_API_ROUTES.GET_CATEGORIES, { params: queryParams });
-
-    return {
-      data: response.data.data,
-      pagination: response.data.pagination,
-    };
-  }
-
-  async toggleCategoryStatus(id: string): Promise<ApiResponse<{ message: string }>> {
-    const response = await adminApi.patch<ApiResponse<{ message: string }>>(ADMIN_API_ROUTES.TOGGLE_CATEGORY_STATUS(id));
-    return response.data
-  }
-
   async getAllSubscriptionFeatures(params?: TableQueryParams): Promise<PaginatedResponse<SubscriptionFeature>> {
     const queryParams = buildQueryParams(params);
     const response = await adminApi.get<{

@@ -2,14 +2,14 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { useFetch } from "@/hooks/useFetch";
-import { CategoryListItem } from "@/interface/category.interface";
-import trainerService from "@/services/trainer/trainer.service";
+import { CategoryListItem } from "@/modules/category/types/category.interface";
 import { toast } from "sonner";
 import authInitService from "@/services/auth/auth-init.service";
 import { useAuthStore } from "@/stores/auth.store";
 import { useTrainerOnboardingStore } from "@/stores/trainer-onboarding.store";
 
 import { parseApiError } from "@/api/error.helper";
+import { categoryService } from "@/modules/category/service/category.service";
 
 const TrainerOnboardingSkills = () => {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -31,7 +31,7 @@ const TrainerOnboardingSkills = () => {
     loading,
     refetch,
   } = useFetch<CategoryListItem[]>(() =>
-    trainerService.getCategories().then((res) => res.data),
+    categoryService.getCategories().then((res) => res.data),
   );
 
   useEffect(() => {

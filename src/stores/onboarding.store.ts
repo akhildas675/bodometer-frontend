@@ -2,7 +2,7 @@ import { create } from "zustand";
 import userServices from "@/services/user/user.services";
 import { AnswerValue, QuestionType, CONDITION_OPERATOR, ConditionOperator } from "@/constants/onboarding.constant";
 import { parseApiError } from "@/api/error.helper";
-import { CategoryListItem } from "@/interface/category.interface";
+import { CategoryListItem } from "@/modules/category/types/category.interface";
 import { OnboardingAnswerItem } from "@/interface/onboarding.interface";
 import type { UpdateEquipment } from "@/interface/equipment.interface";
 import { useAuthStore } from "@/stores/auth.store";

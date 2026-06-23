@@ -13,7 +13,7 @@ import { CalculateBmiPayload, BmiCalculationResult } from "@/interface/health-lo
 import { OnboardingAnswersResponse } from "@/interface/onboarding.interface";
 import { ActiveSubscription } from "@/interface/subscription.interface";
 import { UploadProfilePictureResponse } from "@/interface/common.interface";
-import { CategoryListItem, CategoryDetail } from "@/interface/category.interface";
+
 import { TrainerDetail, TrainerListItem } from "@/interface/trainer.interface";
 import { ProfileUpdatePayload, UserProfileInterface } from "@/interface/user.interface";
 import { AnswerValue } from "@/constants/onboarding.constant";
@@ -64,20 +64,8 @@ const userServices = {
     return response.data;
   },
 
-  async getCategories(params?: TableQueryParams): Promise<ApiResponse<CategoryListItem[]> & { pagination: PaginationMeta }> {
-    const queryParams = buildQueryParams({ page: 1, limit: 9, ...params });
-    const response = await userApi.get(
-      `${USER_API_ROUTES.GET_CATEGORIES}?${queryParams.toString()}`
-    );
-    return response.data;
-  },
 
-  async getCategoryById(id: string): Promise<ApiResponse<CategoryDetail>> {
-    const response = await userApi.get<ApiResponse<CategoryDetail>>(
-      USER_API_ROUTES.GET_CATEGORY_BY_ID(id)
-    );
-    return response.data;
-  },
+
 
   async getMealCategory(params?: TableQueryParams): Promise<ApiResponse<MealCategory[]> & { pagination: PaginationMeta }> {
     const queryParams = buildQueryParams({ page: 1, limit: 100, ...params });

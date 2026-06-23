@@ -3,11 +3,10 @@ import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, Image, X} from "lucide-react";
 import { toast } from "sonner";
 import { parseApiError } from "@/api/error.helper";
-
-import adminService from "@/services/admin/admin.services";
 import { useFetch } from "@/hooks/useFetch";
 import { useEffect, useState } from "react";
-import { Category } from "@/interface/category.interface";
+import { Category } from "@/modules/category/types/category.interface";
+import { categoryService } from "@/modules/category/service/category.service";
 const EMPTY_FORM: Category = {
   name: "",
   description: "",
@@ -24,7 +23,7 @@ const AdminCategoryForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const { data: response, loading: fetchLoading } = useFetch(
-    () => adminService.getCategoryById(id as string),
+    () => categoryService.getCategoryById(id as string),
     isEdit
   );
 
@@ -36,7 +35,7 @@ const AdminCategoryForm = () => {
       image: null,
     });
 
-    setImagePreview(response.data.image || "");
+    setImagePreview(response.data.image || response.data.media?.image?.url|| "");
   }
 }, [response, isEdit]);
 
@@ -71,10 +70,10 @@ const AdminCategoryForm = () => {
     try {
       setIsSubmitting(true);
       if (isEdit && id) {
-        const res = await adminService.updateCategory(id, formData);
+        const res = await categoryService.updateCategory(id, formData);
         toast.success(res.message);
       } else {
-        const res = await adminService.createCategory(formData);
+        const res = await categoryService.createCategory(formData);
         toast.success(res.message);
       }
       navigate("/admin/category");
@@ -138,7 +137,7 @@ const AdminCategoryForm = () => {
               Image{" "}
               {!isEdit && <span className="text-red-400">*</span>}
               {isEdit && (
-                <span className="text-purple-400 text-xs ml-1">(keep if empty)</span>
+                <span className="text-purple-400 text-xs ml-1"></span>
               )}
             </label>
 

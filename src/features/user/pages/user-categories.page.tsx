@@ -1,4 +1,4 @@
-import UserCategories from "@/components/user/user.category/user-categories";
+import UserCategories from "@/features/user/components/user-categories";
 
 
 function UserCategoriesPage() {

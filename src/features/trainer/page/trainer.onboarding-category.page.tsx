@@ -1,5 +1,5 @@
 
-import TrainerOnboardingSkills from '@/components/trainer/trainer-onboarding.skill';
+import TrainerOnboardingSkills from '@/features/trainer/components/trainer-onboarding.category';
 
 const TrainerOnboardingSkillPage = () => {
     return (

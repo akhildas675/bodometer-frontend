@@ -8,13 +8,12 @@ import SearchBar from "@/components/controls/search/search";
 import SortDropdown, { type SortConfig } from "@/components/controls/sort/sort";
 import { extractSortOptions } from "@/components/controls/sort/sort.label";
 import Pagination from "@/components/controls/pagination/pagination";
-
 import { useTableFetch } from "@/hooks/useTableFetch";
-import adminServices from "@/services/admin/admin.services";
 import { PaginatedResponse } from "@/interface/common.interface";
-import { UpdateCategory } from "@/interface/category.interface";
+import { UpdateCategory } from "@/modules/category/types/category.interface";
 import { categoryColumns } from "./admin-category.columns";
 import { useCategoryActions, type CategoryModalConfig } from "./admin-category.actions";
+import { categoryService } from "@/modules/category/service/category.service";
 
 const AdminCategoryList = () => {
   const navigate = useNavigate();
@@ -28,7 +27,7 @@ const AdminCategoryList = () => {
   const [itemsPerPage, setItemsPerPage] = useState(10);
 
   const fetchFn = useCallback(async() =>{
-    return adminServices.getAllCategories({
+    return categoryService.getCategories({
         search: searchQuery || undefined,
         sortBy: sortConfig.field ? String(sortConfig.field) : undefined,
         sortOrder: sortConfig.order,
