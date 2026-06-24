@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { ChevronLeft, Loader2, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
-import adminServices from "@/services/admin/admin.services";
+import { equipmentService } from "@/modules/equipment/service/equipment.service";
 import { onboardingService } from "@/modules/onboarding/service/onboarding.service";
 import { categoryService } from "@/modules/category/service/category.service";
 import type { CategoryListItem } from "@/modules/category/types/category.interface";
@@ -137,7 +137,7 @@ const AdminQuestionForm = () => {
         })
         .finally(() => setPreviewLoading(false));
     } else if (dataSource === "equipment") {
-      adminServices.getAllEquipment({ page: 1, limit: 1000 })
+      equipmentService.getAllEquipment({ page: 1, limit: 1000 })
         .then((res) => {
           const titles = (res.data || [])
             .filter((eq) => eq.isActive !== false && eq.title)

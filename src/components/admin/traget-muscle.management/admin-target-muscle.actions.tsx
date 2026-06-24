@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import type { TableAction } from "@/components/ui/table/table.types";
 import type { UpdateTargetMuscles } from "@/interface/target-muscle.interface";
-import adminServices from "@/services/admin/admin.services";
+import { targetMuscleService } from "@/modules/target-muscle/service/target-muscle.service";
 import { parseApiError } from "@/api/error.helper";
 
 export type TargetMuscleModalConfig = {
@@ -40,7 +40,7 @@ export const useTargetMuscleActions = (
           variant: "danger",
           onConfirm: async () => {
             try {
-              const res = await adminServices.toggleTargetMuscleStatus(muscle.targetMuscleId);
+              const res = await targetMuscleService.toggleTargetMuscleStatus(muscle.targetMuscleId);
               toast.success(res.message);
               refetch();
             } catch (error: unknown) {
@@ -63,7 +63,7 @@ export const useTargetMuscleActions = (
           variant: "primary",
           onConfirm: async () => {
             try {
-              const res = await adminServices.toggleTargetMuscleStatus(muscle.targetMuscleId);
+              const res = await targetMuscleService.toggleTargetMuscleStatus(muscle.targetMuscleId);
               toast.success(res.message);
               refetch();
             } catch (error: unknown) {

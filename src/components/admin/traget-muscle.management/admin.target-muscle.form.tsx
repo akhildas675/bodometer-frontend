@@ -2,6 +2,7 @@ import { parseApiError } from "@/api/error.helper";
 import { ADMIN_UI_ROUTES } from "@/constants/constant-routes/ui-routes/admin.ui-constant-routes";
 import { BODY_REGION, BodyRegion } from "@/constants/fitness.constant";
 import { TargetMuscle } from "@/interface/target-muscle.interface";
+import { targetMuscleService } from "@/modules/target-muscle/service/target-muscle.service";
 import adminServices from "@/services/admin/admin.services";
 import { Image, X } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -30,7 +31,7 @@ const AdminTargetMuscleForm = () => {
     if (isEdit && id) {
       const fetchTargetMuscle = async () => {
         try {
-          const res = await adminServices.getTargetMuscleById(id);
+          const res = await targetMuscleService.getTargetMuscleById(id);
           const data = res.data;
 
           setForm({
@@ -79,10 +80,10 @@ const AdminTargetMuscleForm = () => {
       setIsSubmitting(true)
 
       if (isEdit && id) {
-        const res = await adminServices.updateTargetMuscle(id, formData);
+        const res = await targetMuscleService.updateTargetMuscle(id, formData);
         toast.success(res.message);
       } else {
-        const res = await adminServices.createTargetMuscle(formData);
+        const res = await targetMuscleService.createTargetMuscle(formData);
         toast.success(res.message);
       }
       navigate(ADMIN_UI_ROUTES.TARGET_MUSCLES)

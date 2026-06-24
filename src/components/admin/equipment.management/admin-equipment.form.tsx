@@ -1,5 +1,6 @@
 import { parseApiError } from "@/api/error.helper";
 import { ADMIN_UI_ROUTES } from "@/constants/constant-routes/ui-routes/admin.ui-constant-routes";
+import { equipmentService } from "@/modules/equipment/service/equipment.service";
 import adminServices from "@/services/admin/admin.services";
 import { Image, X } from "lucide-react";
 import { useState, useEffect } from "react";
@@ -26,7 +27,7 @@ const AdminEquipmentForm = () => {
     if (isEdit && id) {
       const fetchEquipment = async () => {
         try {
-          const res = await adminServices.getEquipmentById(id);
+          const res = await equipmentService.getEquipmentById(id);
           const data = res.data;
 
           setForm({
@@ -71,10 +72,10 @@ const AdminEquipmentForm = () => {
       setIsSubmitting(true);
 
       if (isEdit && id) {
-        const res = await adminServices.updateEquipment(id, formData);
+        const res = await equipmentService.updateEquipment(id, formData);
         toast.success(res.message);
       } else {
-        const res = await adminServices.createEquipment(formData);
+        const res = await equipmentService.createEquipment(formData);
         toast.success(res.message);
       }
       

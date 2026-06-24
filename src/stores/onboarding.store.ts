@@ -6,6 +6,7 @@ import { parseApiError } from "@/api/error.helper";
 import { CategoryListItem } from "@/modules/category/types/category.interface";
 import { categoryService } from "@/modules/category/service/category.service";
 import { OnboardingAnswerItem } from "@/modules/onboarding/types/onboarding.interface";
+import { equipmentService } from "@/modules/equipment/service/equipment.service";
 import type { UpdateEquipment } from "@/interface/equipment.interface";
 import { useAuthStore } from "@/stores/auth.store";
 import type { ApiResponse } from "@/interface/api-response.interface";
@@ -143,7 +144,7 @@ export const useOnboardingStore = create<OnboardingStore>((set, get) => ({
                         }));
                 },
                 equipment: async () => {
-                    const res = await userServices.getEquipment({ page: 1, limit: 1000 });
+                    const res = await equipmentService.getAllEquipment({ page: 1, limit: 1000 });
                     return (res.data ?? [])
                         .filter((eq: UpdateEquipment) => eq.isActive !== false)
                         .map((eq: UpdateEquipment) => ({

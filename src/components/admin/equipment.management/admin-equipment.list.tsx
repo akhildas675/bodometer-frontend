@@ -10,7 +10,7 @@ import { extractSortOptions } from "@/components/controls/sort/sort.label";
 import Pagination from "@/components/controls/pagination/pagination";
 
 import { useTableFetch } from "@/hooks/useTableFetch";
-import adminServices from "@/services/admin/admin.services";
+import { equipmentService } from "@/modules/equipment/service/equipment.service";
 import { PaginatedResponse } from "@/interface/common.interface";
 import type { UpdateEquipment } from "@/interface/equipment.interface";
 import { ADMIN_UI_ROUTES } from "@/constants/constant-routes/ui-routes/admin.ui-constant-routes";
@@ -81,7 +81,7 @@ const AdminEquipmentList = () => {
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("");
 
   const fetchFn = useCallback(async () => {
-    return adminServices.getAllEquipment({
+    return equipmentService.getAllEquipment({
       search: searchQuery || undefined,
       status: statusFilter || undefined,
       sortBy: sortConfig.field ? String(sortConfig.field) : undefined,

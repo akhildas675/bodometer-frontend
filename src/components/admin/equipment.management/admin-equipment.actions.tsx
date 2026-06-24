@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import type { TableAction } from "@/components/ui/table/table.types";
 import type { UpdateEquipment } from "@/interface/equipment.interface";
-import adminServices from "@/services/admin/admin.services";
+import { equipmentService } from "@/modules/equipment/service/equipment.service";
 import { parseApiError } from "@/api/error.helper";
 
 export type EquipmentModalConfig = {
@@ -41,7 +41,7 @@ export const useEquipmentActions = (
           variant: "danger",
           onConfirm: async () => {
             try {
-              const res = await adminServices.toggleEquipmentStatus(equipment.equipmentId);
+              const res = await equipmentService.toggleEquipmentStatus(equipment.equipmentId);
               toast.success(res.message);
               refetch();
             } catch (error: unknown) {
@@ -64,7 +64,7 @@ export const useEquipmentActions = (
           variant: "primary",
           onConfirm: async () => {
             try {
-              const res = await adminServices.toggleEquipmentStatus(equipment.equipmentId);
+              const res = await equipmentService.toggleEquipmentStatus(equipment.equipmentId);
               toast.success(res.message);
               refetch();
             } catch (error: unknown) {

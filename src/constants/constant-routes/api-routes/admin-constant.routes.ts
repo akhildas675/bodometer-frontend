@@ -45,28 +45,6 @@ export const ADMIN_API_ROUTES = {
 
 
 
-  // Target Muscles
-  CREATE_TARGET_MUSCLE: "/create-target-muscle",
-  GET_TARGET_MUSCLES: "/get-target-muscles",
-  GET_TARGET_MUSCLE_BY_ID: (id: string) => `/get-target-muscle/${id}`,
-  UPDATE_TARGET_MUSCLE: (id: string) => `/update-target-muscle/${id}`,
-  DELETE_TARGET_MUSCLE: (id: string) => `/delete-target-muscle/${id}`,
-  TOGGLE_TARGET_MUSCLE_STATUS: (id: string) => `/toggle-target-muscle/${id}`,
-
-  // Equipment
-  CREATE_EQUIPMENT: "/create-equipment",
-  GET_EQUIPMENT: "/get-equipment",
-  GET_EQUIPMENT_BY_ID: (id: string) => `/get-equipment/${id}`,
-  UPDATE_EQUIPMENT: (id: string) => `/update-equipment/${id}`,
-  TOGGLE_EQUIPMENT_STATUS: (id: string) => `/toggle-equipment/${id}`,
-
-  // Exercises
-  CREATE_EXERCISE: "/create-exercise",
-  GET_EXERCISES: "/get-exercises",
-  GET_EXERCISE_BY_ID: (id: string) => `/get-exercise/${id}`,
-  UPDATE_EXERCISE: (id: string) => `/update-exercise/${id}`,
-  TOGGLE_EXERCISE_STATUS: (id: string) => `/toggle-exercise/${id}`,
-
   //meal category
 
   CREATE_MEAL_CATEGORY:"/create-meal-category",

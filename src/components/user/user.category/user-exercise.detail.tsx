@@ -8,7 +8,7 @@ import {
   Zap,
   Globe,
 } from "lucide-react";
-import userServices from "@/services/user/user.services";
+import { exerciseService } from "@/modules/exercise/service/exercise.service";
 import { useFetch } from "@/hooks/useFetch";
 import type { ExerciseRow } from "@/interface/exercise.interface";
 import LazyImage from "@/components/ui/lazy.image";
@@ -57,7 +57,7 @@ const UserExerciseDetail = () => {
   const navigate = useNavigate();
 
   const { data: exercise, loading, error } = useFetch<ExerciseRow>(
-    useCallback(() => userServices.getExerciseById(exerciseId!).then((res) => res.data), [exerciseId]),
+    useCallback(() => exerciseService.getExerciseById(exerciseId!).then((res) => res.data), [exerciseId]),
     !!exerciseId
   );
 

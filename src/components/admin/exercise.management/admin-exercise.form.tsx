@@ -3,7 +3,9 @@ import { ADMIN_UI_ROUTES } from "@/constants/constant-routes/ui-routes/admin.ui-
 import { DIFFICULTY_LEVEL, WORKOUT_ENVIRONMENT } from "@/constants/fitness.constant";
 import type { ExerciseFormData } from "@/interface/exercise.interface";
 
-import adminServices from "@/services/admin/admin.services";
+import { exerciseService } from "@/modules/exercise/service/exercise.service";
+import { targetMuscleService } from "@/modules/target-muscle/service/target-muscle.service";
+import { equipmentService } from "@/modules/equipment/service/equipment.service";
 import { categoryService } from "@/modules/category/service/category.service";
 import type { CategoryListItem } from "@/modules/category/types/category.interface";
 import type { UpdateTargetMuscles } from "@/interface/target-muscle.interface";
@@ -108,9 +110,9 @@ const AdminExerciseForm = () => {
 
   const { data: optionsData, error: optionsError } = useFetch(async () => {
     const [musclesRes, categoriesRes, equipmentRes] = await Promise.all([
-      adminServices.getAllTargetMuscles({ limit: 100 }),
+      targetMuscleService.getAllTargetMuscles({ limit: 100 }),
       categoryService.getCategories({ limit: 100 }),
-      adminServices.getAllEquipment({ limit: 100 }),
+      equipmentService.getAllEquipment({ limit: 100 }),
     ]);
     return { musclesRes, categoriesRes, equipmentRes };
   });
@@ -133,7 +135,7 @@ const AdminExerciseForm = () => {
 
   // Load exercise for edit
   const { data: exerciseRes, error: exerciseError } = useFetch(
-    async () => (isEdit && id ? await adminServices.getExerciseById(id) : null),
+    async () => (isEdit && id ? await exerciseService.getExerciseById(id) : null),
     isEdit && !!id
   );
 
@@ -238,10 +240,10 @@ const AdminExerciseForm = () => {
     try {
       setIsSubmitting(true);
       if (isEdit && id) {
-        const res = await adminServices.updateExercise(id, formData);
+        const res = await exerciseService.updateExercise(id, formData);
         toast.success(res.message || "Exercise updated successfully");
       } else {
-        const res = await adminServices.createExercise(formData);
+        const res = await exerciseService.createExercise(formData);
         toast.success(res.message || "Exercise created successfully");
       }
       navigate(ADMIN_UI_ROUTES.EXERCISES);

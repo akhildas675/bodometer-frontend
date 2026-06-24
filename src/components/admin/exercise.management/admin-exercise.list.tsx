@@ -10,7 +10,7 @@ import { extractSortOptions } from "@/components/controls/sort/sort.label";
 import Pagination from "@/components/controls/pagination/pagination";
 
 import { useTableFetch } from "@/hooks/useTableFetch";
-import adminServices from "@/services/admin/admin.services";
+import { exerciseService } from "@/modules/exercise/service/exercise.service";
 import { PaginatedResponse } from "@/interface/common.interface";
 import type { ExerciseRow } from "@/interface/exercise.interface";
 import { ADMIN_UI_ROUTES } from "@/constants/constant-routes/ui-routes/admin.ui-constant-routes";
@@ -71,7 +71,7 @@ const AdminExerciseList = () => {
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("");
 
   const fetchFn = useCallback(async () => {
-    return adminServices.getAllExercises({
+    return exerciseService.getAllExercises({
       search: searchQuery || undefined,
       status: statusFilter || undefined,
       sortBy: sortConfig.field ? String(sortConfig.field) : undefined,
