@@ -6,6 +6,7 @@ import { useOnboardingStore } from '@/stores/onboarding.store';
 import { useNavigate } from 'react-router-dom';
 import ConfirmationModal from '@/components/ui/confirm.dialog';
 import { parseApiError } from '@/api/error.helper';
+import { USER_UI_ROUTES } from '@/constants/constant-routes/ui-routes/user.ui-constant.routes';
 
 const UserOnboardingAssessment = () => {
    const navigate = useNavigate();
@@ -37,7 +38,7 @@ const UserOnboardingAssessment = () => {
   // completion
   useEffect(() => {
     if (isComplete) {
-      navigate("/");
+      navigate(USER_UI_ROUTES.USER_WORKOUT_PLANS);
     }
   }, [isComplete, navigate]);
  

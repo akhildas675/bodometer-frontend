@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { ChevronLeft, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
-import adminServices from "@/services/admin/admin.services";
+import { onboardingService } from "@/modules/onboarding/service/onboarding.service";
 import { ADMIN_UI_ROUTES } from "@/constants/constant-routes/ui-routes/admin.ui-constant-routes";
 
 import { parseApiError } from "@/api/error.helper";
@@ -32,7 +32,7 @@ const AdminQuestionGroupForm = () => {
   useEffect(() => {
     if (isEdit && id) {
       setFetching(true);
-      adminServices
+      onboardingService
         .getQuestionGroupById(id)
         .then((res) => {
           if (res.data) {
@@ -58,13 +58,13 @@ const AdminQuestionGroupForm = () => {
     setLoading(true);
     try {
       if (isEdit && id) {
-        const res = await adminServices.updateQuestionGroup(id, {
+        const res = await onboardingService.updateQuestionGroup(id, {
           title: form.title.trim(),
           order: Number(form.order),
         });
         toast.success(res.message);
       } else {
-        const res = await adminServices.createQuestionGroup({
+        const res = await onboardingService.createQuestionGroup({
           key: "",
           title: form.title.trim(),
           order: Number(form.order),

@@ -2,7 +2,7 @@ import { userApi } from "@/api/api.instance";
 import { buildQueryParams, TableQueryParams } from "@/api/query.helper";
 import { USER_API_ROUTES } from "@/constants/constant-routes/api-routes/user-constant.routes";
 import { MealCategory } from "@/interface/health-log.interface";
-import { QuestionGroup, OnboardingQuestion as DynamicOnboardingQuestion } from "@/interface/onboarding.interface";
+
 
 import { PaginationMeta } from "@/interface/common.interface";
 import { HealthLogDto, UpsertHealthLogDto, HealthLogProgressResponseDto } from "@/interface/health-log.interface";
@@ -10,13 +10,13 @@ import { UpdateEquipment } from "@/interface/equipment.interface";
 import type { ApiResponse } from "@/interface/api-response.interface";
 import { TrainerDynamicSlot, TrainerBooking, CreateBookingPayload } from "@/interface/booking.interface";
 import { CalculateBmiPayload, BmiCalculationResult } from "@/interface/health-log.interface";
-import { OnboardingAnswersResponse } from "@/interface/onboarding.interface";
+
 
 import { UploadProfilePictureResponse } from "@/interface/common.interface";
 
 import { TrainerDetail, TrainerListItem } from "@/interface/trainer.interface";
 import { ProfileUpdatePayload, UserProfileInterface } from "@/interface/user.interface";
-import { AnswerValue } from "@/constants/onboarding.constant";
+
 import type { ExerciseRow } from "@/interface/exercise.interface";
 import { GetWorkoutPlansResponse, WorkoutPlanResponse, MarkDayCompletedPayload, MarkExerciseStatusPayload, WorkoutProgressResponse } from "@/interface/workout.interface";
 import { Timeframe } from "@/constants/fitness.constant";
@@ -105,41 +105,6 @@ const userServices = {
   },
 
 
-
-  async getAllQuestions(): Promise<ApiResponse<DynamicOnboardingQuestion[]>> {
-    const response = await userApi.get<ApiResponse<DynamicOnboardingQuestion[]>>(USER_API_ROUTES.GET_ALL_QUESTIONS);
-    return response.data;
-  },
-
-  async getOnboardingGroups(): Promise<ApiResponse<QuestionGroup[]>> {
-    const response = await userApi.get<ApiResponse<QuestionGroup[]>>(USER_API_ROUTES.GET_ONBOARDING_GROUPS);
-    return response.data;
-  },
-
-  async getOnboardingQuestions(): Promise<ApiResponse<DynamicOnboardingQuestion[]>> {
-    const response = await userApi.get<ApiResponse<DynamicOnboardingQuestion[]>>(USER_API_ROUTES.GET_ONBOARDING_QUESTIONS);
-    return response.data;
-  },
-
-  async userOnboardingQuestions(): Promise<ApiResponse<DynamicOnboardingQuestion[]>> {
-    const response = await userApi.get<ApiResponse<DynamicOnboardingQuestion[]>>(USER_API_ROUTES.GET_ONBOARDING_QUESTIONS);
-    return response.data;
-  },
-
-  async submitOnboarding(data: { answers: { questionId: string; key: string; value: AnswerValue }[] }): Promise<ApiResponse<unknown>> {
-    const response = await userApi.post<ApiResponse<unknown>>(USER_API_ROUTES.SUBMIT_ONBOARDING, data);
-    return response.data;
-  },
-
-  async getOnboardingStatus(): Promise<ApiResponse<{ completed: boolean }>> {
-    const response = await userApi.get<ApiResponse<{ completed: boolean }>>(USER_API_ROUTES.GET_ONBOARDING_STATUS);
-    return response.data;
-  },
-
-  async getOnboardingAnswers(): Promise<ApiResponse<OnboardingAnswersResponse>> {
-    const response = await userApi.get<ApiResponse<OnboardingAnswersResponse>>(USER_API_ROUTES.GET_ONBOARDING_ANSWERS);
-    return response.data;
-  },
 
   async calculateBmiPublic(data: CalculateBmiPayload): Promise<ApiResponse<BmiCalculationResult>> {
     const response = await userApi.post<ApiResponse<BmiCalculationResult>>(USER_API_ROUTES.CALCULATE_BMI_PUBLIC, data);

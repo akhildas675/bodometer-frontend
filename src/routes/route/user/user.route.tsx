@@ -13,8 +13,8 @@ import UserCategoryDetailPage from "@/features/user/pages/user.category-detail.p
 import UserSubscriptionPage from "@/features/user/pages/user-subscription.page";
 import UserSubscriptionSuccessPage from "@/features/user/pages/user.subscription-success.page";
 import UserSubscriptionCancelPage from "@/features/user/pages/user.subscription-cancel.page";
-import UserOnboardingIntroPage from "@/pages/user/user-fitness/user.onboarding-intro.page";
-import UserOnboardingAssessmentPage from "@/pages/user/user-fitness/user.onboarding-assessment.page";
+import UserOnboardingIntroPage from "@/features/user/onboarding/pages/user.onboarding-intro.page";
+import UserOnboardingAssessmentPage from "@/features/user/onboarding/pages/user.onboarding-assessment.page";
 import UserFitnessProfilePage from "@/pages/user/user-fitness/user.fitness-profile.page";
 import UserExercisesPage from "@/pages/user/user-fitness/user-exercises.page";
 import UserExerciseDetailPage from "@/pages/user/user-fitness/user-exercise.detail.page";

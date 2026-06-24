@@ -11,11 +11,11 @@ import SortDropdown, { type SortConfig } from "@/components/controls/sort/sort";
 import { extractSortOptions } from "@/components/controls/sort/sort.label";
 
 import { useTableFetch } from "@/hooks/useTableFetch";
-import adminServices from "@/services/admin/admin.services";
+import { onboardingService } from "@/modules/onboarding/service/onboarding.service";
 
 import { getQuestionActions, type QuestionModalConfig } from "./admin.question.actions";
 import { PaginatedResponse } from "@/interface/common.interface";
-import { OnboardingQuestion, QuestionGroup } from "@/interface/onboarding.interface";
+import { OnboardingQuestion, QuestionGroup } from "@/modules/onboarding/types/onboarding.interface";
 import { ADMIN_UI_ROUTES } from "@/constants/constant-routes/ui-routes/admin.ui-constant-routes";
 import { questionColumns } from "./admin.question.columns";
 
@@ -33,14 +33,14 @@ const AdminQuestionList = () => {
   });
 
   useEffect(() => {
-     adminServices.getQuestionGroups({ page: 1, limit: 100 }).then(res => {
-         setGroups(res.data || []);
-     }).catch(e => console.error(e));
+      onboardingService.getQuestionGroups({ page: 1, limit: 100 }).then(res => {
+          setGroups(res.data || []);
+      }).catch(e => console.error(e));
   }, []);
 
   const fetchFn = useCallback(
     () =>
-      adminServices.getQuestions({
+      onboardingService.getQuestions({
         search: searchQuery || undefined,
         groupId: selectedGroup || undefined,
         page: currentPage,

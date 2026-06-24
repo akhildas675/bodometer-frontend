@@ -1,4 +1,4 @@
-import AdminQuestionGroupList from "@/components/admin/questions.management/group/admin.question-group.list";
+import AdminQuestionGroupList from "@/features/admin/onboarding/components/group/admin.question-group.list";
 
 const AdminQuestionGroupListPage = () => {
   return (

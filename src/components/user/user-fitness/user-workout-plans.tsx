@@ -429,6 +429,12 @@ const UserWorkoutPlans = () => {
   const { loading } = useFetch(fetchPlansFn);
 
   const handleGenerate = async () => {
+    if (!user?.onboardingComplete) {
+      toast.error("Please complete your fitness profile to generate a workout plan.");
+      navigate(USER_UI_ROUTES.ONBOARDING_INTRO);
+      return;
+    }
+
     try {
       setGenerating(true);
       const response = await userServices.generateWorkout();

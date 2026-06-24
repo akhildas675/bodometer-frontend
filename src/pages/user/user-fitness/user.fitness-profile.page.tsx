@@ -1,4 +1,4 @@
-import UserFitnessProfile from '@/components/user/user-fitness/user-fitness.profile';
+import UserFitnessProfile from '@/features/user/onboarding/components/user-fitness.profile';
 
 const UserFitnessProfilePage = () => {
     return <UserFitnessProfile/>

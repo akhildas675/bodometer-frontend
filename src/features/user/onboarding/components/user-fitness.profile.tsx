@@ -5,7 +5,7 @@ import { Loader2, Save, ClipboardList, AlertTriangle, ShieldAlert, Info } from '
 import { DynamicFieldRenderer } from './dynamic.field.renderer';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
-import userServices from '@/services/user/user.services';
+import { onboardingService } from '@/modules/onboarding/service/onboarding.service';
 import ConfirmationModal from '@/components/ui/confirm.dialog';
 import { parseApiError } from '@/api/error.helper';
 
@@ -36,7 +36,7 @@ const UserFitnessProfile = () => {
   useEffect(() => {
     const checkStatus = async () => {
       try {
-        const res = await userServices.getOnboardingStatus();
+        const res = await onboardingService.getOnboardingStatus();
         if (!res.data?.completed) {
           navigate("/onboarding/intro");
         } else {

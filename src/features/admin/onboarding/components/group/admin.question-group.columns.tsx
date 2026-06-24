@@ -1,5 +1,5 @@
 import type { TableColumn } from "@/components/ui/table/table.types";
-import { QuestionGroup } from "@/interface/onboarding.interface";
+import { QuestionGroup } from "@/modules/onboarding/types/onboarding.interface";
 export const questionGroupColumns: TableColumn<QuestionGroup>[] = [
   {
     key: "key",

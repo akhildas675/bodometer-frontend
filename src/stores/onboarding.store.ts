@@ -1,10 +1,11 @@
 import { create } from "zustand";
 import userServices from "@/services/user/user.services";
+import { onboardingService } from "@/modules/onboarding/service/onboarding.service";
 import { AnswerValue, QuestionType, CONDITION_OPERATOR, ConditionOperator } from "@/constants/onboarding.constant";
 import { parseApiError } from "@/api/error.helper";
 import { CategoryListItem } from "@/modules/category/types/category.interface";
 import { categoryService } from "@/modules/category/service/category.service";
-import { OnboardingAnswerItem } from "@/interface/onboarding.interface";
+import { OnboardingAnswerItem } from "@/modules/onboarding/types/onboarding.interface";
 import type { UpdateEquipment } from "@/interface/equipment.interface";
 import { useAuthStore } from "@/stores/auth.store";
 import type { ApiResponse } from "@/interface/api-response.interface";
@@ -117,8 +118,8 @@ export const useOnboardingStore = create<OnboardingStore>((set, get) => ({
         set({ loading: true, error: null });
         try {
             const [groupsRes, questionsRes] = await Promise.all([
-                userServices.getOnboardingGroups(),
-                userServices.getOnboardingQuestions(),
+                onboardingService.getOnboardingGroups(),
+                onboardingService.getOnboardingQuestions(),
             ]);
 
             const groups: OnboardingGroup[] = (groupsRes.data ?? [])
@@ -191,7 +192,7 @@ export const useOnboardingStore = create<OnboardingStore>((set, get) => ({
 
     loadUserAnswers: async () => {
         try {
-            const res = await userServices.getOnboardingAnswers();
+            const res = await onboardingService.getOnboardingAnswers();
             if (res?.data?.answers) {
                 const answerMap: Record<string, OnboardingAnswer> = {};
                 (res.data.answers as OnboardingAnswerItem[]).forEach((ans: OnboardingAnswerItem) => {
@@ -251,7 +252,7 @@ export const useOnboardingStore = create<OnboardingStore>((set, get) => ({
                     value: ans.value,
                 }));
 
-            const res = await userServices.submitOnboarding({ answers: payload });
+            const res = await onboardingService.submitOnboarding({ answers: payload });
             useAuthStore.getState().updateUser({ onboardingComplete: true });
             set({ submitting: false, isComplete: true });
             return res;

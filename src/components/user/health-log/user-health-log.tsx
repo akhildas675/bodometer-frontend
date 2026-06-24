@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Activity, Droplets, Moon, Utensils, Plus, Trash2, CheckCircle2 } from 'lucide-react';
-import { StepperInput } from '../user-fitness/stepper.input';
+import { StepperInput } from '@/features/user/onboarding/components/stepper.input';
 import { HealthLogDto, MealEntry, MealEntryDto } from '@/interface/health-log.interface';
 import { MealCategory } from "@/interface/health-log.interface";
 import { useFetch } from '@/hooks/useFetch';

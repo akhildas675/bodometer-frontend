@@ -3,7 +3,7 @@ import { useStandaloneBmiStore } from "@/stores/bmi.store";
 import { useAuthStore } from "@/stores/auth.store";
 import { useMemo } from "react";
 import { Loader2, ArrowLeft, CheckCircle2, Scale, Dumbbell, ShieldAlert, Award } from "lucide-react";
-import { StepperInput } from "@/components/user/user-fitness/stepper.input";
+import { StepperInput } from "@/features/user/onboarding/components/stepper.input";
 
 type Unit = "metric" | "imperial";
 

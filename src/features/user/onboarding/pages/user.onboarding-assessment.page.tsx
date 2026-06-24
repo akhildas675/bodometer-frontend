@@ -1,4 +1,4 @@
-import UserOnboardingAssessment from '@/components/user/user-fitness/user-onboarding.assessment';
+import UserOnboardingAssessment from '@/features/user/onboarding/components/user-onboarding.assessment';
 
 
 const UserOnboardingAssessmentPage = () => {

@@ -43,20 +43,7 @@ export const ADMIN_API_ROUTES = {
   TOGGLE_SUBSCRIPTION_PLAN_STATUS: (id: string) => `/toggle-subscription-plan/${id}`,
   GET_SUBSCRIPTION_TRANSACTIONS: "/get-subscription-transactions",
 
-  // Question Groups
-  GET_QUESTION_GROUPS: "/get-question-groups",
-  CREATE_QUESTION_GROUP: "/create-question-group",
-  GET_QUESTION_GROUP_BY_ID: (id: string) => `/get-question-group/${id}`,
-  UPDATE_QUESTION_GROUP: (id: string) => `/update-question-group/${id}`,
-  TOGGLE_QUESTION_GROUP_STATUS: (id: string) => `/toggle-question-group/${id}`,
 
-  // Questions
-  GET_QUESTIONS: "/get-questions",
-  CREATE_QUESTION: "/create-question",
-  GET_QUESTION_BY_ID: (id: string) => `/get-question/${id}`,
-  UPDATE_QUESTION: (id: string) => `/update-question/${id}`,
-  TOGGLE_QUESTION_STATUS: (id: string) => `/toggle-question/${id}`,
-  GET_QUESTION_DATA_SOURCES: "/questions/data-sources",
 
   // Target Muscles
   CREATE_TARGET_MUSCLE: "/create-target-muscle",

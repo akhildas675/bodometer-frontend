@@ -3,14 +3,14 @@ import { Edit } from "lucide-react";
 import { toast } from "sonner";
 import type { NavigateFunction } from "react-router-dom";
 
-import adminServices from "@/services/admin/admin.services";
+import { onboardingService } from "@/modules/onboarding/service/onboarding.service";
 import type { TableAction } from "@/components/ui/table/table.types";
-import { OnboardingQuestion } from "@/interface/onboarding.interface";
+import { QuestionGroup } from "@/modules/onboarding/types/onboarding.interface";
 import { ADMIN_UI_ROUTES } from "@/constants/constant-routes/ui-routes/admin.ui-constant-routes";
 
 import { parseApiError } from "@/api/error.helper";
 
-export type QuestionModalConfig = {
+export type GroupModalConfig = {
   isOpen: boolean;
   title: string;
   message: string;
@@ -18,14 +18,14 @@ export type QuestionModalConfig = {
   variant?: "danger" | "primary";
 };
 
-export const getQuestionActions = (
+export const getQuestionGroupActions = (
   navigate: NavigateFunction,
   refetch: () => void,
-  setModalConfig: React.Dispatch<React.SetStateAction<QuestionModalConfig>>
-): TableAction<OnboardingQuestion>[] => {
-  const handleToggleStatus = async (id: string) => {
+  setModalConfig: React.Dispatch<React.SetStateAction<GroupModalConfig>>
+): TableAction<QuestionGroup>[] => {
+  const handleToggleStatus = async (groupId: string) => {
     try {
-      const res = await adminServices.toggleQuestionStatus(id);
+      const res = await onboardingService.toggleQuestionGroupStatus(groupId);
       toast.success(res.message);
       refetch();
     } catch (error: unknown) {
@@ -38,7 +38,7 @@ export const getQuestionActions = (
     {
       label: "Edit",
       icon: <Edit size={16} />,
-      onClick: (item) => navigate(ADMIN_UI_ROUTES.QUESTION_EDIT(item.questionId)),
+      onClick: (item) => navigate(ADMIN_UI_ROUTES.QUESTION_GROUPS_EDIT(item.groupId)),
     },
     {
       label: "Block",
@@ -47,11 +47,11 @@ export const getQuestionActions = (
       onClick: (item) => {
         setModalConfig({
           isOpen: true,
-          title: "Block Question",
-          message: `Are you sure you want to block this question?`,
+          title: "Block Group",
+          message: `Are you sure you want to block this group?`,
           variant: "danger",
           onConfirm: async () => {
-            await handleToggleStatus(item.questionId);
+            await handleToggleStatus(item.groupId);
             setModalConfig((p) => ({ ...p, isOpen: false }));
           },
         });
@@ -63,11 +63,11 @@ export const getQuestionActions = (
       onClick: (item) => {
         setModalConfig({
           isOpen: true,
-          title: "Unblock Question",
-          message: `Are you sure you want to unblock this question?`,
+          title: "Unblock Group",
+          message: `Are you sure you want to unblock this group?`,
           variant: "primary",
           onConfirm: async () => {
-            await handleToggleStatus(item.questionId);
+            await handleToggleStatus(item.groupId);
             setModalConfig((p) => ({ ...p, isOpen: false }));
           },
         });

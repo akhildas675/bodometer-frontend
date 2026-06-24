@@ -10,10 +10,10 @@ import ConfirmationModal from "@/components/ui/confirm.dialog";
 import { useTableFetch } from "@/hooks/useTableFetch";
 import { getQuestionGroupActions, type GroupModalConfig } from "./admin.question-group.actions";
 import { PaginatedResponse } from "@/interface/common.interface";
-import { QuestionGroup } from "@/interface/onboarding.interface";
+import { QuestionGroup } from "@/modules/onboarding/types/onboarding.interface";
 import { ADMIN_UI_ROUTES } from "@/constants/constant-routes/ui-routes/admin.ui-constant-routes";
 import { questionGroupColumns } from "./admin.question-group.columns";
-import adminServices from "@/services/admin/admin.services";
+import { onboardingService } from "@/modules/onboarding/service/onboarding.service";
 
 const AdminQuestionGroupList = () => {
   const navigate = useNavigate();
@@ -23,7 +23,7 @@ const AdminQuestionGroupList = () => {
   const [itemsPerPage, setItemsPerPage] = useState(10);
 
   const fetchFn = useCallback(
-    () => adminServices.getQuestionGroups({ search: searchQuery || undefined, page: currentPage, limit: itemsPerPage }),
+    () => onboardingService.getQuestionGroups({ search: searchQuery || undefined, page: currentPage, limit: itemsPerPage }),
     [searchQuery, currentPage, itemsPerPage]
   );
 

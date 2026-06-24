@@ -15,10 +15,10 @@ import AdminSubscriptionFeatureFormPage from "@/features/admin/subscription/page
 import AdminSubscriptionPlanListPage from "@/features/admin/subscription/pages/admin-subscription.plan-list.page";
 import AdminSubscriptionPlanFormPage from "@/features/admin/subscription/pages/admin-subscription.plan-form.page";
 import AdminSubscriptionTransactionListPage from "@/pages/admin/admin-subscription.transaction-list.page";
-import AdminQuestionGroupListPage from "@/pages/admin/admin-question.group-list.page";
-import AdminQuestionGroupFormPage from "@/pages/admin/admin-question.group-form.page";
-import AdminQuestionListPage from "@/pages/admin/admin-question.list.page";
-import AdminQuestionFormPage from "@/pages/admin/admin-question.form.page";
+import AdminQuestionGroupListPage from "@/features/admin/onboarding/pages/admin-question.group-list.page";
+import AdminQuestionGroupFormPage from "@/features/admin/onboarding/pages/admin-question.group-form.page";
+import AdminQuestionListPage from "@/features/admin/onboarding/pages/admin-question.list.page";
+import AdminQuestionFormPage from "@/features/admin/onboarding/pages/admin-question.form.page";
 import AdminEquipmentListPage from "@/pages/admin/admin.equipment-list.page";
 import AdminEquipmentFormPage from "@/pages/admin/admin.equipment-form.page";
 import AdminMealCategoryListPage from "@/pages/admin/admin.meal-category.list-page";

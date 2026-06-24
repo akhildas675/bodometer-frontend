@@ -1,4 +1,4 @@
-import AdminQuestionForm from "@/components/admin/questions.management/question/admin.question.form";
+import AdminQuestionForm from "@/features/admin/onboarding/components/question/admin.question.form";
 
 const AdminQuestionFormPage = () => {
   return (

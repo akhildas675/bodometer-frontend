@@ -30,7 +30,7 @@ export interface OnboardingQuestion {
 }
 
 export interface CreateQuestionGroupData {
-  key: string;
+  key?: string;
   title: string;
   order: number;
 }
@@ -41,7 +41,7 @@ export interface UpdateQuestionGroupData {
 }
 
 export interface CreateQuestionData {
-  key: string;
+  key?: string;
   question: string;
   description?: string;
   groupId: string;
@@ -85,8 +85,8 @@ export interface OnboardingAnswerItem {
   questionId: string;
   questionKey?: string;
   key?: string;
-  answer?: string | number | string[] | number[];
-  value?: string | number | string[] | number[];
+  answer?: string | number | string[] | number[] | boolean;
+  value?: string | number | string[] | number[] | boolean;
 }
 
 export interface OnboardingAnswersResponse {

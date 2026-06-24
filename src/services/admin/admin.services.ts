@@ -3,7 +3,7 @@ import { buildQueryParams, TableQueryParams } from "@/api/query.helper";
 
 import type { TrainerWithProfile } from "@/components/ui/table/table.types";
 import { MealCategory, MealCategoryQueryDto, UpdateMealCategory } from "@/interface/health-log.interface";
-import { QuestionGroup, OnboardingQuestion, CreateQuestionGroupData, UpdateQuestionGroupData, CreateQuestionData, UpdateQuestionData } from "@/interface/onboarding.interface";
+
 
 import { PaginatedResponse, PaginationMeta } from "@/interface/common.interface";
 import { AdminGetUsersResponse } from "@/interface/user.interface";
@@ -148,80 +148,6 @@ class AdminService {
 
   
 
-
-  // Question Groups
-  async getQuestionGroups(params?: TableQueryParams): Promise<PaginatedResponse<QuestionGroup>> {
-    const queryParams = buildQueryParams(params);
-    const response = await adminApi.get<{
-      success: boolean;
-      data: QuestionGroup[];
-      pagination: PaginationMeta;
-    }>(ADMIN_API_ROUTES.GET_QUESTION_GROUPS, { params: queryParams });
-
-    return { data: response.data.data, pagination: response.data.pagination };
-  }
-
-  async createQuestionGroup(data: CreateQuestionGroupData): Promise<ApiResponse<{ message: string }>> {
-    const response = await adminApi.post<ApiResponse<{ message: string }>>(ADMIN_API_ROUTES.CREATE_QUESTION_GROUP, data);
-    return response.data;
-  }
-
-  async updateQuestionGroup(id: string, data: UpdateQuestionGroupData): Promise<ApiResponse<{ message: string }>> {
-    const response = await adminApi.put<ApiResponse<{ message: string }>>(ADMIN_API_ROUTES.UPDATE_QUESTION_GROUP(id), data);
-    return response.data;
-  }
-
-  async getQuestionGroupById(id: string): Promise<ApiResponse<QuestionGroup>> {
-    const response = await adminApi.get<ApiResponse<QuestionGroup>>(ADMIN_API_ROUTES.GET_QUESTION_GROUP_BY_ID(id));
-    return response.data;
-  }
-
-  async toggleQuestionGroupStatus(id: string): Promise<ApiResponse<{ message: string }>> {
-    const response = await adminApi.patch<ApiResponse<{ message: string }>>(ADMIN_API_ROUTES.TOGGLE_QUESTION_GROUP_STATUS(id));
-    return response.data;
-  }
-
-  // Questions
-  async getQuestions(params?: TableQueryParams): Promise<PaginatedResponse<OnboardingQuestion>> {
-    const queryParams = buildQueryParams(params);
-    const response = await adminApi.get<{
-      success: boolean;
-      data: OnboardingQuestion[];
-      pagination: PaginationMeta;
-    }>(ADMIN_API_ROUTES.GET_QUESTIONS, { params: queryParams });
-
-    return { data: response.data.data, pagination: response.data.pagination };
-  }
-
-  async createQuestion(data: CreateQuestionData): Promise<ApiResponse<{ message: string }>> {
-    const response = await adminApi.post<ApiResponse<{ message: string }>>(ADMIN_API_ROUTES.CREATE_QUESTION, data);
-    return response.data;
-  }
-
-  async updateQuestion(id: string, data: UpdateQuestionData): Promise<ApiResponse<{ message: string }>> {
-    const response = await adminApi.put<ApiResponse<{ message: string }>>(ADMIN_API_ROUTES.UPDATE_QUESTION(id), data);
-    return response.data;
-  }
-
-  async getQuestionById(id: string): Promise<ApiResponse<OnboardingQuestion>> {
-    const response = await adminApi.get<ApiResponse<OnboardingQuestion>>(ADMIN_API_ROUTES.GET_QUESTION_BY_ID(id));
-    return response.data;
-  }
-
-  async toggleQuestionStatus(id: string): Promise<ApiResponse<{ message: string }>> {
-    const response = await adminApi.patch<ApiResponse<{ message: string }>>(ADMIN_API_ROUTES.TOGGLE_QUESTION_STATUS(id));
-    return response.data;
-  }
-
-
-
-  async getQuestionDataSources(): Promise<{ label: string; value: string }[]> {
-    const response = await adminApi.get<{
-      success: boolean;
-      data: { label: string; value: string }[];
-    }>(ADMIN_API_ROUTES.GET_QUESTION_DATA_SOURCES);
-    return response.data.data;
-  }
 
   async createTargetMuscle(
     data: FormData

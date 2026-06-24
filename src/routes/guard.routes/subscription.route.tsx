@@ -1,6 +1,6 @@
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { USER_UI_ROUTES } from "@/constants/constant-routes/ui-routes/user.ui-constant.routes";
-import userServices from "@/services/user/user.services";
+import { onboardingService } from "@/modules/onboarding/service/onboarding.service";
 import { subscriptionService } from "@/modules/subscription/service/subscription.service";
 import { useEffect, useState } from "react";
 import { Sparkles } from "lucide-react";
@@ -42,7 +42,7 @@ const SubscriptionRoute = () => {
 
         if (subActive) {
           // Fetch onboarding completed state
-          const onboardingRes = await userServices.getOnboardingStatus();
+          const onboardingRes = await onboardingService.getOnboardingStatus();
           if (isMounted) {
             setIsOnboarded(!!onboardingRes.data?.completed);
           }

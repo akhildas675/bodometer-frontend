@@ -1,4 +1,4 @@
-import AdminQuestionList from "@/components/admin/questions.management/question/admin.question.list";
+import AdminQuestionList from "@/features/admin/onboarding/components/question/admin.question.list";
 
 const AdminQuestionListPage = () => {
   return (

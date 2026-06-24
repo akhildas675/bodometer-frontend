@@ -4,10 +4,11 @@ import { ChevronLeft, Loader2, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 import adminServices from "@/services/admin/admin.services";
+import { onboardingService } from "@/modules/onboarding/service/onboarding.service";
 import { categoryService } from "@/modules/category/service/category.service";
 import type { CategoryListItem } from "@/modules/category/types/category.interface";
 import { ADMIN_UI_ROUTES } from "@/constants/constant-routes/ui-routes/admin.ui-constant-routes";
-import { QuestionGroup, CreateQuestionData, OnboardingQuestion } from "@/interface/onboarding.interface";
+import { QuestionGroup, CreateQuestionData, OnboardingQuestion } from "@/modules/onboarding/types/onboarding.interface";
 import { QUESTION_TYPE, QuestionType } from "@/constants/onboarding.constant";
 import { parseApiError } from "@/api/error.helper";
 import { generateOptionValue } from "@/utils/option-key.generate";
@@ -63,21 +64,21 @@ const AdminQuestionForm = () => {
   const [nextJumps, setNextJumps] = useState<NextJumpData[]>([]);
 
   useEffect(() => {
-    adminServices.getQuestionGroups({ page: 1, limit: 100 })
+    onboardingService.getQuestionGroups({ page: 1, limit: 100 })
       .then((res) => setGroups(res.data || []))
       .catch((e) => console.error(e));
 
-    adminServices.getQuestions({ page: 1, limit: 1000 })
+    onboardingService.getQuestions({ page: 1, limit: 1000 })
       .then((res) => setQuestionsList(res.data || []))
       .catch((e) => console.error(e));
 
-    adminServices.getQuestionDataSources()
+    onboardingService.getQuestionDataSources()
       .then((res) => setDataSources(res || []))
       .catch((e) => console.error(e));
 
     if (isEdit && id) {
       setFetching(true);
-      adminServices.getQuestionById(id)
+      onboardingService.getQuestionById(id)
         .then((res) => {
           const q = res.data;
           if (!q) return;
@@ -234,10 +235,10 @@ const AdminQuestionForm = () => {
       }
 
       if (isEdit && id) {
-        const res = await adminServices.updateQuestion(id, payload);
+        const res = await onboardingService.updateQuestion(id, payload);
         toast.success(res.message);
       } else {
-        const res = await adminServices.createQuestion(payload);
+        const res = await onboardingService.createQuestion(payload);
         toast.success(res.message);
       }
       navigate(ADMIN_UI_ROUTES.QUESTIONS_LIST);

@@ -27,10 +27,6 @@ export const USER_API_ROUTES = {
     GET_WORKOUT_TIME: "/prefer-time",
     GET_FITNESS_GOALS: "/fitness-goals",
     GET_ONBOARDING_WORKOUTS: "/onboarding-workouts",
-    GET_ONBOARDING_OPTIONS: "/onboarding-options",
-    GET_ONBOARDING_QUESTIONS: "/onboarding-questions",
-    GET_ONBOARDING_GROUPS: "/onboarding-groups",
-    SUBMIT_ONBOARDING: "/submit-onboarding",
     GENERATE_WORKOUT: "/generate-workout",
     GET_WORKOUT_PLANS: "/workout-plans",
     MARK_WORKOUT_DAY: (planId: string, dayNumber: number) => `/workout-plan/${planId}/day/${dayNumber}/complete`,
@@ -38,11 +34,6 @@ export const USER_API_ROUTES = {
     GET_WORKOUT_PROGRESS: "/workout-progress",
 
 
-    //onboarding Questions
-
-    GET_ALL_QUESTIONS: "/onboarding-questions",
-    GET_ONBOARDING_STATUS: "/onboarding-status",
-    GET_ONBOARDING_ANSWERS: "/onboarding-answers",
     CALCULATE_BMI_PUBLIC: "/bmi/calculate",
 
     // Exercises (premium)
