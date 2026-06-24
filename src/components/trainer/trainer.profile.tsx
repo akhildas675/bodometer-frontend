@@ -31,6 +31,7 @@ import type { Gender } from "@/constants/identity";
 import { TrainerProfileInterface } from "@/interface/trainer.interface";
 import { ProfileUpdatePayload } from "@/interface/user.interface";
 import { CategoryListItem } from "@/modules/category/types/category.interface";
+import { categoryService } from "@/modules/category/service/category.service";
 import trainerService from "@/services/trainer/trainer.service";
 
 const GENDER_LABELS: Record<string, string> = {
@@ -80,7 +81,7 @@ const TrainerProfile = () => {
   const {
     data: categoriesResponse,
   } = useFetch<CategoryListItem[]>(() =>
-    trainerService.getCategories().then((res) => res.data),
+    categoryService.getCategories().then((res) => res.data),
     true
   );
 

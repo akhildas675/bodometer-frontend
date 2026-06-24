@@ -4,6 +4,10 @@ import { DIFFICULTY_LEVEL, WORKOUT_ENVIRONMENT } from "@/constants/fitness.const
 import type { ExerciseFormData } from "@/interface/exercise.interface";
 
 import adminServices from "@/services/admin/admin.services";
+import { categoryService } from "@/modules/category/service/category.service";
+import type { CategoryListItem } from "@/modules/category/types/category.interface";
+import type { UpdateTargetMuscles } from "@/interface/target-muscle.interface";
+import type { UpdateEquipment } from "@/interface/equipment.interface";
 import { Image, X, Plus, Trash2, ChevronLeft, Video } from "lucide-react";
 
 import { useState, useEffect } from "react";
@@ -105,7 +109,7 @@ const AdminExerciseForm = () => {
   const { data: optionsData, error: optionsError } = useFetch(async () => {
     const [musclesRes, categoriesRes, equipmentRes] = await Promise.all([
       adminServices.getAllTargetMuscles({ limit: 100 }),
-      adminServices.getAllCategories({ limit: 100 }),
+      categoryService.getCategories({ limit: 100 }),
       adminServices.getAllEquipment({ limit: 100 }),
     ]);
     return { musclesRes, categoriesRes, equipmentRes };
@@ -116,13 +120,13 @@ const AdminExerciseForm = () => {
       toast.error("Failed to load options");
     } else if (optionsData) {
       setTargetMuscleOptions(
-        optionsData.musclesRes.data.map((m) => ({ id: m.targetMuscleId, label: m.title }))
+        optionsData.musclesRes.data.map((m: UpdateTargetMuscles) => ({ id: m.targetMuscleId, label: m.title }))
       );
       setCategoryOptions(
-        optionsData.categoriesRes.data.map((c) => ({ id: c.categoryId, label: c.name || "Unnamed Category" }))
+        optionsData.categoriesRes.data.map((c: CategoryListItem) => ({ id: c.categoryId, label: c.name || "Unnamed Category" }))
       );
       setEquipmentOptions(
-        optionsData.equipmentRes.data.map((e) => ({ id: e.equipmentId, label: e.title }))
+        optionsData.equipmentRes.data.map((e: UpdateEquipment) => ({ id: e.equipmentId, label: e.title }))
       );
     }
   }, [optionsData, optionsError]);

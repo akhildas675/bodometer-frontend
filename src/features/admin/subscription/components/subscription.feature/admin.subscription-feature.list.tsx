@@ -10,9 +10,9 @@ import { extractSortOptions } from "@/components/controls/sort/sort.label";
 import Pagination from "@/components/controls/pagination/pagination";
 
 import { useTableFetch } from "@/hooks/useTableFetch";
-import adminServices from "@/services/admin/admin.services";
+import { subscriptionService } from "@/modules/subscription/service/subscription.service";
 import { PaginatedResponse } from "@/interface/common.interface";
-import { SubscriptionFeature } from "@/interface/subscription.interface";
+import { SubscriptionFeature } from "@/modules/subscription/types/subscription.interface";
 import { ADMIN_UI_ROUTES } from "@/constants/constant-routes/ui-routes/admin.ui-constant-routes";
 import { FeatureModalConfig, useSubscriptionFeatureActions } from "./admin.subscription-feature.action";
 import { subscriptionFeatureColumns } from "./admin.subscription-feature.columns";
@@ -41,7 +41,7 @@ const AdminSubscriptionFeatureList = () => {
 
   const fetchFn = useCallback(
     () =>
-      adminServices.getAllSubscriptionFeatures({
+      subscriptionService.getAllSubscriptionFeatures({
         search: searchQuery || undefined,
         type: typeFilter || undefined,
         sortBy: sortConfig.field ? String(sortConfig.field) : undefined,

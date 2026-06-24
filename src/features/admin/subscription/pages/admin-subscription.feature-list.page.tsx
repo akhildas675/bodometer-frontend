@@ -1,4 +1,4 @@
-import AdminSubscriptionFeatureList from '@/components/admin/subscription.management/subscription.feature/admin.subscription-feature.list';
+import AdminSubscriptionFeatureList from '@/features/admin/subscription/components/subscription.feature/admin.subscription-feature.list';
 import React from 'react';
 
 const AdminSubscriptionFeatureListPage = () => {

@@ -5,6 +5,7 @@ import { HealthLogDto, MealEntry, MealEntryDto } from '@/interface/health-log.in
 import { MealCategory } from "@/interface/health-log.interface";
 import { useFetch } from '@/hooks/useFetch';
 import userServices from '@/services/user/user.services';
+import { subscriptionService } from '@/modules/subscription/service/subscription.service';
 import { toast } from 'sonner';
 import { parseApiError } from '@/api/error.helper';
 
@@ -71,7 +72,7 @@ const UserHealthLog = () => {
   useEffect(() => {
     const fetchSub = async () => {
       try {
-        const res = await userServices.getActiveSubscription();
+        const res = await subscriptionService.getActiveSubscription();
         if (res.data?.startDate) {
           setSubStartDate(new Date(res.data.startDate).toISOString().split('T')[0]);
         }

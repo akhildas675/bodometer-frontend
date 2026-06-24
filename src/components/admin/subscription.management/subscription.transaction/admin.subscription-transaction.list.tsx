@@ -5,9 +5,9 @@ import SortDropdown, { type SortConfig } from "@/components/controls/sort/sort";
 import { extractSortOptions } from "@/components/controls/sort/sort.label";
 import Pagination from "@/components/controls/pagination/pagination";
 import { useTableFetch } from "@/hooks/useTableFetch";
-import adminServices from "@/services/admin/admin.services";
+import { subscriptionService } from "@/modules/subscription/service/subscription.service";
 import { PaginatedResponse } from "@/interface/common.interface";
-import { SubscriptionTransaction } from "@/interface/subscription.interface";
+import { SubscriptionTransaction } from "@/modules/subscription/types/subscription.interface";
 import { transactionColumns } from "./admin.subscription-transaction.columns";
 
 const AdminSubscriptionTransactionList = () => {
@@ -22,7 +22,7 @@ const AdminSubscriptionTransactionList = () => {
 
   const fetchFn = useCallback(
     async () =>
-      adminServices.getAllSubscriptionTransactions({
+      subscriptionService.getAllSubscriptionTransactions({
         search: searchQuery,
         status: statusFilter || undefined,
         sortBy: sortConfig.field ? String(sortConfig.field) : undefined,

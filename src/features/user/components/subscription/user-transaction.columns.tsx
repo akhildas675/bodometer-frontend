@@ -1,5 +1,5 @@
 import type { TableColumn } from "@/components/ui/table/table.types";
-import { SubscriptionTransaction } from "@/interface/subscription.interface";
+import { SubscriptionTransaction } from "@/modules/subscription/types/subscription.interface";
 export const transactionColumns: TableColumn<SubscriptionTransaction>[] = [
   {
     key: "subscriptionPlanId",

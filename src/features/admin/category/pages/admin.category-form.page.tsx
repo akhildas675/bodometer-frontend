@@ -1,4 +1,4 @@
-import AdminCategoryForm from '@/features/admin/components/admin-category.form';
+import AdminCategoryForm from '@/features/admin/category/components/admin-category.form';
 
 const AdminCategoryFormPage = () => {
     return (

@@ -10,7 +10,7 @@ export interface SubscriptionFeature {
 }
 
 export interface SubscriptionPlanListItem {
-  planId: string;
+  subscriptionPlanId: string;
   name: string;
   price: number;
   durationInDays: number;
@@ -43,8 +43,7 @@ export interface SubscriptionPlanFormData {
 }
 
 export interface SubscriptionPlan {
-  planId: string;
-  subscriptionPlanId?: string;
+  subscriptionPlanId: string;
   name: string;
   description: string;
   price: number;
@@ -124,7 +123,7 @@ export interface TransactionsQuery {
 
 export interface ActiveSubscription {
   subscriptionId: string;
-  planId: string;
+  subscriptionPlanId: string;
   planName: string;
   startDate: string;
   endDate: string;

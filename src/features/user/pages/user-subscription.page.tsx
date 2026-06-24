@@ -1,4 +1,4 @@
-import UserSubscription from '@/components/user/user.subscription/user-subscription';
+import UserSubscription from '@/features/user/components/subscription/user-subscription';
 import React from 'react';
 
 const UserSubscriptionPage = () => {

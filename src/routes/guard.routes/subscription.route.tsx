@@ -1,6 +1,7 @@
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { USER_UI_ROUTES } from "@/constants/constant-routes/ui-routes/user.ui-constant.routes";
 import userServices from "@/services/user/user.services";
+import { subscriptionService } from "@/modules/subscription/service/subscription.service";
 import { useEffect, useState } from "react";
 import { Sparkles } from "lucide-react";
 import { useAuthStore } from "@/stores/auth.store";
@@ -33,7 +34,7 @@ const SubscriptionRoute = () => {
     let isMounted = true;
     const checkStatus = async () => {
       try {
-        const subscriptionRes = await userServices.getActiveSubscription();
+        const subscriptionRes = await subscriptionService.getActiveSubscription();
         if (!isMounted) return;
 
         const subActive = !!subscriptionRes.data;

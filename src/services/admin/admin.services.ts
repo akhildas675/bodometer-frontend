@@ -4,7 +4,7 @@ import { buildQueryParams, TableQueryParams } from "@/api/query.helper";
 import type { TrainerWithProfile } from "@/components/ui/table/table.types";
 import { MealCategory, MealCategoryQueryDto, UpdateMealCategory } from "@/interface/health-log.interface";
 import { QuestionGroup, OnboardingQuestion, CreateQuestionGroupData, UpdateQuestionGroupData, CreateQuestionData, UpdateQuestionData } from "@/interface/onboarding.interface";
-import { SubscriptionFeature, SubscriptionPlan, SubscriptionTransaction, SubscriptionPlanPayload, SubscriptionPlanDetailsResponse } from "@/interface/subscription.interface";
+
 import { PaginatedResponse, PaginationMeta } from "@/interface/common.interface";
 import { AdminGetUsersResponse } from "@/interface/user.interface";
 import { AdminGetTrainersResponse } from "@/interface/trainer.interface";
@@ -135,110 +135,19 @@ class AdminService {
     );
     return response.data;
   }
-  async getAllSubscriptionFeatures(params?: TableQueryParams): Promise<PaginatedResponse<SubscriptionFeature>> {
-    const queryParams = buildQueryParams(params);
-    const response = await adminApi.get<{
-      success: boolean;
-      data: SubscriptionFeature[];
-      pagination: PaginationMeta;
-    }>(ADMIN_API_ROUTES.GET_SUBSCRIPTION_FEATURES, { params: queryParams });
+ 
 
-    return {
-      data: response.data.data,
-      pagination: response.data.pagination,
-    };
-  }
+ 
 
-  async createSubscriptionFeature(
-    featureData: SubscriptionFeature
-  ): Promise<ApiResponse<{ message: string }>> {
-    const response = await adminApi.post<ApiResponse<{ message: string }>>(
-      ADMIN_API_ROUTES.CREATE_SUBSCRIPTION_FEATURE,
-      featureData
-    );
-    return response.data;
-  }
 
-  async getSubscriptionFeatureById(
-    id: string
-  ): Promise<ApiResponse<SubscriptionFeature>> {
-    const response = await adminApi.get<ApiResponse<SubscriptionFeature>>(
-      ADMIN_API_ROUTES.GET_SUBSCRIPTION_FEATURE_BY_ID(id)
-    );
-    return response.data;
-  }
+ 
 
-  async updateSubscriptionFeature(
-    id: string,
-    featureData: SubscriptionFeature
-  ): Promise<ApiResponse<{ message: string }>> {
-    const response = await adminApi.put<ApiResponse<{ message: string }>>(
-      ADMIN_API_ROUTES.UPDATE_SUBSCRIPTION_FEATURE(id),
-      featureData
-    );
-    return response.data;
-  }
 
-  async toggleSubscriptionFeatureStatus(subscriptionFeatureId: string): Promise<ApiResponse<{ message: string }>> {
-    const response = await adminApi.patch<ApiResponse<{ message: string }>>(
-      ADMIN_API_ROUTES.TOGGLE_SUBSCRIPTION_FEATURE_STATUS(subscriptionFeatureId)
-    )
-    return response.data
-  }
 
-  async getAllSubscriptionPlans(params?: TableQueryParams): Promise<PaginatedResponse<SubscriptionPlan>> {
-    const queryParams = buildQueryParams(params);
-    const response = await adminApi.get<{
-      success: boolean;
-      data: SubscriptionPlan[];
-      pagination: PaginationMeta;
-    }>(ADMIN_API_ROUTES.GET_SUBSCRIPTION_PLANS, { params: queryParams });
 
-    const mappedData = response.data.data.map(plan => ({
-      ...plan,
-      planId: plan.planId || plan.subscriptionPlanId || "",
-      subscriptionPlanId: plan.subscriptionPlanId || plan.planId || "",
-    }));
 
-    return {
-      data: mappedData,
-      pagination: response.data.pagination,
-    };
-  }
+  
 
-  async createSubscriptionPlan(payload: SubscriptionPlanPayload): Promise<ApiResponse<{ message: string }>> {
-    const response = await adminApi.post<ApiResponse<{ message: string }>>(
-      ADMIN_API_ROUTES.CREATE_SUBSCRIPTION_PLAN,
-      payload
-    );
-    return response.data;
-  }
-
-  async getSubscriptionPlanById(id: string): Promise<ApiResponse<SubscriptionPlanDetailsResponse>> {
-    const response = await adminApi.get<ApiResponse<SubscriptionPlanDetailsResponse>>(
-      ADMIN_API_ROUTES.GET_SUBSCRIPTION_PLAN_BY_ID(id)
-    );
-    if (response.data?.data) {
-      response.data.data.planId = response.data.data.planId || response.data.data.subscriptionPlanId || "";
-      response.data.data.subscriptionPlanId = response.data.data.subscriptionPlanId || response.data.data.planId || "";
-    }
-    return response.data;
-  }
-
-  async updateSubscriptionPlan(id: string, payload: SubscriptionPlanPayload): Promise<ApiResponse<{ message: string }>> {
-    const response = await adminApi.put<ApiResponse<{ message: string }>>(
-      ADMIN_API_ROUTES.UPDATE_SUBSCRIPTION_PLAN(id),
-      payload
-    );
-    return response.data;
-  }
-
-  async toggleSubscriptionPlanStatus(id: string): Promise<ApiResponse<{ message: string }>> {
-    const response = await adminApi.patch<ApiResponse<{ message: string }>>(
-      ADMIN_API_ROUTES.TOGGLE_SUBSCRIPTION_PLAN_STATUS(id)
-    );
-    return response.data;
-  }
 
   // Question Groups
   async getQuestionGroups(params?: TableQueryParams): Promise<PaginatedResponse<QuestionGroup>> {
@@ -304,19 +213,7 @@ class AdminService {
     return response.data;
   }
 
-  async getAllSubscriptionTransactions(params?: TableQueryParams): Promise<PaginatedResponse<SubscriptionTransaction>> {
-    const queryParams = buildQueryParams(params);
-    const response = await adminApi.get<{
-      success: boolean;
-      data: SubscriptionTransaction[];
-      pagination: PaginationMeta;
-    }>(ADMIN_API_ROUTES.GET_SUBSCRIPTION_TRANSACTIONS, { params: queryParams });
 
-    return {
-      data: response.data.data,
-      pagination: response.data.pagination,
-    };
-  }
 
   async getQuestionDataSources(): Promise<{ label: string; value: string }[]> {
     const response = await adminApi.get<{

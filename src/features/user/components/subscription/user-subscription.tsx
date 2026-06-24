@@ -3,10 +3,10 @@ import { toast } from "sonner";
 import { useState, useCallback, useEffect } from "react";
 
 import { useFetch } from "@/hooks/useFetch";
-import userServices from "@/services/user/user.services";
+
 import { PaginatedResponse } from "@/interface/common.interface";
-import { SubscriptionPlan, SubscriptionTransaction } from "@/interface/subscription.interface";
-import { ActiveSubscription } from "@/interface/subscription.interface";
+import { SubscriptionPlan, SubscriptionTransaction } from "@/modules/subscription/types/subscription.interface";
+import { ActiveSubscription } from "@/modules/subscription/types/subscription.interface";
 import DataTable from "@/components/ui/table/data.table";
 import SearchBar from "@/components/controls/search/search";
 import SortDropdown, { type SortConfig } from "@/components/controls/sort/sort";
@@ -49,6 +49,7 @@ const TIER_STYLES = [
 ];
 
 import { parseApiError } from "@/api/error.helper";
+import { subscriptionService } from "@/modules/subscription/service/subscription.service";
 
 const UserSubscription = () => {
   const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null);
@@ -67,7 +68,7 @@ const UserSubscription = () => {
 
   const fetchTransactionsFn = useCallback(
     async () =>
-      userServices.getMyTransactions({
+      subscriptionService.getMyTransactions({
         page: currentPage,
         limit: itemsPerPage,
         search: searchQuery || undefined,
@@ -133,8 +134,7 @@ const UserSubscription = () => {
   const { data: plansData, loading: plansLoading } = useFetch<
     SubscriptionPlan[]
   >(() =>
-    userServices
-      .getMySubscriptions()
+    subscriptionService.getAllSubscriptionPlans()
       .then((res) =>
         Array.isArray(res.data)
           ? res.data
@@ -150,13 +150,13 @@ const UserSubscription = () => {
 
   const { data: activeSubscription, loading: activeLoading } =
     useFetch<ActiveSubscription | null>(() =>
-      userServices.getActiveSubscription().then((res) => res.data),
+      subscriptionService.getActiveSubscription().then((res) => res.data),
     );
 
-  const handleSubscribe = async (planId: string) => {
+  const handleSubscribe = async (subscriptionPlanId: string) => {
     try {
-      setCheckoutLoading(planId);
-      const res = await userServices.createCheckoutSession(planId);
+      setCheckoutLoading(subscriptionPlanId);
+      const res = await subscriptionService.createCheckoutSession(subscriptionPlanId);
       window.location.href = res.data.checkoutUrl;
     } catch (error: unknown) {
       const apiError = parseApiError(error);
@@ -247,19 +247,15 @@ const UserSubscription = () => {
               tierIndex = 0;
             }
             const tier = TIER_STYLES[tierIndex];
-            const planId =
-              plan.subscriptionPlanId ||
-              plan.planId ||
-              (plan as { _id?: string })._id ||
-              "";
+            const subscriptionPlanId = plan.subscriptionPlanId || "";
             const name = plan.name || plan.name;
             const duration = plan.durationInDays || plan.durationInDays || 30;
-            const isCurrentPlan = activeSubscription?.planId === planId;
+            const isCurrentPlan = activeSubscription?.subscriptionPlanId === subscriptionPlanId;
             const isPopular = !!plan.isPopular;
 
             return (
               <div
-                key={planId}
+                key={subscriptionPlanId}
                 className={`
                   relative rounded-2xl border p-6 flex flex-col
                   transition-all duration-300
@@ -359,8 +355,8 @@ const UserSubscription = () => {
                     </button>
                   ) : (
                     <button
-                      onClick={() => handleSubscribe(planId)}
-                      disabled={checkoutLoading === planId}
+                      onClick={() => handleSubscribe(subscriptionPlanId)}
+                      disabled={checkoutLoading === subscriptionPlanId}
                       className={`
                         w-full py-2.5 rounded-xl text-sm font-semibold
                         transition-all duration-200 active:scale-[0.98]
@@ -368,7 +364,7 @@ const UserSubscription = () => {
                         ${tier.btnClass}
                       `}
                     >
-                      {checkoutLoading === planId ? (
+                      {checkoutLoading === subscriptionPlanId ? (
                         <span className="flex items-center justify-center gap-2">
                           <svg
                             className="animate-spin h-4 w-4"
@@ -406,105 +402,101 @@ const UserSubscription = () => {
       {/* Divider */}
       <div className="border-t border-white/10 my-16" />
 
-      {txResponse?.data && txResponse.data.length > 0 ? (
-        <div className="text-white space-y-6">
-          {/* Transaction History Section */}
-          <div>
-            <h2 className="text-2xl font-bold tracking-tight text-white">
-              Subscription Purchase History
-            </h2>
-            <p className="text-sm text-slate-400 mt-1">
-              View, search, track, and manage all your subscription plans
-              transaction history
-            </p>
-          </div>
-
-          <div className="flex flex-wrap gap-4 items-center">
-            <SearchBar
-              value={searchQuery}
-              onSearch={handleSearch}
-              placeholder="Search transactions by plan..."
-              disabled={txLoading}
-              className="grow md:max-w-md"
-            />
-
-            {/* Status Filter Dropdown */}
-            <div className="flex items-center bg-[#171c35] border border-white/10 rounded-lg px-3 py-2 text-sm text-slate-300">
-              <label
-                htmlFor="status-select"
-                className="mr-2 text-slate-400 text-xs font-semibold uppercase tracking-wider"
-              >
-                Status:
-              </label>
-              <select
-                id="status-select"
-                value={statusFilter}
-                onChange={handleStatusChange}
-                disabled={txLoading}
-                className="bg-transparent border-none text-white text-sm focus:outline-none cursor-pointer focus:ring-0"
-              >
-                <option value="" className="bg-slate-900 text-white">
-                  All Statuses
-                </option>
-                <option value="success" className="bg-slate-900 text-white">
-                  Success
-                </option>
-                <option value="pending" className="bg-slate-900 text-white">
-                  Pending
-                </option>
-                <option value="failed" className="bg-slate-900 text-white">
-                  Failed
-                </option>
-              </select>
-            </div>
-
-            <SortDropdown<keyof SubscriptionTransaction>
-              options={sortOptions}
-              value={sortConfig}
-              onSortChange={handleSortChange}
-              disabled={txLoading}
-              className="w-64"
-              placeholder="Sort by..."
-            />
-          </div>
-
-          {txLoading ? (
-            <div className="flex justify-center items-center py-20 text-purple-300 gap-3">
-              <div className="w-5 h-5 rounded-full border-2 border-purple-500 border-t-transparent animate-spin"></div>
-              <span>Loading transaction history...</span>
-            </div>
-          ) : (
-            <>
-              <DataTable<SubscriptionTransaction>
-                columns={transactionColumns}
-                data={txResponse?.data || []}
-              />
-
-              {(!txResponse?.data || txResponse.data.length === 0) && (
-                <div className="text-center py-12 text-slate-400 border border-white/5 rounded-xl bg-white/2 mt-4">
-                  No subscription transactions found matching your criteria.
-                </div>
-              )}
-
-              {txResponse?.pagination && txResponse.data.length > 0 && (
-                <div className="mt-6">
-                  <Pagination
-                    currentPage={Number(txResponse.pagination.currentPage)}
-                    totalPages={Number(txResponse.pagination.totalPages)}
-                    totalItems={Number(txResponse.pagination.totalItems)}
-                    itemsPerPage={Number(txResponse.pagination.itemsPerPage)}
-                    onPageChange={handlePageChange}
-                    onItemsPerPageChange={handleItemsPerPageChange}
-                    disabled={txLoading}
-                  />
-                </div>
-              )}
-            </>
-          )}
+      <div className="text-white space-y-6">
+        {/* Transaction History Section */}
+        <div>
+          <h2 className="text-2xl font-bold tracking-tight text-white">
+            Subscription Purchase History
+          </h2>
+          <p className="text-sm text-slate-400 mt-1">
+            View, search, track, and manage all your subscription plans
+            transaction history
+          </p>
         </div>
-      ) : (
-        <p className="text-slate-400 text-sm text-center py-4">No transactions found.</p>
-      )}
+
+        <div className="flex flex-wrap gap-4 items-center">
+          <SearchBar
+            value={searchQuery}
+            onSearch={handleSearch}
+            placeholder="Search transactions by plan..."
+            disabled={txLoading}
+            className="grow md:max-w-md"
+          />
+
+          {/* Status Filter Dropdown */}
+          <div className="flex items-center bg-[#171c35] border border-white/10 rounded-lg px-3 py-2 text-sm text-slate-300">
+            <label
+              htmlFor="status-select"
+              className="mr-2 text-slate-400 text-xs font-semibold uppercase tracking-wider"
+            >
+              Status:
+            </label>
+            <select
+              id="status-select"
+              value={statusFilter}
+              onChange={handleStatusChange}
+              disabled={txLoading}
+              className="bg-transparent border-none text-white text-sm focus:outline-none cursor-pointer focus:ring-0"
+            >
+              <option value="" className="bg-slate-900 text-white">
+                All Statuses
+              </option>
+              <option value="success" className="bg-slate-900 text-white">
+                Success
+              </option>
+              <option value="pending" className="bg-slate-900 text-white">
+                Pending
+              </option>
+              <option value="failed" className="bg-slate-900 text-white">
+                Failed
+              </option>
+            </select>
+          </div>
+
+          <SortDropdown<keyof SubscriptionTransaction>
+            options={sortOptions}
+            value={sortConfig}
+            onSortChange={handleSortChange}
+            disabled={txLoading}
+            className="w-64"
+            placeholder="Sort by..."
+          />
+        </div>
+
+        {txLoading ? (
+          <div className="flex justify-center items-center py-20 text-purple-300 gap-3">
+            <div className="w-5 h-5 rounded-full border-2 border-purple-500 border-t-transparent animate-spin"></div>
+            <span>Loading transaction history...</span>
+          </div>
+        ) : (
+          <>
+            <DataTable<SubscriptionTransaction>
+              columns={transactionColumns}
+              data={txResponse?.data || []}
+            />
+
+            {(!txResponse?.data || txResponse.data.length === 0) && (
+              <div className="text-center py-12 text-slate-400 border border-white/5 rounded-xl bg-white/2 mt-4">
+                No subscription transactions found matching your criteria.
+              </div>
+            )}
+
+            {txResponse?.pagination && txResponse.data.length > 0 && (
+              <div className="mt-6">
+                <Pagination
+                  currentPage={Number(txResponse.pagination.currentPage)}
+                  totalPages={Number(txResponse.pagination.totalPages)}
+                  totalItems={Number(txResponse.pagination.totalItems)}
+                  itemsPerPage={Number(txResponse.pagination.itemsPerPage)}
+                  onPageChange={handlePageChange}
+                  onItemsPerPageChange={handleItemsPerPageChange}
+                  disabled={txLoading}
+                />
+              </div>
+            )}
+          </>
+        )}
+      </div>
     </div>
   );
 };

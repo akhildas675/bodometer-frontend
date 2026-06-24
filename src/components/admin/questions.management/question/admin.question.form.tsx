@@ -4,6 +4,8 @@ import { ChevronLeft, Loader2, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 import adminServices from "@/services/admin/admin.services";
+import { categoryService } from "@/modules/category/service/category.service";
+import type { CategoryListItem } from "@/modules/category/types/category.interface";
 import { ADMIN_UI_ROUTES } from "@/constants/constant-routes/ui-routes/admin.ui-constant-routes";
 import { QuestionGroup, CreateQuestionData, OnboardingQuestion } from "@/interface/onboarding.interface";
 import { QUESTION_TYPE, QuestionType } from "@/constants/onboarding.constant";
@@ -121,11 +123,11 @@ const AdminQuestionForm = () => {
 
     setPreviewLoading(true);
     if (dataSource === "category") {
-      adminServices.getAllCategories({ page: 1, limit: 1000 })
+      categoryService.getCategories({ page: 1, limit: 1000 })
         .then((res) => {
           const names = (res.data || [])
-            .filter((c) => c.isActive !== false && c.name)
-            .map((c) => c.name as string);
+            .filter((c: CategoryListItem) => c.isActive !== false && c.name)
+            .map((c: CategoryListItem) => c.name as string);
           setPreviewOptions(names);
         })
         .catch((error: unknown) => {

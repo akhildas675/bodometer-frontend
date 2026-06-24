@@ -8,12 +8,12 @@ import AdminTrainerOnboardingPage from "@/pages/admin/admin-trainer-onboarding.p
 import AdminAppointmentDetailsPage from "@/pages/admin/admin.appointment-details.page";
 import { ADMIN_UI_ROUTES } from "@/constants/constant-routes/ui-routes/admin.ui-constant-routes";
 import MainSidebarLayout from "@/components/layouts/main-sidebar.layout";
-import AdminCategoryListPage from "@/features/admin/pages/admin.category-list.page";
-import AdminCategoryFormPage from "@/features/admin/pages/admin.category-form.page";
-import AdminSubscriptionFeatureListPage from "@/pages/admin/admin-subscription.feature-list.page";
-import AdminSubscriptionFeatureFormPage from "@/pages/admin/admin.subscription-feature.form.page";
-import AdminSubscriptionPlanListPage from "@/pages/admin/admin-subscription.plan-list.page";
-import AdminSubscriptionPlanFormPage from "@/pages/admin/admin-subscription.plan-form.page";
+import AdminCategoryListPage from "@/features/admin/category/pages/admin.category-list.page";
+import AdminCategoryFormPage from "@/features/admin/category/pages/admin.category-form.page";
+import AdminSubscriptionFeatureListPage from "@/features/admin/subscription/pages/admin-subscription.feature-list.page";
+import AdminSubscriptionFeatureFormPage from "@/features/admin/subscription/pages/admin.subscription-feature.form.page";
+import AdminSubscriptionPlanListPage from "@/features/admin/subscription/pages/admin-subscription.plan-list.page";
+import AdminSubscriptionPlanFormPage from "@/features/admin/subscription/pages/admin-subscription.plan-form.page";
 import AdminSubscriptionTransactionListPage from "@/pages/admin/admin-subscription.transaction-list.page";
 import AdminQuestionGroupListPage from "@/pages/admin/admin-question.group-list.page";
 import AdminQuestionGroupFormPage from "@/pages/admin/admin-question.group-form.page";

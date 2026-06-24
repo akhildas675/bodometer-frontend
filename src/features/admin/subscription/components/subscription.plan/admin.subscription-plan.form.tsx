@@ -3,8 +3,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
-import adminServices from "@/services/admin/admin.services";
-import { FeatureListItem, SubscriptionPlanFormData, SubscriptionPlanDetailsResponse } from "@/interface/subscription.interface";
+import { subscriptionService } from "@/modules/subscription/service/subscription.service";
+import { FeatureListItem, SubscriptionPlanFormData, SubscriptionPlanDetailsResponse } from "@/modules/subscription/types/subscription.interface";
 import { LIMIT_TYPES } from "@/constants/subscription.constants";
 import { useFetch } from "@/hooks/useFetch";
 
@@ -32,7 +32,7 @@ const AdminSubscriptionPlanForm = () => {
   const [loadedPlan, setLoadedPlan] = useState<SubscriptionPlanDetailsResponse | null>(null);
 
   // Load available features
-  const { data: response } = useFetch(() => adminServices.getAllSubscriptionFeatures());
+  const { data: response } = useFetch(() => subscriptionService.getAllSubscriptionFeatures());
 
   useEffect(() => {
     if (response?.data) {
@@ -54,7 +54,7 @@ const AdminSubscriptionPlanForm = () => {
     const load = async () => {
       try {
         setFetchLoading(true);
-        const res = await adminServices.getSubscriptionPlanById(id);
+        const res = await subscriptionService.getSubscriptionPlanById(id);
         if (res?.success) {
           setLoadedPlan(res.data);
         }
@@ -147,10 +147,10 @@ const AdminSubscriptionPlanForm = () => {
     try {
       setIsSubmitting(true);
       if (isEdit && id) {
-        const res = await adminServices.updateSubscriptionPlan(id, payload);
+        const res = await subscriptionService.updateSubscriptionPlan(id, payload);
         toast.success(res.message);
       } else {
-        const res = await adminServices.createSubscriptionPlan(payload);
+        const res = await subscriptionService.createSubscriptionPlan(payload);
         toast.success(res.message);
       }
       navigate("/admin/subscription/plans");

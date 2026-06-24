@@ -1,4 +1,4 @@
-import UserSubscriptionSuccess from '@/components/user/user.subscription/user-subscription.success';
+import UserSubscriptionSuccess from '@/features/user/components/subscription/user-subscription.success';
 import React from 'react';
 
 const UserSubscriptionCancelPage = () => {

@@ -10,9 +10,9 @@ import UserTrainerDetailPage from "@/pages/user/user-fitness/user.trainer-detail
 import { ROLES } from "@/constants/role";
 import UserCategoriesPage from "@/features/user/pages/user-categories.page";
 import UserCategoryDetailPage from "@/features/user/pages/user.category-detail.page";
-import UserSubscriptionPage from "@/pages/user/user-subscription/user-subscription.page";
-import UserSubscriptionSuccessPage from "@/pages/user/user-subscription/user.subscription-success.page";
-import UserSubscriptionCancelPage from "@/pages/user/user-subscription/user.subscription-cancel.page";
+import UserSubscriptionPage from "@/features/user/pages/user-subscription.page";
+import UserSubscriptionSuccessPage from "@/features/user/pages/user.subscription-success.page";
+import UserSubscriptionCancelPage from "@/features/user/pages/user.subscription-cancel.page";
 import UserOnboardingIntroPage from "@/pages/user/user-fitness/user.onboarding-intro.page";
 import UserOnboardingAssessmentPage from "@/pages/user/user-fitness/user.onboarding-assessment.page";
 import UserFitnessProfilePage from "@/pages/user/user-fitness/user.fitness-profile.page";

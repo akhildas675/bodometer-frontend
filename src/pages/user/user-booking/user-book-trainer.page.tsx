@@ -186,8 +186,8 @@ const UserBookTrainerPage: React.FC = () => {
               <PrimaryButton
                 type="button"
                 onClick={() => setIsConfirmModalOpen(true)}
-                disabled={isSubmitting}
-                text={isSubmitting ? "Processing..." : "Confirm Booking"}
+                loading={isSubmitting}
+                text="Confirm Booking"
               />
             </div>
           )}

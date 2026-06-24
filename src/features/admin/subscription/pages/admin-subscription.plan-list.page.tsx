@@ -1,4 +1,4 @@
-import AdminSubscriptionPlanList from "@/components/admin/subscription.management/subscription.plan/admin.subscription-plan.form"
+import AdminSubscriptionPlanList from "@/features/admin/subscription/components/subscription.plan/admin.subscription-plan.list"
 
 const AdminSubscriptionPlanListPage = () => {
     return (

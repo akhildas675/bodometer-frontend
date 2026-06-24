@@ -10,8 +10,8 @@ import { extractSortOptions } from "@/components/controls/sort/sort.label";
 import Pagination from "@/components/controls/pagination/pagination";
 
 import { useTableFetch } from "@/hooks/useTableFetch";
-import adminServices from "@/services/admin/admin.services";
-import { SubscriptionPlan, SubscriptionPlanListItem } from "@/interface/subscription.interface";
+import { subscriptionService } from "@/modules/subscription/service/subscription.service";
+import { SubscriptionPlan, SubscriptionPlanListItem } from "@/modules/subscription/types/subscription.interface";
 import { PaginatedResponse } from "@/interface/common.interface";
 import { SubscriptionModalConfig, useSubscriptionActions } from "./admin.subscription-plan.action";
 import { subscriptionColumns } from "./admin.subscription-plan.columns";
@@ -32,7 +32,7 @@ const AdminSubscriptionPlanList = () => {
 
   const fetchFn = useCallback(
     async () =>
-      adminServices.getAllSubscriptionPlans({
+      subscriptionService.getAllSubscriptionPlans({
         search: searchQuery || undefined,
         sortBy: sortConfig.field ? String(sortConfig.field) : undefined,
         sortOrder: sortConfig.order,

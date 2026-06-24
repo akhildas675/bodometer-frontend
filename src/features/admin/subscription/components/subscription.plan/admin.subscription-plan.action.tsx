@@ -1,7 +1,7 @@
 import { TableAction } from "@/components/ui/table/table.types";
 import { ADMIN_UI_ROUTES } from "@/constants/constant-routes/ui-routes/admin.ui-constant-routes";
-import { SubscriptionPlanListItem } from "@/interface/subscription.interface";
-import adminServices from "@/services/admin/admin.services";
+import { SubscriptionPlanListItem } from "@/modules/subscription/types/subscription.interface";
+import { subscriptionService } from "@/modules/subscription/service/subscription.service";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { parseApiError } from "@/api/error.helper";
@@ -30,7 +30,7 @@ export const useSubscriptionActions = (
       variant: isActive ? "danger" : "primary",
       onConfirm: async () => {
         try {
-          const res = await adminServices.toggleSubscriptionPlanStatus(plan.planId);
+          const res = await subscriptionService.toggleSubscriptionPlanStatus(plan.subscriptionPlanId);
           toast.success(res.message);
           refetch();
         } catch (error: unknown) {
@@ -45,7 +45,7 @@ export const useSubscriptionActions = (
     {
       label: "Edit",
       variant: "primary",
-      onClick: (plan: SubscriptionPlanListItem) => navigate(ADMIN_UI_ROUTES.SUBSCRIPTION_PLAN_EDIT(plan.planId)),
+      onClick: (plan: SubscriptionPlanListItem) => navigate(ADMIN_UI_ROUTES.SUBSCRIPTION_PLAN_EDIT(plan.subscriptionPlanId)),
     },
     {
       label: "Deactivate",

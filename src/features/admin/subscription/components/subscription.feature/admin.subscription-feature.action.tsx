@@ -3,8 +3,8 @@ import { toast } from "sonner";
 import { parseApiError } from "@/api/error.helper";
 
 import type { TableAction } from "@/components/ui/table/table.types";
-import { SubscriptionFeature } from "@/interface/subscription.interface";
-import adminServices from "@/services/admin/admin.services";
+import { SubscriptionFeature } from "@/modules/subscription/types/subscription.interface";
+import { subscriptionService } from "@/modules/subscription/service/subscription.service";
 import { ADMIN_UI_ROUTES } from "@/constants/constant-routes/ui-routes/admin.ui-constant-routes";
 
 export type FeatureModalConfig = {
@@ -35,7 +35,7 @@ const handleToggle = (feature: SubscriptionFeature) => {
       try {
         const featureId = feature.subscriptionFeatureId;
     
-        const res = await adminServices.toggleSubscriptionFeatureStatus(featureId!);
+        const res = await subscriptionService.toggleSubscriptionFeatureStatus(featureId!);
         toast.success(res.message);
         refetch();
       } catch (error: unknown) {

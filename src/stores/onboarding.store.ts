@@ -3,6 +3,7 @@ import userServices from "@/services/user/user.services";
 import { AnswerValue, QuestionType, CONDITION_OPERATOR, ConditionOperator } from "@/constants/onboarding.constant";
 import { parseApiError } from "@/api/error.helper";
 import { CategoryListItem } from "@/modules/category/types/category.interface";
+import { categoryService } from "@/modules/category/service/category.service";
 import { OnboardingAnswerItem } from "@/interface/onboarding.interface";
 import type { UpdateEquipment } from "@/interface/equipment.interface";
 import { useAuthStore } from "@/stores/auth.store";
@@ -132,7 +133,7 @@ export const useOnboardingStore = create<OnboardingStore>((set, get) => ({
             type FetchFunction = () => Promise<OnboardingOption[]>;
             const dataSourceFetchers: Record<string, FetchFunction> = {
                 category: async () => {
-                    const res = await userServices.getCategories({ page: 1, limit: 1000 });
+                    const res = await categoryService.getCategories({ page: 1, limit: 1000 });
                     return (res.data ?? [])
                         .filter((cat: CategoryListItem) => cat.isActive !== false)
                         .map((cat: CategoryListItem) => ({

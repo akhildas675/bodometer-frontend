@@ -3,9 +3,9 @@ import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 
-import adminServices from "@/services/admin/admin.services";
+import { subscriptionService } from "@/modules/subscription/service/subscription.service";
 import { useFetch } from "@/hooks/useFetch";
-import { SubscriptionFeature } from "@/interface/subscription.interface";
+import { SubscriptionFeature } from "@/modules/subscription/types/subscription.interface";
 import { FEATURE_TYPES } from "@/constants/subscription.constants";
 
 
@@ -28,7 +28,7 @@ const AdminSubscriptionFeatureForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const { data: response, loading: fetchLoading } = useFetch(
-    () => adminServices.getSubscriptionFeatureById(id as string),
+    () => subscriptionService.getSubscriptionFeatureById(id as string),
     isEdit
   );
 
@@ -54,10 +54,10 @@ const handleSubmit = async () => {
   try {
     setIsSubmitting(true);
     if (isEdit && id) {
-      const res = await adminServices.updateSubscriptionFeature(id, payload);
+      const res = await subscriptionService.updateSubscriptionFeature(id, payload);
       toast.success(res.message);
     } else {
-      const res = await adminServices.createSubscriptionFeature(payload);
+      const res = await subscriptionService.createSubscriptionFeature(payload);
       toast.success(res.message);
     }
     navigate("/admin/subscription/features");

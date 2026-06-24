@@ -1,4 +1,4 @@
-import UserCategoryDetail from "@/features/user/components/user-category.detail";
+import UserCategoryDetail from "@/features/user/components/category/user-category.detail";
 
 const CategoryDetailsPage = () => {
   return (

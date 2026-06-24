@@ -3,7 +3,7 @@ import { buildQueryParams, TableQueryParams } from "@/api/query.helper";
 import { USER_API_ROUTES } from "@/constants/constant-routes/api-routes/user-constant.routes";
 import { MealCategory } from "@/interface/health-log.interface";
 import { QuestionGroup, OnboardingQuestion as DynamicOnboardingQuestion } from "@/interface/onboarding.interface";
-import { SubscriptionPlan, SubscriptionTransaction } from "@/interface/subscription.interface";
+
 import { PaginationMeta } from "@/interface/common.interface";
 import { HealthLogDto, UpsertHealthLogDto, HealthLogProgressResponseDto } from "@/interface/health-log.interface";
 import { UpdateEquipment } from "@/interface/equipment.interface";
@@ -11,7 +11,7 @@ import type { ApiResponse } from "@/interface/api-response.interface";
 import { TrainerDynamicSlot, TrainerBooking, CreateBookingPayload } from "@/interface/booking.interface";
 import { CalculateBmiPayload, BmiCalculationResult } from "@/interface/health-log.interface";
 import { OnboardingAnswersResponse } from "@/interface/onboarding.interface";
-import { ActiveSubscription } from "@/interface/subscription.interface";
+
 import { UploadProfilePictureResponse } from "@/interface/common.interface";
 
 import { TrainerDetail, TrainerListItem } from "@/interface/trainer.interface";
@@ -104,31 +104,7 @@ const userServices = {
     return response.data;
   },
 
-  async getMySubscriptions(): Promise<ApiResponse<SubscriptionPlan>> {
-    const response = await userApi.get<ApiResponse<SubscriptionPlan>>(USER_API_ROUTES.GET_MY_SUBSCRIPTION);
-    return response.data;
-  },
 
-  async createCheckoutSession(planId: string): Promise<ApiResponse<{ checkoutUrl: string }>> {
-    const response = await userApi.post<ApiResponse<{ checkoutUrl: string }>>(USER_API_ROUTES.CREATE_CHECKOUT_SESSION, {
-      planId: planId
-    });
-    return response.data;
-  },
-
-  async verifyPayment(sessionId: string): Promise<ApiResponse<ActiveSubscription>> {
-    const response = await userApi.get<ApiResponse<ActiveSubscription>>(
-      `${USER_API_ROUTES.VERIFY_PAYMENT}?session_id=${sessionId}`
-    );
-    return response.data;
-  },
-
-  async getActiveSubscription(): Promise<ApiResponse<ActiveSubscription | null>> {
-    const response = await userApi.get<ApiResponse<ActiveSubscription | null>>(
-      USER_API_ROUTES.GET_ACTIVE_SUBSCRIPTION
-    );
-    return response.data;
-  },
 
   async getAllQuestions(): Promise<ApiResponse<DynamicOnboardingQuestion[]>> {
     const response = await userApi.get<ApiResponse<DynamicOnboardingQuestion[]>>(USER_API_ROUTES.GET_ALL_QUESTIONS);
@@ -170,13 +146,7 @@ const userServices = {
     return response.data;
   },
 
-  async getMyTransactions(params?: TableQueryParams): Promise<ApiResponse<SubscriptionTransaction[]> & { pagination: PaginationMeta }> {
-    const queryParams = buildQueryParams({ page: 1, limit: 10, ...params });
-    const response = await userApi.get<ApiResponse<SubscriptionTransaction[]> & { pagination: PaginationMeta }>(
-      `${USER_API_ROUTES.GET_MY_TRANSACTIONS}?${queryParams.toString()}`
-    );
-    return response.data;
-  },
+
 
   async getExercises(
     params?: TableQueryParams & { difficulty?: string; targetMuscleId?: string; categoryId?: string }
