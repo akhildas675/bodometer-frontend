@@ -21,8 +21,8 @@ import UserExerciseDetailPage from "@/pages/user/user-fitness/user-exercise.deta
 
 import UserWorkoutPlansPage from "@/pages/user/user-fitness/user-workout-plans.page";
 import UserWorkoutProgressionPage from "@/pages/user/user-fitness/user-workout-progression.page";
-import UserHealthLogPage from "@/pages/user/user-fitness/user-health-log.page";
-import UserHealthProgressionPage from "@/pages/user/health-log/user-health-progression.page";
+import UserHealthLogPage from "@/features/user/pages/user-health-log.page";
+import UserHealthProgressionPage from "@/features/user/pages/user-health-progression.page";
 import UserBookTrainerPage from "@/pages/user/user-booking/user-book-trainer.page";
 import UserMyBookingsPage from "@/pages/user/user-booking/user-my-bookings.page";
 

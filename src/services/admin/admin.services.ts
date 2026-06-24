@@ -2,7 +2,7 @@ import { adminApi } from "@/api/api.instance";
 import { buildQueryParams, TableQueryParams } from "@/api/query.helper";
 
 import type { TrainerWithProfile } from "@/components/ui/table/table.types";
-import { MealCategory, MealCategoryQueryDto, UpdateMealCategory } from "@/interface/health-log.interface";
+
 
 
 import { PaginatedResponse, PaginationMeta } from "@/interface/common.interface";
@@ -149,51 +149,6 @@ class AdminService {
   
 
 
-
-  async createMealCategory(mealCategoryData: MealCategory): Promise<ApiResponse<{message:string}>>{
-    console.log("Meal category ", mealCategoryData)
-    const response = await adminApi.post<ApiResponse<{message:string}>>(ADMIN_API_ROUTES.CREATE_MEAL_CATEGORY, mealCategoryData);
-    return response.data
-  }
-
-  async getAllMealCategories(query: MealCategoryQueryDto): Promise<PaginatedResponse<MealCategory>> {
-    const queryParams = buildQueryParams(query);
-    const response = await adminApi.get<{
-      success: boolean;
-      message: string;
-      data: MealCategory[];
-      pagination: PaginationMeta;
-    }>(
-      ADMIN_API_ROUTES.GET_MEAL_CATEGORIES,
-      { params: queryParams }
-    );
-    return {
-      data: response.data.data,
-      pagination: response.data.pagination,
-    };
-  }
-
-  async getMealCategoryById(id: string): Promise<MealCategory> {
-    const response = await adminApi.get<ApiResponse<MealCategory>>(
-      ADMIN_API_ROUTES.GET_MEAL_CATEGORY_BY_ID(id)
-    );
-    return response.data.data;
-  }
-
-  async updateMealCategory(id: string, data: Partial<UpdateMealCategory>): Promise<ApiResponse<{ message: string }>> {
-    const response = await adminApi.put<ApiResponse<{ message: string }>>(
-      ADMIN_API_ROUTES.UPDATE_MEAL_CATEGORY(id),
-      data
-    );
-    return response.data;
-  }
-
-  async toggleMealCategoryStatus(id: string): Promise<ApiResponse<{ message: string }>> {
-    const response = await adminApi.patch<ApiResponse<{ message: string }>>(
-      ADMIN_API_ROUTES.TOGGLE_MEAL_CATEGORY_STATUS(id)
-    );
-    return response.data;
-  }
 
   // Bookings
   async getAllBookings(params?: TableQueryParams & { status?: string; date?: string }): Promise<ApiResponse<TrainerBooking[]> & { pagination: PaginationMeta }> {

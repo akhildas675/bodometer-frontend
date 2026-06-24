@@ -1,15 +1,11 @@
 import { userApi } from "@/api/api.instance";
 import { buildQueryParams, TableQueryParams } from "@/api/query.helper";
 import { USER_API_ROUTES } from "@/constants/constant-routes/api-routes/user-constant.routes";
-import { MealCategory } from "@/interface/health-log.interface";
-
-
 import { PaginationMeta } from "@/interface/common.interface";
-import { HealthLogDto, UpsertHealthLogDto, HealthLogProgressResponseDto } from "@/interface/health-log.interface";
 import { UpdateEquipment } from "@/interface/equipment.interface";
 import type { ApiResponse } from "@/interface/api-response.interface";
 import { TrainerDynamicSlot, TrainerBooking, CreateBookingPayload } from "@/interface/booking.interface";
-import { CalculateBmiPayload, BmiCalculationResult } from "@/interface/health-log.interface";
+import { CalculateBmiPayload, BmiCalculationResult } from "@/interface/bmi.interface";
 
 
 import { UploadProfilePictureResponse } from "@/interface/common.interface";
@@ -66,35 +62,6 @@ const userServices = {
 
 
 
-
-  async getMealCategory(params?: TableQueryParams): Promise<ApiResponse<MealCategory[]> & { pagination: PaginationMeta }> {
-    const queryParams = buildQueryParams({ page: 1, limit: 100, ...params });
-    const response = await userApi.get(
-      `${USER_API_ROUTES.GET_MEAL_CATEGORIES}?${queryParams.toString()}`
-    );
-    return response.data;
-  },
-
-  async getHealthLog(date: string): Promise<ApiResponse<HealthLogDto>> {
-    const response = await userApi.get(`${USER_API_ROUTES.GET_HEALTH_LOG}?date=${date}`);
-    return response.data;
-  },
-
-  async upsertHealthLog(data: UpsertHealthLogDto): Promise<ApiResponse<HealthLogDto>> {
-    const response = await userApi.post<ApiResponse<HealthLogDto>>(
-      USER_API_ROUTES.UPSERT_HEALTH_LOG,
-      data
-    );
-    return response.data;
-  },
-
-  async getHealthLogProgress(timeframe?: string): Promise<ApiResponse<HealthLogProgressResponseDto>> {
-    const url = timeframe 
-      ? `${USER_API_ROUTES.GET_HEALTH_LOG_PROGRESS}?timeframe=${timeframe}`
-      : USER_API_ROUTES.GET_HEALTH_LOG_PROGRESS;
-    const response = await userApi.get<ApiResponse<HealthLogProgressResponseDto>>(url);
-    return response.data;
-  },
 
   async getEquipment(params?: TableQueryParams): Promise<ApiResponse<UpdateEquipment[]> & { pagination: PaginationMeta }> {
     const queryParams = buildQueryParams({ page: 1, limit: 1000, ...params });

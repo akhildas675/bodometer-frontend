@@ -1,7 +1,7 @@
 import { parseApiError } from "@/api/error.helper";
 import { ADMIN_UI_ROUTES } from "@/constants/constant-routes/ui-routes/admin.ui-constant-routes";
-import { MealCategory } from "@/interface/health-log.interface";
-import adminServices from "@/services/admin/admin.services";
+import { MealCategory } from "@/modules/meal-category/types/meal-category.interface";
+import mealCategoryService from "@/modules/meal-category/service/meal-category.service";
 import { ArrowLeft } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -26,7 +26,7 @@ const AdminMealCategoryForm = () => {
     if (isEditMode && id) {
       const fetchCategory = async () => {
         try {
-          const res = await adminServices.getMealCategoryById(id);
+          const res = await mealCategoryService.getMealCategoryById(id);
           setForm({
             title: res.title,
             description: res.description,
@@ -57,10 +57,10 @@ const AdminMealCategoryForm = () => {
       };
       
       if (isEditMode && id) {
-        const res = await adminServices.updateMealCategory(id, payload);
+        const res = await mealCategoryService.updateMealCategory(id, payload);
         toast.success(res.message);
       } else {
-        const res = await adminServices.createMealCategory(payload);
+        const res = await mealCategoryService.createMealCategory(payload);
         toast.success(res.message);
       }
       

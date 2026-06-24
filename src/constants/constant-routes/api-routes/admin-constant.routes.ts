@@ -45,14 +45,6 @@ export const ADMIN_API_ROUTES = {
 
 
 
-  //meal category
-
-  CREATE_MEAL_CATEGORY:"/create-meal-category",
-  GET_MEAL_CATEGORIES: "/meal-category",
-  GET_MEAL_CATEGORY_BY_ID: (id: string) => `/meal-category/${id}`,
-  UPDATE_MEAL_CATEGORY: (id: string) => `/meal-category/${id}`,
-  TOGGLE_MEAL_CATEGORY_STATUS: (id: string) => `/meal-category/${id}/toggle-status`,
-
   // Bookings
   GET_ALL_BOOKINGS: "/bookings",
   CANCEL_BOOKING: "/bookings/:bookingId/cancel",

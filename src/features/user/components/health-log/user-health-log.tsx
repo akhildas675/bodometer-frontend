@@ -1,9 +1,11 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Activity, Droplets, Moon, Utensils, Plus, Trash2, CheckCircle2 } from 'lucide-react';
 import { StepperInput } from '@/features/user/onboarding/components/stepper.input';
-import { HealthLogDto, MealEntry, MealEntryDto } from '@/interface/health-log.interface';
-import { MealCategory } from "@/interface/health-log.interface";
+import { HealthLogDto, MealEntry, MealEntryDto } from '@/modules/health-log/types/health-log.interface';
+import { MealCategory } from "@/modules/meal-category/types/meal-category.interface";
 import { useFetch } from '@/hooks/useFetch';
+import healthLogService from '@/modules/health-log/service/health-log.service';
+import mealCategoryService from '@/modules/meal-category/service/meal-category.service';
 import userServices from '@/services/user/user.services';
 import { subscriptionService } from '@/modules/subscription/service/subscription.service';
 import { toast } from 'sonner';
@@ -66,7 +68,7 @@ const UserHealthLog = () => {
   const [subStartDate, setSubStartDate] = useState<string | null>(null);
 
   //  Fetch meal categories & subscription
-  const { data: categoryResponse } = useFetch(() => userServices.getMealCategory({ limit: 100 }));
+  const { data: categoryResponse } = useFetch(() => mealCategoryService.getMealCategory({ limit: 100 }));
   const mealCategories = categoryResponse?.data ?? [];
 
   useEffect(() => {
@@ -88,7 +90,7 @@ const UserHealthLog = () => {
     const fetchLog = async () => {
       setIsLoading(true);
       try {
-        const res  = await userServices.getHealthLog(date);
+        const res  = await healthLogService.getHealthLog(date);
         const log  = res.data;
         const sleep  = log?.sleepHours  ?? null;
         const water  = log?.waterLiters ?? null;
@@ -137,7 +139,7 @@ const UserHealthLog = () => {
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      const res = await userServices.upsertHealthLog({
+      const res = await healthLogService.upsertHealthLog({
         date,
         sleepHours,
         waterLiters,

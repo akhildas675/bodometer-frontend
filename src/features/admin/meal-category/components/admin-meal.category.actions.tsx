@@ -1,8 +1,8 @@
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import type { TableAction } from "@/components/ui/table/table.types";
-import { MealCategory } from "@/interface/health-log.interface";
-import adminServices from "@/services/admin/admin.services";
+import { MealCategory } from "@/modules/meal-category/types/meal-category.interface";
+import mealCategoryService from "@/modules/meal-category/service/meal-category.service";
 import { parseApiError } from "@/api/error.helper";
 import { ADMIN_UI_ROUTES } from "@/constants/constant-routes/ui-routes/admin.ui-constant-routes";
 
@@ -41,7 +41,7 @@ export const useMealCategoryActions = (
           onConfirm: async () => {
             try {
               if (!category.mealCategoryId) return;
-              const res = await adminServices.toggleMealCategoryStatus(category.mealCategoryId);
+              const res = await mealCategoryService.toggleMealCategoryStatus(category.mealCategoryId);
               toast.success(res.message);
               refetch();
             } catch (error: unknown) {
@@ -65,7 +65,7 @@ export const useMealCategoryActions = (
           onConfirm: async () => {
             try {
               if (!category.mealCategoryId) return;
-              const res = await adminServices.toggleMealCategoryStatus(category.mealCategoryId);
+              const res = await mealCategoryService.toggleMealCategoryStatus(category.mealCategoryId);
               toast.success(res.message);
               refetch();
             } catch (error: unknown) {

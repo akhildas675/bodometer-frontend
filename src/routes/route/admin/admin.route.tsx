@@ -21,8 +21,8 @@ import AdminQuestionListPage from "@/features/admin/onboarding/pages/admin-quest
 import AdminQuestionFormPage from "@/features/admin/onboarding/pages/admin-question.form.page";
 import AdminEquipmentListPage from "@/pages/admin/admin.equipment-list.page";
 import AdminEquipmentFormPage from "@/pages/admin/admin.equipment-form.page";
-import AdminMealCategoryListPage from "@/pages/admin/admin.meal-category.list-page";
-import AdminMealCategoryFormPage from "@/pages/admin/admin.meal-category.form-page";
+import AdminMealCategoryListPage from "@/features/admin/meal-category/pages/admin.meal-category.list-page";
+import AdminMealCategoryFormPage from "@/features/admin/meal-category/pages/admin.meal-category.form-page";
 const AdminTargetMuscleListPage = lazy(() => import("@/pages/admin/admin-target.muscle-list.page"));
 const AdminTargetMuscleFormPage = lazy(() => import("@/pages/admin/admin.target-muscle.form-page"));
 const AdminExerciseListPage = lazy(() => import("@/pages/admin/admin.exercise-list.page"));

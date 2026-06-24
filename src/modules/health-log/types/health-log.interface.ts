@@ -1,5 +1,3 @@
-
-
 export interface MealEntry {
     id: string;
     categoryId: string;
@@ -45,7 +43,6 @@ export interface UpsertHealthLogDto {
     }[];
 }
 
-// One data-point per chart x-axis label
 export interface HealthLogTrendDataDto {
     label: string;
     calories: number;
@@ -61,7 +58,6 @@ export interface MacroDistributionDto {
     percentage: number;
 }
 
-
 export interface DailyNutritionSummaryDto {
     date: string;
     totalCalories: number;
@@ -71,68 +67,13 @@ export interface DailyNutritionSummaryDto {
 }
 
 export interface HealthLogProgressResponseDto {
-    // Summary cards
     averageCalories: number;
     averageSleep: number;
     averageWater: number;
     averageSteps: number;
     averageProtein: number;
     currentStreak: number;
-
-    // Chart series (ordered oldest → newest)
     trendData: HealthLogTrendDataDto[];
-
-    // Pie chart
     macroDistribution: MacroDistributionDto[];
-
-    // Daily Nutrition Summary section
     dailySummary: DailyNutritionSummaryDto | null;
-}
-
-export interface MealCategory {
-  mealCategoryId?: string;
-  title: string;
-  description: string;
-  isActive?: boolean;
-}
-
-export interface UpdateMealCategory {
-  mealCategoryId: string;
-  title?: string;
-  description?: string;
-  isActive?: boolean;
-}
-
-export interface MealCategoryQueryDto {
-  page?: number;
-  limit?: number;
-  search?: string;
-  sortBy?: string;
-  sortOrder?: "asc" | "desc";
-  status?: string;
-  [key: string]: string | number | boolean | undefined | null;
-}
-
-export interface CalculateBmiPayload {
-  height?: number | null;
-  weight?: number | null;
-  unit: "metric" | "imperial";
-  heightFt?: string;
-  heightIn?: string;
-}
-
-export interface BmiCalculationResult {
-  bmi: number;
-  heightCm: number;
-  weightKg: number;
-  category: {
-    label: string;
-    color: string;
-    description: string;
-    tips: string[];
-  };
-  healthyWeightRange: {
-    minKg: number;
-    maxKg: number;
-  };
 }

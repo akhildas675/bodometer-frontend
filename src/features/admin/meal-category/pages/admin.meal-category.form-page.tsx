@@ -1,4 +1,4 @@
-import AdminMealCategoryForm from "@/components/admin/meal-category.management/admin-meal.category-form";
+import AdminMealCategoryForm from "../components/admin-meal.category-form";
 
 const AdminMealCategoryFormPage = () => {
     return (

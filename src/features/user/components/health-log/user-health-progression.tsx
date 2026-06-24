@@ -10,10 +10,10 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { useFetch } from "@/hooks/useFetch";
-import userServices from "@/services/user/user.services";
 import {
   HealthLogProgressResponseDto,
-} from "@/interface/health-log.interface";
+} from "@/modules/health-log/types/health-log.interface";
+import healthLogService from '@/modules/health-log/service/health-log.service';
 import { TIMEFRAME, Timeframe } from "@/constants/fitness.constant";
 import {
   Chart as ChartJS,
@@ -42,7 +42,7 @@ import {
   PIE_COLORS_DIM,
   lineDataset,
   barDataset
-} from "../shared/dashboard-components";
+} from "@/components/user/shared/dashboard-components";
 
 ChartJS.register(
   CategoryScale,
@@ -66,7 +66,7 @@ const UserHealthProgression = () => {
   const fetchProgress = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await userServices.getHealthLogProgress(timeframe);
+      const res = await healthLogService.getHealthLogProgress(timeframe);
       if (res.success && res.data) setData(res.data);
     } catch (e) {
       console.error("Health progress fetch failed", e);
@@ -89,7 +89,7 @@ const UserHealthProgression = () => {
   const macroLabels = data?.macroDistribution.map(d => `${d.macroName} (${d.percentage}%)`) ?? [];
   const macroValues = data?.macroDistribution.map(d => d.amount) ?? [];
 
-  const currentTab = TIME_TABS.find(t => t.value === timeframe)!;
+  const currentTab = TIME_TABS.find((t) => t.value === timeframe)!;
 
   //  Loading state
   if (loading) {
@@ -119,7 +119,7 @@ const UserHealthProgression = () => {
 
         {/* Timeframe tabs */}
         <div className="flex space-x-1 bg-white/5 border border-white/10 p-1 rounded-xl shrink-0">
-          {TIME_TABS.map(tab => (
+          {TIME_TABS.map((tab) => (
             <button
               key={tab.value}
               onClick={() => setTimeframe(tab.value)}
