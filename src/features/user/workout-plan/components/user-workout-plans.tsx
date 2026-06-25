@@ -27,7 +27,6 @@ import {
 
 import { USER_UI_ROUTES } from "@/constants/constant-routes/ui-routes/user.ui-constant.routes";
 import { AiWorkoutExercise, GenerateWorkoutDay, GetWorkoutPlansResponse, WorkoutPlanResponse, WorkoutExerciseStatus, CompletedHistoryItem } from "@/modules/workout-plan/types/workout.types";
-import userServices from "@/services/user/user.services";
 import { useAuthStore } from "@/stores/auth.store";
 import { toast } from "sonner";
 
@@ -695,10 +694,10 @@ const UserWorkoutPlans = () => {
                             {plan.status}
                           </span>
                         </div>
-                        <p className="text-white/50 text-sm mt-0.5 flex items-center gap-2">
+                        {/* <p className="text-white/50 text-sm mt-0.5 flex items-center gap-2">
                           <Clock className="w-3.5 h-3.5" />
                           {plan.formattedStartDate || plan.startDate} — {plan.formattedEndDate || plan.endDate || ""}
-                        </p>
+                        </p> */}
                       </div>
                     </div>
 

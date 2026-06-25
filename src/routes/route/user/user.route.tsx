@@ -21,6 +21,7 @@ import UserExerciseDetailPage from "@/pages/user/user-fitness/user-exercise.deta
 
 import UserWorkoutPlansPage from "@/features/user/workout-plan/pages/user-workout-plans.page";
 import UserWorkoutProgressionPage from "@/features/user/workout-plan/pages/user-workout-progression.page";
+import { UserDietPlansPage } from "@/features/user/diet-plan/pages/user-diet-plans.page";
 import UserHealthLogPage from "@/features/user/health-log/pages/user-health-log.page";
 import UserHealthProgressionPage from "@/features/user/health-log/pages/user-health-progression.page";
 import UserBookTrainerPage from "@/pages/user/user-booking/user-book-trainer.page";
@@ -71,6 +72,7 @@ export const userRoutes = (
         <Route path={USER_UI_ROUTES.USER_EXERCISES} element={<UserExercisesPage />} />
         <Route path={USER_UI_ROUTES.USER_EXERCISE_DETAIL} element={<UserExerciseDetailPage />} />
         <Route path={USER_UI_ROUTES.USER_PROGRESS} element={<UserWorkoutProgressionPage />} />
+        <Route path={USER_UI_ROUTES.USER_DIET_PLANS} element={<UserDietPlansPage />} />
         <Route path={USER_UI_ROUTES.USER_HEALTH_LOG} element={<UserHealthLogPage />} />
         <Route path={USER_UI_ROUTES.USER_HEALTH_PROGRESS} element={<UserHealthProgressionPage />} />
         

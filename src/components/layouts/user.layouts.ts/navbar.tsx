@@ -66,6 +66,17 @@ const Navbar = () => {
   </NavLink>
 
   <NavLink
+    to="/diet-plans"
+    className={({ isActive }) =>
+      `cursor-pointer hover:text-white ${
+        isActive ? "text-white font-semibold" : ""
+      }`
+    }
+  >
+    Diet Plans
+  </NavLink>
+
+  <NavLink
     to="/subscriptions"
     className={({ isActive }) =>
       `cursor-pointer hover:text-white ${
