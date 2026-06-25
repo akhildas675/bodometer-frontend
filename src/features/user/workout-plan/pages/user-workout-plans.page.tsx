@@ -1,4 +1,4 @@
-import UserWorkoutPlans from "@/components/user/user-fitness/user-workout-plans";
+import UserWorkoutPlans from "../components/user-workout-plans";
 
 const UserWorkoutPlansPage = () => {
   return <UserWorkoutPlans />;

@@ -1,5 +1,5 @@
 import React from 'react';
-import UserHealthLog from '../components/health-log/user-health-log';
+import UserHealthLog from '../components/user-health-log';
 
 const UserHealthLogPage = () => {
     return <UserHealthLog />;

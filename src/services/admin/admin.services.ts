@@ -10,9 +10,6 @@ import { AdminGetUsersResponse } from "@/interface/user.interface";
 import { AdminGetTrainersResponse } from "@/interface/trainer.interface";
 import { TrainerBooking } from "@/interface/booking.interface";
 import type { ApiResponse } from "@/interface/api-response.interface";
-import type { UpdateTargetMuscles } from "@/interface/target-muscle.interface";
-import type { UpdateEquipment } from "@/interface/equipment.interface";
-import type { ExerciseRow } from "@/interface/exercise.interface";
 
 import { ADMIN_API_ROUTES } from "@/constants/constant-routes/api-routes/admin-constant.routes";
 
@@ -137,16 +134,6 @@ class AdminService {
   }
  
 
- 
-
-
- 
-
-
-
-
-
-  
 
 
 

@@ -1,3 +1,4 @@
+import { workoutPlanService } from "@/modules/workout-plan/service/workout-plan.service";
 import React, { useCallback, useEffect, useState } from "react";
 import {
   Activity,
@@ -10,7 +11,7 @@ import {
 } from "lucide-react";
 import { useFetch } from "@/hooks/useFetch";
 import userServices from "@/services/user/user.services";
-import { WorkoutProgressResponse } from "@/interface/workout.interface";
+import { WorkoutProgressResponse } from "@/modules/workout-plan/types/workout.types";
 import { TIMEFRAME, Timeframe } from "@/constants/fitness.constant";
 import {
   Chart as ChartJS,
@@ -37,7 +38,7 @@ import {
   gridColor,
   lineDataset,
   tickColor,
-} from "../shared/dashboard-components";
+} from "@/components/user/shared/dashboard-components";
 
 ChartJS.register(
   CategoryScale,
@@ -69,7 +70,7 @@ const UserWorkoutProgression = () => {
   const fetchProgress = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await userServices.getWorkoutProgress(timeframe);
+      const res = await workoutPlanService.getWorkoutProgress(timeframe);
       if (res.success && res.data) setData(res.data);
     } catch (e) {
       console.error("Workout progress fetch failed", e);
@@ -81,7 +82,7 @@ const UserWorkoutProgression = () => {
   const { refetch } = useFetch(fetchProgress);
   useEffect(() => { refetch(); }, [timeframe, refetch]);
 
-  const currentTab = WORKOUT_TIME_TABS.find(t => t.value === timeframe)!;
+  const currentTab = WORKOUT_TIME_TABS.find((t: any) => t.value === timeframe)!;
 
   if (loading) {
     return (
@@ -121,7 +122,7 @@ const UserWorkoutProgression = () => {
 
         {/* Timeframe tabs */}
         <div className="flex space-x-1 bg-white/5 border border-white/10 p-1 rounded-xl shrink-0">
-          {WORKOUT_TIME_TABS.map(tab => (
+          {WORKOUT_TIME_TABS.map((tab: any) => (
             <button
               key={tab.value}
               onClick={() => setTimeframe(tab.value)}

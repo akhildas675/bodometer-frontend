@@ -1,4 +1,4 @@
-import UserHealthProgression from "../components/health-log/user-health-progression";
+import UserHealthProgression from "../components/user-health-progression";
 
 const UserHealthProgressionPage = () => {
   return <UserHealthProgression />;

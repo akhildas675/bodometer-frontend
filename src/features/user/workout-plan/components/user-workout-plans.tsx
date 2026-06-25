@@ -1,3 +1,4 @@
+import { workoutPlanService } from "@/modules/workout-plan/service/workout-plan.service";
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useFetch } from "@/hooks/useFetch";
@@ -25,7 +26,7 @@ import {
 } from "lucide-react";
 
 import { USER_UI_ROUTES } from "@/constants/constant-routes/ui-routes/user.ui-constant.routes";
-import { AiWorkoutExercise, GenerateWorkoutDay, GetWorkoutPlansResponse, WorkoutPlanResponse, WorkoutExerciseStatus, CompletedHistoryItem } from "@/interface/workout.interface";
+import { AiWorkoutExercise, GenerateWorkoutDay, GetWorkoutPlansResponse, WorkoutPlanResponse, WorkoutExerciseStatus, CompletedHistoryItem } from "@/modules/workout-plan/types/workout.types";
 import userServices from "@/services/user/user.services";
 import { useAuthStore } from "@/stores/auth.store";
 import { toast } from "sonner";
@@ -398,7 +399,7 @@ const UserWorkoutPlans = () => {
   };
 
   const fetchPlansFn = useCallback(async () => {
-    const response = await userServices.getWorkoutPlans();
+    const response = await workoutPlanService.getWorkoutPlans();
     if (response.success && response.data) {
       const currentIsPremium = response.data.isPremium !== undefined ? response.data.isPremium : (user?.hasActiveSubscription ?? false);
       setIsPremium(currentIsPremium);
@@ -437,7 +438,7 @@ const UserWorkoutPlans = () => {
 
     try {
       setGenerating(true);
-      const response = await userServices.generateWorkout();
+      const response = await workoutPlanService.generateWorkout();
       if (response.success && response.data) {
         await fetchPlansFn();
       } else if (response.message) {
@@ -461,7 +462,7 @@ const UserWorkoutPlans = () => {
     try {
       setTogglingDay({ planId, dayNumber });
       const newStatus = currentStatus === "COMPLETED" ? false : true;
-      const response = await userServices.markDayCompleted({ planId, dayNumber, completed: newStatus });
+      const response = await workoutPlanService.markDayCompleted({ planId, dayNumber, completed: newStatus });
       if (response.success) {
         await fetchPlansFn();
       }
@@ -475,7 +476,7 @@ const UserWorkoutPlans = () => {
   const handleSetExerciseStatus = async (planId: string, dayNumber: number, exerciseId: string, status: WorkoutExerciseStatus) => {
     try {
       setTogglingExercise(exerciseId);
-      const response = await userServices.markExerciseStatus({ planId, dayNumber, exerciseId, status });
+      const response = await workoutPlanService.markExerciseStatus({ planId, dayNumber, exerciseId, status });
       if (response.success) {
         await fetchPlansFn();
       }

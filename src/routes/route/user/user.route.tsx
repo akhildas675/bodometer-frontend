@@ -19,10 +19,10 @@ import UserFitnessProfilePage from "@/pages/user/user-fitness/user.fitness-profi
 import UserExercisesPage from "@/pages/user/user-fitness/user-exercises.page";
 import UserExerciseDetailPage from "@/pages/user/user-fitness/user-exercise.detail.page";
 
-import UserWorkoutPlansPage from "@/pages/user/user-fitness/user-workout-plans.page";
-import UserWorkoutProgressionPage from "@/pages/user/user-fitness/user-workout-progression.page";
-import UserHealthLogPage from "@/features/user/pages/user-health-log.page";
-import UserHealthProgressionPage from "@/features/user/pages/user-health-progression.page";
+import UserWorkoutPlansPage from "@/features/user/workout-plan/pages/user-workout-plans.page";
+import UserWorkoutProgressionPage from "@/features/user/workout-plan/pages/user-workout-progression.page";
+import UserHealthLogPage from "@/features/user/health-log/pages/user-health-log.page";
+import UserHealthProgressionPage from "@/features/user/health-log/pages/user-health-progression.page";
 import UserBookTrainerPage from "@/pages/user/user-booking/user-book-trainer.page";
 import UserMyBookingsPage from "@/pages/user/user-booking/user-my-bookings.page";
 
