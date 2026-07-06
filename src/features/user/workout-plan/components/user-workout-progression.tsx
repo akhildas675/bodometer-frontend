@@ -10,7 +10,7 @@ import {
   Target
 } from "lucide-react";
 import { useFetch } from "@/hooks/useFetch";
-import userServices from "@/services/user/user.services";
+import { userService } from "@/modules/user/service/user.service";
 import { WorkoutProgressResponse } from "@/modules/workout-plan/types/workout.types";
 import { TIMEFRAME, Timeframe } from "@/constants/fitness.constant";
 import {
@@ -38,7 +38,7 @@ import {
   gridColor,
   lineDataset,
   tickColor,
-} from "@/components/user/shared/dashboard-components";
+} from "@/ui.components/shared/dashboard-components";
 
 ChartJS.register(
   CategoryScale,
@@ -82,7 +82,7 @@ const UserWorkoutProgression = () => {
   const { refetch } = useFetch(fetchProgress);
   useEffect(() => { refetch(); }, [timeframe, refetch]);
 
-  const currentTab = WORKOUT_TIME_TABS.find((t: any) => t.value === timeframe)!;
+  const currentTab = WORKOUT_TIME_TABS.find(t => t.value === timeframe)!;
 
   if (loading) {
     return (
@@ -122,7 +122,7 @@ const UserWorkoutProgression = () => {
 
         {/* Timeframe tabs */}
         <div className="flex space-x-1 bg-white/5 border border-white/10 p-1 rounded-xl shrink-0">
-          {WORKOUT_TIME_TABS.map((tab: any) => (
+          {WORKOUT_TIME_TABS.map(tab => (
             <button
               key={tab.value}
               onClick={() => setTimeframe(tab.value)}

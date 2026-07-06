@@ -6,7 +6,7 @@ import {
   SubscriptionPlanPayload,
   SubscriptionTransaction,
 } from "@/modules/subscription/types/subscription.interface";
-import { SUBSCRIPTION_API_PATHS } from "../constant/subscription-api.path";
+import { SUBSCRIPTION_API_PATHS } from "../constant/api-routes";
 import { ApiResponse } from "@/interface/api-response.interface";
 import { api } from "@/api/api.instance";
 import { buildQueryParams, TableQueryParams } from "@/api/query.helper";

@@ -1,31 +1,31 @@
 import { Route } from "react-router-dom";
-import MainLayouts from "@/components/layouts/MainLayouts";
-import UserProfilePage from "@/pages/user/user-profile.page";
+import MainLayouts from "@/ui.components/layouts/MainLayouts";
+import UserProfilePage from "@/features/user/user.users/pages/user-profile.page";
 import ProtectedRoute from "@/routes/guard.routes/protected.route";
 import SubscriptionRoute from "@/routes/guard.routes/subscription.route";
 import { USER_UI_ROUTES } from "@/constants/constant-routes/ui-routes/user.ui-constant.routes";
-import UserTrainersPage from "@/pages/user/user-fitness/user-trainers.page";
-import UserChangePasswordPage from "@/pages/user/user-auth/user.change-password.page";
-import UserTrainerDetailPage from "@/pages/user/user-fitness/user.trainer-detail.page";
+import UserTrainersPage from "@/features/user/user.trainers/pages/user-trainers.page";
+import UserChangePasswordPage from "@/features/user/user.users/pages/user.change-password.page";
+import UserTrainerDetailPage from "@/features/user/user.trainers/pages/user.trainer-detail.page";
 import { ROLES } from "@/constants/role";
-import UserCategoriesPage from "@/features/user/pages/user-categories.page";
-import UserCategoryDetailPage from "@/features/user/pages/user.category-detail.page";
-import UserSubscriptionPage from "@/features/user/pages/user-subscription.page";
-import UserSubscriptionSuccessPage from "@/features/user/pages/user.subscription-success.page";
-import UserSubscriptionCancelPage from "@/features/user/pages/user.subscription-cancel.page";
-import UserOnboardingIntroPage from "@/features/user/onboarding/pages/user.onboarding-intro.page";
-import UserOnboardingAssessmentPage from "@/features/user/onboarding/pages/user.onboarding-assessment.page";
-import UserFitnessProfilePage from "@/pages/user/user-fitness/user.fitness-profile.page";
-import UserExercisesPage from "@/pages/user/user-fitness/user-exercises.page";
-import UserExerciseDetailPage from "@/pages/user/user-fitness/user-exercise.detail.page";
+import UserCategoriesPage from "@/features/user/user.category/pages/user-categories.page";
+import UserCategoryDetailPage from "@/features/user/user.category/pages/user.category-detail.page";
+import UserSubscriptionPage from "@/features/user/user.subscription/pages/user-subscription.page";
+import UserSubscriptionSuccessPage from "@/features/user/user.subscription/pages/user.subscription-success.page";
+import UserSubscriptionCancelPage from "@/features/user/user.subscription/pages/user.subscription-cancel.page";
+import UserOnboardingIntroPage from "@/features/user/user.onboarding/pages/user.onboarding-intro.page";
+import UserOnboardingAssessmentPage from "@/features/user/user.onboarding/pages/user.onboarding-assessment.page";
+import UserFitnessProfilePage from "@/features/user/user.users/pages/user.fitness-profile.page";
+import UserExercisesPage from "@/features/user/user.exercise/pages/user-exercises.page";
+import UserExerciseDetailPage from "@/features/user/user.exercise/pages/user-exercise.detail.page";
 
 import UserWorkoutPlansPage from "@/features/user/workout-plan/pages/user-workout-plans.page";
 import UserWorkoutProgressionPage from "@/features/user/workout-plan/pages/user-workout-progression.page";
-import { UserDietPlansPage } from "@/features/user/diet-plan/pages/user-diet-plans.page";
-import UserHealthLogPage from "@/features/user/health-log/pages/user-health-log.page";
-import UserHealthProgressionPage from "@/features/user/health-log/pages/user-health-progression.page";
-import UserBookTrainerPage from "@/pages/user/user-booking/user-book-trainer.page";
-import UserMyBookingsPage from "@/pages/user/user-booking/user-my-bookings.page";
+import { UserDietPlansPage } from "@/features/user/user.diet-plan/pages/user-diet-plans.page";
+import UserHealthLogPage from "@/features/user/user.health-log/pages/user-health-log.page";
+import UserHealthProgressionPage from "@/features/user/user.health-log/pages/user-health-progression.page";
+import UserBookTrainerPage from "@/features/user/user.booking/pages/user-book-trainer.page";
+import UserMyBookingsPage from "@/features/user/user.booking/pages/user-my-bookings.page";
 
 export const userRoutes = (
   <Route element={<ProtectedRoute allowedRoles={[ROLES.USER]} />}>

@@ -1,5 +1,6 @@
+import { healthLogService } from "@/modules/health-log/service/health-log.service";
 import { create } from "zustand";
-import userServices from "@/services/user/user.services";
+import { userService } from "@/modules/user/service/user.service";
 
 interface BmiState {
   height: number | null;
@@ -48,7 +49,7 @@ export const useStandaloneBmiStore = create<BmiState>((set, get) => ({
     const { height, weight, unit, heightFt, heightIn } = get();
     set({ loading: true, error: null });
     try {
-      const res = await userServices.calculateBmiPublic({
+      const res = await healthLogService.calculateBmiPublic({
         height,
         weight,
         unit,

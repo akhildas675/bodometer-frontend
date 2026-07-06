@@ -1,6 +1,6 @@
 import { Navigate, Outlet } from "react-router-dom";
 import { useAuthStore } from "@/stores/auth.store";
-import { ScreenLoader } from "@/components/ui/screen-loader";
+import { ScreenLoader } from "@/ui.components/ui/screen-loader";
 
 const GuestRoute = () => {
   const { isAuthenticated, user, isInitialized } = useAuthStore();

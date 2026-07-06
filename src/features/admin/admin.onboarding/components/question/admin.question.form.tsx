@@ -1,0 +1,600 @@
+import { useEffect, useState, FormEvent } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { ChevronLeft, Loader2, Plus, Trash2 } from "lucide-react";
+import { toast } from "sonner";
+
+import { equipmentService } from "@/modules/equipment/service/equipment.service";
+import { onboardingService } from "@/modules/onboarding/service/onboarding.service";
+import { categoryService } from "@/modules/category/service/category.service";
+import type { CategoryListItem } from "@/modules/category/types/category.interface";
+import { ADMIN_UI_ROUTES } from "@/constants/constant-routes/ui-routes/admin.ui-constant-routes";
+import { QuestionGroup, CreateQuestionData, OnboardingQuestion } from "@/modules/onboarding/types/onboarding.interface";
+import { QUESTION_TYPE, QuestionType } from "@/constants/onboarding.constant";
+import { parseApiError } from "@/api/error.helper";
+import { generateOptionValue } from "@/utils/option-key.generate";
+
+interface NextJumpData {
+  condition: { operator: string; value?: string | number | boolean };
+  nextQuestionId: string;
+}
+
+
+const QUESTION_TYPES = [
+  { label: "Yes / No (Boolean)", value: QUESTION_TYPE.BOOLEAN },
+  { label: "Single Select", value: QUESTION_TYPE.SINGLE_SELECT },
+  { label: "Multi Select", value: QUESTION_TYPE.MULTI_SELECT },
+  { label: "Text Input", value: QUESTION_TYPE.TEXT },
+  { label: "Number Input", value: QUESTION_TYPE.NUMBER },
+  { label: "Time Picker", value: QUESTION_TYPE.TIME },
+  { label: "Date Picker", value: QUESTION_TYPE.DATE },
+];
+
+interface OptionData {
+  label: string;
+  value: string | number | boolean;
+}
+
+const AdminQuestionForm = () => {
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const isEdit = !!id;
+
+  const [loading, setLoading] = useState(false);
+  const [fetching, setFetching] = useState(isEdit);
+  const [groups, setGroups] = useState<QuestionGroup[]>([]);
+  const [questionsList, setQuestionsList] = useState<OnboardingQuestion[]>([]);
+  const [dataSources, setDataSources] = useState<{ label: string; value: string }[]>([]);
+
+  // Form state
+  const [key, setKey] = useState("");
+  const [question, setQuestion] = useState("");
+  const [groupId, setGroupId] = useState("");
+  const [type, setType] = useState<QuestionType>(QUESTION_TYPE.SINGLE_SELECT);
+  const [order, setOrder] = useState(1);
+  const [isRequired, setIsRequired] = useState(true);
+  const [options, setOptions] = useState<OptionData[]>([{ label: "", value: "" }]);
+  
+  const [minNum, setMinNum] = useState<number | undefined>(undefined);
+  const [maxNum, setMaxNum] = useState<number | undefined>(undefined);
+  const [unitNum, setUnitNum] = useState("");
+  const [dataSource, setDataSource] = useState("");
+  const [previewOptions, setPreviewOptions] = useState<string[]>([]);
+  const [previewLoading, setPreviewLoading] = useState(false);
+
+  const [nextJumps, setNextJumps] = useState<NextJumpData[]>([]);
+
+  useEffect(() => {
+    onboardingService.getQuestionGroups({ page: 1, limit: 100 })
+      .then((res) => setGroups(res.data || []))
+      .catch((e) => console.error(e));
+
+    onboardingService.getQuestions({ page: 1, limit: 1000 })
+      .then((res) => setQuestionsList(res.data || []))
+      .catch((e) => console.error(e));
+
+    onboardingService.getQuestionDataSources()
+      .then((res) => setDataSources(res || []))
+      .catch((e) => console.error(e));
+
+    if (isEdit && id) {
+      setFetching(true);
+      onboardingService.getQuestionById(id)
+        .then((res) => {
+          const q = res.data;
+          if (!q) return;
+          setKey(q.key);
+          setQuestion(q.question);
+          setGroupId(q.groupId);
+          setType(q.type);
+          setOrder(q.order);
+          setIsRequired(!!q.validation?.required);
+          
+          if (q.options) {
+            setOptions(q.options);
+          }
+          if (q.numberConfig) {
+            setMinNum(q.numberConfig.min);
+            setMaxNum(q.numberConfig.max);
+            setUnitNum(q.numberConfig.unit ?? "");
+          }
+          setDataSource(q.dataSource ?? "");
+          if (q.next && Array.isArray(q.next)) {
+            setNextJumps(q.next.map(n => ({
+              condition: {
+                operator: n.condition?.operator || "equals",
+                value: n.condition?.value ?? ""
+              },
+              nextQuestionId: n.nextQuestionId
+            })));
+          }
+        })
+        .catch((error) => {
+          const apiError = parseApiError(error);
+          toast.error(apiError.message);
+        })
+        .finally(() => setFetching(false));
+    }
+  }, [isEdit, id]);
+
+  useEffect(() => {
+    if (!dataSource) {
+      setPreviewOptions([]);
+      return;
+    }
+
+    setPreviewLoading(true);
+    if (dataSource === "category") {
+      categoryService.getCategories({ page: 1, limit: 1000 })
+        .then((res) => {
+          const names = (res.data || [])
+            .filter((c: CategoryListItem) => c.isActive !== false && c.name)
+            .map((c: CategoryListItem) => c.name as string);
+          setPreviewOptions(names);
+        })
+        .catch((error: unknown) => {
+          const apiError = parseApiError(error);
+          toast.error(`Failed to load preview for categories: ${apiError.message}`);
+        })
+        .finally(() => setPreviewLoading(false));
+    } else if (dataSource === "equipment") {
+      equipmentService.getEquipment({ page: 1, limit: 1000 })
+        .then((res) => {
+          const titles = (res.data || [])
+            .filter((eq) => eq.isActive !== false && eq.title)
+            .map((eq) => eq.title);
+          setPreviewOptions(titles);
+        })
+        .catch((error: unknown) => {
+          const apiError = parseApiError(error);
+          toast.error(`Failed to load preview for equipment: ${apiError.message}`);
+        })
+        .finally(() => setPreviewLoading(false));
+    } else {
+      setPreviewOptions([]);
+      setPreviewLoading(false);
+    }
+  }, [dataSource]);
+
+
+
+  const handleAddOption = () => {
+    setOptions([...options, { label: "", value: "" }]);
+  };
+
+  const handleRemoveOption = (index: number) => {
+    setOptions(options.filter((_, i) => i !== index));
+  };
+
+  const handleOptionChange = (index: number, field: keyof OptionData, value: string) => {
+    setOptions(
+      options.map((opt, i) => 
+        i === index ? { ...opt, [field]: value } : opt
+      )
+    );
+  };
+
+  const handleAddJump = () => {
+    setNextJumps([...nextJumps, { condition: { operator: "equals", value: "" }, nextQuestionId: "" }]);
+  };
+
+  const handleRemoveJump = (index: number) => {
+    setNextJumps(nextJumps.filter((_, i) => i !== index));
+  };
+
+  const handleJumpChange = (index: number, field: "operator" | "value" | "nextQuestionId", val: string) => {
+    setNextJumps(
+      nextJumps.map((jump, i) => {
+        if (i !== index) return jump;
+        if (field === "operator") {
+          return { ...jump, condition: { ...jump.condition, operator: val } };
+        } else if (field === "value") {
+          return { ...jump, condition: { ...jump.condition, value: val } };
+        } else {
+          return { ...jump, nextQuestionId: val };
+        }
+      })
+    );
+  };
+
+  const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    setLoading(true);
+    try {
+      const payload: CreateQuestionData = {
+        key: "",
+        question: question.trim(),
+        groupId,
+        order: Number(order),
+        type,
+        dataSource: ([QUESTION_TYPE.SINGLE_SELECT, QUESTION_TYPE.MULTI_SELECT] as QuestionType[]).includes(type) && dataSource ? dataSource : undefined,
+        validation: { required: isRequired },
+        next: nextJumps.length > 0 ? nextJumps.map(j => ({
+          condition: {
+            operator: j.condition.operator,
+            value: j.condition.operator === "always" ? undefined : String(j.condition.value || "").trim()
+          },
+          nextQuestionId: j.nextQuestionId
+        })) : undefined,
+      };
+
+      if (([QUESTION_TYPE.SINGLE_SELECT, QUESTION_TYPE.MULTI_SELECT] as QuestionType[]).includes(type)) {
+        if (dataSource) {
+          payload.options = undefined;
+        } else {
+          payload.options = options.map((o) => ({ label: o.label.trim(), value: "" }));
+        }
+      }
+
+      if (type === QUESTION_TYPE.NUMBER) {
+        payload.numberConfig = {
+          min: minNum !== undefined ? Number(minNum) : undefined,
+          max: maxNum !== undefined ? Number(maxNum) : undefined,
+          unit: unitNum.trim() || undefined,
+        };
+      }
+
+      if (isEdit && id) {
+        const res = await onboardingService.updateQuestion(id, payload);
+        toast.success(res.message);
+      } else {
+        const res = await onboardingService.createQuestion(payload);
+        toast.success(res.message);
+      }
+      navigate(ADMIN_UI_ROUTES.QUESTIONS_LIST);
+    } catch (error: unknown) {
+      const apiError = parseApiError(error);
+      toast.error(apiError.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (fetching) {
+    return (
+      <div className="h-64 flex items-center justify-center">
+        <Loader2 className="animate-spin h-8 w-8 text-purple-500" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="text-white max-w-3xl mx-auto">
+      <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-purple-400 hover:text-purple-300 mb-6 transition">
+        <ChevronLeft size={20} />
+        <span>Back</span>
+      </button>
+
+      <div className="bg-[#0c0624]/70 backdrop-blur border border-purple-900/50 rounded-xl p-8 shadow-2xl">
+        <h1 className="text-2xl font-bold mb-6 bg-linear-to-r from-white to-purple-300 bg-clip-text text-transparent">
+          {isEdit ? "Modify Questionnaire Item" : "Create New Question"}
+        </h1>
+
+        <form onSubmit={onSubmit} className="grid grid-cols-1 gap-6">
+          <div className={isEdit ? "grid grid-cols-2 gap-4" : ""}>
+            <div>
+              <label className="block text-xs font-semibold uppercase tracking-wide text-purple-400 mb-1">Group <span className="text-red-400">*</span></label>
+              <select 
+                value={groupId}
+                onChange={(e) => setGroupId(e.target.value)}
+                required
+                className="w-full bg-[#050017]/70 border border-purple-900/50 rounded-lg px-4 py-2 text-white outline-none cursor-pointer"
+              >
+                <option value="">Select Group...</option>
+                {groups.map((g) => (
+                  <option key={g.groupId} value={g.groupId}>{g.title}</option>
+                ))}
+              </select>
+            </div>
+            {isEdit && (
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-wide text-purple-400 mb-1">System Reference Key</label>
+                <input 
+                  value={key}
+                  disabled
+                  className="w-full bg-[#050017]/70 border border-purple-900/50 rounded-lg px-4 py-2 text-white outline-none opacity-60" 
+                />
+              </div>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold uppercase tracking-wide text-purple-400 mb-1">Question Prompt <span className="text-red-400">*</span></label>
+            <input 
+              value={question}
+              onChange={(e) => setQuestion(e.target.value)}
+              required
+              className="w-full bg-[#050017]/70 border border-purple-900/50 rounded-lg px-4 py-3 text-lg text-white outline-none focus:border-purple-500 transition" 
+              placeholder="e.g. What are your specific workout constraints?" 
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-semibold uppercase tracking-wide text-purple-400 mb-1">Response Pattern Type</label>
+              <select 
+                value={type}
+                onChange={(e) => setType(e.target.value as QuestionType)}
+                className="w-full bg-[#050017]/70 border border-purple-900/50 rounded-lg px-4 py-2 text-white outline-none cursor-pointer"
+              >
+                {QUESTION_TYPES.map((t) => (
+                  <option key={t.value} value={t.value}>{t.label}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block text-xs font-semibold uppercase tracking-wide text-purple-400 mb-1">Display Sort Order</label>
+              <input 
+                type="number" 
+                value={order}
+                onChange={(e) => setOrder(Number(e.target.value))}
+                required
+                min="1"
+                className="w-full bg-[#050017]/70 border border-purple-900/50 rounded-lg px-4 py-2 text-white outline-none" 
+              />
+            </div>
+          </div>
+
+          {(([QUESTION_TYPE.SINGLE_SELECT, QUESTION_TYPE.MULTI_SELECT] as QuestionType[]).includes(type)) && (
+            <div className="border border-dashed border-purple-800/50 p-4 rounded-lg bg-[#0a041a] space-y-4">
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-wide text-purple-400 mb-1.5">Option Data Source</label>
+                <select 
+                  value={dataSource}
+                  onChange={(e) => setDataSource(e.target.value)}
+                  className="w-full bg-[#050017]/70 border border-purple-900/50 rounded-lg px-3 py-2 text-white text-sm outline-none cursor-pointer focus:border-purple-500"
+                >
+                  <option value="">Manual / Static List</option>
+                  {dataSources.map((ds) => (
+                    <option key={ds.value} value={ds.value}>
+                      Dynamic - Load from {ds.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {!dataSource ? (
+                <div className="space-y-3 pt-2 border-t border-purple-950">
+                  <div className="flex justify-between items-center">
+                    <h3 className="text-xs font-semibold text-purple-200 uppercase tracking-wider">Define Selectable Options</h3>
+                    <button 
+                      type="button" 
+                      onClick={handleAddOption} 
+                      className="text-xs flex items-center gap-1 text-purple-400 hover:text-purple-200 transition bg-purple-900/10 hover:bg-purple-900/20 px-2 py-1 rounded border border-purple-900/50"
+                    >
+                      <Plus size={12}/> Add
+                    </button>
+                  </div>
+                  <div className="space-y-2">
+                    {options.map((opt, index) => (
+                      <div key={index} className="flex gap-2">
+                        <input 
+                          value={opt.label}
+                          onChange={(e) => handleOptionChange(index, "label", e.target.value)}
+                          placeholder="Option Label (e.g. Muscle Gain, Weight Loss)" 
+                          required
+                          className="flex-1 bg-black/30 border border-purple-900/30 px-3 py-2 rounded text-sm text-white outline-none focus:border-purple-500 transition" 
+                        />
+                        <button 
+                          type="button" 
+                          onClick={() => handleRemoveOption(index)} 
+                          className="text-red-500/60 hover:text-red-400 px-2 transition disabled:opacity-30"
+                          disabled={options.length <= 1}
+                        >
+                          <Trash2 size={16}/>
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-3 pt-4 border-t border-purple-950/50">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-xs font-semibold text-purple-300 uppercase tracking-wider flex items-center gap-2">
+                      <span>Datasource Preview ({dataSource})</span>
+                      <span className="text-[10px] bg-purple-900/50 text-purple-200 px-2 py-0.5 rounded-full border border-purple-800/30 normal-case">
+                        Read-only Single Source of Truth
+                      </span>
+                    </h3>
+                  </div>
+
+                  {previewLoading ? (
+                    <div className="flex items-center gap-2 text-sm text-purple-400 italic py-2">
+                      <Loader2 className="animate-spin h-4 w-4" />
+                      <span>Loading datasource values...</span>
+                    </div>
+                  ) : previewOptions.length === 0 ? (
+                    <div className="p-4 bg-purple-950/10 border border-purple-900/20 rounded-lg text-sm text-purple-400 italic">
+                      No active options found for this datasource.
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-48 overflow-y-auto pr-1">
+                      {previewOptions.map((opt, i) => (
+                        <div 
+                          key={i} 
+                          className="bg-[#050017]/60 border border-purple-900/30 rounded-lg px-3 py-2 text-xs text-purple-200 flex items-center gap-2 hover:border-purple-800 transition"
+                        >
+                          <span className="w-1.5 h-1.5 rounded-full bg-purple-500 shrink-0" />
+                          <span className="truncate">{opt}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                 
+                </div>
+              )}
+            </div>
+          )}
+
+          {type === QUESTION_TYPE.NUMBER && (
+            <div className="grid grid-cols-3 gap-4 border border-dashed border-purple-800/50 p-4 rounded-lg bg-[#0a041a]">
+              <div>
+                <label className="text-xs text-purple-400 block mb-1">Min Bounds</label>
+                <input 
+                  type="number" 
+                  value={minNum ?? ""}
+                  onChange={(e) => setMinNum(e.target.value !== "" ? Number(e.target.value) : undefined)}
+                  className="w-full bg-black/30 border border-purple-900/30 px-2 py-1.5 text-white text-sm rounded outline-none focus:border-purple-500" 
+                />
+              </div>
+              <div>
+                <label className="text-xs text-purple-400 block mb-1">Max Bounds</label>
+                <input 
+                  type="number" 
+                  value={maxNum ?? ""}
+                  onChange={(e) => setMaxNum(e.target.value !== "" ? Number(e.target.value) : undefined)}
+                  className="w-full bg-black/30 border border-purple-900/30 px-2 py-1.5 text-white text-sm rounded outline-none focus:border-purple-500" 
+                />
+              </div>
+              <div>
+                <label className="text-xs text-purple-400 block mb-1">Suffix (Unit)</label>
+                <input 
+                  value={unitNum}
+                  onChange={(e) => setUnitNum(e.target.value)}
+                  placeholder="kg, lbs, mins" 
+                  className="w-full bg-black/30 border border-purple-900/30 px-2 py-1.5 text-white text-sm rounded outline-none focus:border-purple-500" 
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Conditional Follow-up Rules Section */}
+          <div className="border border-dashed border-purple-800/50 p-4 rounded-lg bg-[#0a041a]">
+            <div className="flex justify-between mb-3">
+              <h3 className="text-sm font-semibold text-purple-200">Conditional Follow-up Rules (Flow Jumps)</h3>
+              <button 
+                type="button" 
+                onClick={handleAddJump} 
+                className="text-xs flex items-center gap-1 text-purple-400 hover:text-purple-200 transition"
+              >
+                <Plus size={14}/> Add Rule
+              </button>
+            </div>
+            {nextJumps.length === 0 ? (
+              <p className="text-xs text-gray-500 italic text-center py-2">No conditional follow-ups configured. Standard linear progression applies.</p>
+            ) : (
+              <div className="space-y-3">
+                {nextJumps.map((jump, index) => (
+                  <div key={index} className="flex flex-col md:flex-row gap-3 p-3 bg-black/20 border border-purple-950 rounded-lg items-end relative group">
+                    <div className="flex-1 min-w-[120px]">
+                      <label className="block text-[10px] font-semibold uppercase tracking-wide text-purple-400 mb-1">If Answer...</label>
+                      <select 
+                        value={jump.condition.operator}
+                        onChange={(e) => handleJumpChange(index, "operator", e.target.value)}
+                        className="w-full bg-[#050017]/70 border border-purple-900/50 rounded px-2 py-1.5 text-xs text-white outline-none cursor-pointer focus:border-purple-500"
+                      >
+                        <option value="equals">Equals</option>
+                        <option value="includes">Includes</option>
+                        <option value="always">Always jumps</option>
+                      </select>
+                    </div>
+
+                    {jump.condition.operator !== "always" && (
+                      <div className="flex-1 min-w-[120px]">
+                        <label className="block text-[10px] font-semibold uppercase tracking-wide text-purple-400 mb-1">To Value...</label>
+                        {type === QUESTION_TYPE.BOOLEAN ? (
+                          <select 
+                            value={String(jump.condition.value ?? "")}
+                            onChange={(e) => handleJumpChange(index, "value", e.target.value)}
+                            required
+                            className="w-full bg-[#050017]/70 border border-purple-900/50 rounded px-2 py-1.5 text-xs text-white outline-none cursor-pointer focus:border-purple-500"
+                          >
+                            <option value="">Select answer...</option>
+                            <option value="true">True / Yes</option>
+                            <option value="false">False / No</option>
+                          </select>
+                        ) : ([QUESTION_TYPE.SINGLE_SELECT, QUESTION_TYPE.MULTI_SELECT] as QuestionType[]).includes(type) && !dataSource && options.some(o => o.label.trim() !== "") ? (
+                          <select 
+                            value={String(jump.condition.value ?? "")}
+                            onChange={(e) => handleJumpChange(index, "value", e.target.value)}
+                            required
+                            className="w-full bg-[#050017]/70 border border-purple-900/50 rounded px-2 py-1.5 text-xs text-white outline-none cursor-pointer focus:border-purple-500"
+                          >
+                            <option value="">Select option...</option>
+                            {options.filter(o => o.label.trim() !== "").map((opt, i) => {
+                               const val = generateOptionValue(opt.label);
+                               return <option key={i} value={val}>{opt.label}</option>;
+                            })}
+                          </select>
+                        ) : (
+                          <input 
+                            value={String(jump.condition.value ?? "")}
+                            onChange={(e) => handleJumpChange(index, "value", e.target.value)}
+                            placeholder="e.g. yes, true, 10" 
+                            required
+                            className="w-full bg-[#050017]/70 border border-purple-900/50 rounded px-2 py-1.5 text-xs text-white outline-none focus:border-purple-500" 
+                          />
+                        )}
+                      </div>
+                    )}
+
+                    <div className="flex-2 min-w-[200px]">
+                      <label className="block text-[10px] font-semibold uppercase tracking-wide text-purple-400 mb-1">Go to Question...</label>
+                      <select 
+                        value={jump.nextQuestionId}
+                        onChange={(e) => handleJumpChange(index, "nextQuestionId", e.target.value)}
+                        required
+                        className="w-full bg-[#050017]/70 border border-purple-900/50 rounded px-2 py-1.5 text-xs text-white outline-none cursor-pointer focus:border-purple-500"
+                      >
+                        <option value="">Select Next Question...</option>
+                        {questionsList
+                          .filter((q) => q.questionId !== id) // Prevent linking to self
+                          .map((q) => (
+                            <option key={q.questionId} value={q.questionId!}>
+                              {q.question} ({q.type})
+                            </option>
+                          ))
+                        }
+                      </select>
+                    </div>
+
+                    <button 
+                      type="button" 
+                      onClick={() => handleRemoveJump(index)} 
+                      className="text-red-500/60 hover:text-red-400 p-2 transition self-center mt-4 md:mt-0"
+                    >
+                      <Trash2 size={16}/>
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div className="flex items-center gap-2 py-2">
+            <input 
+              type="checkbox" 
+              id="req" 
+              checked={isRequired}
+              onChange={(e) => setIsRequired(e.target.checked)}
+              className="accent-purple-600 w-4 h-4 cursor-pointer" 
+            />
+            <label htmlFor="req" className="text-sm font-medium text-purple-300 cursor-pointer select-none">
+              Response is compulsory to continue flow
+            </label>
+          </div>
+
+          <div className="flex gap-3 mt-4">
+            <button 
+              type="submit" 
+              disabled={loading} 
+              className="flex-1 bg-linear-to-r from-purple-600 to-violet-600 hover:from-purple-500 py-3 rounded-lg font-semibold text-white shadow-lg shadow-purple-900/20 disabled:opacity-50 transition flex items-center justify-center"
+            >
+              {loading ? <Loader2 className="animate-spin h-5 w-5" /> : isEdit ? "Push Changes" : "Publish Question"}
+            </button>
+            <button 
+              type="button" 
+              onClick={() => navigate(-1)} 
+              className="flex-1 border border-purple-900 text-purple-300 hover:bg-purple-900/10 py-3 rounded-lg font-semibold transition"
+            >
+              Discard
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+export default AdminQuestionForm;

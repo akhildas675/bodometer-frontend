@@ -24,3 +24,4 @@ dist-ssr
 *.sw?
 demo.ts
 z.text.txt
+z.features

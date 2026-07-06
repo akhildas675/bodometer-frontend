@@ -1,10 +1,10 @@
 /* eslint-disable react-refresh/only-export-components */
 import { Route } from "react-router-dom";
-import UserHomePage from "@/pages/user/user-home.page";
+import UserHomePage from "@/features/user/user.users/pages/user-home.page";
 import PublicGuard from "../../guard.routes/public-guard.routes";
-import MainLayoutsNoSidebar from "@/components/layouts/user.layouts.ts/MainLayoutsNoSidebar";
-import MainLayouts from "@/components/layouts/MainLayouts";
-import UserBmiPage from "@/pages/user/user-fitness/user-bmi.page";
+import MainLayoutsNoSidebar from "@/ui.components/layouts/user.layouts.ts/MainLayoutsNoSidebar";
+import MainLayouts from "@/ui.components/layouts/MainLayouts";
+import UserBmiPage from "@/features/user/user.users/pages/user-bmi.page";
 import { USER_UI_ROUTES } from "@/constants/constant-routes/ui-routes/user.ui-constant.routes";
 import { useAuthStore } from "@/stores/auth.store";
 

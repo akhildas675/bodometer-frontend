@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import userServices from "@/services/user/user.services";
+import { userService } from "@/modules/user/service/user.service";
 import { onboardingService } from "@/modules/onboarding/service/onboarding.service";
 import { AnswerValue, QuestionType, CONDITION_OPERATOR, ConditionOperator } from "@/constants/onboarding.constant";
 import { parseApiError } from "@/api/error.helper";
@@ -144,7 +144,7 @@ export const useOnboardingStore = create<OnboardingStore>((set, get) => ({
                         }));
                 },
                 equipment: async () => {
-                    const res = await equipmentService.getAllEquipment({ page: 1, limit: 1000 });
+                    const res = await equipmentService.getEquipment({ page: 1, limit: 1000 });
                     return (res.data ?? [])
                         .filter((eq: UpdateEquipment) => eq.isActive !== false)
                         .map((eq: UpdateEquipment) => ({

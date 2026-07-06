@@ -4,18 +4,18 @@ import ProtectedRoute from "@/routes/guard.routes/protected.route";
 import TrainerOnboardingRoute from "@/routes/guard.routes/TrainerOnboardingRoute";
 import TrainerStatusRoute from "@/routes/guard.routes/TrainerStatusRoute";
 import ApprovedTrainerRoute from "@/routes/guard.routes/ApprovedTrainerRoute";
-import TrainerDashboardPage from "@/pages/trainer/trainer-dashboard.page";
+import TrainerDashboardPage from "@/features/trainer/trainer.trainers/page/trainer-dashboard.page";
 
-import TrainerProfilePage from "@/pages/trainer/trainer-profile.page";
-import TrainerStatusPage from "@/pages/trainer/trainer-status.page";
+import TrainerProfilePage from "@/features/trainer/trainer.trainers/page/trainer-profile.page";
+import TrainerStatusPage from "@/features/trainer/trainer.onboarding/pages/trainer-status.page";
 
 import { TRAiNER_UI_ROUTES } from "@/constants/constant-routes/ui-routes/trainer.ui-constant.routes";
-import TrainerOnboardingIntroPage from "@/pages/trainer/trainer.onboarding-intro.page";
-import TrainerOnboardingProfilePage from "@/pages/trainer/trainer.onboarding-experience.page";
-import MainLayouts from "@/components/layouts/MainLayouts";
-import TrainerOnboardingSkillPage from "@/features/trainer/page/trainer.onboarding-category.page";
-import TrainerSlotsPage from "@/pages/trainer/trainer-booking/trainer-slots.page";
-import TrainerBookingsPage from "@/pages/trainer/trainer-booking/trainer-bookings.page";
+import TrainerOnboardingIntroPage from "@/features/trainer/trainer.onboarding/pages/trainer.onboarding-intro.page";
+import TrainerOnboardingProfilePage from "@/features/trainer/trainer.onboarding/pages/trainer.onboarding-experience.page";
+import MainLayouts from "@/ui.components/layouts/MainLayouts";
+import TrainerOnboardingSkillPage from "@/features/trainer/trainer.onboarding/pages/trainer.onboarding-category.page";
+import TrainerSlotsPage from "@/features/trainer/trainer.booking/pages/trainer-slots.page";
+import TrainerBookingsPage from "@/features/trainer/trainer.booking/pages/trainer-bookings.page";
 
 export const trainerRoutes = (
   <Route element={<ProtectedRoute allowedRoles={["trainer"]} />}>

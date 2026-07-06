@@ -1,7 +1,7 @@
 import { Navigate, Outlet } from "react-router-dom";
 import { useAuthStore } from "@/stores/auth.store";
 import type { Role } from "@/constants/role";
-import { ScreenLoader } from "@/components/ui/screen-loader";
+import { ScreenLoader } from "@/ui.components/ui/screen-loader";
 
 interface Props {
   allowedRoles: Role[];

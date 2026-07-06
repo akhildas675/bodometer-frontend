@@ -3,7 +3,7 @@ import { CategoryDetail, CategoryListItem } from "../types/category.interface";
 import { buildQueryParams, TableQueryParams } from "@/api/query.helper";
 import { api } from "@/api/protected.instance";
 import { PaginationMeta } from "@/interface/common.interface";
-import { CATEGORY_API_PATHS } from "../constant/category-api.path";
+import { CATEGORY_API_PATHS } from "../constant/api-routes";
 
 export const categoryService = {
   async createCategory(

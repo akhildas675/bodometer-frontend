@@ -1,8 +1,8 @@
 import { Toaster } from "sonner";
 import AppRoutes from "./routes/route/app.routes";
-import { ErrorBoundary } from "./components/ui/error.boundary";
+import { ErrorBoundary } from "./ui.components/ui/error.boundary";
 import { Suspense } from "react";
-import { ScreenLoader } from "./components/ui/screen-loader";
+import { ScreenLoader } from "./ui.components/ui/screen-loader";
 
 const App = () => {
   return (

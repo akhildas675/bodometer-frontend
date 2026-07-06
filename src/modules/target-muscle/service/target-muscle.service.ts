@@ -3,7 +3,7 @@ import { UpdateTargetMuscles } from "@/interface/target-muscle.interface";
 import { buildQueryParams, TableQueryParams } from "@/api/query.helper";
 import { api } from "@/api/protected.instance";
 import { PaginationMeta } from "@/interface/common.interface";
-import { TARGET_MUSCLE_API_PATHS } from "../constant/target-muscle-api.path";
+import { TARGET_MUSCLE_API_PATHS } from "../constant/api-routes";
 
 export const targetMuscleService = {
   async createTargetMuscle(

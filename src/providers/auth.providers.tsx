@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useAuthStore } from "@/stores/auth.store";
-import authInitService from "@/services/auth/auth-init.service";
+import authInitService from "@/modules/auth/service/auth-init.service";
 
 interface AuthProviderProps {
   children: React.ReactNode;

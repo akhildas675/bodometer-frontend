@@ -2,7 +2,7 @@ import { api } from "@/api/protected.instance";
 import { buildQueryParams, TableQueryParams } from "@/api/query.helper";
 import { ApiResponse } from "@/interface/api-response.interface";
 import { PaginatedResponse, PaginationMeta } from "@/interface/common.interface";
-import { ONBOARDING_API_PATHS } from "../constant/onboarding-api.path";
+import { ONBOARDING_API_PATHS } from "../constant/api-routes";
 import {
   QuestionGroup,
   OnboardingQuestion,
@@ -63,7 +63,7 @@ export const onboardingService = {
       success: boolean;
       data: QuestionGroup[];
       pagination: PaginationMeta;
-    }>(ONBOARDING_API_PATHS.ADMIN_GROUPS, { params: queryParams });
+    }>(ONBOARDING_API_PATHS.GROUPS, { params: queryParams });
 
     return {
       data: response.data.data,
@@ -75,7 +75,7 @@ export const onboardingService = {
     data: CreateQuestionGroupData,
   ): Promise<ApiResponse<{ message: string }>> {
     const response = await api.post<ApiResponse<{ message: string }>>(
-      ONBOARDING_API_PATHS.ADMIN_GROUPS,
+      ONBOARDING_API_PATHS.GROUPS,
       data,
     );
     return response.data;
@@ -86,7 +86,7 @@ export const onboardingService = {
     data: UpdateQuestionGroupData,
   ): Promise<ApiResponse<{ message: string }>> {
     const response = await api.put<ApiResponse<{ message: string }>>(
-      ONBOARDING_API_PATHS.ADMIN_GROUP_BY_ID(id),
+      ONBOARDING_API_PATHS.GROUP_BY_ID(id),
       data,
     );
     return response.data;
@@ -94,7 +94,7 @@ export const onboardingService = {
 
   async getQuestionGroupById(id: string): Promise<ApiResponse<QuestionGroup>> {
     const response = await api.get<ApiResponse<QuestionGroup>>(
-      ONBOARDING_API_PATHS.ADMIN_GROUP_BY_ID(id),
+      ONBOARDING_API_PATHS.GROUP_BY_ID(id),
     );
     return response.data;
   },
@@ -103,7 +103,7 @@ export const onboardingService = {
     id: string,
   ): Promise<ApiResponse<{ message: string }>> {
     const response = await api.patch<ApiResponse<{ message: string }>>(
-      ONBOARDING_API_PATHS.ADMIN_GROUP_TOGGLE(id),
+      ONBOARDING_API_PATHS.GROUP_TOGGLE(id),
     );
     return response.data;
   },
@@ -116,7 +116,7 @@ export const onboardingService = {
       success: boolean;
       data: OnboardingQuestion[];
       pagination: PaginationMeta;
-    }>(ONBOARDING_API_PATHS.ADMIN_QUESTIONS, { params: queryParams });
+    }>(ONBOARDING_API_PATHS.QUESTIONS, { params: queryParams });
 
     return {
       data: response.data.data,
@@ -128,7 +128,7 @@ export const onboardingService = {
     data: CreateQuestionData,
   ): Promise<ApiResponse<{ message: string }>> {
     const response = await api.post<ApiResponse<{ message: string }>>(
-      ONBOARDING_API_PATHS.ADMIN_QUESTIONS,
+      ONBOARDING_API_PATHS.QUESTIONS,
       data,
     );
     return response.data;
@@ -139,7 +139,7 @@ export const onboardingService = {
     data: UpdateQuestionData,
   ): Promise<ApiResponse<{ message: string }>> {
     const response = await api.put<ApiResponse<{ message: string }>>(
-      ONBOARDING_API_PATHS.ADMIN_QUESTION_BY_ID(id),
+      ONBOARDING_API_PATHS.QUESTION_BY_ID(id),
       data,
     );
     return response.data;
@@ -147,7 +147,7 @@ export const onboardingService = {
 
   async getQuestionById(id: string): Promise<ApiResponse<OnboardingQuestion>> {
     const response = await api.get<ApiResponse<OnboardingQuestion>>(
-      ONBOARDING_API_PATHS.ADMIN_QUESTION_BY_ID(id),
+      ONBOARDING_API_PATHS.QUESTION_BY_ID(id),
     );
     return response.data;
   },
@@ -156,7 +156,7 @@ export const onboardingService = {
     id: string,
   ): Promise<ApiResponse<{ message: string }>> {
     const response = await api.patch<ApiResponse<{ message: string }>>(
-      ONBOARDING_API_PATHS.ADMIN_QUESTION_TOGGLE(id),
+      ONBOARDING_API_PATHS.QUESTION_TOGGLE(id),
     );
     return response.data;
   },
@@ -165,7 +165,7 @@ export const onboardingService = {
     const response = await api.get<{
       success: boolean;
       data: { label: string; value: string }[];
-    }>(ONBOARDING_API_PATHS.ADMIN_QUESTION_DATA_SOURCES);
+    }>(ONBOARDING_API_PATHS.QUESTION_DATA_SOURCES);
     return response.data.data;
   },
 };

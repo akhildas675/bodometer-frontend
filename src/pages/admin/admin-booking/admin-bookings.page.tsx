@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
-import adminServices from "@/services/admin/admin.services";
+import { bookingService } from "@/modules/booking/service/booking.service";
 import { parseApiError } from "@/api/error.helper";
-import DataTable from "@/components/ui/table/data.table";
-import type { TableColumn, TableAction } from "@/components/ui/table/table.types";
+import DataTable from "@/ui.components/ui/table/data.table";
+import type { TableColumn, TableAction } from "@/ui.components/ui/table/table.types";
 import { TrainerBooking } from "@/interface/booking.interface";
 import { format } from "date-fns";
 import { toast } from "sonner";
-import { ScreenLoader } from "@/components/ui/screen-loader";
+import { ScreenLoader } from "@/ui.components/ui/screen-loader";
 
 const AdminBookingsPage: React.FC = () => {
   const [bookings, setBookings] = useState<TrainerBooking[]>([]);
@@ -15,7 +15,7 @@ const AdminBookingsPage: React.FC = () => {
   const fetchBookings = async () => {
     setIsLoading(true);
     try {
-      const res = await adminServices.getAllBookings();
+      const res = await bookingService.getAllBookings();
       if (res.success && res.data) {
         setBookings(res.data as unknown as TrainerBooking[]);
       }
@@ -33,7 +33,7 @@ const AdminBookingsPage: React.FC = () => {
   const handleCancel = async (bookingId: string) => {
     if (!window.confirm("Are you sure you want to cancel this booking?")) return;
     try {
-      const res = await adminServices.cancelBooking(bookingId);
+      const res = await bookingService.cancelBooking(bookingId);
       if (res.success) {
         toast.success("Booking cancelled");
         fetchBookings();

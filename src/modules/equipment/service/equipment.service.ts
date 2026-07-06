@@ -1,55 +1,40 @@
-import { ApiResponse } from "@/interface/api-response.interface";
-import { UpdateEquipment } from "@/interface/equipment.interface";
+import { EQUIPMENT_API_ROUTES } from "@/modules/equipment/constant/api-routes";
+import { api } from "@/api/api.instance";
 import { buildQueryParams, TableQueryParams } from "@/api/query.helper";
-import { api } from "@/api/protected.instance";
 import { PaginationMeta } from "@/interface/common.interface";
-import { EQUIPMENT_API_PATHS } from "../constant/equipment-api.path";
+import type { ApiResponse } from "@/interface/api-response.interface";
+import { UpdateEquipment } from "@/interface/equipment.interface";
 
-export const equipmentService = {
-  async createEquipment(
-    data: FormData,
-  ): Promise<ApiResponse<{ message: string }>> {
-    const response = await api.post<ApiResponse<{ message: string }>>(
-      EQUIPMENT_API_PATHS.ROOT,
-      data,
-    );
+class EquipmentService {
+  async getEquipment(params?: TableQueryParams): Promise<ApiResponse<UpdateEquipment[]> & { pagination: PaginationMeta }> {
+    const queryParams = buildQueryParams({ page: 1, limit: 1000, ...params });
+    const response = await api.get(`${EQUIPMENT_API_ROUTES.EQUIPMENT}?${queryParams.toString()}`);
     return response.data;
-  },
-
-  async updateEquipment(
-    id: string,
-    data: FormData,
-  ): Promise<ApiResponse<{ message: string }>> {
-    const response = await api.put<ApiResponse<{ message: string }>>(
-      EQUIPMENT_API_PATHS.BY_ID(id),
-      data,
-    );
-    return response.data;
-  },
-  
-  async getAllEquipment(
-    params?: TableQueryParams,
-  ): Promise<ApiResponse<UpdateEquipment[]> & { pagination: PaginationMeta }> {
-    const queryParams = buildQueryParams({ page: 1, limit: 10, ...params });
-    const response = await api.get(
-      `${EQUIPMENT_API_PATHS.ROOT}?${queryParams.toString()}`,
-    );
-    return response.data;
-  },
+  }
 
   async getEquipmentById(id: string): Promise<ApiResponse<UpdateEquipment>> {
-    const response = await api.get<ApiResponse<UpdateEquipment>>(
-      EQUIPMENT_API_PATHS.BY_ID(id),
-    );
+    const response = await api.get(EQUIPMENT_API_ROUTES.EQUIPMENT_BY_ID(id));
     return response.data;
-  },
+  }
 
-  async toggleEquipmentStatus(
-    id: string,
-  ): Promise<ApiResponse<{ message: string }>> {
-    const response = await api.patch<ApiResponse<{ message: string }>>(
-      EQUIPMENT_API_PATHS.TOGGLE_STATUS(id),
-    );
+  async createEquipment(data: FormData): Promise<ApiResponse<{ message: string }>> {
+    const response = await api.post(EQUIPMENT_API_ROUTES.EQUIPMENT, data, {
+      headers: { "Content-Type": "multipart/form-data" }
+    });
     return response.data;
-  },
-};
+  }
+
+  async updateEquipment(id: string, data: FormData): Promise<ApiResponse<{ message: string }>> {
+    const response = await api.put(EQUIPMENT_API_ROUTES.EQUIPMENT_BY_ID(id), data, {
+      headers: { "Content-Type": "multipart/form-data" }
+    });
+    return response.data;
+  }
+
+  async toggleEquipmentStatus(id: string): Promise<ApiResponse<{ message: string }>> {
+    const response = await api.patch(EQUIPMENT_API_ROUTES.STATUS(id));
+    return response.data;
+  }
+}
+
+export const equipmentService = new EquipmentService();
