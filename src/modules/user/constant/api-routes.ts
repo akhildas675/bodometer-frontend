@@ -3,6 +3,6 @@ export const USER_API_ROUTES = {
   PROFILE_PICTURE: "/user/profile-picture",
   CHANGE_PASSWORD: "/user/change-password",
   USERS: "/user/users",
-  BLOCK_USER: (id: string) => `/user/users/${id}/block`,
-  UNBLOCK_USER: (id: string) => `/user/users/${id}/unblock`,
+  TOGGLE_USER_STATUS: (id: string) => `/user/${id}/toggle-status`,
+
 } as const;

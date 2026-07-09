@@ -123,7 +123,7 @@ const AuthLoginPage = () => {
         {/* Left image */}
         <div className="w-1/2 hidden md:block relative">
           <img
-            src="https://bodometer-assets.s3.eu-north-1.amazonaws.com/bodometer_register_page_img.jpg"
+             src="https://bodometer-asset.s3.eu-north-1.amazonaws.com/banner/bodometer_register_page_img+(1).jpg"
             alt="Bodometer login"
             className="h-full w-full object-cover"
           />

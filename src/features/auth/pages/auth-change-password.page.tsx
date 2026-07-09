@@ -1,4 +1,4 @@
-import UserChangePassword from '@/components/user/user-change.password';
+import UserChangePassword from '@/features/user/user.users/components/user-change.password';
 import React from 'react';
 
 const UserChangePasswordPage = () => {

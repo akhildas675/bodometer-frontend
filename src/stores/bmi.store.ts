@@ -8,6 +8,7 @@ interface BmiState {
   unit: "metric" | "imperial";
   heightFt: string;
   heightIn: string;
+  gender: string;
   bmi: number | null;
   category: { label: string; color: string; description: string; tips: string[] } | null;
   heightCm: number | null;
@@ -21,6 +22,7 @@ interface BmiState {
   setUnit: (u: "metric" | "imperial") => void;
   setHeightFt: (ft: string) => void;
   setHeightIn: (inVal: string) => void;
+  setGender: (g: string) => void;
   reset: () => void;
   calculateBmi: () => Promise<void>;
 }
@@ -31,6 +33,7 @@ export const useStandaloneBmiStore = create<BmiState>((set, get) => ({
   unit: "metric",
   heightFt: "",
   heightIn: "",
+  gender: "male",
   bmi: null,
   category: null,
   heightCm: null,
@@ -41,12 +44,13 @@ export const useStandaloneBmiStore = create<BmiState>((set, get) => ({
 
   setHeight: (h) => set({ height: h }),
   setWeight: (w) => set({ weight: w }),
-  setUnit: (u) => set({ unit: u, height: null, weight: null, heightFt: "", heightIn: "", bmi: null, category: null, heightCm: null, weightKg: null, healthyWeightRange: null, error: null }),
+  setUnit: (u) => set({ unit: u, height: null, weight: null, heightFt: "", heightIn: "", gender: "male", bmi: null, category: null, heightCm: null, weightKg: null, healthyWeightRange: null, error: null }),
   setHeightFt: (ft) => set({ heightFt: ft }),
   setHeightIn: (inVal) => set({ heightIn: inVal }),
-  reset: () => set({ height: null, weight: null, heightFt: "", heightIn: "", bmi: null, category: null, heightCm: null, weightKg: null, healthyWeightRange: null, error: null }),
+  setGender: (g) => set({ gender: g }),
+  reset: () => set({ height: null, weight: null, heightFt: "", heightIn: "", gender: "male", bmi: null, category: null, heightCm: null, weightKg: null, healthyWeightRange: null, error: null }),
   calculateBmi: async () => {
-    const { height, weight, unit, heightFt, heightIn } = get();
+    const { height, weight, unit, heightFt, heightIn, gender } = get();
     set({ loading: true, error: null });
     try {
       const res = await healthLogService.calculateBmiPublic({
@@ -55,6 +59,7 @@ export const useStandaloneBmiStore = create<BmiState>((set, get) => ({
         unit,
         heightFt,
         heightIn,
+        gender,
       });
       if (res.success && res.data) {
         set({

@@ -1,9 +1,9 @@
 export const AUTH_API_ROUTES = {
   REGISTER: "/register",
-  OTP_VERIFY: "/verify-otp",
-  OTP_RESEND: "/resend-otp",
+  OTP_VERIFY: "/otp-verify",
+  OTP_RESEND: "/otp-resend",
   LOGIN: "/login",
-  COMPLETE_REGISTER: "/complete-register",
+  COMPLETE_REGISTER: "/register/complete",
   FORGET_PASSWORD: "/forget-password",
   RESET_PASSWORD: "/reset-password",
   GOOGLE_LOGIN: "/google-login",

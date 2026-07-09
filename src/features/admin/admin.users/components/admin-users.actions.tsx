@@ -4,6 +4,7 @@ import { AdminGetUsersResponse } from "@/interface/user.interface";
 import { toast } from "sonner";
 import { Lock, Unlock } from "lucide-react";
 import { parseApiError } from "@/api/error.helper";
+import { use } from "react";
 
 export type UserModalConfig = {
   isOpen: boolean;
@@ -36,7 +37,7 @@ export const useUserActions = (
           cancelText: "Cancel",
           onConfirm: async () => {
             try {
-              const res = await userService.blockUser(user.id);
+              const res = await userService.toggleStatusUser(user.id);
               toast.success(res.message);
               refreshUsers();
             } catch (error: unknown) {
@@ -61,7 +62,7 @@ export const useUserActions = (
           cancelText: "Cancel",
           onConfirm: async () => {
             try {
-              const res = await userService.unblockUser(user.id);
+              const res = await userService.toggleStatusUser(user.id);
               toast.success(res.message);
               refreshUsers();
             } catch (error: unknown) {

@@ -47,16 +47,8 @@ export const userRoutes = (
 
       {/* Accessible to all logged-in users */}
       <Route
-        path={USER_UI_ROUTES.USER_TRAINERS}
-        element={<UserTrainersPage />}
-      />
-      <Route
         path={USER_UI_ROUTES.USER_TRAINER_DETAILS}
         element={<UserTrainerDetailPage />}
-      />
-      <Route
-        path={USER_UI_ROUTES.USER_CATEGORIES}
-        element={<UserCategoriesPage />}
       />
       <Route 
         path={USER_UI_ROUTES.USER_CATEGORY_DETAILS}

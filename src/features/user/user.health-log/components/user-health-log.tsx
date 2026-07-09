@@ -6,25 +6,22 @@ import { MealCategory } from "@/modules/meal-category/types/meal-category.interf
 import { useFetch } from '@/hooks/useFetch';
 import { healthLogService } from '@/modules/health-log/service/health-log.service';
 import mealCategoryService from '@/modules/meal-category/service/meal-category.service';
-import { userService } from "@/modules/user/service/user.service";
 import { subscriptionService } from '@/modules/subscription/service/subscription.service';
 import { toast } from 'sonner';
 import { parseApiError } from '@/api/error.helper';
 
-//  Dirty-state snapshot
-// Serialises the user-editable inputs so we can detect unsaved changes
-// without running any business logic on the frontend.
+
 interface EditSnapshot {
   sleepHours: number | null;
   waterLiters: number | null;
   steps: number | null;
-  mealsKey: string; // JSON of [{categoryId, description}] only
+  mealsKey: string; 
 }
 
 const buildMealsKey = (meals: MealEntry[]): string =>
   JSON.stringify(meals.map(m => ({ categoryId: m.categoryId, description: m.description })));
 
-//  Helpers for mapping server meals → local MealEntry
+
 const mapDtoToEntry = (m: MealEntryDto, index: number): MealEntry => ({
   id:                `meal-${index}-${Date.now()}`,
   categoryId:        m.mealCategoryId,
@@ -39,17 +36,17 @@ const mapDtoToEntry = (m: MealEntryDto, index: number): MealEntry => ({
 //  Component
 const UserHealthLog = () => {
 
-  //  Form state (user inputs only)
+
   const [date,        setDate]        = useState<string>(new Date().toISOString().split('T')[0]);
   const [sleepHours,  setSleepHours]  = useState<number | null>(null);
   const [waterLiters, setWaterLiters] = useState<number | null>(null);
   const [steps,       setSteps]       = useState<number | null>(null);
   const [meals,       setMeals]       = useState<MealEntry[]>([]);
 
-  //  Backend-sourced display values (no frontend calculations)
+
   const [savedLog, setSavedLog] = useState<HealthLogDto | null>(null);
 
-  //  Dirty detection
+
   const [savedSnapshot, setSavedSnapshot] = useState<EditSnapshot>({
     sleepHours: null, waterLiters: null, steps: null, mealsKey: '[]',
   });
@@ -62,12 +59,12 @@ const UserHealthLog = () => {
     return false;
   }, [sleepHours, waterLiters, steps, meals, savedSnapshot]);
 
-  //  Loading flags
+
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving,  setIsSaving]  = useState(false);
   const [subStartDate, setSubStartDate] = useState<string | null>(null);
 
-  //  Fetch meal categories & subscription
+
   const { data: categoryResponse } = useFetch(() => mealCategoryService.getMealCategory({ limit: 100 }));
   const mealCategories = categoryResponse?.data ?? [];
 
@@ -85,7 +82,7 @@ const UserHealthLog = () => {
     fetchSub();
   }, []);
 
-  //  Load health log whenever date change
+
   useEffect(() => {
     const fetchLog = async () => {
       setIsLoading(true);
@@ -129,7 +126,7 @@ const UserHealthLog = () => {
 
     if (subStartDate && newDate < subStartDate) {
       toast.error("You cannot log meals for a date before your subscription started.");
-      return; // Do not update the date
+      return; 
     }
 
     setDate(newDate);

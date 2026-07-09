@@ -129,14 +129,14 @@ const UserTrainers = () => {
 
   const fetchFn = useCallback(
     () =>
-      trainerService.getTrainers({
-          page: currentPage,
-          limit: ITEMS_PER_PAGE,
-          search: debouncedSearch,
-          sortBy: sortField || undefined,
-          sortOrder: sortOrder,
-        })
-        .then((res: any) => ({ data: res.data, pagination: res.pagination })),
+      trainerService.getTrainers<TrainerListItem>({
+        page: currentPage,
+        limit: ITEMS_PER_PAGE,
+        search: debouncedSearch,
+        sortBy: sortField || undefined,
+        sortOrder: sortOrder,
+      })
+        .then((res) => ({ data: res.data, pagination: res.pagination })),
     [currentPage, debouncedSearch, sortField, sortOrder],
   );
 
@@ -196,9 +196,8 @@ const UserTrainers = () => {
                       setCurrentPage(1);
                       setShowSortMenu(false);
                     }}
-                    className={`w-full text-left px-4 py-2.5 text-sm transition hover:bg-purple-700/20 ${
-                      sortField === opt.value ? "text-purple-400 font-semibold" : "text-white/70"
-                    }`}
+                    className={`w-full text-left px-4 py-2.5 text-sm transition hover:bg-purple-700/20 ${sortField === opt.value ? "text-purple-400 font-semibold" : "text-white/70"
+                      }`}
                   >
                     {opt.label}
                     {sortField === opt.value && (
@@ -242,7 +241,7 @@ const UserTrainers = () => {
             totalItems={Number(pagination.totalItems)}
             itemsPerPage={Number(pagination.itemsPerPage)}
             onPageChange={setCurrentPage}
-            onItemsPerPageChange={() => {}}
+            onItemsPerPageChange={() => { }}
             disabled={loading}
           />
         </div>

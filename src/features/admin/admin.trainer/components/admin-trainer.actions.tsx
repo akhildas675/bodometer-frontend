@@ -37,7 +37,7 @@ export const useTrainerActions = (
           cancelText: "Cancel",
           onConfirm: async () => {
             try {
-              const res = await trainerService.blockTrainer(trainer.id);
+              const res = await trainerService.toggleTrainerBlockStatus(trainer.id);
               toast.success(res.message);
               refreshTrainers();
             } catch (error: unknown) {
@@ -62,7 +62,7 @@ export const useTrainerActions = (
           cancelText: "Cancel",
           onConfirm: async () => {
             try {
-              const res = await trainerService.unblockTrainer(trainer.id);
+              const res = await trainerService.toggleTrainerBlockStatus(trainer.id);
               toast.success(res.message);
               refreshTrainers();
             } catch (error: unknown) {

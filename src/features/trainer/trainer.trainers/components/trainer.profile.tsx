@@ -293,7 +293,7 @@ const TrainerProfile = () => {
         formData.append("file", selectedCoverImage);
 
         const uploadResponse =
-          await trainerService.uploadProfilePicture(formData);
+          await trainerService.uploadCoverPhoto(formData);
 
         if (uploadResponse.success && uploadResponse.data.url) {
           uploadedCoverUrl = uploadResponse.data.url;

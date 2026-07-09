@@ -10,7 +10,6 @@ const UserTrainerDetails = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
-
   const { data, loading, refetch } = useFetch<ApiResponse<TrainerDetail>>(
     useCallback(() => trainerService.getTrainerById(id!), [id]),
     !!id,
@@ -26,26 +25,25 @@ const UserTrainerDetails = () => {
   const trainer = data?.data ?? null;
 
   return (
-   
-      <div className="text-white max-w-3xl mx-auto">
-        {/* Back */}
-        <button
-          onClick={() => navigate(-1)}
-          className="flex items-center gap-2 text-purple-400 hover:text-white text-sm mb-6 transition"
-        >
-          <ArrowLeft size={16} />
-          Back to Trainers
-        </button>
+    <div className="text-white max-w-3xl mx-auto">
+      {/* Back */}
+      <button
+        onClick={() => navigate(-1)}
+        className="flex items-center gap-2 text-purple-400 hover:text-white text-sm mb-6 transition"
+      >
+        <ArrowLeft size={16} />
+        Back to Trainers
+      </button>
 
-        {loading ? (
-          <div className="text-center text-purple-300 py-20">Loading...</div>
-        ) : !trainer ? (
-          <div className="text-center text-purple-300 py-20">
-            Trainer not found.
-          </div>
-        ) : (
-          <>
-            <div className="bg-[#0d0b1f] border border-white/5 rounded-2xl overflow-hidden">
+      {loading ? (
+        <div className="text-center text-purple-300 py-20">Loading...</div>
+      ) : !trainer ? (
+        <div className="text-center text-purple-300 py-20">
+          Trainer not found.
+        </div>
+      ) : (
+        <>
+          <div className="bg-[#0d0b1f] border border-white/5 rounded-2xl overflow-hidden">
             {/* Cover Photo */}
             <div className="relative h-48 w-full">
               {trainer.coverPhoto ? (
@@ -61,7 +59,7 @@ const UserTrainerDetails = () => {
             </div>
 
             {/* Profile Pic overlapping cover */}
-            <div className="relative px-6">
+            <div className="relative px-6 pb-6">
               <div className="-mt-10 mb-4">
                 <img
                   src={trainer.profilePic || "https://via.placeholder.com/80"}
@@ -126,7 +124,7 @@ const UserTrainerDetails = () => {
               )}
             </div>
           </div>
-          
+
           {/* Related Trainers */}
           {trainer.relatedTrainers && trainer.relatedTrainers.length > 0 && (
             <div className="mt-10 mb-10">
@@ -135,12 +133,12 @@ const UserTrainerDetails = () => {
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 {trainer.relatedTrainers.map((rt) => (
-                  <div 
+                  <div
                     key={rt._id}
                     onClick={() => navigate(`/trainers/${rt._id}`)}
                     className="flex items-center gap-4 p-4 bg-[#0d0b1f] hover:bg-[#13102b] rounded-2xl border border-white/5 hover:border-purple-500/40 cursor-pointer transition-all shadow-md hover:shadow-purple-900/20 hover:-translate-y-1"
                   >
-                    <img 
+                    <img
                       src={rt.profilePic || "https://via.placeholder.com/64"}
                       alt={rt.name}
                       className="w-16 h-16 rounded-full object-cover border-2 border-[#2a264f]"
@@ -157,10 +155,9 @@ const UserTrainerDetails = () => {
               </div>
             </div>
           )}
-          </>
-        )}
-      </div>
-   
+        </>
+      )}
+    </div>
   );
 };
 

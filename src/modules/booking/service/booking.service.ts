@@ -1,74 +1,133 @@
 import { api } from "@/api/api.instance";
-import { buildQueryParams, TableQueryParams } from "@/api/query.helper";
-import { PaginationMeta } from "@/interface/common.interface";
 import type { ApiResponse } from "@/interface/api-response.interface";
-import { TrainerAvailability, CreateAvailabilityPayload, UpdateAvailabilityPayload, TrainerBooking, TrainerDynamicSlot } from "@/interface/booking.interface";
-import { BOOKING_API_ROUTES } from "@/modules/booking/constant/api-routes";
+import type { PaginationMeta } from "@/interface/common.interface";
+import { BOOKING_API_ROUTES } from "@/modules/booking/constant/api.constant.ts/api-routes";
+import {
+  BookingQueryParams,
+  CreateAvailabilityPayload,
+  CreateBookingPayload,
+  RejectCancelBookingPayload,
+  TrainerBookingItem,
+  TrainerSlot,
+  UserBookingItem,
+} from "../types/booking.interface";
 
 class BookingService {
-  async createAvailability(data: CreateAvailabilityPayload): Promise<ApiResponse<{ message: string; generatedSlots: number }>> {
-    const response = await api.post(BOOKING_API_ROUTES.AVAILABILITY, data);
+ 
+
+  async createAvailability(
+    data: CreateAvailabilityPayload
+  ): Promise<ApiResponse<{ message: string; generatedSlots: number }>> {
+    const response = await api.post(BOOKING_API_ROUTES.CREATE_AVAILABILITY, data);
     return response.data;
   }
 
-  async getAvailabilities(params?: TableQueryParams & { status?: string }): Promise<ApiResponse<TrainerAvailability[]> & { pagination: PaginationMeta }> {
-    const queryParams = buildQueryParams({ page: 1, limit: 10, ...params });
-    const response = await api.get(`${BOOKING_API_ROUTES.AVAILABILITY}?${queryParams.toString()}`);
+
+  async getMySlots(
+    params?: BookingQueryParams
+  ): Promise<ApiResponse<TrainerSlot[]> & { pagination: PaginationMeta }> {
+    const response = await api.get(BOOKING_API_ROUTES.GET_MY_SLOTS, {
+      params,
+    });
     return response.data;
   }
 
-  async updateAvailabilityStatus(availabilityId: string, data: UpdateAvailabilityPayload): Promise<ApiResponse<TrainerAvailability>> {
-    const response = await api.patch(BOOKING_API_ROUTES.AVAILABILITY_STATUS(availabilityId), data);
+
+
+  async getTrainerAvailableSlots(
+    trainerId: string
+  ): Promise<ApiResponse<TrainerSlot[]>> {
+    const response = await api.get(
+      BOOKING_API_ROUTES.GET_TRAINER_AVAILABLE_SLOTS(trainerId)
+    );
     return response.data;
   }
 
-  async getAllBookings(params?: TableQueryParams): Promise<ApiResponse<TrainerBooking[]> & { pagination: PaginationMeta }> {
-    const queryParams = buildQueryParams({ page: 1, limit: 10, ...params });
-    const response = await api.get(`${BOOKING_API_ROUTES.BOOKINGS}?${queryParams.toString()}`);
+
+  async blockSlot(slotId: string): Promise<ApiResponse<void>> {
+    const response = await api.patch(BOOKING_API_ROUTES.BLOCK_SLOT(slotId));
     return response.data;
   }
 
-  async cancelBooking(bookingId: string, reason?: string): Promise<ApiResponse<TrainerBooking>> {
-    const response = await api.patch(BOOKING_API_ROUTES.CANCEL_BOOKING(bookingId), { reason });
+
+  async unblockSlot(slotId: string): Promise<ApiResponse<void>> {
+    const response = await api.patch(BOOKING_API_ROUTES.UNBLOCK_SLOT(slotId));
     return response.data;
   }
 
-  async getMyBookings(params?: TableQueryParams): Promise<ApiResponse<TrainerBooking[]> & { pagination: PaginationMeta }> {
-    const queryParams = buildQueryParams({ page: 1, limit: 10, ...params });
-    const response = await api.get(`${BOOKING_API_ROUTES.MY_BOOKINGS}?${queryParams.toString()}`);
+
+
+
+  //user booking
+  async createBooking(
+    data: CreateBookingPayload
+  ): Promise<ApiResponse<void>> {
+    const response = await api.post(BOOKING_API_ROUTES.CREATE_BOOKING, data);
     return response.data;
   }
 
-  async confirmBooking(bookingId: string): Promise<ApiResponse<TrainerBooking>> {
-    const response = await api.patch(BOOKING_API_ROUTES.CONFIRM_BOOKING(bookingId));
+
+  async acceptBooking(bookingId: string): Promise<ApiResponse<void>> {
+    const response = await api.patch(
+      BOOKING_API_ROUTES.ACCEPT_BOOKING(bookingId)
+    );
     return response.data;
   }
 
-  async rejectBooking(bookingId: string, reason?: string): Promise<ApiResponse<TrainerBooking>> {
-    const response = await api.patch(BOOKING_API_ROUTES.REJECT_BOOKING(bookingId), { reason });
+
+  async rejectBooking(
+    bookingId: string,
+    data: RejectCancelBookingPayload
+  ): Promise<ApiResponse<void>> {
+    const response = await api.patch(
+      BOOKING_API_ROUTES.REJECT_BOOKING(bookingId),
+      data
+    );
     return response.data;
   }
 
-  async completeBooking(bookingId: string): Promise<ApiResponse<TrainerBooking>> {
-    const response = await api.patch(BOOKING_API_ROUTES.COMPLETE_BOOKING(bookingId));
+ 
+  async cancelBooking(
+    bookingId: string,
+    data?: RejectCancelBookingPayload
+  ): Promise<ApiResponse<void>> {
+    const response = await api.patch(
+      BOOKING_API_ROUTES.CANCEL_BOOKING(bookingId),
+      data || { reason: "Cancellation requested" }
+    );
     return response.data;
   }
 
-  async getTrainerSlots(trainerId: string, params: { from: string; to: string }): Promise<ApiResponse<TrainerDynamicSlot[]>> {
-    const response = await api.get(`${BOOKING_API_ROUTES.TRAINER_SLOTS(trainerId)}?from=${params.from}&to=${params.to}`);
+
+  async getTrainerBookings(
+    params?: BookingQueryParams
+  ): Promise<ApiResponse<TrainerBookingItem[]> & { pagination: PaginationMeta }> {
+    const response = await api.get(BOOKING_API_ROUTES.GET_TRAINER_BOOKINGS, {
+      params,
+    });
     return response.data;
   }
 
-  async createBooking(data: { trainerId: string; availabilityId?: string; date: string; startTime: string; endTime: string; bookingType: string; userNotes?: string }): Promise<ApiResponse<TrainerBooking>> {
-    const response = await api.post(BOOKING_API_ROUTES.BOOKINGS, data);
+
+  async getUserBookings(
+    params?: BookingQueryParams
+  ): Promise<ApiResponse<UserBookingItem[]> & { pagination: PaginationMeta }> {
+    const response = await api.get(BOOKING_API_ROUTES.GET_MY_BOOKINGS, {
+      params,
+    });
     return response.data;
   }
 
-  async getUserBookings(params?: TableQueryParams): Promise<ApiResponse<TrainerBooking[]> & { pagination: PaginationMeta }> {
-    const queryParams = buildQueryParams({ page: 1, limit: 10, ...params });
-    const response = await api.get(`${BOOKING_API_ROUTES.USER_BOOKINGS}?${queryParams.toString()}`);
+ 
+  async getAllBookings(
+    params?: BookingQueryParams
+  ): Promise<ApiResponse<TrainerBookingItem[]> & { pagination: PaginationMeta }> {
+    const response = await api.get(BOOKING_API_ROUTES.GET_TRAINER_BOOKINGS, {
+      params,
+    });
     return response.data;
   }
 }
 
 export const bookingService = new BookingService();
+

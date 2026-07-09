@@ -28,22 +28,17 @@ class UserService {
     return response.data;
   }
 
-  // Admin/Management User Actions
+
   async getUsers(params?: TableQueryParams): Promise<PaginatedResponse<AdminGetUsersResponse>> {
     const queryParams = buildQueryParams(params);
     const response = await api.get<{ success: boolean; data: AdminGetUsersResponse[]; pagination: PaginationMeta; }>(USER_API_ROUTES.USERS, { params: queryParams });
     return { data: response.data.data, pagination: response.data.pagination };
   }
-
-  async blockUser(userId: string): Promise<ApiResponse<null>> {
-    const response = await api.patch<ApiResponse<null>>(USER_API_ROUTES.BLOCK_USER(userId));
+  async toggleStatusUser(userId: string): Promise<ApiResponse<{ message: string }>> {
+    const response = await api.patch<ApiResponse<{ message: string }>>(USER_API_ROUTES.TOGGLE_USER_STATUS(userId));
     return response.data;
   }
 
-  async unblockUser(userId: string): Promise<ApiResponse<null>> {
-    const response = await api.patch<ApiResponse<null>>(USER_API_ROUTES.UNBLOCK_USER(userId));
-    return response.data;
-  }
 }
 
 export const userService = new UserService();

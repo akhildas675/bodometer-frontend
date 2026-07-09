@@ -17,7 +17,7 @@ const getIndicatorPosition = (bmi: number): number => {
 const UserBmi = () => {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuthStore();
-  
+
   // Standalone Bmi Store Integration
   const {
     height,
@@ -25,6 +25,7 @@ const UserBmi = () => {
     unit,
     heightFt,
     heightIn,
+    gender,
     bmi,
     category,
     heightCm,
@@ -37,6 +38,7 @@ const UserBmi = () => {
     setUnit,
     setHeightFt,
     setHeightIn,
+    setGender,
     reset,
     calculateBmi,
   } = useStandaloneBmiStore();
@@ -147,13 +149,38 @@ const UserBmi = () => {
                     <button
                       key={u}
                       onClick={() => setUnit(u)}
-                      className={`px-6 py-2 rounded-lg text-sm font-medium transition capitalize ${
-                        unit === u
-                          ? "bg-purple-600 text-white"
-                          : "text-white/40 hover:text-white"
-                      }`}
+                      className={`px-6 py-2 rounded-lg text-sm font-medium transition capitalize ${unit === u
+                        ? "bg-purple-600 text-white"
+                        : "text-white/40 hover:text-white"
+                        }`}
                     >
                       {u}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Gender Selector */}
+              <div>
+                <label className="text-white/50 text-xs uppercase tracking-widest font-semibold block mb-3">
+                  Gender
+                </label>
+                <div className="flex bg-white/5 rounded-xl p-1 w-fit border border-white/10 gap-1 flex-wrap">
+                  {[
+                    { label: "Male", value: "male" },
+                    { label: "Female", value: "female" },
+                    { label: "Other", value: "other" },
+                    { label: "Prefer not to say", value: "prefer_not_say" }
+                  ].map((g) => (
+                    <button
+                      key={g.value}
+                      onClick={() => setGender(g.value)}
+                      className={`px-4 py-2 rounded-lg text-sm font-medium transition ${gender === g.value
+                        ? "bg-purple-600 text-white"
+                        : "text-white/40 hover:text-white"
+                        }`}
+                    >
+                      {g.label}
                     </button>
                   ))}
                 </div>
@@ -224,11 +251,10 @@ const UserBmi = () => {
               <button
                 onClick={handleCalculate}
                 disabled={isCalculateDisabled || calculating}
-                className={`w-full border-2 px-8 py-3 rounded-full font-semibold transition-all flex items-center justify-center gap-2 ${
-                  (!isCalculateDisabled && !calculating)
-                    ? "border-white text-white hover:bg-white hover:text-purple-900"
-                    : "border-white/20 text-white/30 cursor-not-allowed"
-                }`}
+                className={`w-full border-2 px-8 py-3 rounded-full font-semibold transition-all flex items-center justify-center gap-2 ${(!isCalculateDisabled && !calculating)
+                  ? "border-white text-white hover:bg-white hover:text-purple-900"
+                  : "border-white/20 text-white/30 cursor-not-allowed"
+                  }`}
               >
                 {calculating && <Loader2 className="w-4 h-4 animate-spin" />}
                 Calculate BMI
@@ -255,11 +281,10 @@ const UserBmi = () => {
                       <span className="text-5xl font-extrabold text-white z-10">{bmi}</span>
                       <span className="text-white/50 text-xs mt-1 font-semibold tracking-wider uppercase z-10">BMI</span>
                     </div>
-                    
+
                     <div className="mt-4 flex items-center justify-center gap-1.5">
-                      <span className={`inline-block w-2.5 h-2.5 rounded-full ${
-                        bmi < 18.5 ? "bg-blue-400" : bmi < 25 ? "bg-green-400" : bmi < 30 ? "bg-yellow-400" : "bg-red-400"
-                      }`} />
+                      <span className={`inline-block w-2.5 h-2.5 rounded-full ${bmi < 18.5 ? "bg-blue-400" : bmi < 25 ? "bg-green-400" : bmi < 30 ? "bg-yellow-400" : "bg-red-400"
+                        }`} />
                       <h2 className={`text-xl font-bold uppercase tracking-wider ${category?.color}`}>
                         {category?.label}
                       </h2>
@@ -286,13 +311,13 @@ const UserBmi = () => {
                   <div className="grid grid-cols-2 gap-4 pt-2">
                     <div className="bg-white/5 p-4 rounded-xl border border-white/5 text-center">
                       <span className="text-white/40 text-xs block uppercase tracking-wider mb-0.5">Calculated Height</span>
-                      <span className="text-sm font-semibold">
+                      <span className="text-sm font-semibold text-white capitalize">
                         {unit === "metric" ? `${heightCm} cm` : `${heightFt} ft ${heightIn} in`}
                       </span>
                     </div>
                     <div className="bg-white/5 p-4 rounded-xl border border-white/5 text-center">
                       <span className="text-white/40 text-xs block uppercase tracking-wider mb-0.5">Calculated Weight</span>
-                      <span className="text-sm font-semibold">
+                      <span className="text-sm font-semibold text-white capitalize">
                         {unit === "metric" ? `${weightKg} kg` : `${weight} lbs`}
                       </span>
                     </div>

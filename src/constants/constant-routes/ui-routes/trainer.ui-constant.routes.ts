@@ -9,5 +9,6 @@ export const TRAiNER_UI_ROUTES = {
 
     // Slots & Bookings
     TRAINER_SLOTS: "/trainer/slots",
+    TRAINER_SLOTS_LIST: "/trainer/slots",
     TRAINER_BOOKINGS: "/trainer/bookings",
-} as const
+} as const;

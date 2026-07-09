@@ -3,12 +3,13 @@ import { buildQueryParams, TableQueryParams } from "@/api/query.helper";
 
 import type { ApiResponse } from "@/interface/api-response.interface";
 import { TrainerAvailability, CreateAvailabilityPayload, UpdateAvailabilityPayload } from "@/interface/booking.interface";
-import { UploadProfilePictureResponse } from "@/interface/common.interface";
-import { TrainerOnboardingResponse, TrainerProfileInterface, TrainerProfileStatus } from "@/interface/trainer.interface";
+import { PaginatedResponse, UploadProfilePictureResponse } from "@/interface/common.interface";
+import { TrainerDetail, TrainerListResponse, TrainerOnboardingResponse, TrainerProfileInterface, TrainerProfileStatus } from "@/interface/trainer.interface";
 import { ProfileUpdatePayload } from "@/interface/user.interface";
 import { PaginationMeta } from "@/interface/common.interface";
 
 import { TRAINER_API_ROUTES } from "@/modules/trainer/constant/api-routes";
+import { TrainerWithProfile } from "@/ui.components/ui/table/table.types";
 
 class TrainerService {
   async getTrainerProfile(): Promise<ApiResponse<TrainerProfileInterface>> {
@@ -24,6 +25,15 @@ class TrainerService {
   async uploadProfilePicture(data: FormData): Promise<ApiResponse<UploadProfilePictureResponse>> {
     const response = await api.post<ApiResponse<UploadProfilePictureResponse>>(
       "/trainer/profile-picture",
+      data,
+      { headers: { "Content-Type": "multipart/form-data" } }
+    );
+    return response.data;
+  }
+
+  async uploadCoverPhoto(data: FormData): Promise<ApiResponse<UploadProfilePictureResponse>> {
+    const response = await api.post<ApiResponse<UploadProfilePictureResponse>>(
+      "/trainer/cover-photo",
       data,
       { headers: { "Content-Type": "multipart/form-data" } }
     );
@@ -68,43 +78,39 @@ class TrainerService {
     const response = await api.patch(`/booking/availability/${availabilityId}/status`, data);
     return response.data;
   }
-  async getTrainers(params?: TableQueryParams): Promise<ApiResponse<any[]> & { pagination: PaginationMeta }> {
+  async getTrainers<T = TrainerListResponse>(params?: TableQueryParams): Promise<ApiResponse<T[]> & { pagination: PaginationMeta }> {
     const queryParams = buildQueryParams({ page: 1, limit: 10, ...params });
     const response = await api.get(`${TRAINER_API_ROUTES.TRAINERS}?${queryParams.toString()}`);
     return response.data;
   }
 
-  async getTrainerById(id: string): Promise<ApiResponse<any>> {
+  async getTrainerById(id: string): Promise<ApiResponse<TrainerDetail>> {
     const response = await api.get(TRAINER_API_ROUTES.TRAINER_BY_ID(id));
     return response.data;
   }
 
-  async getTrainerProfileById(id: string): Promise<ApiResponse<any>> {
+  async getTrainerProfileById(id: string): Promise<ApiResponse<TrainerWithProfile>> {
     const response = await api.get(TRAINER_API_ROUTES.PROFILE_BY_ID(id));
     return response.data;
   }
 
-  async blockTrainer(id: string): Promise<ApiResponse<any>> {
-    const response = await api.patch(TRAINER_API_ROUTES.BLOCK_TRAINER(id));
-    return response.data;
-  }
+async toggleTrainerBlockStatus(id: string): Promise<ApiResponse<{ message: string }>> {
+  const response = await api.patch(TRAINER_API_ROUTES.TOGGLE_BLOCK_TRAINER(id));
+  return response.data;
+}
 
-  async unblockTrainer(id: string): Promise<ApiResponse<any>> {
-    const response = await api.patch(TRAINER_API_ROUTES.UNBLOCK_TRAINER(id));
-    return response.data;
-  }
 
-  async approveTrainer(id: string): Promise<ApiResponse<any>> {
+  async approveTrainer(id: string): Promise<ApiResponse<{message:string}>> {
     const response = await api.patch(TRAINER_API_ROUTES.APPROVE_PROFILE(id));
     return response.data;
   }
 
-  async rejectTrainer(id: string, reason: string): Promise<ApiResponse<any>> {
+  async rejectTrainer(id: string, reason: string): Promise<ApiResponse<{message:string}>> {
     const response = await api.patch(TRAINER_API_ROUTES.REJECT_PROFILE(id), { reason });
     return response.data;
   }
 
-  async getTrainerAppointments(params?: TableQueryParams): Promise<ApiResponse<any[]> & { pagination: PaginationMeta }> {
+  async getTrainerAppointments(params?: TableQueryParams): Promise<PaginatedResponse<TrainerWithProfile>> {
     const queryParams = buildQueryParams({ page: 1, limit: 10, ...params });
     const response = await api.get(`${TRAINER_API_ROUTES.APPOINTMENTS}?${queryParams.toString()}`);
     return response.data;

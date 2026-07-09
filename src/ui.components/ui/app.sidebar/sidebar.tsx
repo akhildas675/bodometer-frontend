@@ -212,13 +212,13 @@ const Sidebar = ({ role }: Props) => {
         <div className="mb-8 flex items-center justify-center h-12">
           {isExpanded ? (
             <img
-              src="https://bodometer-assets.s3.eu-north-1.amazonaws.com/Bodometer+Icon.png"
+              src="https://bodometer-asset.s3.eu-north-1.amazonaws.com/logo/Bodometer+Logo+corrected+1.png"
               alt="Bodometer Logo"
               className="h-8 w-auto object-contain drop-shadow-lg transition-opacity duration-300"
             />
           ) : (
            <img
-              src="https://bodometer-assets.s3.eu-north-1.amazonaws.com/Bodometer+Icon.png"
+              src="https://bodometer-asset.s3.eu-north-1.amazonaws.com/logo/Bodometer+Icon.png"
               alt="Bodometer Logo"
               className="h-8 w-auto object-contain drop-shadow-lg transition-opacity duration-300"
             />
