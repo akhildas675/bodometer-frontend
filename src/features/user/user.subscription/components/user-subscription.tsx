@@ -135,15 +135,17 @@ const UserSubscription = () => {
     SubscriptionPlan[]
   >(() =>
     subscriptionService.getAllSubscriptionPlans()
-      .then((res) =>
+  .then((res) =>
         Array.isArray(res.data)
           ? res.data
           : ([] as SubscriptionPlan[]),
 
       ),
   );
+    console.log("Plans",plansData)
 
-  // Sort cheapest → most expensive so tier index maps correctly
+
+ 
   const plans = Array.isArray(plansData)
     ? [...plansData].sort((a, b) => a.price - b.price)
     : [];
@@ -230,18 +232,18 @@ const UserSubscription = () => {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5 items-start">
           {plans.map((plan) => {
-            // Decide the tier style based on price rank dynamically
+           
             let tierIndex = 0;
             if (plans.length > 1) {
               const prices = plans.map((p) => p.price);
               const maxPrice = Math.max(...prices);
               const minPrice = Math.min(...prices);
               if (plan.price === maxPrice) {
-                tierIndex = 2; // Premium style
+                tierIndex = 2;
               } else if (plan.price === minPrice) {
-                tierIndex = 0; // Starter style
+                tierIndex = 0;
               } else {
-                tierIndex = 1; // Pro style
+                tierIndex = 1; 
               }
             } else {
               tierIndex = 0;

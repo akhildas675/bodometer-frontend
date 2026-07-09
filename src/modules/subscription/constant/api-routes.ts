@@ -1,24 +1,24 @@
 export const SUBSCRIPTION_API_PATHS = {
   // Features
-  FEATURES: "/subscription/features",
+  FEATURES: "/subscriptions/features",
   FEATURE_BY_ID: (featureId: string) =>
-    `/subscription/features/${featureId}`,
+    `/subscriptions/features/${featureId}`,
   TOGGLE_FEATURE_STATUS: (featureId: string) =>
-    `/subscription/features/${featureId}/toggle`,
+    `/subscriptions/features/${featureId}/toggle`,
 
   // Plans
-  PLANS: "/subscription/plans",
+  PLANS: "/subscriptions/plans",
   PLAN_BY_ID: (subscriptionPlanId: string) =>
-    `/subscription/plans/${subscriptionPlanId}`,
+    `/subscriptions/plans/${subscriptionPlanId}`,
   TOGGLE_PLAN_STATUS: (subscriptionPlanId: string) =>
-    `/subscription/plans/${subscriptionPlanId}/toggle`,
+    `/subscriptions/plans/${subscriptionPlanId}/toggle`,
 
   // User Subscription
-  ACTIVE_SUBSCRIPTION: "/subscription/my-subscription",
-  TRANSACTIONS: "/subscription/transactions",
-  USER_TRANSACTIONS: "/subscription/user/transactions",
+  ACTIVE_SUBSCRIPTION: "/subscriptions/my-subscription",
+  TRANSACTIONS: "/subscriptions/transactions",
+  USER_TRANSACTIONS: "/subscriptions/user/transactions",
 
   // Payment
-  CHECKOUT_SESSION: "/subscription/checkout-session",
-  VERIFY_PAYMENT: "/subscription/verify-payment",
+  CHECKOUT_SESSION: "/subscriptions/checkout-session",
+  VERIFY_PAYMENT: "/subscriptions/verify-payment",
 } as const;
