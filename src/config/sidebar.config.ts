@@ -42,6 +42,7 @@ export const sidebarConfig: Record<SidebarRole, SidebarItem[]> = {
         { label: "Target Muscle", path: "/admin/target-muscles" },
         { label: "Category", path: "/admin/category" },
         { label: "Meal Category", path: "/admin/meal-category" },
+        { label: "Coaching Services", path: "/admin/coaching" },
       ],
     }
   ],

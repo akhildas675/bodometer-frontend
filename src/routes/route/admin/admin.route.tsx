@@ -10,6 +10,8 @@ import { ADMIN_UI_ROUTES } from "@/constants/constant-routes/ui-routes/admin.ui-
 import MainSidebarLayout from "@/ui.components/layouts/main-sidebar.layout";
 import AdminCategoryListPage from "@/features/admin/admin.category/pages/admin.category-list.page";
 import AdminCategoryFormPage from "@/features/admin/admin.category/pages/admin.category-form.page";
+import AdminCoachingListPage from "@/features/admin/admin.coaching/pages/admin.coaching-list.page";
+import AdminCoachingFormPage from "@/features/admin/admin.coaching/pages/admin.coaching-form.page";
 import AdminSubscriptionFeatureListPage from "@/features/admin/admin.subscription/pages/admin-subscription.feature-list.page";
 import AdminSubscriptionFeatureFormPage from "@/features/admin/admin.subscription/pages/admin.subscription-feature.form.page";
 import AdminSubscriptionPlanListPage from "@/features/admin/admin.subscription/pages/admin-subscription.plan-list.page";
@@ -42,6 +44,9 @@ export const adminRoutes = (
       <Route path={ADMIN_UI_ROUTES.CATEGORY} element={<AdminCategoryListPage />} />
       <Route path={ADMIN_UI_ROUTES.CATEGORY_CREATE} element={<AdminCategoryFormPage />} />
       <Route path={ADMIN_UI_ROUTES.CATEGORY_EDIT_PATH} element={<AdminCategoryFormPage />} />
+      <Route path={ADMIN_UI_ROUTES.COACHING} element={<AdminCoachingListPage />} />
+      <Route path={ADMIN_UI_ROUTES.COACHING_CREATE} element={<AdminCoachingFormPage />} />
+      <Route path={ADMIN_UI_ROUTES.COACHING_EDIT_PATH} element={<AdminCoachingFormPage />} />
       <Route path={ADMIN_UI_ROUTES.SUBSCRIPTION_FEATURES} element={<AdminSubscriptionFeatureListPage />} />
       <Route path={ADMIN_UI_ROUTES.SUBSCRIPTION_FEATURE_CREATE} element={<AdminSubscriptionFeatureFormPage />} />
       <Route path={ADMIN_UI_ROUTES.SUBSCRIPTION_FEATURE_EDIT_PATH} element={<AdminSubscriptionFeatureFormPage />} />

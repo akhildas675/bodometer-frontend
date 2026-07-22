@@ -14,6 +14,12 @@ export const ADMIN_UI_ROUTES = {
   CATEGORY_EDIT: (id: string) => `/admin/category/edit/${id}`,
   CATEGORY_EDIT_PATH: "/admin/category/edit/:id",
 
+  // coaching
+  COACHING: "/admin/coaching",
+  COACHING_CREATE: "/admin/coaching/create",
+  COACHING_EDIT: (id: string) => `/admin/coaching/edit/${id}`,
+  COACHING_EDIT_PATH: "/admin/coaching/edit/:id",
+
   SUBSCRIPTIONS: "/admin/subscription",
   SUBSCRIPTION_FEATURES: "/admin/subscription/features",
   SUBSCRIPTION_FEATURE_CREATE: "/admin/subscription/features/create",
