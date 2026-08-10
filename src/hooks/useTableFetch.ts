@@ -30,5 +30,5 @@ export function useTableFetch<T>(fetchFn: FetchFn<T>, auto = true) {
     if (auto) refetch();
   }, [refetch, auto]);
 
-  return { data, loading, error, refetch };
+  return { data, setData, loading, error, refetch };
 }

@@ -2,7 +2,6 @@ import { api } from "@/api/api.instance";
 import { buildQueryParams, TableQueryParams } from "@/api/query.helper";
 
 import type { ApiResponse } from "@/interface/api-response.interface";
-import { TrainerAvailability, CreateAvailabilityPayload, UpdateAvailabilityPayload } from "@/interface/booking.interface";
 import { PaginatedResponse, UploadProfilePictureResponse } from "@/interface/common.interface";
 import { TrainerDetail, TrainerListResponse, TrainerOnboardingResponse, TrainerProfileInterface, TrainerProfileStatus } from "@/interface/trainer.interface";
 import { ProfileUpdatePayload } from "@/interface/user.interface";
@@ -22,11 +21,13 @@ class TrainerService {
     return response.data;
   }
 
-  async uploadProfilePicture(data: FormData): Promise<ApiResponse<UploadProfilePictureResponse>> {
-    const response = await api.post<ApiResponse<UploadProfilePictureResponse>>(
-      "/trainer/profile-picture",
-      data,
-      { headers: { "Content-Type": "multipart/form-data" } }
+  async uploadProfilePicture(formData: FormData): Promise<ApiResponse<UploadProfilePictureResponse>> {
+    const response = await api.patch<ApiResponse<UploadProfilePictureResponse>>(
+      "/trainer/profile/picture",
+      formData,
+      {
+        headers: { "Content-Type": "multipart/form-data" },
+      }
     );
     return response.data;
   }
@@ -40,11 +41,13 @@ class TrainerService {
     return response.data;
   }
 
-  async uploadTrainerDocument(data: FormData): Promise<ApiResponse<UploadProfilePictureResponse>> {
+  async uploadTrainerDocument(formData: FormData): Promise<ApiResponse<UploadProfilePictureResponse>> {
     const response = await api.post<ApiResponse<UploadProfilePictureResponse>>(
-      "/trainer/document",
-      data,
-      { headers: { "Content-Type": "multipart/form-data" } }
+      "/trainer/profile/document",
+      formData,
+      {
+        headers: { "Content-Type": "multipart/form-data" },
+      }
     );
     return response.data;
   }
@@ -62,22 +65,6 @@ class TrainerService {
     return response.data;
   }
 
-  // Availability & Slots
-  async createAvailability(data: CreateAvailabilityPayload): Promise<ApiResponse<{ message: string; generatedSlots: number }>> {
-    const response = await api.post("/booking/availability", data);
-    return response.data;
-  }
-
-  async getAvailabilities(params?: TableQueryParams & { status?: string }): Promise<ApiResponse<TrainerAvailability[]> & { pagination: PaginationMeta }> {
-    const queryParams = buildQueryParams({ page: 1, limit: 10, ...params });
-    const response = await api.get(`/booking/availability?${queryParams.toString()}`);
-    return response.data;
-  }
-
-  async updateAvailabilityStatus(availabilityId: string, data: UpdateAvailabilityPayload): Promise<ApiResponse<TrainerAvailability>> {
-    const response = await api.patch(`/booking/availability/${availabilityId}/status`, data);
-    return response.data;
-  }
   async getTrainers<T = TrainerListResponse>(params?: TableQueryParams): Promise<ApiResponse<T[]> & { pagination: PaginationMeta }> {
     const queryParams = buildQueryParams({ page: 1, limit: 10, ...params });
     const response = await api.get(`${TRAINER_API_ROUTES.TRAINERS}?${queryParams.toString()}`);

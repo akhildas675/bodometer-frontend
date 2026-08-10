@@ -29,13 +29,10 @@ const AdminTargetMuscleListPage = lazy(() => import("@/features/admin/admin.targ
 const AdminTargetMuscleFormPage = lazy(() => import("@/features/admin/admin.target.muscle/pages/admin.target-muscle.form-page"));
 const AdminExerciseListPage = lazy(() => import("@/features/admin/admin.exercise/pages/admin.exercise-list.page"));
 const AdminExerciseFormPage = lazy(() => import("@/features/admin/admin.exercise/pages/admin.exercise-form.page"));
-const AdminBookingsPage = lazy(() => import("@/features/admin/admin.booking/pages/admin-bookings.page"));
-
 
 export const adminRoutes = (
   <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
     <Route element={<MainSidebarLayout />}>
-
       <Route path={ADMIN_UI_ROUTES.DASHBOARD} element={<AdminDashboardPage />} />
       <Route path={ADMIN_UI_ROUTES.USERS} element={<AdminUsersPage />} />
       <Route path={ADMIN_UI_ROUTES.TRAINERS} element={<AdminTrainersPage />} />
@@ -63,13 +60,11 @@ export const adminRoutes = (
       <Route path={ADMIN_UI_ROUTES.QUESTION_CREATE} element={<AdminQuestionFormPage />} />
       <Route path={ADMIN_UI_ROUTES.QUESTION_EDIT_PATH} element={<AdminQuestionFormPage />} />
 
-
       {/* TargetMuscles */}
-
       <Route path={ADMIN_UI_ROUTES.TARGET_MUSCLES} element={<AdminTargetMuscleListPage />} />
       <Route path={ADMIN_UI_ROUTES.TARGET_MUSCLES_FORM} element={<AdminTargetMuscleFormPage />} />
 
-      {/*Equipment*/}
+      {/* Equipment */}
       <Route path={ADMIN_UI_ROUTES.EQUIPMENT} element={<AdminEquipmentListPage />} />
       <Route path={ADMIN_UI_ROUTES.EQUIPMENT_FORM} element={<AdminEquipmentFormPage />} />
 
@@ -79,10 +74,6 @@ export const adminRoutes = (
 
       <Route path={ADMIN_UI_ROUTES.MEAL_CATEGORY} element={<AdminMealCategoryListPage/>} />
       <Route path={ADMIN_UI_ROUTES.MEAL_CATEGORY_FORM} element={<AdminMealCategoryFormPage/>} />
-
-      {/* Bookings */}
-      <Route path={ADMIN_UI_ROUTES.BOOKINGS} element={<AdminBookingsPage />} />
-
     </Route>
   </Route>
 );

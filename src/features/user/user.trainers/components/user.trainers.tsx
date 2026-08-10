@@ -8,7 +8,7 @@ import { Search, SlidersHorizontal } from "lucide-react";
 import Pagination from "@/features/controls/pagination/pagination";
 import LazyImage from "@/ui.components/ui/lazy.image";
 
-const ITEMS_PER_PAGE = 1;
+const ITEMS_PER_PAGE = 10;
 const SEARCH_DEBOUNCE_MS = 400;
 
 const TRAINER_SORT_OPTIONS = [
@@ -91,7 +91,7 @@ const TrainerCard = ({ trainer }: { trainer: TrainerListItem }) => {
 
 
 const UserTrainers = () => {
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(ITEMS_PER_PAGE);
   const [searchInput, setSearchInput] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [sortField, setSortField] = useState("");

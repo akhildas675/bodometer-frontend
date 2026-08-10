@@ -20,6 +20,7 @@ export type UserModalConfig = {
 export const useUserActions = (
   refreshUsers: () => void,
   setModalConfig: React.Dispatch<React.SetStateAction<UserModalConfig>>,
+  updateLocally?: (userId: string) => void,
 ): TableAction<AdminGetUsersResponse>[] => {
   return [
     {
@@ -39,7 +40,11 @@ export const useUserActions = (
             try {
               const res = await userService.toggleStatusUser(user.id);
               toast.success(res.message);
-              refreshUsers();
+              if (updateLocally) {
+                updateLocally(user.id);
+              } else {
+                refreshUsers();
+              }
             } catch (error: unknown) {
               const apiError = parseApiError(error);
               toast.error(apiError.message);
@@ -64,7 +69,11 @@ export const useUserActions = (
             try {
               const res = await userService.toggleStatusUser(user.id);
               toast.success(res.message);
-              refreshUsers();
+              if (updateLocally) {
+                updateLocally(user.id);
+              } else {
+                refreshUsers();
+              }
             } catch (error: unknown) {
               const apiError = parseApiError(error);
               toast.error(apiError.message);

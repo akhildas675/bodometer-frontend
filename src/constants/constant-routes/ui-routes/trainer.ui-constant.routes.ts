@@ -7,8 +7,10 @@ export const TRAiNER_UI_ROUTES = {
     TRAINER_PENDING: "/trainer/status",
     TRAINER_CATEGORIES: "/trainer/categories",
 
-    // Slots & Bookings
-    TRAINER_SLOTS: "/trainer/slots",
-    TRAINER_SLOTS_LIST: "/trainer/slots",
-    TRAINER_BOOKINGS: "/trainer/bookings",
+    // Legacy - kept for backward compatibility
+    TRAINER_AVAILABILITY: "/trainer/availability",
+
+    // Booking — Two-mode flow
+    TRAINER_BOOKING_SETUP: "/trainer/booking/setup",
+    TRAINER_BOOKING_MANAGEMENT: "/trainer/booking",
 } as const;

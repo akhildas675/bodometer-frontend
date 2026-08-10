@@ -1,4 +1,5 @@
-import { Route } from "react-router-dom";
+import { Route, Navigate } from "react-router-dom";
+import { lazy } from "react";
 
 import ProtectedRoute from "@/routes/guard.routes/protected.route";
 import TrainerOnboardingRoute from "@/routes/guard.routes/TrainerOnboardingRoute";
@@ -15,18 +16,21 @@ import TrainerOnboardingProfilePage from "@/features/trainer/trainer.onboarding/
 import MainLayouts from "@/ui.components/layouts/MainLayouts";
 import TrainerOnboardingSkillPage from "@/features/trainer/trainer.onboarding/pages/trainer.onboarding-category.page";
 
-import TrainerSlotCreatePage from "@/features/trainer/trainer.booking/pages/trainer.slot-create.page";
-import TrainerBookingsPage from "@/features/trainer/trainer.booking/pages/trainer.bookings.page";
+// ── Booking — two-mode flow ──────────────────────────────────────────
+const TrainerBookingSetupPage = lazy(
+  () => import("@/features/trainer/trainer.booking/pages/trainer-booking-setup.page")
+);
+const TrainerBookingManagementPage = lazy(
+  () => import("@/features/trainer/trainer.booking/pages/trainer-booking-management.page")
+);
 
 export const trainerRoutes = (
   <Route element={<ProtectedRoute allowedRoles={["trainer"]} />}>
-
     {/* No profile → onboarding only */}
     <Route element={<TrainerOnboardingRoute />}>
       <Route path={TRAiNER_UI_ROUTES.TRAINER_ONBOARDING_INTRO} element={<TrainerOnboardingIntroPage />} />
       <Route path={TRAiNER_UI_ROUTES.TRAINER_CATEGORIES} element={<TrainerOnboardingSkillPage />} />
       <Route path={TRAiNER_UI_ROUTES.TRAINER_ONBOARDING_PROFILE} element={<TrainerOnboardingProfilePage />} />
-
     </Route>
 
     {/* Pending or Rejected */}
@@ -34,19 +38,22 @@ export const trainerRoutes = (
       <Route path={TRAiNER_UI_ROUTES.TRAINER_PENDING} element={<TrainerStatusPage />} />
     </Route>
 
-    {/*Approved */}
-    <Route element={<MainLayouts/>}>
+    {/* Approved */}
+    <Route element={<MainLayouts />}>
+      <Route element={<ApprovedTrainerRoute />}>
+        <Route path={TRAiNER_UI_ROUTES.TRAINER_DASHBOARD} element={<TrainerDashboardPage />} />
+        <Route path={TRAiNER_UI_ROUTES.TRAINER_PROFILE} element={<TrainerProfilePage />} />
 
-    <Route element={<ApprovedTrainerRoute />}>
-      <Route path={TRAiNER_UI_ROUTES.TRAINER_DASHBOARD} element={<TrainerDashboardPage />} />
-      <Route path={TRAiNER_UI_ROUTES.TRAINER_PROFILE}   element={<TrainerProfilePage />} />
-      
-      {/* Slots & Bookings */}
-      <Route path={TRAiNER_UI_ROUTES.TRAINER_SLOTS} element={<TrainerSlotCreatePage />} />
-      <Route path={TRAiNER_UI_ROUTES.TRAINER_BOOKINGS} element={<TrainerBookingsPage />} />
-   
-    </Route>
+        {/* Booking — two-mode flow */}
+        <Route path={TRAiNER_UI_ROUTES.TRAINER_BOOKING_SETUP} element={<TrainerBookingSetupPage />} />
+        <Route path={TRAiNER_UI_ROUTES.TRAINER_BOOKING_MANAGEMENT} element={<TrainerBookingManagementPage />} />
 
+        {/* Legacy redirect: /trainer/availability → /trainer/booking */}
+        <Route
+          path={TRAiNER_UI_ROUTES.TRAINER_AVAILABILITY}
+          element={<Navigate to={TRAiNER_UI_ROUTES.TRAINER_BOOKING_MANAGEMENT} replace />}
+        />
+      </Route>
     </Route>
   </Route>
 );

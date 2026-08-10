@@ -4,11 +4,9 @@ import UserProfilePage from "@/features/user/user.users/pages/user-profile.page"
 import ProtectedRoute from "@/routes/guard.routes/protected.route";
 import SubscriptionRoute from "@/routes/guard.routes/subscription.route";
 import { USER_UI_ROUTES } from "@/constants/constant-routes/ui-routes/user.ui-constant.routes";
-import UserTrainersPage from "@/features/user/user.trainers/pages/user-trainers.page";
 import UserChangePasswordPage from "@/features/user/user.users/pages/user.change-password.page";
 import UserTrainerDetailPage from "@/features/user/user.trainers/pages/user.trainer-detail.page";
 import { ROLES } from "@/constants/role";
-import UserCategoriesPage from "@/features/user/user.category/pages/user-categories.page";
 import UserCategoryDetailPage from "@/features/user/user.category/pages/user.category-detail.page";
 import UserSubscriptionPage from "@/features/user/user.subscription/pages/user-subscription.page";
 import UserSubscriptionSuccessPage from "@/features/user/user.subscription/pages/user.subscription-success.page";
@@ -24,8 +22,10 @@ import UserWorkoutProgressionPage from "@/features/user/workout-plan/pages/user-
 import { UserDietPlansPage } from "@/features/user/user.diet-plan/pages/user-diet-plans.page";
 import UserHealthLogPage from "@/features/user/user.health-log/pages/user-health-log.page";
 import UserHealthProgressionPage from "@/features/user/user.health-log/pages/user-health-progression.page";
-import UserBookTrainerPage from "@/features/user/user.booking/pages/user-book-trainer.page";
-import UserMyBookingsPage from "@/features/user/user.booking/pages/user-my-bookings.page";
+import UserBookTrainerPage from "@/features/user/user.trainers/pages/user.book-trainer.page";
+import UserMyBookingsPage from "@/features/user/user.trainers/pages/user.my-bookings.page";
+import UserWalletPage from "@/features/user/user.wallet/pages/user.wallet.page";
+import { BookingSuccessPage } from "@/features/client/booking/components/booking-success.page";
 
 export const userRoutes = (
   <Route element={<ProtectedRoute allowedRoles={[ROLES.USER]} />}>
@@ -50,6 +50,22 @@ export const userRoutes = (
         path={USER_UI_ROUTES.USER_TRAINER_DETAILS}
         element={<UserTrainerDetailPage />}
       />
+      <Route
+        path={USER_UI_ROUTES.USER_BOOK_TRAINER}
+        element={<UserBookTrainerPage />}
+      />
+      <Route
+        path={USER_UI_ROUTES.USER_MY_BOOKINGS}
+        element={<UserMyBookingsPage />}
+      />
+      <Route
+        path={USER_UI_ROUTES.USER_WALLET}
+        element={<UserWalletPage />}
+      />
+      <Route
+        path="/client/booking/success"
+        element={<BookingSuccessPage />}
+      />
       <Route 
         path={USER_UI_ROUTES.USER_CATEGORY_DETAILS}
         element={<UserCategoryDetailPage />}
@@ -67,10 +83,6 @@ export const userRoutes = (
         <Route path={USER_UI_ROUTES.USER_DIET_PLANS} element={<UserDietPlansPage />} />
         <Route path={USER_UI_ROUTES.USER_HEALTH_LOG} element={<UserHealthLogPage />} />
         <Route path={USER_UI_ROUTES.USER_HEALTH_PROGRESS} element={<UserHealthProgressionPage />} />
-        
-        {/* Bookings */}
-        <Route path={USER_UI_ROUTES.USER_BOOK_TRAINER} element={<UserBookTrainerPage />} />
-        <Route path={USER_UI_ROUTES.USER_MY_BOOKINGS} element={<UserMyBookingsPage />} />
       </Route>
     </Route>
 
@@ -81,4 +93,3 @@ export const userRoutes = (
     </Route>
   </Route>
 );
-

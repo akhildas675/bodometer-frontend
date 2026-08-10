@@ -20,6 +20,7 @@ export type TrainerModalConfig = {
 export const useTrainerActions = (
   refreshTrainers: () => void,
   setModalConfig: React.Dispatch<React.SetStateAction<TrainerModalConfig>>,
+  updateLocally?: (trainerId: string) => void,
 ): TableAction<AdminGetTrainersResponse>[] => {
   return [
     {
@@ -39,7 +40,11 @@ export const useTrainerActions = (
             try {
               const res = await trainerService.toggleTrainerBlockStatus(trainer.id);
               toast.success(res.message);
-              refreshTrainers();
+              if (updateLocally) {
+                updateLocally(trainer.id);
+              } else {
+                refreshTrainers();
+              }
             } catch (error: unknown) {
               const apiError = parseApiError(error);
               toast.error(apiError.message);
@@ -64,7 +69,11 @@ export const useTrainerActions = (
             try {
               const res = await trainerService.toggleTrainerBlockStatus(trainer.id);
               toast.success(res.message);
-              refreshTrainers();
+              if (updateLocally) {
+                updateLocally(trainer.id);
+              } else {
+                refreshTrainers();
+              }
             } catch (error: unknown) {
               const apiError = parseApiError(error);
               toast.error(apiError.message);

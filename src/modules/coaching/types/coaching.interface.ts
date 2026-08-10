@@ -20,6 +20,7 @@ export interface CreateCoachingDto {
 }
 
 export interface UpdateCoaching {
+  id?: string;
   coachingId: string;
   _id?: string;
   serviceId?: string;

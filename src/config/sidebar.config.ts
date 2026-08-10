@@ -49,10 +49,9 @@ export const sidebarConfig: Record<SidebarRole, SidebarItem[]> = {
 
   trainer: [
     { label: "Dashboard", path: "/trainer" },
-    { label: "Bookings", path: "/trainer/bookings" },
+    { label: "Booking", path: "/trainer/booking" },
     { label: "Clients", path: "/trainer/clients" },
     { label: "Messages", path: "/trainer/messages" },
-    { label: "Slots", path: "/trainer/slots" },
     { label: "Earnings", path: "/trainer/earnings" },
     { label: "Profile", path: "/trainer/profile" },
   ],

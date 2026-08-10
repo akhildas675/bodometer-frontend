@@ -31,6 +31,7 @@ const AdminUsersManagement = () => {
 
   const {
     data: response,
+    setData,
     loading,
     refetch,
   } = useTableFetch<PaginatedResponse<AdminGetUsersResponse>>(
@@ -53,7 +54,19 @@ const AdminUsersManagement = () => {
       onConfirm: () => {},
     });
 
-  const actions = useUserActions(refetch,setModalConfig);
+  const updateUserStatusLocally = useCallback((userId: string) => {
+    setData((prev) => {
+      if (!prev || !prev.data) return prev;
+      return {
+        ...prev,
+        data: prev.data.map((u) =>
+          u.id === userId ? { ...u, isBlocked: !u.isBlocked } : u
+        ),
+      };
+    });
+  }, [setData]);
+
+  const actions = useUserActions(refetch, setModalConfig, updateUserStatusLocally);
 
   
      const handleSearch = useCallback((value: string) => {

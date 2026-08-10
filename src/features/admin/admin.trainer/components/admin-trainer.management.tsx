@@ -26,8 +26,11 @@ const AdminTrainerManagement = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
 
+
+
   const {
     data: response,
+    setData,
     loading,
     refetch,
   } = useTableFetch<PaginatedResponse<AdminGetTrainersResponse>>(
@@ -49,10 +52,23 @@ const AdminTrainerManagement = () => {
     onConfirm: () => {},
   });
 
-  const actions = useTrainerActions(refetch, setModalConfig);
+  const updateTrainerStatusLocally = useCallback((trainerId: string) => {
+    setData((prev) => {
+      if (!prev || !prev.data) return prev;
+      return {
+        ...prev,
+        data: prev.data.map((t) =>
+          t.id === trainerId ? { ...t, isBlocked: !t.isBlocked } : t
+        ),
+      };
+    });
+  }, [setData]);
+
+  const actions = useTrainerActions(refetch, setModalConfig, updateTrainerStatusLocally);
 
   const handleSearch = useCallback((value: string) => {
     setSearchQuery(value);
+
     setCurrentPage(1);
   }, []);
 
@@ -82,6 +98,11 @@ const AdminTrainerManagement = () => {
   if (!user) {
     return <div className="text-white p-6">Loading...</div>;
   }
+
+
+
+
+
 
   return (
     <>
