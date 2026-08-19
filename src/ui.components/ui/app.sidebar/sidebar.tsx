@@ -5,6 +5,7 @@ import authInitService from "@/modules/auth/service/auth-init.service";
 import { useState } from "react";
 import { toast } from "sonner";
 import { parseApiError } from "@/api/error.helper";
+import { useEffect } from "react";
 import {
   LayoutDashboard,
   Users,
@@ -31,7 +32,9 @@ import {
   Receipt,
   BicepsFlexed,
   DumbbellIcon,
+  Bell,
 } from "lucide-react";
+import { useNotificationStore } from "@/stores/notification.store";
 
 type Props = {
   role: SidebarRole;
@@ -55,6 +58,7 @@ const iconMap: Record<string, React.ReactNode> = {
   "/admin/exercises": <BicepsFlexed size={20} />,
   "/admin/equipment": <DumbbellIcon size={20} />,
   "/admin/target-muscles": <PersonStanding size={20} />,
+  "/admin/notifications": <Bell size={20} />,
 
   "/trainer": <LayoutDashboard size={20} />,
   "/trainer/availability": <Calendar size={20} />,
@@ -62,6 +66,7 @@ const iconMap: Record<string, React.ReactNode> = {
   "/trainer/messages": <MessageSquare size={20} />,
   "/trainer/slots": <Clock size={20} />,
   "/trainer/earnings": <DollarSign size={20} />,
+  "/trainer/notifications": <Bell size={20} />,
   "/trainer/profile": <UserCircle size={20} />,
 
   "/": <LayoutDashboard size={20} />,
@@ -73,6 +78,7 @@ const iconMap: Record<string, React.ReactNode> = {
   "/food-log": <Apple size={20} />,
   "/health-progress": <Activity size={20} />,
   "/progress": <TrendingUp size={20} />,
+  "/notifications": <Bell size={20} />,
   "/profile": <UserCircle size={20} />,
 };
 
@@ -170,6 +176,14 @@ const Sidebar = ({ role }: Props) => {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const { user } = useAuthStore();
+  const unreadCount = useNotificationStore((state) => state.unreadCount);
+  const fetchUnreadCount = useNotificationStore((state) => state.fetchUnreadCount);
+
+  useEffect(() => {
+    if (user) {
+      fetchUnreadCount();
+    }
+  }, [user, fetchUnreadCount]);
 
   const handleLogout = async () => {
     try {
@@ -244,8 +258,12 @@ const Sidebar = ({ role }: Props) => {
 
         {/* NAVIGATION */}
         <nav className="space-y-1 text-sm">
-          {menuItems.map((item) =>
-            item.children ? (
+          {menuItems.map((item) => {
+            const isNotifItem =
+              item.path.includes("notifications") ||
+              item.label.toLowerCase() === "notifications";
+
+            return item.children ? (
               <NavGroup key={item.path} item={item} isExpanded={isExpanded} />
             ) : (
               <NavLink
@@ -264,13 +282,21 @@ const Sidebar = ({ role }: Props) => {
                           : "hover:bg-white/10 text-slate-300"
                       }`}
                     >
-                      <span className="shrink-0">
+                      <span className="shrink-0 relative">
                         {iconMap[item.path] || <LayoutDashboard size={20} />}
+                        {isNotifItem && unreadCount > 0 && (
+                          <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-rose-500 rounded-full animate-pulse shadow-xs shadow-rose-500/80" />
+                        )}
                       </span>
                       {isExpanded && (
-                        <span className="whitespace-nowrap transition-opacity duration-300">
-                          {item.label}
-                        </span>
+                        <div className="flex items-center justify-between w-full min-w-0">
+                          <span className="whitespace-nowrap transition-opacity duration-300">
+                            {item.label}
+                          </span>
+                          {isNotifItem && unreadCount > 0 && (
+                            <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse ml-2" />
+                          )}
+                        </div>
                       )}
                     </div>
                     {/* collapsed hint — tiny dot when active */}
@@ -278,8 +304,8 @@ const Sidebar = ({ role }: Props) => {
                   </div>
                 )}
               </NavLink>
-            )
-          )}
+            );
+          })}
         </nav>
       </div>
 

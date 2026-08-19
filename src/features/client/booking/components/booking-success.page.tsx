@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { CheckCircle, Calendar, Clock, ArrowRight } from "lucide-react";
 import { clientBookingService, BookingResponseData } from "@/modules/booking/service/client-booking.service";
 
@@ -6,8 +6,12 @@ export const BookingSuccessPage: React.FC = () => {
   const [booking, setBooking] = useState<BookingResponseData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const hasVerifiedRef = useRef(false);
 
   useEffect(() => {
+    if (hasVerifiedRef.current) return;
+    hasVerifiedRef.current = true;
+
     const urlParams = new URLSearchParams(window.location.search);
     const bookingId = urlParams.get("bookingId");
     const sessionId = urlParams.get("session_id");

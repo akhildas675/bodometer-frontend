@@ -26,6 +26,7 @@ import UserBookTrainerPage from "@/features/user/user.trainers/pages/user.book-t
 import UserMyBookingsPage from "@/features/user/user.trainers/pages/user.my-bookings.page";
 import UserWalletPage from "@/features/user/user.wallet/pages/user.wallet.page";
 import { BookingSuccessPage } from "@/features/client/booking/components/booking-success.page";
+import UserNotificationPage from "@/features/user/user.notification/pages/user-notification.page";
 
 export const userRoutes = (
   <Route element={<ProtectedRoute allowedRoles={[ROLES.USER]} />}>
@@ -61,6 +62,10 @@ export const userRoutes = (
       <Route
         path={USER_UI_ROUTES.USER_WALLET}
         element={<UserWalletPage />}
+      />
+      <Route
+        path={USER_UI_ROUTES.USER_NOTIFICATIONS}
+        element={<UserNotificationPage />}
       />
       <Route
         path="/client/booking/success"

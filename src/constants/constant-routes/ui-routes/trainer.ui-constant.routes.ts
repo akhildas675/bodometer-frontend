@@ -13,4 +13,5 @@ export const TRAiNER_UI_ROUTES = {
     // Booking — Two-mode flow
     TRAINER_BOOKING_SETUP: "/trainer/booking/setup",
     TRAINER_BOOKING_MANAGEMENT: "/trainer/booking",
+    TRAINER_NOTIFICATIONS: "/trainer/notifications",
 } as const;

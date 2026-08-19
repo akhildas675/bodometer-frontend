@@ -57,4 +57,5 @@ export const ADMIN_UI_ROUTES = {
   MEAL_CATEGORY_FORM:"/admin/meal-category/create",
 
   BOOKINGS: "/admin/bookings",
+  NOTIFICATIONS: "/admin/notifications",
 } as const;

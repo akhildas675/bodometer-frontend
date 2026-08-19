@@ -32,4 +32,5 @@ export const USER_UI_ROUTES = {
     USER_BOOK_TRAINER: "/trainers/:id/book",
     USER_MY_BOOKINGS: "/my-bookings",
     USER_WALLET: "/wallet",
+    USER_NOTIFICATIONS: "/notifications",
 } as const

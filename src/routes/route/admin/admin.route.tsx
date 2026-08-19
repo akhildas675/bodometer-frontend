@@ -25,6 +25,7 @@ import AdminEquipmentListPage from "@/features/admin/admin.equipment/pages/admin
 import AdminEquipmentFormPage from "@/features/admin/admin.equipment/pages/admin.equipment-form.page";
 import AdminMealCategoryListPage from "@/features/admin/admin.meal-category/pages/admin.meal-category.list-page";
 import AdminMealCategoryFormPage from "@/features/admin/admin.meal-category/pages/admin.meal-category.form-page";
+import AdminNotificationPage from "@/features/admin/admin.notification/pages/admin-notification.page";
 const AdminTargetMuscleListPage = lazy(() => import("@/features/admin/admin.target.muscle/pages/admin-target.muscle-list.page"));
 const AdminTargetMuscleFormPage = lazy(() => import("@/features/admin/admin.target.muscle/pages/admin.target-muscle.form-page"));
 const AdminExerciseListPage = lazy(() => import("@/features/admin/admin.exercise/pages/admin.exercise-list.page"));
@@ -74,6 +75,8 @@ export const adminRoutes = (
 
       <Route path={ADMIN_UI_ROUTES.MEAL_CATEGORY} element={<AdminMealCategoryListPage/>} />
       <Route path={ADMIN_UI_ROUTES.MEAL_CATEGORY_FORM} element={<AdminMealCategoryFormPage/>} />
+
+      <Route path={ADMIN_UI_ROUTES.NOTIFICATIONS} element={<AdminNotificationPage />} />
     </Route>
   </Route>
 );

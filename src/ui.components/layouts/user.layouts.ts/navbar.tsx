@@ -1,10 +1,20 @@
+import { useEffect } from "react";
 import { FaPaperPlane, FaBell, FaUserCircle } from "react-icons/fa";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/stores/auth.store";
+import { useNotificationStore } from "@/stores/notification.store";
 
 const Navbar = () => {
   const navigator = useNavigate();
   const { isAuthenticated } = useAuthStore();
+  const unreadCount = useNotificationStore((state) => state.unreadCount);
+  const fetchUnreadCount = useNotificationStore((state) => state.fetchUnreadCount);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      fetchUnreadCount();
+    }
+  }, [isAuthenticated, fetchUnreadCount]);
 
   return (
     <nav
@@ -85,7 +95,16 @@ const Navbar = () => {
         {isAuthenticated && (
           <>
             <FaPaperPlane className="text-[#268AFF] text-2xl cursor-pointer hover:text-[#1a6fd6] transition" />
-            <FaBell className="text-[#268AFF] text-2xl cursor-pointer hover:text-[#1a6fd6] transition" />
+            <div
+              className="relative cursor-pointer group"
+              onClick={() => navigator("/notifications")}
+              title="Notifications"
+            >
+              <FaBell className="text-[#268AFF] text-2xl hover:text-[#1a6fd6] transition" />
+              {unreadCount > 0 && (
+                <span className="absolute -top-1 -right-1 w-3 h-3 bg-rose-500 rounded-full border-2 border-[#050017] animate-pulse shadow-sm shadow-rose-500/80" />
+              )}
+            </div>
 
             {/* USER ICON WITH DROPDOWN */}
             <div className="relative">
