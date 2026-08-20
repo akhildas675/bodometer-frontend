@@ -52,14 +52,6 @@ export const userRoutes = (
         element={<UserTrainerDetailPage />}
       />
       <Route
-        path={USER_UI_ROUTES.USER_BOOK_TRAINER}
-        element={<UserBookTrainerPage />}
-      />
-      <Route
-        path={USER_UI_ROUTES.USER_MY_BOOKINGS}
-        element={<UserMyBookingsPage />}
-      />
-      <Route
         path={USER_UI_ROUTES.USER_WALLET}
         element={<UserWalletPage />}
       />
@@ -81,6 +73,14 @@ export const userRoutes = (
 
       {/* Premium Routes inside Main Layout (Subscription Required) */}
       <Route element={<SubscriptionRoute />}>
+        <Route
+          path={USER_UI_ROUTES.USER_BOOK_TRAINER}
+          element={<UserBookTrainerPage />}
+        />
+        <Route
+          path={USER_UI_ROUTES.USER_MY_BOOKINGS}
+          element={<UserMyBookingsPage />}
+        />
         <Route path={USER_UI_ROUTES.USER_FITNESS_PROFILE} element={<UserFitnessProfilePage/>} />
         <Route path={USER_UI_ROUTES.USER_EXERCISES} element={<UserExercisesPage />} />
         <Route path={USER_UI_ROUTES.USER_EXERCISE_DETAIL} element={<UserExerciseDetailPage />} />

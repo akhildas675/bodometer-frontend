@@ -111,7 +111,14 @@ const AdminQuestionList = () => {
             className="bg-[#0c0624] border border-purple-900/50 rounded-lg px-4 py-2 text-sm text-purple-200 outline-none focus:ring-1 focus:ring-purple-500 cursor-pointer hover:border-purple-500/50 transition"
          >
             <option value="">All Groups</option>
-            {groups.map(g => <option key={g.groupId} value={g.groupId}>{g.title}</option>)}
+            {groups.map((g) => {
+              const gid = g.groupId || ((g as unknown as Record<string, unknown>)._id as string) || g.key;
+              return (
+                <option key={gid} value={gid}>
+                  {g.title}
+                </option>
+              );
+            })}
          </select>
          <SortDropdown<keyof OnboardingQuestion>
             options={sortOptions}

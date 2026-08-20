@@ -17,7 +17,7 @@ function getDaysInMonth(year: number, month: number) {
   return new Date(year, month + 1, 0).getDate();
 }
 
-/** Returns 0=Sun…6=Sat ? converts to Mon=0…Sun=6 */
+/** Returns 0=Sun..6=Sat - converts to Mon=0..Sun=6 */
 function getMondayBasedDow(date: Date) {
   return (date.getDay() + 6) % 7;
 }
@@ -42,10 +42,12 @@ export const BookingCalendar: React.FC<BookingCalendarProps> = ({
   const firstDay = getMondayBasedDow(new Date(year, month - 1, 1));
 
   const goPrev = () => {
+    if (loading) return;
     const d = new Date(year, month - 2, 1);
     onMonthChange(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`);
   };
   const goNext = () => {
+    if (loading) return;
     const d = new Date(year, month, 1);
     onMonthChange(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`);
   };
@@ -76,12 +78,13 @@ export const BookingCalendar: React.FC<BookingCalendarProps> = ({
     let tooltip = "";
     let clickable = false;
 
-    if (isPast) {
+    if (loading) {
+      cellClass += "cursor-default animate-pulse bg-white/5 border border-purple-500/10 ";
+      dayClass += "text-white/20 ";
+      badge = <span className="w-6 h-1.5 bg-white/10 rounded animate-pulse mt-1" />;
+    } else if (isPast) {
       cellClass += "opacity-30 cursor-not-allowed ";
       dayClass += "text-white/30 ";
-    } else if (loading) {
-      cellClass += "cursor-default animate-pulse bg-white/5 ";
-      dayClass += "text-transparent ";
     } else if (!overview) {
       cellClass += "opacity-40 cursor-not-allowed bg-white/[0.02] ";
       dayClass += "text-white/30 ";
@@ -128,7 +131,7 @@ export const BookingCalendar: React.FC<BookingCalendarProps> = ({
       tooltip = "Trainer off-duty";
     }
 
-    if (isToday && !isSelected) {
+    if (isToday && !isSelected && !loading) {
       cellClass += "ring-1 ring-purple-500/50 ";
     }
 
@@ -136,7 +139,7 @@ export const BookingCalendar: React.FC<BookingCalendarProps> = ({
       <div
         key={dateStr}
         title={tooltip}
-        onClick={clickable && !isPast ? () => onDateSelect(dateStr) : undefined}
+        onClick={clickable && !isPast && !loading ? () => onDateSelect(dateStr) : undefined}
         className={cellClass}
       >
         <span className={dayClass}>{day}</span>
@@ -151,15 +154,22 @@ export const BookingCalendar: React.FC<BookingCalendarProps> = ({
         <button
           type="button"
           onClick={goPrev}
-          className="w-8 h-8 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 text-white/60 hover:text-white transition cursor-pointer"
+          disabled={loading}
+          className="w-8 h-8 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 disabled:opacity-30 text-white/60 hover:text-white transition cursor-pointer"
         >
           <ChevronLeft size={16} />
         </button>
-        <span className="text-sm font-bold text-white">{monthLabel}</span>
+        <div className="flex items-center gap-2">
+          <span className="text-sm font-bold text-white">{monthLabel}</span>
+          {loading && (
+            <div className="w-3.5 h-3.5 border-2 border-purple-400 border-t-transparent rounded-full animate-spin" />
+          )}
+        </div>
         <button
           type="button"
           onClick={goNext}
-          className="w-8 h-8 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 text-white/60 hover:text-white transition cursor-pointer"
+          disabled={loading}
+          className="w-8 h-8 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 disabled:opacity-30 text-white/60 hover:text-white transition cursor-pointer"
         >
           <ChevronRight size={16} />
         </button>

@@ -13,6 +13,16 @@ export const questionColumns: TableColumn<OnboardingQuestion>[] = [
     sortable: true,
   },
   {
+    key: "groupId",
+    label: "Category / Group",
+    sortable: true,
+    render: (item) => (
+      <span className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-purple-500/10 border border-purple-500/30 text-purple-300">
+        {item.groupTitle || "General Group"}
+      </span>
+    )
+  },
+  {
     key: "type",
     label: "Type",
     sortable: false,

@@ -15,6 +15,7 @@ export interface OnboardingQuestion {
   question: string;
   description?: string;
   groupId: string;
+  groupTitle?: string;
   order: number;
   isActive: boolean;
   type: QuestionType;

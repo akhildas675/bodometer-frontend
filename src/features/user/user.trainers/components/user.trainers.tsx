@@ -91,7 +91,7 @@ const TrainerCard = ({ trainer }: { trainer: TrainerListItem }) => {
 
 
 const UserTrainers = () => {
-  const [currentPage, setCurrentPage] = useState(ITEMS_PER_PAGE);
+  const [currentPage, setCurrentPage] = useState(1);
   const [searchInput, setSearchInput] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [sortField, setSortField] = useState("");

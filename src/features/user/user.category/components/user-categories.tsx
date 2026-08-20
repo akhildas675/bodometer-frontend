@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useTableFetch } from "@/hooks/useTableFetch";
 import { PaginationMeta } from "@/interface/common.interface";
 import { CategoryListItem } from "@/modules/category/types/category.interface";
 import { Search, SlidersHorizontal, Dumbbell } from "lucide-react";
@@ -130,30 +129,43 @@ const UserCategories = () => {
     };
   }, []);
 
-  // Fetch
-  const fetchFn = useCallback(
-    () =>
-      categoryService
-        .getCategories({
-          page: currentPage,
-          limit: ITEMS_PER_PAGE,
-          search: debouncedSearch,
-          sortBy: sortField || undefined,
-          sortOrder: sortOrder,
-        })
-        .then((res) => ({ data: res.data, pagination: res.pagination })),
-    [currentPage, debouncedSearch, sortField, sortOrder],
-  );
-
-  const { data: response, loading, error, refetch } =
-    useTableFetch<{ data: CategoryListItem[]; pagination: PaginationMeta }>(fetchFn, false);
+  // Fetch categories directly when params change
+  const [categories, setCategories] = useState<CategoryListItem[]>([]);
+  const [pagination, setPagination] = useState<PaginationMeta | undefined>();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    refetch();
-  }, [fetchFn, refetch]);
+    let isMounted = true;
+    setLoading(true);
+    setError(null);
 
-  const categories = response?.data ?? [];
-  const pagination = response?.pagination;
+    categoryService
+      .getCategories({
+        page: currentPage,
+        limit: ITEMS_PER_PAGE,
+        search: debouncedSearch,
+        sortBy: sortField || undefined,
+        sortOrder: sortOrder,
+      })
+      .then((res) => {
+        if (isMounted && res) {
+          setCategories(res.data || []);
+          setPagination(res.pagination);
+        }
+      })
+      .catch((err) => {
+        console.error("Failed to load categories:", err);
+        if (isMounted) setError("Failed to load categories.");
+      })
+      .finally(() => {
+        if (isMounted) setLoading(false);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [currentPage, debouncedSearch, sortField, sortOrder]);
 
   return (
     <div className="text-white min-h-screen">

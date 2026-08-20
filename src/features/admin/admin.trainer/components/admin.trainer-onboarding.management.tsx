@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 import { useTrainerOnboardingActions } from "./admin.trainer-onboarding.actions";
 import { trainerOnboardingColumns } from "./admin.trainer-onboarding.columns";
@@ -50,7 +51,12 @@ const AdminTrainerOnboardingManagement = () => {
   }, [searchQuery, sortConfig, currentPage, itemsPerPage, filter, refetch]);
 
   const handleViewDetails = (trainer: TrainerWithProfile) => {
-    navigate(`/admin/appointments/${trainer.profile._id}`);
+    const targetId = trainer?.profile?._id || trainer?.user?._id;
+    if (targetId) {
+      navigate(`/admin/appointments/${targetId}`);
+    } else {
+      toast.error("Trainer details ID unavailable.");
+    }
   };
 
   const trainerActions = useTrainerOnboardingActions(handleViewDetails);

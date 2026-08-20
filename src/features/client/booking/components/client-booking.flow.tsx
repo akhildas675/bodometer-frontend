@@ -13,6 +13,9 @@ import {
   ShieldCheck,
   Check,
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { USER_UI_ROUTES } from "@/constants/constant-routes/ui-routes/user.ui-constant.routes";
+import { subscriptionService } from "@/modules/subscription/service/subscription.service";
 import { CoachingListItem } from "@/modules/coaching/types/coaching.interface";
 import { coachingService } from "@/modules/coaching/service/coaching.service";
 import {
@@ -37,6 +40,10 @@ export const ClientBookingFlow: React.FC<ClientBookingFlowProps> = ({
   trainerId,
   trainerName = "Trainer",
 }) => {
+  const navigate = useNavigate();
+  const [checkingSubscription, setCheckingSubscription] = useState(true);
+  const [hasSubscription, setHasSubscription] = useState(false);
+
   const [services, setServices] = useState<CoachingListItem[]>([]);
   const [selectedService, setSelectedService] = useState<CoachingListItem | null>(null);
 
@@ -50,6 +57,27 @@ export const ClientBookingFlow: React.FC<ClientBookingFlowProps> = ({
   const [loadingSlots, setLoadingSlots] = useState(false);
   const [loadingServices, setLoadingServices] = useState(true);
   const [bookingInProgress, setBookingInProgress] = useState(false);
+
+  // 0. Check active subscription
+  useEffect(() => {
+    subscriptionService
+      .getActiveSubscription()
+      .then((res) => {
+        if (res?.data) {
+          setHasSubscription(true);
+        } else {
+          toast.error("Active subscription required to book a session. Redirecting to plans...");
+          navigate(USER_UI_ROUTES.USER_SUBSCRIPTIONS, { replace: true });
+        }
+      })
+      .catch(() => {
+        toast.error("Active subscription required to book a session. Redirecting to plans...");
+        navigate(USER_UI_ROUTES.USER_SUBSCRIPTIONS, { replace: true });
+      })
+      .finally(() => {
+        setCheckingSubscription(false);
+      });
+  }, [navigate]);
 
   // 1. Fetch active coaching services
   useEffect(() => {
@@ -191,13 +219,21 @@ export const ClientBookingFlow: React.FC<ClientBookingFlowProps> = ({
     }
   };
 
-  if (loadingServices) {
+  if (checkingSubscription || loadingServices) {
     return (
       <div className="p-8 space-y-4 animate-pulse max-w-4xl mx-auto">
+        <div className="flex items-center gap-3 text-purple-400 mb-2">
+          <Sparkles className="animate-spin text-purple-400" size={20} />
+          <span className="text-sm font-medium text-white/70">Checking subscription status...</span>
+        </div>
         <div className="h-10 w-48 bg-white/5 rounded-xl" />
         <div className="h-64 bg-white/5 rounded-2xl" />
       </div>
     );
+  }
+
+  if (!hasSubscription) {
+    return null;
   }
 
   const selectedDateLabel = selectedDate

@@ -46,7 +46,7 @@ const AdminTrainerAppointmentDetails = () => {
     } catch (error: unknown) {
       const apiError = parseApiError(error);
       toast.error(apiError.message);
-      navigate("/admin/trainers");
+      navigate("/admin/appointments");
     } finally {
       setLoading(false);
     }
