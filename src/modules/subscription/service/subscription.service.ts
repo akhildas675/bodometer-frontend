@@ -5,6 +5,7 @@ import {
   SubscriptionPlanDetailsResponse,
   SubscriptionPlanPayload,
   SubscriptionTransaction,
+  UpgradePreview,
 } from "@/modules/subscription/types/subscription.interface";
 import { SUBSCRIPTION_API_PATHS } from "../constant/api-routes";
 import { ApiResponse } from "@/interface/api-response.interface";
@@ -174,5 +175,23 @@ export const subscriptionService = {
       data: response.data.data,
       pagination: response.data.pagination,
     };
+  },
+
+  async getUpgradePreview(
+    targetPlanId: string,
+  ): Promise<ApiResponse<UpgradePreview>> {
+    const response = await api.get<ApiResponse<UpgradePreview>>(
+      SUBSCRIPTION_API_PATHS.UPGRADE_PREVIEW(targetPlanId),
+    );
+    return response.data;
+  },
+
+  async createUpgradeCheckoutSession(
+    targetPlanId: string,
+  ): Promise<ApiResponse<{ checkoutUrl: string | null; directSuccess?: boolean }>> {
+    const response = await api.post<
+      ApiResponse<{ checkoutUrl: string | null; directSuccess?: boolean }>
+    >(SUBSCRIPTION_API_PATHS.UPGRADE_CHECKOUT, { targetPlanId });
+    return response.data;
   },
 };

@@ -126,15 +126,21 @@ const AdminTrainerAppointmentDetails = () => {
     );
   }
 
-  if (!trainer) {
+  if (!trainer || !trainer.profile || !trainer.user) {
     return (
-      <div className="min-h-screen bg-[#0d0b1f] p-6">
-        <div className="text-white">Trainer not found</div>
+      <div className="min-h-screen bg-[#0d0b1f] p-6 flex flex-col items-center justify-center text-center">
+        <div className="text-white text-lg mb-4 font-semibold">Trainer details not found.</div>
+        <button
+          onClick={() => navigate("/admin/appointments")}
+          className="px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white font-medium rounded-xl transition cursor-pointer"
+        >
+          Back to Appointments
+        </button>
       </div>
     );
   }
 
-  const isPending = trainer.profile.verificationStatus === "pending";
+  const isPending = trainer.profile?.verificationStatus === "pending";
 
   return (
     <div className="min-h-screen bg-[#0d0b1f]">

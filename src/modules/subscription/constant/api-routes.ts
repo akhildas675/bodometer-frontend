@@ -21,4 +21,7 @@ export const SUBSCRIPTION_API_PATHS = {
   // Payment
   CHECKOUT_SESSION: "/subscriptions/checkout-session",
   VERIFY_PAYMENT: "/subscriptions/verify-payment",
+  UPGRADE_PREVIEW: (targetPlanId: string) =>
+    `/subscriptions/upgrade-preview/${targetPlanId}`,
+  UPGRADE_CHECKOUT: "/subscriptions/upgrade-checkout",
 } as const;

@@ -1,10 +1,12 @@
+import { ChevronsLeft, ChevronLeft, ChevronRight, ChevronsRight } from "lucide-react";
+
 interface PaginationProps {
   currentPage: number;
   totalPages: number;
   totalItems: number;
   itemsPerPage: number;
   onPageChange: (page: number) => void;
-  onItemsPerPageChange: (itemsPerPage: number) => void;
+  onItemsPerPageChange?: (itemsPerPage: number) => void;
   disabled?: boolean;
   className?: string;
 }
@@ -15,8 +17,9 @@ const Pagination = ({
   totalItems,
   itemsPerPage,
   onPageChange,
+  onItemsPerPageChange,
   disabled = false,
-  className = '',
+  className = "",
 }: PaginationProps) => {
   const startItem = totalItems === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1;
   const endItem = Math.min(currentPage * itemsPerPage, totalItems);
@@ -54,21 +57,21 @@ const Pagination = ({
         for (let i = 1; i <= 4; i++) {
           pages.push(i);
         }
-        pages.push('...');
+        pages.push("...");
         pages.push(totalPages);
       } else if (currentPage >= totalPages - 2) {
         pages.push(1);
-        pages.push('...');
+        pages.push("...");
         for (let i = totalPages - 3; i <= totalPages; i++) {
           pages.push(i);
         }
       } else {
         pages.push(1);
-        pages.push('...');
+        pages.push("...");
         pages.push(currentPage - 1);
         pages.push(currentPage);
         pages.push(currentPage + 1);
-        pages.push('...');
+        pages.push("...");
         pages.push(totalPages);
       }
     }
@@ -77,49 +80,54 @@ const Pagination = ({
   };
 
   return (
-    <div className={`flex items-center justify-between ${className}`}>
-
-      {/* Page info */}
-      <div className="text-gray-400 text-sm">
-        Showing {startItem} to {endItem} of {totalItems} results
+    <div
+      className={`flex flex-col sm:flex-row items-center justify-between gap-4 p-4 bg-slate-900/60 border border-slate-800/80 rounded-2xl backdrop-blur-xl shadow-xl ${className}`}
+    >
+      {/* Result stats */}
+      <div className="text-xs sm:text-sm text-slate-400">
+        Showing <strong className="text-white font-semibold">{startItem}</strong> to{" "}
+        <strong className="text-white font-semibold">{endItem}</strong> of{" "}
+        <strong className="text-white font-semibold">{totalItems}</strong> results
       </div>
 
-      {/* Pagination controls */}
-      <div className="flex items-center gap-2">
+      {/* Pagination button controls */}
+      <div className="flex items-center gap-1.5">
         {/* First page button */}
         <button
+          type="button"
           onClick={handleFirst}
           disabled={currentPage === 1 || disabled}
-          className="px-3 py-1 bg-gray-800 border border-gray-700 rounded text-white hover:bg-gray-700 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
+          className="p-2 bg-slate-800/80 border border-slate-700/60 rounded-xl text-slate-300 hover:text-white hover:bg-slate-700 transition duration-200 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
           title="First page"
         >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
-          </svg>
+          <ChevronsLeft className="w-4 h-4" />
         </button>
 
         {/* Previous button */}
         <button
+          type="button"
           onClick={handlePrevious}
           disabled={currentPage === 1 || disabled}
-          className="px-3 py-1 bg-gray-800 border border-gray-700 rounded text-white hover:bg-gray-700 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
+          className="px-3 py-1.5 bg-slate-800/80 border border-slate-700/60 rounded-xl text-xs sm:text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-700 transition duration-200 disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1 cursor-pointer"
         >
-          Previous
+          <ChevronLeft className="w-4 h-4" />
+          <span className="hidden sm:inline">Prev</span>
         </button>
 
         {/* Page numbers */}
-        <div className="flex gap-1">
+        <div className="flex items-center gap-1">
           {getPageNumbers().map((page, index) => (
             <button
               key={index}
-              onClick={() => typeof page === 'number' && onPageChange(page)}
-              disabled={page === '...' || page === currentPage || disabled}
-              className={`px-3 py-1 rounded focus:outline-none ${
+              type="button"
+              onClick={() => typeof page === "number" && onPageChange(page)}
+              disabled={page === "..." || page === currentPage || disabled}
+              className={`min-w-[34px] h-[34px] px-2 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 flex items-center justify-center ${
                 page === currentPage
-                  ? 'bg-blue-600 text-white'
-                  : page === '...'
-                  ? 'bg-transparent text-gray-400 cursor-default'
-                  : 'bg-gray-800 border border-gray-700 text-white hover:bg-gray-700'
+                  ? "bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-lg shadow-purple-600/30 border border-purple-400/40"
+                  : page === "..."
+                  ? "bg-transparent text-slate-500 cursor-default"
+                  : "bg-slate-800/60 border border-slate-700/60 text-slate-300 hover:text-white hover:bg-slate-700/80 cursor-pointer"
               } disabled:cursor-not-allowed`}
             >
               {page}
@@ -129,23 +137,24 @@ const Pagination = ({
 
         {/* Next button */}
         <button
+          type="button"
           onClick={handleNext}
-          disabled={currentPage === totalPages || disabled}
-          className="px-3 py-1 bg-gray-800 border border-gray-700 rounded text-white hover:bg-gray-700 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
+          disabled={currentPage >= totalPages || disabled}
+          className="px-3 py-1.5 bg-slate-800/80 border border-slate-700/60 rounded-xl text-xs sm:text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-700 transition duration-200 disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1 cursor-pointer"
         >
-          Next
+          <span className="hidden sm:inline">Next</span>
+          <ChevronRight className="w-4 h-4" />
         </button>
 
         {/* Last page button */}
         <button
+          type="button"
           onClick={handleLast}
-          disabled={currentPage === totalPages || disabled}
-          className="px-3 py-1 bg-gray-800 border border-gray-700 rounded text-white hover:bg-gray-700 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
+          disabled={currentPage >= totalPages || disabled}
+          className="p-2 bg-slate-800/80 border border-slate-700/60 rounded-xl text-slate-300 hover:text-white hover:bg-slate-700 transition duration-200 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
           title="Last page"
         >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 5l7 7-7 7M5 5l7 7-7 7" />
-          </svg>
+          <ChevronsRight className="w-4 h-4" />
         </button>
       </div>
     </div>

@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from "react";
+import { Search, X } from "lucide-react";
 
 interface SearchBarProps {
   value?: string;
@@ -11,28 +12,25 @@ interface SearchBarProps {
 }
 
 const SearchBar = ({
-  value = '',
+  value = "",
   onSearch,
   placeholder = "Search...",
   debounceMs = 500,
   disabled = false,
-  className = '',
+  className = "",
   showClearButton = true,
 }: SearchBarProps) => {
   const [searchInput, setSearchInput] = useState(value);
   const onSearchRef = useRef(onSearch);
 
-  // Sync latest function ref without breaking effect logic
   useEffect(() => {
     onSearchRef.current = onSearch;
   }, [onSearch]);
 
-  // Sync with external value changes
   useEffect(() => {
     setSearchInput(value);
   }, [value]);
 
-  // Debounced search
   useEffect(() => {
     const timer = setTimeout(() => {
       onSearchRef.current(searchInput);
@@ -42,47 +40,34 @@ const SearchBar = ({
   }, [searchInput, debounceMs]);
 
   const handleClear = () => {
-    setSearchInput('');
-    onSearch('');
+    setSearchInput("");
+    onSearch("");
   };
 
   return (
-    <div className={`relative w-full ${className}`}> {/* Fixed: Use curly braces, not backtick */}
-      <input
-        type="text"
-        placeholder={placeholder}
-        value={searchInput}
-        onChange={(e) => setSearchInput(e.target.value)}
-        disabled={disabled}
-        className="w-full px-4 py-2 pl-10 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
-        aria-label="Search"
-      />
-      
-      {/* Search Icon */}
-      <svg
-        className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={2}
-          d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+    <div className={`relative w-full ${className}`}>
+      <div className="relative flex items-center w-full">
+        <Search className="absolute left-3.5 top-1/2 transform -translate-y-1/2 w-4 h-4 text-purple-400/80 pointer-events-none transition-colors" />
+        <input
+          type="text"
+          placeholder={placeholder}
+          value={searchInput}
+          onChange={(e) => setSearchInput(e.target.value)}
+          disabled={disabled}
+          className="w-full pl-10 pr-10 py-2.5 bg-slate-900/80 border border-slate-700/60 rounded-xl text-white placeholder-slate-400/80 text-sm focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-inner"
+          aria-label="Search"
         />
-      </svg>
-      
-      {/* Clear Button */}
-      {showClearButton && searchInput && !disabled && (
-        <button
-          onClick={handleClear}
-          className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white text-xl"
-          aria-label="Clear search"
-        >
-          ×
-        </button>
-      )}
+        {showClearButton && searchInput && !disabled && (
+          <button
+            type="button"
+            onClick={handleClear}
+            className="absolute right-3 top-1/2 transform -translate-y-1/2 p-1 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-all cursor-pointer"
+            aria-label="Clear search"
+          >
+            <X className="w-3.5 h-3.5" />
+          </button>
+        )}
+      </div>
     </div>
   );
 };

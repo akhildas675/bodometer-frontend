@@ -2,13 +2,13 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/stores/auth.store";
 import { toast } from "sonner";
-import { Clock, LogOut, XCircle, RefreshCw, AlertTriangle } from "lucide-react";
+import { Clock, LogOut, XCircle, RefreshCw, AlertTriangle, Wifi } from "lucide-react";
 import authInitService from "@/modules/auth/service/auth-init.service";
 import { useFetch } from "@/hooks/useFetch";
 import { TrainerProfileStatus } from "@/interface/trainer.interface";
 import { trainerService } from "@/modules/trainer/service/trainer.service";
-
 import { parseApiError } from "@/api/error.helper";
+import { initializeNotificationSocket } from "@/modules/notification/socket/notification.listener";
 
 const TrainerStatus = () => {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -53,28 +53,31 @@ const TrainerStatus = () => {
     true
   );
 
-
-useEffect(() => {
-  const interval = setInterval(refetch, 30000);
-  return () => clearInterval(interval);
-}, []);
-
-
-useEffect(() => {
-  const status = trainerProfileStatus?.data?.verificationStatus;
-  if (status === "approved") {
-    toast.success(" Your profile has been approved! Please log in again.", {
-      duration: 4000,
+  // Subscribe to real-time socket updates for instant status changes (no 30s HTTP polling)
+  useEffect(() => {
+    const unsubscribe = initializeNotificationSocket((notification) => {
+      if (
+        notification?.type === "TRAINER_APPROVED" ||
+        notification?.type === "TRAINER_REJECTED" ||
+        notification?.type?.includes("TRAINER")
+      ) {
+        refetch();
+      }
     });
-    setTimeout(async () => {
-      try { await authInitService.logout(); } catch (e: unknown) { console.error(e); }
-      navigate("/", { replace: true });
-      setTimeout(() => {
-        useAuthStore.getState().clearAuth();
-      }, 150);
-    }, 4000);
-  }
-}, [navigate, trainerProfileStatus]);
+
+    return () => {
+      unsubscribe();
+    };
+  }, [refetch]);
+
+  useEffect(() => {
+    const status = trainerProfileStatus?.data?.verificationStatus;
+    if (status === "approved") {
+      toast.success("Your trainer profile has been approved! Please log in to access your account.");
+      useAuthStore.getState().clearAuth();
+      navigate("/login", { replace: true });
+    }
+  }, [navigate, trainerProfileStatus]);
 
   const status = trainerProfileStatus?.data?.verificationStatus;
   const trainerName = trainerProfileStatus?.data?.name;
@@ -102,7 +105,7 @@ useEffect(() => {
           <p className="text-slate-300">Failed to load your profile status.</p>
           <button
             onClick={refetch}
-            className="px-4 py-2 rounded-full bg-purple-600/20 border border-purple-500/30 text-purple-300 text-sm hover:bg-purple-600/30 transition-all"
+            className="px-4 py-2 rounded-full bg-purple-600/20 border border-purple-500/30 text-purple-300 text-sm hover:bg-purple-600/30 transition-all cursor-pointer"
           >
             Try again
           </button>
@@ -136,7 +139,6 @@ useEffect(() => {
         </button>
 
         <div className="flex flex-col items-center justify-center px-10 py-16 text-white relative z-10">
-
           {/* icon */}
           <div className="mb-8 relative">
             {isRejected ? (
@@ -188,10 +190,10 @@ useEffect(() => {
                   This process typically takes 24–48 hours. You'll receive an
                   email notification once your profile has been reviewed.
                 </p>
-               
-                <p className="text-purple-400 text-xs flex items-center justify-center gap-1">
-                  <RefreshCw size={10} className="animate-spin" />
-                  Auto-checking approval status every 30 seconds...
+
+                <p className="text-emerald-400 text-xs flex items-center justify-center gap-1.5 pt-1">
+                  <Wifi size={12} className="animate-pulse text-emerald-400" />
+                  <span>Real-time status updates active</span>
                 </p>
               </>
             )}
@@ -233,7 +235,7 @@ useEffect(() => {
           {isRejected && (
             <button
               onClick={() => navigate("/trainer/onboarding/intro")}
-              className="mt-8 flex items-center gap-2 px-8 py-3 rounded-full bg-linear-to-r from-red-600/80 to-rose-600/80 hover:from-red-600 hover:to-rose-600 text-white font-semibold text-sm transition-all hover:scale-105 shadow-lg shadow-red-900/30 border border-red-500/30"
+              className="mt-8 flex items-center gap-2 px-8 py-3 rounded-full bg-linear-to-r from-red-600/80 to-rose-600/80 hover:from-red-600 hover:to-rose-600 text-white font-semibold text-sm transition-all hover:scale-105 shadow-lg shadow-red-900/30 border border-red-500/30 cursor-pointer"
             >
               <RefreshCw size={16} />
               Reapply Now

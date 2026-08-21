@@ -1,22 +1,50 @@
 import type { TableColumn } from "@/ui.components/ui/table/table.types";
 import { SubscriptionTransaction } from "@/modules/subscription/types/subscription.interface";
+
 export const transactionColumns: TableColumn<SubscriptionTransaction>[] = [
   {
     key: "subscriptionPlanId",
-    label: "Plan Name",
-    render: (tx) => (
-      <span className="text-white text-xs font-semibold">
-        {tx.subscriptionPlanId?.name || "Custom Plan"}
-      </span>
-    ),
+    label: "Plan Details",
+    render: (tx) => {
+      const isUpgrade = tx.type === "UPGRADE" || !!tx.oldPlanId;
+      return (
+        <div className="flex flex-col gap-0.5">
+          <div className="flex items-center gap-1.5">
+            <span className="text-white text-xs font-semibold">
+              {tx.subscriptionPlanId?.name || "Subscription Plan"}
+            </span>
+            {isUpgrade ? (
+              <span className="px-1.5 py-0.2 rounded text-[9px] font-bold uppercase bg-violet-500/20 text-violet-300 border border-violet-500/30">
+                Upgrade
+              </span>
+            ) : (
+              <span className="px-1.5 py-0.2 rounded text-[9px] font-bold uppercase bg-blue-500/20 text-blue-300 border border-blue-500/30">
+                Purchase
+              </span>
+            )}
+          </div>
+          {isUpgrade && (
+            <span className="text-[10px] text-slate-400">
+              {tx.oldPlanId?.name ? `From ${tx.oldPlanId.name}` : "Plan Upgrade"}
+              {!!tx.oldPlanUnusedValue && ` (Credit: ₹${tx.oldPlanUnusedValue})`}
+            </span>
+          )}
+        </div>
+      );
+    },
   },
   {
     key: "amount",
-    label: "Amount",
+    label: "Amount Paid",
     render: (tx) => (
-      <span className="text-indigo-300 font-bold text-xs">
-        ₹{tx.amount}
-      </span>
+      <div className="flex flex-col">
+        <span className="text-indigo-300 font-bold text-xs">
+          ₹{tx.amount}
+        </span>
+        {tx.type === "UPGRADE" && tx.upgradeAmount !== undefined && (
+          <span className="text-[9px] text-slate-400">Prorated charge</span>
+        )}
+      </div>
     ),
   },
   {
@@ -24,8 +52,12 @@ export const transactionColumns: TableColumn<SubscriptionTransaction>[] = [
     label: "Method",
     render: (tx) => (
       <div className="flex flex-col">
-        <span className="text-[11px] text-slate-200 capitalize font-medium">{tx.paymentMethod}</span>
-        <span className="text-[9px] text-slate-400 capitalize">{tx.paymentGateway}</span>
+        <span className="text-[11px] text-slate-200 capitalize font-medium">
+          {tx.paymentMethod?.replace("_", " ")}
+        </span>
+        <span className="text-[9px] text-slate-400 capitalize">
+          {tx.paymentGateway}
+        </span>
       </div>
     ),
   },
@@ -36,13 +68,15 @@ export const transactionColumns: TableColumn<SubscriptionTransaction>[] = [
       const dateVal = tx.paidAt || tx.createdAt;
       return (
         <span className="text-[11px] text-slate-300">
-          {dateVal ? new Date(dateVal).toLocaleDateString("en-IN", {
-            day: "numeric",
-            month: "short",
-            year: "numeric",
-            hour: "2-digit",
-            minute: "2-digit"
-          }) : "N/A"}
+          {dateVal
+            ? new Date(dateVal).toLocaleDateString("en-IN", {
+                day: "numeric",
+                month: "short",
+                year: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
+              })
+            : "N/A"}
         </span>
       );
     },

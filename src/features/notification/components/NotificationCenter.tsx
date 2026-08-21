@@ -21,6 +21,8 @@ import { notificationService } from "@/modules/notification/service/notification
 import type { NotificationItem } from "@/interface/notification.interface";
 import { useNotificationStore } from "@/stores/notification.store";
 import { toast } from "sonner";
+import Pagination from "@/features/controls/pagination/pagination";
+import { parseApiError } from "@/api/error.helper";
 
 interface NotificationCenterProps {
   role?: "admin" | "trainer" | "user";
@@ -39,13 +41,13 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
   const [page, setPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(1);
   const [totalItems, setTotalItems] = useState<number>(0);
-  const limit = 10;
+  const [itemsPerPage, setItemsPerPage] = useState<number>(10);
 
-  const loadNotifications = useCallback(async (currentPage: number) => {
+  const loadNotifications = useCallback(async (currentPage: number, currentLimit: number) => {
     try {
       setLoading(true);
       const [res, unreadRes] = await Promise.all([
-        notificationService.getNotifications(currentPage, limit),
+        notificationService.getNotifications(currentPage, currentLimit),
         notificationService.getUnreadCount(),
       ]);
 
@@ -53,7 +55,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
         setNotifications(res.data);
         const total = res.totalItems || res.data.length;
         setTotalItems(total);
-        setTotalPages(Math.ceil(total / limit) || 1);
+        setTotalPages(Math.ceil(total / currentLimit) || 1);
       }
 
       if (unreadRes && unreadRes.success) {
@@ -61,8 +63,9 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
         setUnreadCount(count);
         useNotificationStore.getState().setUnreadCount(count);
       }
-    } catch (err) {
-      console.error("Error loading notifications:", err);
+    } catch (err: unknown) {
+      const parsed = parseApiError(err);
+      console.error("Error loading notifications:", parsed);
       toast.error("Failed to load notifications.");
     } finally {
       setLoading(false);
@@ -70,8 +73,8 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
   }, []);
 
   useEffect(() => {
-    loadNotifications(page);
-  }, [page, loadNotifications]);
+    loadNotifications(page, itemsPerPage);
+  }, [page, itemsPerPage, loadNotifications]);
 
   const handleMarkAsRead = async (id: string, isRead: boolean) => {
     if (isRead) return;
@@ -86,10 +89,10 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
       if (res.success) {
         toast.success("Marked as read");
       }
-    } catch (err) {
+    } catch (err: unknown) {
       console.error("Failed to mark notification as read:", err);
       toast.error("Failed to update notification");
-      loadNotifications(page);
+      loadNotifications(page, itemsPerPage);
     }
   };
 
@@ -194,7 +197,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
         {/* Action controls */}
         <div className="flex items-center space-x-3">
           <button
-            onClick={() => loadNotifications(page)}
+            onClick={() => loadNotifications(page, itemsPerPage)}
             disabled={loading}
             className="p-2.5 bg-slate-800/80 hover:bg-slate-700/80 text-slate-300 hover:text-white rounded-xl border border-slate-700/60 transition duration-200"
             title="Refresh"
@@ -322,36 +325,20 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
       )}
 
       {/* Pagination Footer */}
-      {totalPages > 1 && (
-        <div className="flex items-center justify-between mt-8 p-4 bg-slate-900/60 rounded-2xl border border-slate-800">
-          <span className="text-sm text-slate-400">
-            Page <span className="font-semibold text-white">{page}</span> of{" "}
-            <span className="font-semibold text-white">{totalPages}</span>
-          </span>
-          <div className="flex items-center space-x-2">
-            <button
-              onClick={() => setPage((p) => Math.max(1, p - 1))}
-              disabled={page === 1}
-              className={`p-2 rounded-xl border transition ${
-                page === 1
-                  ? "bg-slate-800/30 text-slate-600 border-slate-800 cursor-not-allowed"
-                  : "bg-slate-800 text-slate-300 hover:text-white border-slate-700 hover:bg-slate-700"
-              }`}
-            >
-              <ChevronLeft className="w-5 h-5" />
-            </button>
-            <button
-              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-              disabled={page === totalPages}
-              className={`p-2 rounded-xl border transition ${
-                page === totalPages
-                  ? "bg-slate-800/30 text-slate-600 border-slate-800 cursor-not-allowed"
-                  : "bg-slate-800 text-slate-300 hover:text-white border-slate-700 hover:bg-slate-700"
-              }`}
-            >
-              <ChevronRight className="w-5 h-5" />
-            </button>
-          </div>
+      {totalItems > 0 && (
+        <div className="mt-8">
+          <Pagination
+            currentPage={page}
+            totalPages={totalPages}
+            totalItems={totalItems}
+            itemsPerPage={itemsPerPage}
+            onPageChange={(newPage) => setPage(newPage)}
+            onItemsPerPageChange={(newLimit) => {
+              setItemsPerPage(newLimit);
+              setPage(1);
+            }}
+            disabled={loading}
+          />
         </div>
       )}
     </div>

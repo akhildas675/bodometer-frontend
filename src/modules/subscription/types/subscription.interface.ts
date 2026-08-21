@@ -101,6 +101,13 @@ export interface SubscriptionTransaction {
     _id: string;
     name: string;
   } | null;
+  type?: string;
+  oldPlanId?: {
+    _id: string;
+    name: string;
+  } | null;
+  oldPlanUnusedValue?: number;
+  upgradeAmount?: number;
   amount: number;
   currency: string;
   paymentMethod: string;
@@ -129,4 +136,22 @@ export interface ActiveSubscription {
   endDate: string;
   status: string;
   daysRemaining: number;
+}
+
+export interface UpgradePreview {
+  currentPlan: {
+    id: string;
+    name: string;
+    price: number;
+    durationInDays: number;
+  };
+  targetPlan: {
+    id: string;
+    name: string;
+    price: number;
+    durationInDays: number;
+  };
+  daysRemaining: number;
+  oldPlanUnusedValue: number;
+  upgradeAmount: number;
 }

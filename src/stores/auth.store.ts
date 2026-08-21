@@ -29,7 +29,7 @@ interface AuthState {
   }) => void;
   clearAuth: () => void;
   setInitialized: (value: boolean) => void;
-  setVerificationStatus: (status: VerificationStatus) => void;
+  setVerificationStatus: (status: VerificationStatus | null) => void;
   updateUser: (updates: Partial<AuthUser>) => void;
 }
 

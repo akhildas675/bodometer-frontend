@@ -13,27 +13,21 @@ const TrainerOnboardingRoute = () => {
   const [redirect, setRedirect] = useState<string | null>(null);
 
   useEffect(() => {
-    if (user?.verificationStatus) {
-      setChecking(false);
-      return;
-    }
-
     const verify = async () => {
       try {
         const result = await trainerService.getTrainerProfileStatus();
         const status = result?.data?.verificationStatus;
-        // const profileExists = result?.data?.profileExists;
 
         if (status === VERIFICATION_STATUS.APPROVED) {
-          try { await authInitService.logout(); } catch (e: unknown) { console.error(e); }
-          useAuthStore.getState().clearAuth();
-          setRedirect("/");
-        } else if (status === VERIFICATION_STATUS.PENDING) {
-          
+          useAuthStore.getState().setVerificationStatus(status);
+          setRedirect("/trainer");
+        } else if (status === VERIFICATION_STATUS.PENDING || status === VERIFICATION_STATUS.REJECTED) {
           useAuthStore.getState().setVerificationStatus(status);
           setRedirect("/trainer/status");
+        } else {
+          // No profile created yet - stay on onboarding!
+          useAuthStore.getState().setVerificationStatus(null);
         }
-       
       } catch (e: unknown) {
         console.error(e);
       } finally {
@@ -47,14 +41,6 @@ const TrainerOnboardingRoute = () => {
   if (!isAuthenticated || !user) return <Navigate to="/login" replace />;
   if (user.role !== ROLES.TRAINER) return <Navigate to="/" replace />;
 
-  if (user.verificationStatus === VERIFICATION_STATUS.APPROVED) {
-    return <Navigate to="/trainer" replace />;
-  }
-
-  if (user.verificationStatus === VERIFICATION_STATUS.PENDING) {
-    return <Navigate to="/trainer/status" replace />;
-  }
-
   if (checking) {
     return (
       <div className="min-h-screen bg-[#050017] flex items-center justify-center">
@@ -65,7 +51,6 @@ const TrainerOnboardingRoute = () => {
 
   if (redirect) return <Navigate to={redirect} replace />;
 
-  
   return <Outlet />;
 };
 

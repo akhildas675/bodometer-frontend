@@ -16,15 +16,18 @@ const App = () => {
           position="top-right" 
           expand={false}
           duration={3000}
+          theme="dark"
           toastOptions={{
             style: {
-              background: 'linear-gradient(135deg, #1e1b4b 0%, #312e81 100%)',
-              border: '1px solid rgba(139, 92, 246, 0.3)',
-              color: '#e0e7ff',
-              fontSize: '14px',
-              fontWeight: '500',
+              background: '#13112c',
+              border: '1px solid rgba(139, 92, 246, 0.4)',
+              color: '#ffffff',
             },
-            className: 'toast-custom',
+            classNames: {
+              toast: 'bg-[#13112c] border border-violet-500/40 text-white rounded-xl shadow-2xl p-4',
+              title: 'text-white font-bold text-sm',
+              description: 'text-slate-300 text-xs font-normal mt-1',
+            },
           }}
         />
         <Suspense fallback={<ScreenLoader />}>

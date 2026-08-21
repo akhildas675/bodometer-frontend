@@ -13,26 +13,19 @@ const TrainerStatusRoute = () => {
   const [redirect, setRedirect] = useState<string | null>(null);
 
   useEffect(() => {
-    if (user?.verificationStatus) {
-      setChecking(false);
-      return;
-    }
-
     const verify = async () => {
       try {
         const result = await trainerService.getTrainerProfileStatus();
         const status = result?.data?.verificationStatus;
 
         if (status === VERIFICATION_STATUS.APPROVED) {
-         
-          try { await authInitService.logout(); } catch (e: unknown) { console.error(e); }
-          useAuthStore.getState().clearAuth();
-          setRedirect("/");
+          useAuthStore.getState().setVerificationStatus(status);
+          setRedirect("/trainer");
         } else if (!status) {
-        
+          // No profile created yet - redirect to onboarding intro!
+          useAuthStore.getState().setVerificationStatus(null);
           setRedirect("/trainer/onboarding/intro");
         } else {
-       
           useAuthStore.getState().setVerificationStatus(status);
         }
       } catch (e: unknown) {
@@ -47,10 +40,6 @@ const TrainerStatusRoute = () => {
 
   if (!isAuthenticated || !user) return <Navigate to="/login" replace />;
   if (user.role !== ROLES.TRAINER) return <Navigate to="/" replace />;
-
-  if (user.verificationStatus === VERIFICATION_STATUS.APPROVED) {
-    return <Navigate to="/trainer" replace />;
-  }
 
   if (checking) {
     return (

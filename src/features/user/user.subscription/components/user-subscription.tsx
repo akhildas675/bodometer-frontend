@@ -50,9 +50,28 @@ const TIER_STYLES = [
 
 import { parseApiError } from "@/api/error.helper";
 import { subscriptionService } from "@/modules/subscription/service/subscription.service";
+import ConfirmationModal from "@/ui.components/ui/confirm.dialog";
+import { UpgradePreview } from "@/modules/subscription/types/subscription.interface";
 
 const UserSubscription = () => {
   const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null);
+  const [upgradeModalState, setUpgradeModalState] = useState<{
+    isOpen: boolean;
+    targetPlanId: string;
+    targetPlanName: string;
+    loading: boolean;
+    preview: UpgradePreview | null;
+    error: string | null;
+    submitting: boolean;
+  }>({
+    isOpen: false,
+    targetPlanId: "",
+    targetPlanName: "",
+    loading: false,
+    preview: null,
+    error: null,
+    submitting: false,
+  });
 
   // Transaction Table State
   const [searchQuery, setSearchQuery] = useState("");
@@ -142,18 +161,20 @@ const UserSubscription = () => {
 
       ),
   );
-    // console.log("Plans",plansData)
 
-
- 
   const plans = Array.isArray(plansData)
     ? [...plansData].sort((a, b) => a.price - b.price)
     : [];
 
-  const { data: activeSubscription, loading: activeLoading } =
+  const { data: activeSubscription, loading: activeLoading, refetch: refetchActiveSub } =
     useFetch<ActiveSubscription | null>(() =>
       subscriptionService.getActiveSubscription().then((res) => res.data),
     );
+
+  const currentPlan = plans.find(
+    (p) => p.subscriptionPlanId === activeSubscription?.subscriptionPlanId,
+  );
+  const currentPrice = currentPlan ? currentPlan.price : 0;
 
   const handleSubscribe = async (subscriptionPlanId: string) => {
     try {
@@ -165,6 +186,59 @@ const UserSubscription = () => {
       toast.error(apiError.message);
     } finally {
       setCheckoutLoading(null);
+    }
+  };
+
+  const openUpgradeModal = async (targetPlanId: string, targetPlanName: string) => {
+    setUpgradeModalState({
+      isOpen: true,
+      targetPlanId,
+      targetPlanName,
+      loading: true,
+      preview: null,
+      error: null,
+      submitting: false,
+    });
+
+    try {
+      const res = await subscriptionService.getUpgradePreview(targetPlanId);
+      setUpgradeModalState((prev) => ({
+        ...prev,
+        loading: false,
+        preview: res.data,
+      }));
+    } catch (err: unknown) {
+      const parsed = parseApiError(err);
+      setUpgradeModalState((prev) => ({
+        ...prev,
+        loading: false,
+        error: parsed.message || "Failed to fetch upgrade calculation from server",
+      }));
+    }
+  };
+
+  const handleConfirmUpgrade = async () => {
+    if (!upgradeModalState.targetPlanId) return;
+
+    try {
+      setUpgradeModalState((prev) => ({ ...prev, submitting: true }));
+      const res = await subscriptionService.createUpgradeCheckoutSession(
+        upgradeModalState.targetPlanId,
+      );
+
+      if (res.data.directSuccess) {
+        toast.success(`Successfully upgraded to ${upgradeModalState.targetPlanName}!`);
+        setUpgradeModalState((prev) => ({ ...prev, isOpen: false }));
+        refetchActiveSub();
+        refetchTransactions();
+      } else if (res.data.checkoutUrl) {
+        window.location.href = res.data.checkoutUrl;
+      }
+    } catch (err: unknown) {
+      const parsed = parseApiError(err);
+      toast.error(parsed.message || "Failed to initiate upgrade");
+    } finally {
+      setUpgradeModalState((prev) => ({ ...prev, submitting: false }));
     }
   };
 
@@ -191,7 +265,7 @@ const UserSubscription = () => {
               </div>
               <div>
                 <p className="text-violet-300 text-sm font-medium">
-                  Current Plan
+                  Current Active Plan
                 </p>
                 <h2 className="text-white text-xl font-bold">
                   {activeSubscription.planName}
@@ -219,7 +293,7 @@ const UserSubscription = () => {
         </h1>
         <p className="text-slate-400 text-sm">
           {activeSubscription
-            ? "Manage your subscription or view your active plan"
+            ? "Upgrade to a higher tier plan with unused credit applied"
             : "Start your fitness journey with the right plan"}
         </p>
       </div>
@@ -254,6 +328,7 @@ const UserSubscription = () => {
             const duration = plan.durationInDays || plan.durationInDays || 30;
             const isCurrentPlan = activeSubscription?.subscriptionPlanId === subscriptionPlanId;
             const isPopular = !!plan.isPopular;
+            const isHigherTier = activeSubscription && plan.price > currentPrice;
 
             return (
               <div
@@ -349,12 +424,21 @@ const UserSubscription = () => {
                       Current Plan
                     </button>
                   ) : activeSubscription ? (
-                    <button
-                      disabled
-                      className="w-full py-2.5 rounded-xl bg-white/5 text-slate-500 text-sm font-semibold cursor-not-allowed"
-                    >
-                      Already Subscribed
-                    </button>
+                    isHigherTier ? (
+                      <button
+                        onClick={() => openUpgradeModal(subscriptionPlanId, name)}
+                        className="w-full py-2.5 rounded-xl text-sm font-bold bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white shadow-lg shadow-violet-600/30 transition-all duration-200 active:scale-[0.98]"
+                      >
+                        Upgrade to {name}
+                      </button>
+                    ) : (
+                      <button
+                        disabled
+                        className="w-full py-2.5 rounded-xl bg-white/5 text-slate-500 text-sm font-semibold cursor-not-allowed"
+                      >
+                        Lower Tier Plan
+                      </button>
+                    )
                   ) : (
                     <button
                       onClick={() => handleSubscribe(subscriptionPlanId)}
@@ -499,6 +583,80 @@ const UserSubscription = () => {
           </>
         )}
       </div>
+
+      <ConfirmationModal
+        isOpen={upgradeModalState.isOpen}
+        onClose={() =>
+          setUpgradeModalState((prev) => ({ ...prev, isOpen: false }))
+        }
+        onConfirm={handleConfirmUpgrade}
+        title={`Upgrade to ${upgradeModalState.targetPlanName}`}
+        icon={<Zap className="w-6 h-6 text-purple-400" />}
+        confirmText={
+          upgradeModalState.submitting
+            ? "Processing..."
+            : upgradeModalState.preview?.upgradeAmount === 0
+            ? "Activate Upgrade"
+            : upgradeModalState.preview
+            ? `Pay ₹${upgradeModalState.preview.upgradeAmount} & Upgrade`
+            : "Confirm Upgrade"
+        }
+        cancelText="Cancel"
+        variant="purple"
+        size="lg"
+        message={
+          upgradeModalState.loading ? (
+            <div className="py-8 flex flex-col items-center justify-center text-slate-400 gap-3">
+              <Sparkles size={24} className="animate-spin text-purple-400" />
+              <span className="text-sm font-medium">
+                Fetching server calculations...
+              </span>
+            </div>
+          ) : upgradeModalState.error ? (
+            <div className="text-rose-400 py-4 text-center">
+              {upgradeModalState.error}
+            </div>
+          ) : upgradeModalState.preview ? (
+            <div className="space-y-4">
+              <div className="bg-slate-900/60 p-4 rounded-2xl border border-white/10 space-y-3">
+                <div className="flex justify-between items-center text-sm">
+                  <span className="text-slate-400">Current Plan</span>
+                  <span className="font-semibold text-white">
+                    {upgradeModalState.preview.currentPlan.name}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center text-sm">
+                  <span className="text-slate-400">Target Plan Price</span>
+                  <span className="font-semibold text-white">
+                    ₹{upgradeModalState.preview.targetPlan.price}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center text-sm">
+                  <span className="text-slate-400">
+                    Unused Credit ({upgradeModalState.preview.daysRemaining} days remaining)
+                  </span>
+                  <span className="font-semibold text-emerald-400">
+                    - ₹{upgradeModalState.preview.oldPlanUnusedValue}
+                  </span>
+                </div>
+                <div className="border-t border-white/10 pt-3 flex justify-between items-center">
+                  <div>
+                    <span className="text-sm font-bold text-white">
+                      Upgrade Amount Payable
+                    </span>
+                    <p className="text-[11px] text-slate-400">
+                      Calculated & verified by server
+                    </p>
+                  </div>
+                  <span className="text-2xl font-extrabold text-purple-400">
+                    ₹{upgradeModalState.preview.upgradeAmount}
+                  </span>
+                </div>
+              </div>
+            </div>
+          ) : null
+        }
+      />
     </div>
   );
 };

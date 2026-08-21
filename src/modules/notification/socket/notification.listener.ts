@@ -17,9 +17,7 @@ export const initializeNotificationSocket = (
     useNotificationStore.getState().addNotification(notification);
 
     if (notification?.title) {
-      toast.info(notification.title, {
-        description: notification.message,
-      });
+      toast.success(notification.title);
     }
 
     if (onNotification) {
