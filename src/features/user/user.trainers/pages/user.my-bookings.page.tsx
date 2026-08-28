@@ -1,4 +1,5 @@
-﻿import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import {
   Calendar,
   Clock,
@@ -11,6 +12,7 @@ import {
   Wallet,
   ArrowUpRight,
   ArrowDownLeft,
+  Video,
 } from "lucide-react";
 import {
   clientBookingService,
@@ -19,6 +21,7 @@ import {
 } from "@/modules/booking/service/client-booking.service";
 import { walletService, UserWalletData, WalletTransactionData } from "@/modules/wallet/service/wallet.service";
 import SearchBar from "@/features/controls/search/search";
+import { USER_UI_ROUTES } from "@/constants/constant-routes/ui-routes/user.ui-constant.routes";
 import SortDropdown, { SortConfig } from "@/features/controls/sort/sort";
 import Pagination from "@/features/controls/pagination/pagination";
 import { toast } from "sonner";
@@ -368,6 +371,12 @@ export const UserMyBookingsPage: React.FC = () => {
             const end = new Date(b.endTime);
             const dateStr = start.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", year: "numeric" });
             const timeStr = `${start.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })} - ${end.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })}`;
+            const nowMs = Date.now();
+            const startMs = start.getTime();
+            const endMs = end.getTime();
+            const isBeforeStart = nowMs < startMs;
+            const isWithinWindow = nowMs >= startMs && nowMs <= endMs + 10 * 60 * 1000;
+            const isPastSession = nowMs > endMs + 10 * 60 * 1000;
             const isConfirmed = b.status.toUpperCase() === "CONFIRMED";
 
             return (
@@ -418,12 +427,33 @@ export const UserMyBookingsPage: React.FC = () => {
                       <HelpCircle size={14} className="text-purple-400" /> Cancellation refunds credit directly to your Bodometer Wallet
                     </span>
 
-                    <button
-                      onClick={() => setSelectedForCancel(b)}
-                      className="px-4 py-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 text-xs font-bold border border-rose-500/20 transition cursor-pointer"
-                    >
-                      Cancel Session
-                    </button>
+                    <div className="flex items-center gap-2">
+                      {isWithinWindow ? (
+                        <Link
+                          to={USER_UI_ROUTES.USER_VIDEO_CALL.replace(":bookingId", b.id)}
+                          className="px-4 py-2 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 text-xs font-bold border border-emerald-500/40 transition flex items-center gap-1.5 animate-pulse shadow-lg shadow-emerald-900/30"
+                        >
+                          <Video size={14} /> Join Video Call (Live)
+                        </Link>
+                      ) : isBeforeStart ? (
+                        <span className="px-3.5 py-2 rounded-xl bg-white/5 text-white/50 text-xs font-semibold border border-white/10 flex items-center gap-1.5 cursor-not-allowed">
+                          <Clock size={14} className="text-purple-400" /> Starts at {start.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                        </span>
+                      ) : (
+                        <span className="px-3.5 py-2 rounded-xl bg-zinc-800/80 text-zinc-400 text-xs font-semibold border border-zinc-700/60 flex items-center gap-1.5">
+                          Session Expired
+                        </span>
+                      )}
+
+                      {!isPastSession && (
+                        <button
+                          onClick={() => setSelectedForCancel(b)}
+                          className="px-4 py-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 text-xs font-bold border border-rose-500/20 transition cursor-pointer"
+                        >
+                          Cancel Session
+                        </button>
+                      )}
+                    </div>
                   </div>
                 )}
               </div>

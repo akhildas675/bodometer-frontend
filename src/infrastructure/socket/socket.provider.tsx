@@ -3,7 +3,6 @@ import { socket } from "./socket.client";
 import { initializeNotificationSocket } from "@/modules/notification/socket/notification.listener";
 import { SocketProviderProps } from "./socket.types";
 
-
 export function SocketProvider({
   isAuthenticated,
   children,

@@ -15,16 +15,17 @@ const App = () => {
         <Toaster 
           position="top-right" 
           expand={false}
-          duration={3000}
+          duration={4000}
           toastOptions={{
             style: {
-              background: 'linear-gradient(135deg, #1e1b4b 0%, #312e81 100%)',
-              border: '1px solid rgba(139, 92, 246, 0.3)',
-              color: '#e0e7ff',
+              background: '#0c071e',
+              border: '1px solid rgba(168, 85, 247, 0.4)',
+              color: '#ffffff',
               fontSize: '14px',
-              fontWeight: '500',
+              fontWeight: '600',
             },
-            className: 'toast-custom',
+            descriptionClassName: '!text-slate-100 !font-medium text-xs',
+            className: 'toast-custom text-white',
           }}
         />
         <Suspense fallback={<ScreenLoader />}>

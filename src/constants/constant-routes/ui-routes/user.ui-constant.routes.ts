@@ -33,4 +33,5 @@ export const USER_UI_ROUTES = {
     USER_MY_BOOKINGS: "/my-bookings",
     USER_WALLET: "/wallet",
     USER_NOTIFICATIONS: "/notifications",
+    USER_VIDEO_CALL: "/video-call/:bookingId",
 } as const

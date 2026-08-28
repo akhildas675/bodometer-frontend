@@ -24,6 +24,9 @@ const TrainerBookingSetupPage = lazy(
 const TrainerBookingManagementPage = lazy(
   () => import("@/features/trainer/trainer.booking/pages/trainer-booking-management.page")
 );
+const VideoCallPage = lazy(
+  () => import("@/features/video-call/pages/VideoCallPage")
+);
 
 export const trainerRoutes = (
   <Route element={<ProtectedRoute allowedRoles={["trainer"]} />}>
@@ -49,6 +52,7 @@ export const trainerRoutes = (
         <Route path={TRAiNER_UI_ROUTES.TRAINER_BOOKING_SETUP} element={<TrainerBookingSetupPage />} />
         <Route path={TRAiNER_UI_ROUTES.TRAINER_BOOKING_MANAGEMENT} element={<TrainerBookingManagementPage />} />
         <Route path={TRAiNER_UI_ROUTES.TRAINER_NOTIFICATIONS} element={<TrainerNotificationPage />} />
+        <Route path={TRAiNER_UI_ROUTES.TRAINER_VIDEO_CALL} element={<VideoCallPage />} />
 
         {/* Legacy redirect: /trainer/availability → /trainer/booking */}
         <Route

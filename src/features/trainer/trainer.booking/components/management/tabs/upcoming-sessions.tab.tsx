@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import {
   CalendarClock,
   Calendar,
@@ -13,6 +14,7 @@ import {
   ChevronRight,
   Pencil,
   Sparkles,
+  Video,
 } from "lucide-react";
 import {
   clientBookingService,
@@ -21,6 +23,7 @@ import {
   AvailableDateOverview,
 } from "@/modules/booking/service/client-booking.service";
 import SearchBar from "@/features/controls/search/search";
+import { TRAiNER_UI_ROUTES } from "@/constants/constant-routes/ui-routes/trainer.ui-constant.routes";
 import SortDropdown, { SortConfig } from "@/features/controls/sort/sort";
 import Pagination from "@/features/controls/pagination/pagination";
 import { toast } from "sonner";
@@ -406,6 +409,36 @@ export const UpcomingSessionsTab: React.FC = () => {
                 <div className="flex items-center justify-between pt-3 border-t border-white/5 text-xs">
                   <span className="text-white/40">Fee: Rs.{b.price}</span>
                   <div className="flex items-center gap-2">
+                    {(() => {
+                      const nowMs = Date.now();
+                      const startMs = startDate.getTime();
+                      const deadlineMs = startMs + 10 * 60 * 1000;
+
+                      if (nowMs < startMs) {
+                        return (
+                          <span className="px-3 py-1.5 rounded-xl bg-white/5 text-white/40 font-semibold text-xs border border-white/10 flex items-center gap-1.5 cursor-not-allowed">
+                            <Clock size={13} /> Starts at {startDate.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                          </span>
+                        );
+                      }
+
+                      if (nowMs > deadlineMs) {
+                        return (
+                          <span className="px-3 py-1.5 rounded-xl bg-rose-500/10 text-rose-400 font-semibold text-xs border border-rose-500/20 flex items-center gap-1.5">
+                            <XCircle size={13} /> Start Window Expired
+                          </span>
+                        );
+                      }
+
+                      return (
+                        <Link
+                          to={TRAiNER_UI_ROUTES.TRAINER_VIDEO_CALL.replace(":bookingId", b.id)}
+                          className="px-3 py-1.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 font-semibold text-xs transition border border-emerald-500/30 flex items-center gap-1.5"
+                        >
+                          <Video size={13} /> Start Call
+                        </Link>
+                      );
+                    })()}
                     {b.status === "RESCHEDULE_PENDING" ? (
                       <span className="px-3 py-1.5 rounded-xl bg-amber-500/10 text-amber-300 font-semibold text-xs border border-amber-500/30 flex items-center gap-1.5">
                         <AlertCircle size={13} /> Proposal Pending
