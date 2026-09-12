@@ -13,9 +13,6 @@ import {
   Sparkles,
   RefreshCw,
   Clock,
-  ChevronLeft,
-  ChevronRight,
-  Filter,
 } from "lucide-react";
 import { notificationService } from "@/modules/notification/service/notification.service";
 import type { NotificationItem } from "@/interface/notification.interface";

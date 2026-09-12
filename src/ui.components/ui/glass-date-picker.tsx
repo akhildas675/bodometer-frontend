@@ -28,8 +28,8 @@ export default function GlassDatePicker({
   value,
   onChange,
   label,
-  minDate,
-  maxDate,
+  minDate: _minDate,
+  maxDate: _maxDate,
   placeholder = "Select Date",
 }: GlassDatePickerProps) {
   const [isOpen, setIsOpen] = useState(false);

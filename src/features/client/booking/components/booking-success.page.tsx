@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { CheckCircle, Calendar, Clock, ArrowRight } from "lucide-react";
+import { CheckCircle, ArrowRight } from "lucide-react";
 import { clientBookingService, BookingResponseData } from "@/modules/booking/service/client-booking.service";
 
 export const BookingSuccessPage: React.FC = () => {

@@ -601,7 +601,7 @@ function VideoSession({ videoSessionId }: VideoSessionProps) {
       setRemoteStream(null);
       setLocalStream(null);
     };
-  }, [videoSessionId]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [videoSessionId]);
 
   // ─── Error Screen 
   if (mediaError) {

@@ -18,7 +18,7 @@ export function useFetch<T>(fetchFn: FetchFn<T>, auto = true) {
       setError(null);
       const result = await fetchFnRef.current(); 
       setData(result);
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       setError("Failed to fetch data");
     } finally {
       setLoading(false);

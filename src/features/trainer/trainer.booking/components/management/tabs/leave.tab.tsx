@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { ShieldAlert, Plus, Trash2, Edit2, Loader2, Calendar } from "lucide-react";
+import { ShieldAlert, Plus, Trash2, Edit2, Calendar } from "lucide-react";
 import { trainerAvailabilityService } from "@/modules/booking/service/trainer-availability.service";
 import {
   CreateTrainerUnavailability,

@@ -10,7 +10,6 @@ import {
   Target
 } from "lucide-react";
 import { useFetch } from "@/hooks/useFetch";
-import { userService } from "@/modules/user/service/user.service";
 import { WorkoutProgressResponse } from "@/modules/workout-plan/types/workout.types";
 import { TIMEFRAME, Timeframe } from "@/constants/fitness.constant";
 import {

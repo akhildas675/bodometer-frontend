@@ -238,7 +238,7 @@ export const UpcomingSessionsTab: React.FC = () => {
       const path = TRAiNER_UI_ROUTES.TRAINER_VIDEO_CALL_SESSION.replace(':videoSessionId', videoSession.id);
       navigate(path);
     } catch (err: unknown) {
-      const msg = (err as any)?.response?.data?.message || 'Failed to start video call.';
+      const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message || 'Failed to start video call.';
       toast.error(msg);
     } finally {
       setStartingCallBookingId(null);

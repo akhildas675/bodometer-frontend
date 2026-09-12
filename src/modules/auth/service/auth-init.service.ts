@@ -26,7 +26,7 @@ class AuthInitService {
       } else {
         clearAuth();
       }
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       clearAuth();
     } finally {
       setInitialized(true);

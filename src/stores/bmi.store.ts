@@ -1,6 +1,5 @@
 import { healthLogService } from "@/modules/health-log/service/health-log.service";
 import { create } from "zustand";
-import { userService } from "@/modules/user/service/user.service";
 
 interface BmiState {
   height: number | null;
@@ -73,7 +72,7 @@ export const useStandaloneBmiStore = create<BmiState>((set, get) => ({
       } else {
         set({ error: "Failed to calculate BMI", loading: false });
       }
-    } catch (error: unknown) {
+    } catch (_error: unknown) {
       set({
         error: "Failed to calculate BMI",
         loading: false,

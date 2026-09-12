@@ -1,4 +1,3 @@
-/* eslint-disable react-refresh/only-export-components */
 import { Route } from "react-router-dom";
 import UserHomePage from "@/features/user/user.users/pages/user-home.page";
 import PublicGuard from "../../guard.routes/public-guard.routes";

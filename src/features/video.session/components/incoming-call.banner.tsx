@@ -43,7 +43,7 @@ function IncomingCallBanner() {
     try {
       await videoSessionService.rejectCall(incomingVideoSessionId);
     } catch {
-
+      // Ignore errors when rejecting call
     } finally {
       clearIncomingCall();
     }

@@ -4,7 +4,6 @@ import { ROLES } from '@/constants/role';
 import { VERIFICATION_STATUS } from '@/constants/verification.status';
 import { useEffect, useState } from 'react';
 import { trainerService } from "@/modules/trainer/service/trainer.service";
-import authInitService from '@/modules/auth/service/auth-init.service';
 
 const TrainerStatusRoute = () => {
   const user = useAuthStore((state) => state.user);

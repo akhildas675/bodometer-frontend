@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
 import {
   Wallet,
@@ -13,7 +13,6 @@ import {
   PlusCircle,
   AlertCircle,
   XCircle,
-  CheckCircle2,
   ExternalLink,
 } from "lucide-react";
 import { walletService, UserWalletData, WalletTransactionData } from "@/modules/wallet/service/wallet.service";

@@ -1,5 +1,4 @@
 import { create } from "zustand";
-import { userService } from "@/modules/user/service/user.service";
 import { onboardingService } from "@/modules/onboarding/service/onboarding.service";
 import { AnswerValue, QuestionType, CONDITION_OPERATOR, ConditionOperator } from "@/constants/onboarding.constant";
 import { parseApiError } from "@/api/error.helper";

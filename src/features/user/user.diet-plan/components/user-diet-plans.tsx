@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ChevronDown, ChevronUp, UtensilsCrossed, Calendar as CalendarIcon, Flame, Droplets, Target, Loader2, Sparkles, Clock, Crown } from 'lucide-react';
+import { ChevronDown, ChevronUp, UtensilsCrossed, Calendar as CalendarIcon, Flame, Droplets, Target, Loader2, Sparkles, Clock } from 'lucide-react';
 import { DietPlanService } from '../../../../modules/diet-plan/service/diet-plan.service';
 import { GetDietPlansResponseDto } from '../../../../modules/diet-plan/types/diet-plan.types';
 import { toast } from 'sonner';

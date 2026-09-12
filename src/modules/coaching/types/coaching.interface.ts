@@ -33,6 +33,6 @@ export interface UpdateCoaching {
   createdAt?: string;
 }
 
-export interface CoachingListItem extends UpdateCoaching {}
+export type CoachingListItem = UpdateCoaching;
 
-export interface CoachingDetail extends UpdateCoaching {}
+export type CoachingDetail = UpdateCoaching;

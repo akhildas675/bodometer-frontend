@@ -60,7 +60,7 @@ export const TrainerUnavailabilityManager: React.FC<
   // Detect which mode we're in:
   //   controlled  = props supplied by TrainerAvailabilityEditor (setup flow)
   //   standalone  = no props, rendered directly by LeaveTab
-  const isControlled = unavailabilities !== undefined;
+  const _isControlled = unavailabilities !== undefined;
   // ── Local form-field state only ──────────────────────────────────────
   const [showForm, setShowForm] = useState(false);
   const [type, setType] = useState<UnavailabilityType>("VACATION");

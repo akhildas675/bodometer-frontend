@@ -11,7 +11,6 @@ import {
   Wallet,
   XCircle,
   ShieldCheck,
-  Check,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { USER_UI_ROUTES } from "@/constants/constant-routes/ui-routes/user.ui-constant.routes";

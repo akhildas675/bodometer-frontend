@@ -4,7 +4,6 @@ import { AdminGetUsersResponse } from "@/interface/user.interface";
 import { toast } from "sonner";
 import { Lock, Unlock } from "lucide-react";
 import { parseApiError } from "@/api/error.helper";
-import { use } from "react";
 
 export type UserModalConfig = {
   isOpen: boolean;

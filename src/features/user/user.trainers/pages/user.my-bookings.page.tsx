@@ -33,7 +33,7 @@ export const UserMyBookingsPage: React.FC = () => {
   const [bookings, setBookings] = useState<BookingResponseData[]>([]);
   const [pendingRequests, setPendingRequests] = useState<{ request: BookingRescheduleRequestDetails; booking: BookingResponseData }[]>([]);
   const [wallet, setWallet] = useState<UserWalletData | null>(null);
-  const [transactions, setTransactions] = useState<WalletTransactionData[]>([]);
+  const [_transactions, setTransactions] = useState<WalletTransactionData[]>([]);
   const [loading, setLoading] = useState(true);
   const [sessionHistory, setSessionHistory] = useState<VideoSession[]>([]);
   const [requestingRefundId, setRequestingRefundId] = useState<string | null>(null);
@@ -620,7 +620,6 @@ export const UserMyBookingsPage: React.FC = () => {
             const endMs = end.getTime();
             const deadlineMs = startMs + 10 * 60 * 1000;
             const isBeforeStart = nowMs < startMs;
-            const isWithinStartWindow = nowMs >= startMs && nowMs <= deadlineMs;
             const isPastStartWindow = nowMs > deadlineMs;
             const isPastSession = nowMs > endMs;
             const trainerDisplayName = b.trainerName || vs?.otherParticipantName || "Assigned Trainer";

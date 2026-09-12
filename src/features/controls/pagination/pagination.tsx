@@ -17,7 +17,7 @@ const Pagination = ({
   totalItems,
   itemsPerPage,
   onPageChange,
-  onItemsPerPageChange,
+  onItemsPerPageChange: _onItemsPerPageChange,
   disabled = false,
   className = "",
 }: PaginationProps) => {
