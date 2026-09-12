@@ -18,7 +18,7 @@ export const BookingSettingsTab: React.FC = () => {
   const [settings, setSettings] = useState<TrainerBookingSettingsForm>({
     serviceIds: [],
     advanceNoticeHours: ADVANCE_NOTICE_HOURS.TWO,
-    bufferMinutes: BUFFER_TIME_MINUTES.FIFTEEN,
+    bufferMinutes: BUFFER_TIME_MINUTES.TWENTY,
     maximumBookingPerDay: MAX_BOOKING_LIMITS.EIGHT,
   });
   const [availableServices, setAvailableServices] = useState<CoachingListItem[]>([]);

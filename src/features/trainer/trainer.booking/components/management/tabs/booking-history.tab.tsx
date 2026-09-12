@@ -1,6 +1,8 @@
-﻿import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { History, Calendar, Clock, User, XCircle, CheckCircle2, AlertCircle, RefreshCw } from "lucide-react";
 import { clientBookingService, BookingResponseData } from "@/modules/booking/service/client-booking.service";
+import { videoSessionService } from "@/modules/video.session/service/video-session.service";
+import { VideoSession } from "@/modules/video.session/types";
 import SearchBar from "@/features/controls/search/search";
 import SortDropdown, { SortConfig } from "@/features/controls/sort/sort";
 import Pagination from "@/features/controls/pagination/pagination";
@@ -8,6 +10,7 @@ import { toast } from "sonner";
 
 export const BookingHistoryTab: React.FC = () => {
   const [historySessions, setHistorySessions] = useState<BookingResponseData[]>([]);
+  const [videoSessions, setVideoSessions] = useState<VideoSession[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Search, Filter, Sort, Pagination state
@@ -22,9 +25,14 @@ export const BookingHistoryTab: React.FC = () => {
 
   const fetchHistory = () => {
     setLoading(true);
-    clientBookingService
-      .getTrainerBookings("history")
-      .then((data) => setHistorySessions(data))
+    Promise.all([
+      clientBookingService.getTrainerBookings("history"),
+      videoSessionService.getVideoSessionHistory({ limit: 50 }).catch(() => null),
+    ])
+      .then(([bookingsData, vsData]) => {
+        setHistorySessions(bookingsData);
+        if (vsData?.sessions) setVideoSessions(vsData.sessions);
+      })
       .catch(() => toast.error("Failed to load booking history."))
       .finally(() => setLoading(false));
   };
@@ -209,6 +217,30 @@ export const BookingHistoryTab: React.FC = () => {
                       <p className="text-[11px] text-rose-200/80">Reason: {b.cancellationDetails.reason}</p>
                     </div>
                   )}
+
+                  {(() => {
+                    const vs = videoSessions.find((s) => s.bookingId === b.id);
+                    if (!vs) return null;
+                    return (
+                      <div className="bg-white/[0.03] border border-white/10 rounded-xl p-3 text-xs space-y-1">
+                        <div className="flex items-center justify-between text-white font-medium">
+                          <span className="text-purple-300">Video Call Conducted:</span>
+                          <span className="font-bold">{vs.actualDurationMinutes ?? 0} mins</span>
+                        </div>
+                        {vs.status === "INCOMPLETE" && (
+                          <div className="flex items-center justify-between text-amber-400 text-[11px] font-semibold">
+                            <span>Ended Early (&lt; 20m)</span>
+                            <span>{vs.refundStatus === "COMPLETED" ? "Refund Credited" : "Refund Eligible"}</span>
+                          </div>
+                        )}
+                        {vs.status === "COMPLETED" && (
+                          <div className="text-emerald-400 text-[11px] font-semibold">
+                            ✓ Session Completed
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })()}
 
                   <div className="flex items-center justify-between pt-2 border-t border-white/5 text-xs text-white/40">
                     <span>Fee: Rs.{b.price}</span>

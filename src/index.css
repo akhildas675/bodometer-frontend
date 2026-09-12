@@ -15,7 +15,7 @@
   border: 1px solid rgba(139, 92, 246, 0.4) !important;
   color: #ffffff !important;
   border-radius: 12px !important;
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5) !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(168, 85, 247, 0.2) !important;
 }
 
 [data-sonner-toast] [data-title] {
@@ -25,8 +25,8 @@
 }
 
 [data-sonner-toast] [data-description] {
-  color: #cbd5e1 !important; /* Light Slate 300 - 100% visible on dark bg */
-  font-weight: 400 !important;
+  color: #cbd5e1 !important;
+  font-weight: 500 !important;
   font-size: 12px !important;
   margin-top: 4px !important;
   line-height: 1.4 !important;

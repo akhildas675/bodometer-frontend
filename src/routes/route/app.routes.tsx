@@ -16,6 +16,7 @@ const AppRoutes = () => {
         {userRoutes}
         {publicRoutes}
       </Routes>
+
     </BrowserRouter>
   );
 };

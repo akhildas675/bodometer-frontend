@@ -510,7 +510,7 @@ export const ClientBookingFlow: React.FC<ClientBookingFlowProps> = ({
 
               {/* Wallet Option */}
               {(wallet?.balance || 0) >= (selectedService?.price || 0) && (
-                <label
+                <div
                   onClick={() => setSelectedPaymentMethod("WALLET")}
                   className={`p-3.5 rounded-2xl border flex items-center justify-between cursor-pointer transition ${
                     selectedPaymentMethod === "WALLET"
@@ -530,14 +530,14 @@ export const ClientBookingFlow: React.FC<ClientBookingFlowProps> = ({
                     name="paymentMethod"
                     checked={selectedPaymentMethod === "WALLET"}
                     onChange={() => setSelectedPaymentMethod("WALLET")}
-                    className="accent-purple-500"
+                    className="accent-purple-500 cursor-pointer"
                   />
-                </label>
+                </div>
               )}
 
               {/* Split Payment Option */}
               {(wallet?.balance || 0) > 0 && (wallet?.balance || 0) < (selectedService?.price || 0) && (
-                <label
+                <div
                   onClick={() => setSelectedPaymentMethod("SPLIT")}
                   className={`p-3.5 rounded-2xl border flex items-center justify-between cursor-pointer transition ${
                     selectedPaymentMethod === "SPLIT"
@@ -559,13 +559,13 @@ export const ClientBookingFlow: React.FC<ClientBookingFlowProps> = ({
                     name="paymentMethod"
                     checked={selectedPaymentMethod === "SPLIT"}
                     onChange={() => setSelectedPaymentMethod("SPLIT")}
-                    className="accent-purple-500"
+                    className="accent-purple-500 cursor-pointer"
                   />
-                </label>
+                </div>
               )}
 
               {/* Full Online Payment Option */}
-              <label
+              <div
                 onClick={() => setSelectedPaymentMethod("ONLINE")}
                 className={`p-3.5 rounded-2xl border flex items-center justify-between cursor-pointer transition ${
                   selectedPaymentMethod === "ONLINE"
@@ -585,9 +585,9 @@ export const ClientBookingFlow: React.FC<ClientBookingFlowProps> = ({
                   name="paymentMethod"
                   checked={selectedPaymentMethod === "ONLINE"}
                   onChange={() => setSelectedPaymentMethod("ONLINE")}
-                  className="accent-purple-500"
+                  className="accent-purple-500 cursor-pointer"
                 />
-              </label>
+              </div>
             </div>
 
             <div className="flex items-center justify-end gap-3 pt-2">
@@ -609,7 +609,13 @@ export const ClientBookingFlow: React.FC<ClientBookingFlowProps> = ({
                 ) : (
                   <ShieldCheck size={14} />
                 )}
-                {bookingInProgress ? "Processing..." : "Confirm Booking & Pay"}
+                {bookingInProgress
+                  ? "Processing..."
+                  : selectedPaymentMethod === "ONLINE"
+                  ? "Pay Online via Card / Gateway"
+                  : selectedPaymentMethod === "SPLIT"
+                  ? "Pay Split & Proceed to Gateway"
+                  : "Confirm & Pay via Wallet"}
               </button>
             </div>
           </div>

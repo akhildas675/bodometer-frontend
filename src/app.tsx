@@ -5,6 +5,7 @@ import { Suspense } from "react";
 import { ScreenLoader } from "./ui.components/ui/screen-loader";
 import { SocketProvider } from "./infrastructure/socket/socket.provider";
 import { useAuthStore } from "./stores/auth.store";
+import IncomingCallBanner from "./features/video.session/components/incoming-call.banner";
 
 const App = () => {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
@@ -22,14 +23,18 @@ const App = () => {
               background: '#13112c',
               border: '1px solid rgba(139, 92, 246, 0.4)',
               color: '#ffffff',
+              fontSize: '14px',
+              fontWeight: '600',
             },
             classNames: {
               toast: 'bg-[#13112c] border border-violet-500/40 text-white rounded-xl shadow-2xl p-4',
               title: 'text-white font-bold text-sm',
               description: 'text-slate-300 text-xs font-normal mt-1',
             },
+            className: 'toast-custom text-white',
           }}
         />
+        <IncomingCallBanner />
         <Suspense fallback={<ScreenLoader />}>
           <AppRoutes />
         </Suspense>

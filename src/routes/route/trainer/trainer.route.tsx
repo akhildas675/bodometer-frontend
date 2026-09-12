@@ -16,8 +16,8 @@ import TrainerOnboardingProfilePage from "@/features/trainer/trainer.onboarding/
 import MainLayouts from "@/ui.components/layouts/MainLayouts";
 import TrainerOnboardingSkillPage from "@/features/trainer/trainer.onboarding/pages/trainer.onboarding-category.page";
 import TrainerNotificationPage from "@/features/trainer/trainer.notification/pages/trainer-notification.page";
+import VideoSessionPage from "@/features/video.session/pages/video-session.page";
 
-// ── Booking — two-mode flow ──────────────────────────────────────────
 const TrainerBookingSetupPage = lazy(
   () => import("@/features/trainer/trainer.booking/pages/trainer-booking-setup.page")
 );
@@ -49,6 +49,7 @@ export const trainerRoutes = (
         <Route path={TRAiNER_UI_ROUTES.TRAINER_BOOKING_SETUP} element={<TrainerBookingSetupPage />} />
         <Route path={TRAiNER_UI_ROUTES.TRAINER_BOOKING_MANAGEMENT} element={<TrainerBookingManagementPage />} />
         <Route path={TRAiNER_UI_ROUTES.TRAINER_NOTIFICATIONS} element={<TrainerNotificationPage />} />
+        <Route path={TRAiNER_UI_ROUTES.TRAINER_VIDEO_CALL_SESSION} element={<VideoSessionPage />} />
 
         {/* Legacy redirect: /trainer/availability → /trainer/booking */}
         <Route

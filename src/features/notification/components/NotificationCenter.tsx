@@ -276,8 +276,8 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
               onClick={() => handleMarkAsRead(item.id, item.isRead)}
               className={`group relative flex items-start space-x-4 p-5 rounded-2xl border transition-all duration-300 cursor-pointer ${
                 item.isRead
-                  ? "bg-slate-900/40 border-slate-800/80 opacity-80 hover:opacity-100 hover:border-slate-700/80 hover:bg-slate-900/70"
-                  : "bg-gradient-to-r from-purple-950/30 via-slate-900/90 to-slate-900/90 border-purple-500/30 shadow-lg shadow-purple-950/20 hover:border-purple-500/50"
+                  ? "bg-[#0A0518]/90 border-white/10 hover:border-purple-500/30 hover:bg-[#0F0824]/90"
+                  : "bg-gradient-to-r from-purple-950/40 via-[#0E0722]/90 to-[#0A0518]/90 border-purple-500/40 shadow-lg shadow-purple-950/30 hover:border-purple-400/60"
               }`}
             >
               {/* Unread indicator bar */}
@@ -286,22 +286,25 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
               )}
 
               {/* Icon Container */}
-              <div className="p-3 bg-slate-800/80 rounded-xl border border-slate-700/50 shrink-0 group-hover:scale-105 transition duration-200">
+              <div className="p-3 bg-white/5 rounded-xl border border-white/10 shrink-0 group-hover:scale-105 transition duration-200">
                 {getEntityIcon(item.entityType, item.type)}
               </div>
 
               {/* Main Info */}
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between gap-2 mb-1">
-                  <h4 className={`text-base font-semibold truncate ${item.isRead ? "text-slate-300" : "text-white"}`}>
+                  <h4 className="text-base font-bold text-white tracking-wide flex items-center gap-2">
                     {item.title}
+                    {!item.isRead && (
+                      <span className="w-2 h-2 rounded-full bg-purple-400 animate-pulse" />
+                    )}
                   </h4>
-                  <span className="flex items-center text-xs text-slate-400 shrink-0">
-                    <Clock className="w-3.5 h-3.5 mr-1 text-slate-500" />
+                  <span className="flex items-center text-xs font-semibold text-purple-300/80 bg-purple-500/10 px-2.5 py-1 rounded-full border border-purple-500/20 shrink-0">
+                    <Clock className="w-3.5 h-3.5 mr-1 text-purple-400" />
                     {formatRelativeTime(item.createdAt)}
                   </span>
                 </div>
-                <p className="text-sm text-slate-300 leading-relaxed font-normal">
+                <p className="text-sm text-slate-100 font-medium leading-relaxed mt-1">
                   {item.message}
                 </p>
               </div>
@@ -313,7 +316,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
                     e.stopPropagation();
                     handleMarkAsRead(item.id, false);
                   }}
-                  className="opacity-0 group-hover:opacity-100 p-2 bg-purple-600/20 hover:bg-purple-600/40 text-purple-300 rounded-xl border border-purple-500/30 transition duration-200 shrink-0"
+                  className="opacity-0 group-hover:opacity-100 p-2 bg-purple-600/30 hover:bg-purple-600/50 text-purple-200 rounded-xl border border-purple-400/40 transition duration-200 shrink-0"
                   title="Mark as read"
                 >
                   <Check className="w-4 h-4" />

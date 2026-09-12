@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   CalendarClock,
   Calendar,
@@ -13,6 +14,8 @@ import {
   ChevronRight,
   Pencil,
   Sparkles,
+  Video,
+  PhoneOff,
 } from "lucide-react";
 import {
   clientBookingService,
@@ -21,7 +24,9 @@ import {
   AvailableDateOverview,
 } from "@/modules/booking/service/client-booking.service";
 import SearchBar from "@/features/controls/search/search";
+import { TRAiNER_UI_ROUTES } from "@/constants/constant-routes/ui-routes/trainer.ui-constant.routes";
 import SortDropdown, { SortConfig } from "@/features/controls/sort/sort";
+import { videoSessionService } from "@/modules/video.session/service/video-session.service";
 import Pagination from "@/features/controls/pagination/pagination";
 import { toast } from "sonner";
 
@@ -145,6 +150,15 @@ export const UpcomingSessionsTab: React.FC = () => {
   });
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(4);
+  const [startingCallBookingId, setStartingCallBookingId] = useState<string | null>(null);
+
+  // Active VideoSession tracking per booking: bookingId -> videoSessionId | null
+  const [activeSessions, setActiveSessions] = useState<Record<string, string | null>>({});
+  const [disconnectModal, setDisconnectModal] = useState<{
+    bookingId: string;
+    videoSessionId: string;
+  } | null>(null);
+  const [disconnecting, setDisconnecting] = useState(false);
 
   // Cancel Modal
   const [selectedBookingForCancel, setSelectedBookingForCancel] = useState<BookingResponseData | null>(null);
@@ -167,12 +181,91 @@ export const UpcomingSessionsTab: React.FC = () => {
     setLoading(true);
     clientBookingService
       .getTrainerBookings("upcoming")
-      .then((data) => setSessions(data))
+      .then((data) => {
+        setSessions(data);
+
+        // Check active video sessions for confirmed bookings within session window
+        const now = Date.now();
+        const inWindowBookings = data.filter((b) => {
+          const start = new Date(b.startTime).getTime();
+          const end = new Date(b.endTime).getTime();
+          return (
+            b.status.toUpperCase() === "CONFIRMED" &&
+            now >= start - 10 * 60 * 1000 &&
+            now <= end + 10 * 60 * 1000
+          );
+        });
+
+        if (inWindowBookings.length > 0) {
+          const fetches = inWindowBookings.map((b) =>
+            videoSessionService
+              .getVideoSessionByBookingId(b.id)
+              .then((vs) => ({ bookingId: b.id, videoSessionId: vs?.id ?? null }))
+              .catch(() => ({ bookingId: b.id, videoSessionId: null }))
+          );
+          Promise.all(fetches).then((results) => {
+            const map: Record<string, string | null> = {};
+            results.forEach(({ bookingId, videoSessionId }) => {
+              map[bookingId] = videoSessionId;
+            });
+            setActiveSessions((prev) => ({ ...prev, ...map }));
+          });
+        }
+      })
       .catch(() => toast.error("Failed to load upcoming sessions."))
       .finally(() => setLoading(false));
   };
 
-  useEffect(() => { fetchUpcoming(); }, []);
+  useEffect(() => {
+    fetchUpcoming();
+    const interval = setInterval(() => {
+      fetchUpcoming();
+    }, 15000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const navigate = useNavigate();
+
+  const handleStartCall = async (bookingId: string) => {
+    try {
+      setStartingCallBookingId(bookingId);
+      const videoSession = await videoSessionService.requestCall(bookingId);
+      if (!videoSession?.id) {
+        toast.error('Failed to start video call.');
+        return;
+      }
+      setActiveSessions((prev) => ({ ...prev, [bookingId]: videoSession.id }));
+      const path = TRAiNER_UI_ROUTES.TRAINER_VIDEO_CALL_SESSION.replace(':videoSessionId', videoSession.id);
+      navigate(path);
+    } catch (err: unknown) {
+      const msg = (err as any)?.response?.data?.message || 'Failed to start video call.';
+      toast.error(msg);
+    } finally {
+      setStartingCallBookingId(null);
+    }
+  };
+
+  const handleTrainerDisconnectCall = async () => {
+    if (!disconnectModal) return;
+    try {
+      setDisconnecting(true);
+      await videoSessionService.endSession(disconnectModal.videoSessionId);
+      toast.success("Call session disconnected.");
+      setActiveSessions((prev) => ({
+        ...prev,
+        [disconnectModal.bookingId]: null,
+      }));
+      setDisconnectModal(null);
+      fetchUpcoming();
+    } catch (err: unknown) {
+      const msg =
+        (err as { response?: { data?: { message?: string } } })?.response?.data?.message ||
+        "Failed to disconnect call.";
+      toast.error(msg);
+    } finally {
+      setDisconnecting(false);
+    }
+  };
 
   const loadSlotsForDate = useCallback((date: string, booking: BookingResponseData) => {
     if (!date || !booking) return;
@@ -406,24 +499,104 @@ export const UpcomingSessionsTab: React.FC = () => {
                 <div className="flex items-center justify-between pt-3 border-t border-white/5 text-xs">
                   <span className="text-white/40">Fee: Rs.{b.price}</span>
                   <div className="flex items-center gap-2">
-                    {b.status === "RESCHEDULE_PENDING" ? (
-                      <span className="px-3 py-1.5 rounded-xl bg-amber-500/10 text-amber-300 font-semibold text-xs border border-amber-500/30 flex items-center gap-1.5">
-                        <AlertCircle size={13} /> Proposal Pending
-                      </span>
-                    ) : (
-                      <button
-                        onClick={() => { setSelectedBookingForReschedule(b); setProposedDate(""); setAvailableSlots([]); setSelectedSlot(null); setCustomMode(false); }}
-                        className="px-3 py-1.5 rounded-xl bg-purple-500/10 hover:bg-purple-500/20 text-purple-300 font-semibold text-xs transition border border-purple-500/30 cursor-pointer"
-                      >
-                        Reschedule
-                      </button>
+                    {(() => {
+                      if (b.status !== "CONFIRMED") return null;
+
+                      const activeSessionId = activeSessions[b.id];
+                      if (activeSessionId) {
+                        const now = Date.now();
+                        const endMs = new Date(b.endTime).getTime();
+                        const diffMs = endMs - now;
+                        const mins = Math.max(0, Math.ceil(diffMs / 60000));
+
+                        return (
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span className="px-2.5 py-1 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 text-xs font-mono font-bold flex items-center gap-1.5 animate-pulse">
+                              <Clock size={12} />
+                              {diffMs <= 0 ? "Ending…" : `${mins}m left`}
+                            </span>
+                            <button
+                              onClick={() => {
+                                const path = TRAiNER_UI_ROUTES.TRAINER_VIDEO_CALL_SESSION.replace(
+                                  ':videoSessionId',
+                                  activeSessionId,
+                                );
+                                navigate(path);
+                              }}
+                              className="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs transition border border-emerald-500/40 flex items-center gap-1.5 shadow-lg shadow-emerald-600/20 cursor-pointer"
+                            >
+                              <Video size={13} /> Rejoin Call
+                            </button>
+                            <button
+                              onClick={() =>
+                                setDisconnectModal({
+                                  bookingId: b.id,
+                                  videoSessionId: activeSessionId,
+                                })
+                              }
+                              className="px-3 py-1.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 font-semibold text-xs transition border border-rose-500/30 flex items-center gap-1.5 cursor-pointer"
+                            >
+                              <PhoneOff size={13} /> Disconnect
+                            </button>
+                          </div>
+                        );
+                      }
+
+                      const nowMs = Date.now();
+                      const startMs = startDate.getTime();
+                      const deadlineMs = startMs + 10 * 60 * 1000;
+
+                      if (nowMs < startMs) {
+                        return (
+                          <span className="px-3 py-1.5 rounded-xl bg-white/5 text-white/40 font-semibold text-xs border border-white/10 flex items-center gap-1.5 cursor-not-allowed">
+                            <Clock size={13} /> Starts at {startDate.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                          </span>
+                        );
+                      }
+
+                      if (nowMs > deadlineMs) {
+                        return (
+                          <span className="px-3 py-1.5 rounded-xl bg-rose-500/10 text-rose-400 font-semibold text-xs border border-rose-500/20 flex items-center gap-1.5">
+                            <XCircle size={13} /> Start Window Expired
+                          </span>
+                        );
+                      }
+
+                      return startingCallBookingId === b.id ? (
+                        <span className="px-3 py-1.5 rounded-xl bg-emerald-500/10 text-emerald-300 font-semibold text-xs flex items-center gap-1.5 opacity-50 cursor-not-allowed">
+                          <Video size={13} /> Starting...
+                        </span>
+                      ) : (
+                        <button
+                          onClick={() => handleStartCall(b.id)}
+                          className="px-3 py-1.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 font-semibold text-xs transition border border-emerald-500/30 flex items-center gap-1.5 cursor-pointer"
+                        >
+                          <Video size={13} /> Start Call
+                        </button>
+                      );
+                    })()}
+                    {!activeSessions[b.id] && (
+                      <>
+                        {b.status === "RESCHEDULE_PENDING" ? (
+                          <span className="px-3 py-1.5 rounded-xl bg-amber-500/10 text-amber-300 font-semibold text-xs border border-amber-500/30 flex items-center gap-1.5">
+                            <AlertCircle size={13} /> Proposal Pending
+                          </span>
+                        ) : (
+                          <button
+                            onClick={() => { setSelectedBookingForReschedule(b); setProposedDate(""); setAvailableSlots([]); setSelectedSlot(null); setCustomMode(false); }}
+                            className="px-3 py-1.5 rounded-xl bg-purple-500/10 hover:bg-purple-500/20 text-purple-300 font-semibold text-xs transition border border-purple-500/30 cursor-pointer"
+                          >
+                            Reschedule
+                          </button>
+                        )}
+                        <button
+                          onClick={() => setSelectedBookingForCancel(b)}
+                          className="px-3 py-1.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 font-semibold text-xs transition border border-rose-500/30 cursor-pointer"
+                        >
+                          Cancel
+                        </button>
+                      </>
                     )}
-                    <button
-                      onClick={() => setSelectedBookingForCancel(b)}
-                      className="px-3 py-1.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 font-semibold text-xs transition border border-rose-500/30 cursor-pointer"
-                    >
-                      Cancel
-                    </button>
                   </div>
                 </div>
               </div>
@@ -615,6 +788,36 @@ export const UpcomingSessionsTab: React.FC = () => {
               >
                 {proposing ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Send size={13} />}
                 {proposing ? "Sending..." : "Send Proposal"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ─── Disconnect Call Modal ────────────────────────────────────── */}
+      {disconnectModal && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 z-50">
+          <div className="bg-[#0A051D] border border-rose-500/30 rounded-3xl p-6 max-w-md w-full space-y-4 shadow-2xl">
+            <h3 className="text-base font-bold text-white flex items-center gap-2">
+              <PhoneOff className="text-rose-400" size={20} />
+              Disconnect Video Call?
+            </h3>
+            <p className="text-xs text-white/70 leading-relaxed">
+              Are you sure you want to disconnect this active video session? This will end the call for both you and the client.
+            </p>
+            <div className="flex items-center justify-end gap-3 pt-2">
+              <button
+                onClick={() => setDisconnectModal(null)}
+                className="px-4 py-2 rounded-xl text-xs text-white/60 hover:text-white transition cursor-pointer"
+              >
+                Go Back
+              </button>
+              <button
+                onClick={handleTrainerDisconnectCall}
+                disabled={disconnecting}
+                className="px-5 py-2.5 rounded-xl font-bold text-xs text-white bg-rose-600 hover:bg-rose-500 shadow-lg shadow-rose-600/30 transition cursor-pointer disabled:opacity-50"
+              >
+                {disconnecting ? "Disconnecting..." : "Yes, Disconnect Call"}
               </button>
             </div>
           </div>

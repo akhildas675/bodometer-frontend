@@ -207,7 +207,7 @@ export const TrainerAvailabilityOverview: React.FC<OverviewProps> = ({
           {/* Booking Rules Card */}
           {(() => {
             const advanceNoticeHours = bookingSettings?.advanceNoticeHours ?? 2;
-            const bufferMinutes = bookingSettings?.bufferMinutes ?? 15;
+            const bufferMinutes = bookingSettings?.bufferMinutes ?? 20;
             const maximumBookingPerDay = bookingSettings?.maximumBookingPerDay ?? 8;
             return (
               <div className="bg-[#03000D]/80 backdrop-blur-xl border border-white/10 rounded-[22px] p-5 sm:p-6 space-y-4">
