@@ -64,6 +64,8 @@ export interface BookingResponseData {
   paymentId?: string;
   userName?: string;
   userEmail?: string;
+  trainerName?: string;
+  trainerEmail?: string;
   serviceName?: string;
   serviceDuration?: number;
   serviceSnapshot?: {
@@ -106,6 +108,11 @@ class ClientBookingService {
       bookingId,
       sessionId,
     });
+    return response.data?.data;
+  }
+
+  async getBookingById(bookingId: string): Promise<BookingResponseData> {
+    const response = await api.get<ApiResponse<BookingResponseData>>(`/booking/${bookingId}`);
     return response.data?.data;
   }
 

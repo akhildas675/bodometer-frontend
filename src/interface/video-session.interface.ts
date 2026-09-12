@@ -1,1 +1,1 @@
-export * from "@/modules/video-call/types/video-session.types";
+export * from "@/modules/video.session/types";

@@ -33,7 +33,15 @@ export const BookingSuccessPage: React.FC = () => {
         })
         .finally(() => setLoading(false));
     } else {
-      setLoading(false);
+      clientBookingService
+        .getBookingById(bookingId)
+        .then((res) => {
+          setBooking(res);
+        })
+        .catch(() => {
+          // Even if fetch fails, show default confirmation
+        })
+        .finally(() => setLoading(false));
     }
   }, []);
 
@@ -103,12 +111,20 @@ export const BookingSuccessPage: React.FC = () => {
           </div>
         )}
 
-        <a
-          href="/"
-          className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-purple-600 to-purple-500 hover:from-purple-500 hover:to-purple-400 text-sm font-bold text-white shadow-lg transition"
-        >
-          Go to Dashboard <ArrowRight size={16} />
-        </a>
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+          <a
+            href="/my-bookings"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-purple-600 hover:bg-purple-500 text-sm font-bold text-white shadow-lg shadow-purple-600/30 transition cursor-pointer"
+          >
+            View My Bookings <ArrowRight size={16} />
+          </a>
+          <a
+            href="/"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-white/5 hover:bg-white/10 text-sm font-semibold text-white/80 border border-white/10 transition"
+          >
+            Go to Dashboard
+          </a>
+        </div>
       </div>
     </div>
   );
