@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
 import {
   Wallet,
@@ -26,7 +26,11 @@ const MAX_WALLET_LIMIT = 10000;
 export const UserWalletPage: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [wallet, setWallet] = useState<UserWalletData | null>(null);
-  const [transactions, setTransactions] = useState<WalletTransactionData[]>([]);
+  const [paginatedTxs, setPaginatedTxs] = useState<WalletTransactionData[]>([]);
+  const [totalItems, setTotalItems] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalCredits, setTotalCredits] = useState(0);
+  const [totalDebits, setTotalDebits] = useState(0);
   const [loading, setLoading] = useState(true);
 
   // Search, Sort, Filter, Pagination state
@@ -46,18 +50,42 @@ export const UserWalletPage: React.FC = () => {
 
   const verifiedRef = useRef<string | null>(null);
 
+  const fetchTransactions = useCallback(async () => {
+    try {
+      const res = await walletService.getWalletTransactions({
+        page: currentPage,
+        limit: pageSize,
+        type: filterType !== "ALL" ? filterType : undefined,
+        search: searchQuery.trim() || undefined,
+        sortBy: sortConfig.field,
+        sortOrder: sortConfig.order,
+      });
+      setPaginatedTxs(res.transactions);
+      setTotalItems(res.pagination.totalItems);
+      setTotalPages(res.pagination.totalPages);
+      setTotalCredits(res.totalCredits);
+      setTotalDebits(res.totalDebits);
+    } catch {
+      // ignore
+    }
+  }, [currentPage, pageSize, filterType, searchQuery, sortConfig]);
+
+  useEffect(() => {
+    fetchTransactions();
+  }, [fetchTransactions]);
+
   const loadWalletData = () => {
     setLoading(true);
-    Promise.all([
-      walletService.getWalletBalance().catch(() => null),
-      walletService.getWalletTransactions().catch(() => []),
-    ])
-      .then(([walletData, txsData]) => {
-        if (walletData) setWallet(walletData);
-        if (txsData) setTransactions(txsData);
+    walletService
+      .getWalletBalance()
+      .then((data) => {
+        if (data) setWallet(data);
       })
       .catch(() => toast.error("Failed to load wallet information."))
-      .finally(() => setLoading(false));
+      .finally(() => {
+        setLoading(false);
+        fetchTransactions();
+      });
   };
 
   useEffect(() => {
@@ -123,52 +151,7 @@ export const UserWalletPage: React.FC = () => {
     }
   };
 
-  // Filter, Search, Sort calculation
-  let processedTxs = [...transactions];
-
-  // 1. Filter by Type
-  if (filterType !== "ALL") {
-    processedTxs = processedTxs.filter((tx) => tx.type === filterType);
-  }
-
-  // 2. Search Query
-  if (searchQuery.trim()) {
-    const q = searchQuery.toLowerCase().trim();
-    processedTxs = processedTxs.filter(
-      (tx) =>
-        (tx.description && tx.description.toLowerCase().includes(q)) ||
-        (tx.source && tx.source.toLowerCase().includes(q)) ||
-        (tx.reference && tx.reference.toLowerCase().includes(q)) ||
-        (tx.bookingId && tx.bookingId.toLowerCase().includes(q)) ||
-        String(tx.amount).includes(q)
-    );
-  }
-
-  // 3. Sort
-  processedTxs.sort((a, b) => {
-    let comparison = 0;
-    if (sortConfig.field === "createdAt") {
-      comparison = new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
-    } else if (sortConfig.field === "amount") {
-      comparison = a.amount - b.amount;
-    }
-    return sortConfig.order === "asc" ? comparison : -comparison;
-  });
-
-  // 4. Pagination calculation
-  const totalItems = processedTxs.length;
-  const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
   const validCurrentPage = Math.min(currentPage, totalPages);
-  const startIndex = (validCurrentPage - 1) * pageSize;
-  const paginatedTxs = processedTxs.slice(startIndex, startIndex + pageSize);
-
-  const totalCredits = transactions
-    .filter((tx) => tx.type === "CREDIT")
-    .reduce((sum, tx) => sum + tx.amount, 0);
-
-  const totalDebits = transactions
-    .filter((tx) => tx.type === "DEBIT")
-    .reduce((sum, tx) => sum + tx.amount, 0);
 
   return (
     <div className="max-w-5xl mx-auto p-4 sm:p-6 space-y-8 text-white">
@@ -286,7 +269,7 @@ export const UserWalletPage: React.FC = () => {
                 filterType === "ALL" ? "bg-purple-600 text-white shadow-md" : "text-white/60 hover:text-white"
               }`}
             >
-              All ({transactions.length})
+              All ({totalItems})
             </button>
             <button
               onClick={() => { setFilterType("CREDIT"); setCurrentPage(1); }}

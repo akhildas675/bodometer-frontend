@@ -23,7 +23,7 @@ const UserCategoryDetail = () => {
   const [recommendedCategories, setRecommendedCategories] = useState<CategoryListItem[]>([]);
   const [loadingRecommended, setLoadingRecommended] = useState(false);
 
-  // 1. Fetch current Category details when URL param id changes
+  
   useEffect(() => {
     if (!id) return;
 
@@ -53,7 +53,7 @@ const UserCategoryDetail = () => {
     };
   }, [id]);
 
-  // 2. Fetch Trainers specializing in this Category & Recommended Categories
+ 
   useEffect(() => {
     if (!category || !id) return;
 
@@ -61,37 +61,26 @@ const UserCategoryDetail = () => {
     setLoadingTrainers(true);
     setLoadingRecommended(true);
 
-    const catNameLower = category.name.toLowerCase().trim();
     const catId = category.categoryId || ((category as unknown as Record<string, unknown>)._id as string) || id;
 
-    // Fetch trainers
+    // Fetch matching trainers directly from backend
     trainerService
-      .getTrainers<TrainerListItem>({ limit: 50 })
+      .getTrainers<TrainerListItem>({ specializationId: catId, limit: 4 })
       .then((res) => {
         if (!isMounted || !res?.data) return;
-        const matchingTrainers = res.data.filter((t) =>
-          t.specializations?.some(
-            (s) =>
-              s._id === catId ||
-              s.name?.toLowerCase().trim() === catNameLower
-          )
-        );
-        setTrainers(matchingTrainers.length > 0 ? matchingTrainers : res.data.slice(0, 4));
+        setTrainers(res.data);
       })
       .catch(() => {})
       .finally(() => {
         if (isMounted) setLoadingTrainers(false);
       });
 
-    // Fetch recommended categories
+    // Fetch recommended categories directly from backend (excluding current category)
     categoryService
-      .getCategories({ limit: 12 })
+      .getCategories({ excludeId: catId, limit: 6 })
       .then((res) => {
         if (!isMounted || !res?.data) return;
-        const otherCats = res.data.filter(
-          (c) => (c.categoryId || c._id) !== catId && c.name.toLowerCase().trim() !== catNameLower
-        );
-        setRecommendedCategories(otherCats.slice(0, 6));
+        setRecommendedCategories(res.data);
       })
       .catch(() => {})
       .finally(() => {

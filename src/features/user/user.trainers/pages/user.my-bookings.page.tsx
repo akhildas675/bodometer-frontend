@@ -78,14 +78,14 @@ export const UserMyBookingsPage: React.FC = () => {
       clientBookingService.getUserBookings(),
       clientBookingService.getUserPendingRescheduleRequests(),
       walletService.getWalletBalance().catch(() => null),
-      walletService.getWalletTransactions().catch(() => []),
+      walletService.getWalletTransactions().catch(() => null),
       videoSessionService.getVideoSessionHistory({ limit: 50 }).catch(() => null),
     ])
       .then(([bookingsData, requestsData, walletData, txsData, historyData]) => {
         setBookings(bookingsData);
         setPendingRequests(requestsData);
         if (walletData) setWallet(walletData);
-        if (txsData) setTransactions(txsData);
+        if (txsData?.transactions) setTransactions(txsData.transactions);
         if (historyData?.sessions) setSessionHistory(historyData.sessions);
 
         const now = Date.now();

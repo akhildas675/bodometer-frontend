@@ -84,9 +84,8 @@ export const ClientBookingFlow: React.FC<ClientBookingFlowProps> = ({
       .getCoachingServices()
       .then((res) => {
         if (res?.data && Array.isArray(res.data)) {
-          const active = res.data.filter((s) => s.isActive !== false);
-          setServices(active);
-          if (active.length > 0) setSelectedService(active[0]);
+          setServices(res.data);
+          if (res.data.length > 0) setSelectedService(res.data[0]);
         }
       })
       .catch(() => toast.error("Failed to load coaching services."))

@@ -22,15 +22,45 @@ export interface WalletTransactionData {
   createdAt: string;
 }
 
+import { PaginationMeta } from "@/interface/common.interface";
+import { buildQueryParams, TableQueryParams } from "@/api/query.helper";
+
+export interface PaginatedWalletTransactionsData {
+  transactions: WalletTransactionData[];
+  pagination: PaginationMeta;
+  totalCredits: number;
+  totalDebits: number;
+}
+
 class WalletService {
   async getWalletBalance(): Promise<UserWalletData> {
     const response = await api.get<ApiResponse<UserWalletData>>("/wallet/balance");
     return response.data?.data;
   }
 
-  async getWalletTransactions(): Promise<WalletTransactionData[]> {
-    const response = await api.get<ApiResponse<WalletTransactionData[]>>("/wallet/history");
-    return response.data?.data || [];
+  async getWalletTransactions(
+    params?: TableQueryParams,
+  ): Promise<PaginatedWalletTransactionsData> {
+    const queryParams = buildQueryParams(params);
+    const queryString = queryParams.toString() ? `?${queryParams.toString()}` : "";
+    const response = await api.get<ApiResponse<PaginatedWalletTransactionsData>>(
+      `/wallet/history${queryString}`,
+    );
+    return (
+      response.data?.data || {
+        transactions: [],
+        pagination: {
+          currentPage: 1,
+          totalPages: 1,
+          totalItems: 0,
+          itemsPerPage: 10,
+          hasNextPage: false,
+          hasPreviousPage: false,
+        },
+        totalCredits: 0,
+        totalDebits: 0,
+      }
+    );
   }
 
   async addFunds(amount: number): Promise<{ wallet: UserWalletData; transaction: WalletTransactionData }> {

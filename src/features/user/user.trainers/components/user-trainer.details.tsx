@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import { trainerService } from "@/modules/trainer/service/trainer.service";
 import { subscriptionService } from "@/modules/subscription/service/subscription.service";
 import { USER_UI_ROUTES } from "@/constants/constant-routes/ui-routes/user.ui-constant.routes";
-import { TrainerDetail, TrainerListItem } from "@/interface/trainer.interface";
+import { TrainerDetail } from "@/interface/trainer.interface";
 import {
   Dumbbell,
   ArrowLeft,
@@ -26,10 +26,7 @@ const UserTrainerDetails = () => {
   const [trainer, setTrainer] = useState<TrainerDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [checkingSub, setCheckingSub] = useState(false);
-  const [recommendedTrainers, setRecommendedTrainers] = useState<TrainerListItem[]>([]);
-  const [loadingRecommended, setLoadingRecommended] = useState(false);
 
-  // 1. Fetch trainer whenever URL parameter id changes
   useEffect(() => {
     if (!id) return;
 
@@ -58,60 +55,14 @@ const UserTrainerDetails = () => {
     };
   }, [id]);
 
-  // 2. Fetch recommended trainers sharing at least 1 skill
-  useEffect(() => {
-    if (!trainer) return;
-
-    let isMounted = true;
-    setLoadingRecommended(true);
-
-    trainerService
-      .getTrainers<TrainerListItem>({ limit: 50 })
-      .then((res) => {
-        if (!isMounted || !res?.data) return;
-
-        const currentId = trainer._id;
-        const currentSkillIds = new Set(
-          trainer.specializations?.map((s) => s._id) || [],
-        );
-        const currentSkillNames = new Set(
-          trainer.specializations?.map((s) => s.name?.toLowerCase().trim()) || [],
-        );
-
-        const otherTrainers = res.data.filter(
-          (t) => t._id !== currentId && t.profileId !== currentId,
-        );
-
-        const skillMatches = otherTrainers.filter((t) =>
-          t.specializations?.some(
-            (s) =>
-              currentSkillIds.has(s._id) ||
-              currentSkillNames.has(s.name?.toLowerCase().trim()),
-          ),
-        );
-
-        const finalRecommendations =
-          skillMatches.length > 0 ? skillMatches : otherTrainers;
-
-        setRecommendedTrainers(finalRecommendations.slice(0, 6));
-      })
-      .catch(() => {})
-      .finally(() => {
-        if (isMounted) setLoadingRecommended(false);
-      });
-
-    return () => {
-      isMounted = false;
-    };
-  }, [trainer]);
-
   const handleBookSession = async () => {
     if (!trainer) return;
     setCheckingSub(true);
     try {
       const res = await subscriptionService.getActiveSubscription();
+      const targetId = trainer._id || id;
       if (res?.data) {
-        navigate(`/trainers/${trainer._id}/book`);
+        navigate(`/trainers/${targetId}/book`);
       } else {
         toast.error("Active subscription required to book a session. Redirecting to subscription plans...");
         navigate(USER_UI_ROUTES.USER_SUBSCRIPTIONS);
@@ -330,69 +281,54 @@ const UserTrainerDetails = () => {
               </div>
             </div>
 
-            {loadingRecommended ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-pulse">
-                <div className="h-44 bg-white/5 rounded-3xl" />
-                <div className="h-44 bg-white/5 rounded-3xl" />
-                <div className="h-44 bg-white/5 rounded-3xl" />
-              </div>
-            ) : recommendedTrainers.length === 0 ? (
+            {!trainer.relatedTrainers || trainer.relatedTrainers.length === 0 ? (
               <p className="text-xs text-white/40 italic">No other trainers currently available.</p>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {recommendedTrainers.map((rt) => {
-                  const targetId = rt.profileId || rt._id;
-                  const sharedSkills = rt.specializations?.filter((s) =>
-                    trainer.specializations?.some(
-                      (ts) => ts._id === s._id || ts.name.toLowerCase() === s.name.toLowerCase(),
-                    ),
-                  ) || [];
-
-                  return (
-                    <div
-                      key={targetId}
-                      onClick={() => navigate(`/trainers/${targetId}`)}
-                      className="group relative rounded-3xl overflow-hidden bg-[#0a0520]/80 backdrop-blur-xl border border-white/10 hover:border-purple-500/50 p-5 cursor-pointer transition-all duration-300 hover:-translate-y-1.5 shadow-xl hover:shadow-purple-900/30 flex flex-col justify-between"
-                    >
-                      <div className="space-y-4">
-                        <div className="flex items-center gap-4">
-                          <img
-                            src={rt.profilePic || "https://via.placeholder.com/64"}
-                            alt={rt.name}
-                            className="w-16 h-16 rounded-full object-cover border-2 border-purple-500/30 group-hover:border-purple-400 shadow-md shrink-0"
-                          />
-                          <div className="min-w-0 flex-1">
-                            <h3 className="text-white text-lg font-bold truncate group-hover:text-purple-300 transition">
-                              {rt.name}
-                            </h3>
-                            <div className="flex items-center gap-1.5 text-purple-400 text-xs mt-0.5 font-medium">
-                              <Clock size={13} />
-                              <span>{rt.experienceInYears} Yrs Experience</span>
-                            </div>
+                {trainer.relatedTrainers.map((rt) => (
+                  <div
+                    key={rt._id}
+                    onClick={() => navigate(`/trainers/${rt._id}`)}
+                    className="group relative rounded-3xl overflow-hidden bg-[#0a0520]/80 backdrop-blur-xl border border-white/10 hover:border-purple-500/50 p-5 cursor-pointer transition-all duration-300 hover:-translate-y-1.5 shadow-xl hover:shadow-purple-900/30 flex flex-col justify-between"
+                  >
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-4">
+                        <img
+                          src={rt.profilePic || "https://via.placeholder.com/64"}
+                          alt={rt.name}
+                          className="w-16 h-16 rounded-full object-cover border-2 border-purple-500/30 group-hover:border-purple-400 shadow-md shrink-0"
+                        />
+                        <div className="min-w-0 flex-1">
+                          <h3 className="text-white text-lg font-bold truncate group-hover:text-purple-300 transition">
+                            {rt.name}
+                          </h3>
+                          <div className="flex items-center gap-1.5 text-purple-400 text-xs mt-0.5 font-medium">
+                            <Clock size={13} />
+                            <span>{rt.experienceInYears} Yrs Experience</span>
                           </div>
                         </div>
-
-                        {sharedSkills.length > 0 && (
-                          <div className="flex flex-wrap gap-1.5 pt-1">
-                            {sharedSkills.map((sk) => (
-                              <span
-                                key={sk._id}
-                                className="text-[10px] font-semibold bg-purple-500/15 border border-purple-500/30 text-purple-300 px-2.5 py-1 rounded-full"
-                              >
-                                {sk.name}
-                              </span>
-                            ))}
-                          </div>
-                        )}
                       </div>
 
-                      <div className="mt-5 pt-3 border-t border-white/5 flex items-center justify-between text-xs text-purple-400 font-semibold group-hover:text-white transition">
-                        <span>View Trainer Profile</span>
-                        <ChevronRight size={14} className="group-hover:translate-x-1 transition" />
-                      </div>
+                      {rt.specializations && rt.specializations.length > 0 && (
+                        <div className="flex flex-wrap gap-1.5 pt-1">
+                          {rt.specializations.map((sk) => (
+                            <span
+                              key={sk._id}
+                              className="text-[10px] font-semibold bg-purple-500/15 border border-purple-500/30 text-purple-300 px-2.5 py-1 rounded-full"
+                            >
+                              {sk.name}
+                            </span>
+                          ))}
+                        </div>
+                      )}
                     </div>
-                  );
-                })}
+
+                    <div className="mt-5 pt-3 border-t border-white/5 flex items-center justify-between text-xs text-purple-400 font-semibold group-hover:text-white transition">
+                      <span>View Trainer Profile</span>
+                      <ChevronRight size={14} className="group-hover:translate-x-1 transition" />
+                    </div>
+                  </div>
+                ))}
               </div>
             )}
           </div>

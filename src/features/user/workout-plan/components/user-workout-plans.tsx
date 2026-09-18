@@ -406,18 +406,16 @@ const UserWorkoutPlans = () => {
         useAuthStore.getState().updateUser({ hasActiveSubscription: currentIsPremium });
       }
 
-      const targetPlanType = currentIsPremium ? "PREMIUM" : "FREE";
-      const filteredPlans = response.data.plans.filter(p => p.planType === targetPlanType);
-
-      setPlans(filteredPlans);
+      const loadedPlans = response.data.plans || [];
+      setPlans(loadedPlans);
       setGenerationStatus(response.data.generationStatus);
       if (response.data.completedHistory) {
         setCompletedHistory(response.data.completedHistory);
       }
       
-      if (filteredPlans.length > 0) {
-        if (!expandedPlanId || !filteredPlans.some(p => p.workoutPlanId === expandedPlanId)) {
-          setExpandedPlanId(filteredPlans[0].workoutPlanId);
+      if (loadedPlans.length > 0) {
+        if (!expandedPlanId || !loadedPlans.some(p => p.workoutPlanId === expandedPlanId)) {
+          setExpandedPlanId(loadedPlans[0].workoutPlanId);
         }
       } else {
         setExpandedPlanId(null);

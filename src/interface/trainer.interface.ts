@@ -59,6 +59,7 @@ export interface RelatedTrainer {
   profilePic: string | null;
   experienceInYears: number;
   bio: string;
+  specializations?: { _id: string; name: string }[];
 }
 
 export interface TrainerDetail {
