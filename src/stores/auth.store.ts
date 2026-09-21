@@ -1,6 +1,6 @@
 import { create } from "zustand";
-import type { Role } from "@/constants/role";
-import type { VerificationStatus } from "@/constants/verification.status";
+import type { Role } from "@/constants/roles.constants";
+import type { VerificationStatus } from "@/constants/verification-status.constants";
 
 
 export interface AuthUser {

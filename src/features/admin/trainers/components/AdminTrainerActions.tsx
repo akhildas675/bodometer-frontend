@@ -1,0 +1,86 @@
+import { toast } from "sonner";
+import { AdminGetTrainersResponse } from "@/features/trainer/types/trainer.types";
+import { trainerService } from "@/features/trainer/services/trainer.service";
+import type { TableAction } from "@/components/ui/DataTable.types";
+import { Lock, Unlock } from "lucide-react";
+import { parseApiError } from "@/infrastructure/api/api-error";
+
+export type TrainerModalConfig = {
+  isOpen: boolean;
+  title: string;
+  message: string;
+  onConfirm: () => void;
+  variant?: "danger" | "primary" | "purple";
+  icon?: React.ReactNode;
+  confirmText?: string;
+  cancelText?: string;
+};
+
+
+export const useTrainerActions = (
+  refreshTrainers: () => void,
+  setModalConfig: React.Dispatch<React.SetStateAction<TrainerModalConfig>>,
+  updateLocally?: (trainerId: string) => void,
+): TableAction<AdminGetTrainersResponse>[] => {
+  return [
+    {
+      label: "Block",
+      variant: "danger",
+      visible: (trainer) => !trainer.isBlocked,
+      onClick: (trainer) => {
+        setModalConfig({
+          isOpen: true,
+          title: "Block Trainer",
+          message: `Are you sure you want to block ${trainer.name}? This will temporarily restrict their dashboard access.`,
+          variant: "danger",
+          icon: <Lock className="w-6 h-6 text-red-400 animate-pulse" />,
+          confirmText: "Yes, block trainer",
+          cancelText: "Cancel",
+          onConfirm: async () => {
+            try {
+              const res = await trainerService.toggleTrainerBlockStatus(trainer.id);
+              toast.success(res.message);
+              if (updateLocally) {
+                updateLocally(trainer.id);
+              } else {
+                refreshTrainers();
+              }
+            } catch (error: unknown) {
+              const apiError = parseApiError(error);
+              toast.error(apiError.message);
+            }
+          },
+        });
+      },
+    },
+    {
+      label: "Unblock",
+      visible: (trainer) => trainer.isBlocked,
+      onClick: (trainer) => {
+        setModalConfig({
+          isOpen: true,
+          title: "Unblock Trainer",
+          message: `Are you sure you want to restore access for ${trainer.name}?`,
+          variant: "primary",
+          icon: <Unlock className="w-6 h-6 text-green-400" />,
+          confirmText: "Yes, unblock trainer",
+          cancelText: "Cancel",
+          onConfirm: async () => {
+            try {
+              const res = await trainerService.toggleTrainerBlockStatus(trainer.id);
+              toast.success(res.message);
+              if (updateLocally) {
+                updateLocally(trainer.id);
+              } else {
+                refreshTrainers();
+              }
+            } catch (error: unknown) {
+              const apiError = parseApiError(error);
+              toast.error(apiError.message);
+            }
+          },
+        });
+      },
+    },
+  ];
+};

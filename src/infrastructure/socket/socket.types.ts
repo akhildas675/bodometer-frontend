@@ -1,5 +1,5 @@
-import { NotificationItem } from "@/interface/notification.interface";
-import { VideoSession } from "@/modules/video.session/types";
+import { NotificationItem } from "@/features/notification/types/notification.types";
+import { VideoSession } from "@/features/video-session/types/video-session-socket.types";
 
 export interface SocketProviderProps {
   isAuthenticated: boolean;

@@ -14,12 +14,12 @@ import {
   RefreshCw,
   Clock,
 } from "lucide-react";
-import { notificationService } from "@/modules/notification/service/notification.service";
-import type { NotificationItem } from "@/interface/notification.interface";
-import { useNotificationStore } from "@/stores/notification.store";
+import { notificationService } from "@/features/notification/services/notification.service";
+import type { NotificationItem } from "@/features/notification/types/notification.types";
+import { useNotificationStore } from "@/features/notification/stores/notification.store";
 import { toast } from "sonner";
-import Pagination from "@/features/controls/pagination/pagination";
-import { parseApiError } from "@/api/error.helper";
+import Pagination from "@/components/ui/Pagination";
+import { parseApiError } from "@/infrastructure/api/api-error";
 
 interface NotificationCenterProps {
   role?: "admin" | "trainer" | "user";

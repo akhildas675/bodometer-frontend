@@ -1,0 +1,26 @@
+
+import Sidebar from '@/components/layout/AppSidebar';
+import { SidebarRole } from '@/config/sidebar.config';
+import { Outlet } from 'react-router-dom';
+import Footer from '@/components/layout/Footer';
+import { useAuthStore } from "@/stores/auth.store";
+const MainSidebarLayout = () => {
+     const user = useAuthStore((state) => state.user);
+    return (
+       <div className="min-h-screen flex flex-col bg-[#050017]">
+      {/* Fixed top navbar */}
+    
+ 
+      <div className="flex flex-1">
+        <Sidebar role={(user?.role as SidebarRole)} />
+        <main className="flex-1 overflow-y-auto p-10">
+          <Outlet />
+        </main>
+      </div>
+ 
+      <Footer />
+    </div>
+    );
+}
+
+export default MainSidebarLayout;

@@ -1,0 +1,11 @@
+import AdminQuestionList from "@/features/admin/onboarding/components/question/AdminQuestionList";
+
+const AdminQuestionListPage = () => {
+  return (
+    <div className="container mx-auto">
+      <AdminQuestionList />
+    </div>
+  );
+};
+
+export default AdminQuestionListPage;
