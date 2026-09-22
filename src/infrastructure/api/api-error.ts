@@ -21,10 +21,18 @@ export function parseApiError(error: unknown): ParsedError {
     
     if (apiResponse?.message) {
       parsed.message = apiResponse.message;
+    } else if (parsed.statusCode === 404) {
+      parsed.message = "Requested resource was not found.";
+    } else if (parsed.statusCode === 403) {
+      parsed.message = "You are not authorized to perform this action.";
+    } else if (parsed.statusCode === 401) {
+      parsed.message = "Authentication required. Please log in again.";
     } else if (parsed.statusCode >= 500) {
       parsed.message = "Something went wrong on the server. Please try again later.";
+    } else if (error.request) {
+      parsed.message = "Unable to connect to the server. Please check your connection.";
     } else {
-      parsed.message = "An unexpected network error occurred.";
+      parsed.message = "An unexpected error occurred.";
     }
 
     if (apiResponse?.errors && Array.isArray(apiResponse.errors)) {
