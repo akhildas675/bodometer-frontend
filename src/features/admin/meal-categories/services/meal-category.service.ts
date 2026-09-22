@@ -30,10 +30,10 @@ class MealCategoryService {
 
   // User-facing category fetch
   async getMealCategory(params?: import("@/infrastructure/api/query-builder").TableQueryParams): Promise<ApiResponse<MealCategory[]> & { pagination: PaginationMeta }> {
-    const queryParams = buildQueryParams({ page: 1, limit: 100, ...params });
-    const { userApi } = await import("@/infrastructure/api/client");
-    const response = await userApi.get(
-      `${MEAL_CATEGORY_API_ROUTES.GET_MEAL_CATEGORIES_USER}?${queryParams.toString()}`
+    const queryParams = buildQueryParams({ page: 1, limit: 100, status: "active", ...params });
+    const response = await api.get<ApiResponse<MealCategory[]> & { pagination: PaginationMeta }>(
+      MEAL_CATEGORY_API_ROUTES.ROOT,
+      { params: queryParams }
     );
     return response.data;
   }
