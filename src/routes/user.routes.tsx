@@ -28,6 +28,7 @@ import UserWalletPage from "@/features/user/pages/UserWalletPage";
 import { BookingSuccessPage } from "@/features/booking/pages/BookingSuccessPage";
 import UserNotificationPage from "@/features/notification/pages/UserNotificationPage";
 import VideoSessionPage from "@/features/video-session/pages/VideoSessionPage";
+import UserChatPage from "@/features/chat/pages/UserChatPage";
 
 
 export const userRoutes = (
@@ -94,6 +95,7 @@ export const userRoutes = (
         <Route path={USER_UI_ROUTES.USER_DIET_PLANS} element={<UserDietPlansPage />} />
         <Route path={USER_UI_ROUTES.USER_HEALTH_LOG} element={<UserHealthLogPage />} />
         <Route path={USER_UI_ROUTES.USER_HEALTH_PROGRESS} element={<UserHealthProgressionPage />} />
+        <Route path={USER_UI_ROUTES.USER_MESSAGES} element={<UserChatPage />} />
       </Route>
     </Route>
 

@@ -37,4 +37,5 @@ export const USER_UI_ROUTES = {
     VIDEO_CALL_SESSION: "/video-call/:videoSessionId",
     TRAINER_VIDEO_CALL: "/trainer/video-call/:bookingId",
     TRAINER_VIDEO_CALL_SESSION: "/trainer/video-call/:videoSessionId",
+    USER_MESSAGES: "/messages",
 } as const

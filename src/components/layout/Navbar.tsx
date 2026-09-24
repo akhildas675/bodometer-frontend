@@ -106,7 +106,10 @@ const Navbar = () => {
       <div className="flex items-center space-x-5 shrink-0 pl-6">
         {isAuthenticated && (
           <>
-            <FaPaperPlane className="text-[#3b82f6] text-xl cursor-pointer hover:text-blue-400 transition-transform duration-200 hover:scale-110" />
+            <FaPaperPlane className="text-[#3b82f6] text-xl cursor-pointer hover:text-blue-400 transition-transform duration-200 hover:scale-110"
+             onClick={() => navigator("/messages")}
+              title="Messages"
+            />
             
             <div
               className="relative cursor-pointer group"

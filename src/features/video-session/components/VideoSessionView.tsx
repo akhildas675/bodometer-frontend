@@ -242,9 +242,9 @@ function VideoSession({ videoSessionId }: VideoSessionProps) {
       if (!pc) return;
       console.log(
         `[WebRTC] ${label} | signalingState=${pc.signalingState}` +
-          ` | iceConnectionState=${pc.iceConnectionState}` +
-          ` | connectionState=${pc.connectionState}` +
-          ` | iceGatheringState=${pc.iceGatheringState}`,
+        ` | iceConnectionState=${pc.iceConnectionState}` +
+        ` | connectionState=${pc.connectionState}` +
+        ` | iceGatheringState=${pc.iceGatheringState}`,
       );
     };
 
@@ -303,7 +303,7 @@ function VideoSession({ videoSessionId }: VideoSessionProps) {
         await pc.setRemoteDescription(new RTCSessionDescription(offer));
         logState("after setRemoteDescription(offer)");
 
-        // Flush any ICE candidates that arrived before the remote description
+        // Flush   ICE candidates that arrived before the remote description
         console.log(
           `[WebRTC] Flushing ${pendingCandidates.current.length} queued ICE candidates`,
         );
@@ -429,7 +429,7 @@ function VideoSession({ videoSessionId }: VideoSessionProps) {
         if (scheduledEnd && Date.now() >= scheduledEnd) {
           setIsSessionEnded(true);
           setEndedReason("The scheduled session duration has expired.");
-          void videoSessionService.endSession(videoSessionId).catch(() => {});
+          void videoSessionService.endSession(videoSessionId).catch(() => { });
           return;
         }
 
@@ -766,13 +766,12 @@ function VideoSession({ videoSessionId }: VideoSessionProps) {
                     ? "rgba(217, 119, 6, 0.25)"
                     : "rgba(10, 5, 29, 0.85)",
               backdropFilter: "blur(14px)",
-              border: `1px solid ${
-                remainingSeconds <= 60
+              border: `1px solid ${remainingSeconds <= 60
                   ? "rgba(244, 63, 94, 0.6)"
                   : remainingSeconds <= 300
                     ? "rgba(245, 158, 11, 0.5)"
                     : "rgba(255, 255, 255, 0.15)"
-              }`,
+                }`,
               padding: "0.45rem 1.15rem",
               borderRadius: "9999px",
               boxShadow:
@@ -788,7 +787,7 @@ function VideoSession({ videoSessionId }: VideoSessionProps) {
                   : "none",
             }}
           >
-            
+
             <div
               style={{
                 display: "flex",
@@ -805,7 +804,7 @@ function VideoSession({ videoSessionId }: VideoSessionProps) {
                   letterSpacing: "0.06em",
                   color:
                     !sessionDetails?.userAcceptedAt &&
-                    sessionDetails?.status === "WAITING"
+                      sessionDetails?.status === "WAITING"
                       ? "rgba(255, 255, 255, 0.5)"
                       : remainingSeconds <= 60
                         ? "#fda4af"
@@ -815,7 +814,7 @@ function VideoSession({ videoSessionId }: VideoSessionProps) {
                 }}
               >
                 {!sessionDetails?.userAcceptedAt &&
-                sessionDetails?.status === "WAITING"
+                  sessionDetails?.status === "WAITING"
                   ? "Starts On Accept"
                   : remainingSeconds <= 60
                     ? "Ending Soon"
@@ -841,7 +840,7 @@ function VideoSession({ videoSessionId }: VideoSessionProps) {
           </div>
         )}
 
-        
+
       </div>
 
       {/* ── Socket error toast ── */}
@@ -1153,11 +1152,10 @@ function VideoSession({ videoSessionId }: VideoSessionProps) {
                 sessionDetails?.status === "INCOMPLETE"
                   ? "rgba(245, 158, 11, 0.12)"
                   : "rgba(16, 185, 129, 0.12)",
-              border: `2px solid ${
-                sessionDetails?.status === "INCOMPLETE"
+              border: `2px solid ${sessionDetails?.status === "INCOMPLETE"
                   ? "rgba(245, 158, 11, 0.4)"
                   : "rgba(16, 185, 129, 0.4)"
-              }`,
+                }`,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",

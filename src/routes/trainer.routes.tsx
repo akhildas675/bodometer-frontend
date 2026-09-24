@@ -17,6 +17,7 @@ import MainLayouts from "@/components/layout/MainLayout";
 import TrainerOnboardingSkillPage from "@/features/onboarding/pages/TrainerOnboardingCategoryPage";
 import TrainerNotificationPage from "@/features/notification/pages/TrainerNotificationPage";
 import VideoSessionPage from "@/features/video-session/pages/VideoSessionPage";
+import TrainerChatPage from "@/features/chat/pages/TrainerChatPage";
 
 const TrainerBookingSetupPage = lazy(
   () => import("@/features/booking/pages/TrainerBookingSetupPage")
@@ -50,6 +51,7 @@ export const trainerRoutes = (
         <Route path={TRAiNER_UI_ROUTES.TRAINER_BOOKING_MANAGEMENT} element={<TrainerBookingManagementPage />} />
         <Route path={TRAiNER_UI_ROUTES.TRAINER_NOTIFICATIONS} element={<TrainerNotificationPage />} />
         <Route path={TRAiNER_UI_ROUTES.TRAINER_VIDEO_CALL_SESSION} element={<VideoSessionPage />} />
+        <Route path={TRAiNER_UI_ROUTES.TRAINER_MESSAGES} element={<TrainerChatPage />} />
 
         {/* Legacy redirect: /trainer/availability → /trainer/booking */}
         <Route

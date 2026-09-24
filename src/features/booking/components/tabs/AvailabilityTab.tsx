@@ -212,7 +212,7 @@ export const AvailabilityTab: React.FC = () => {
     setWeeklySchedule(createDefaultWeeklySchedule());
     setBookingRules(DEFAULT_BOOKING_RULES);
     setUnavailabilities([]);
-    
+
     setOfferedServiceIds([]);
     setView("editor");
   };
@@ -291,7 +291,7 @@ export const AvailabilityTab: React.FC = () => {
           }),
         ];
 
-        // Save any newly added draft leaves that don't have an ID yet
+        // Save   newly added draft leaves that don't have an ID yet
         unavailabilities.forEach((leave) => {
           if (!leave.id) {
             updateTasks.push(
@@ -362,7 +362,7 @@ export const AvailabilityTab: React.FC = () => {
       const err = error as { response?: { data?: { message?: string } } };
       toast.error(
         err.response?.data?.message ||
-          TRAINER_AVAILABILITY_MESSAGES.ERROR.DELETE_SCHEDULE_FAILED
+        TRAINER_AVAILABILITY_MESSAGES.ERROR.DELETE_SCHEDULE_FAILED
       );
     }
   };

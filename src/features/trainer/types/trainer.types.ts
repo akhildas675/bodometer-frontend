@@ -64,6 +64,7 @@ export interface RelatedTrainer {
 
 export interface TrainerDetail {
   _id: string;
+  userId?: string;
   name: string;
   profilePic: string | null;
   coverPhoto: string;

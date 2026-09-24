@@ -65,6 +65,7 @@ export const sidebarConfig: Record<SidebarRole, SidebarItem[]> = {
     { label: "Workout Plans", path: "/workout-plans" },
     { label: "Diet Plans", path: "/diet-plans" },
     { label: "Trainers", path: "/trainers" },
+    { label: "Messages", path: "/messages" },
     { label: "My Bookings", path: "/my-bookings" },
     { label: "BMI Calculator", path: "/bmi" },
     { label: "Food Log", path: "/food-log" },

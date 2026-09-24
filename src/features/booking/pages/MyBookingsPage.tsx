@@ -91,7 +91,7 @@ export const UserMyBookingsPage: React.FC = () => {
         const now = Date.now();
         const inWindowBookings = bookingsData.filter((b) => {
           const start = new Date(b.startTime).getTime();
-          const end   = new Date(b.endTime).getTime();
+          const end = new Date(b.endTime).getTime();
           return (
             b.status.toUpperCase() === "CONFIRMED" &&
             now >= start - 10 * 60 * 1000 &&
@@ -244,7 +244,7 @@ export const UserMyBookingsPage: React.FC = () => {
     }
   };
 
-  // Compile all bookings including any completed video sessions
+  // Compile all bookings including   completed video sessions
   const allBookings: BookingResponseData[] = [...bookings];
   sessionHistory.forEach((vs) => {
     if (
@@ -556,9 +556,8 @@ export const UserMyBookingsPage: React.FC = () => {
               <button
                 key={id}
                 onClick={() => { setStatusFilter(id); setCurrentPage(1); }}
-                className={`px-3 py-1 rounded-lg text-xs font-semibold whitespace-nowrap transition cursor-pointer ${
-                  statusFilter === id ? "bg-purple-600 text-white shadow-md" : "text-white/60 hover:text-white"
-                }`}
+                className={`px-3 py-1 rounded-lg text-xs font-semibold whitespace-nowrap transition cursor-pointer ${statusFilter === id ? "bg-purple-600 text-white shadow-md" : "text-white/60 hover:text-white"
+                  }`}
               >
                 {label}
               </button>
@@ -628,11 +627,10 @@ export const UserMyBookingsPage: React.FC = () => {
             return (
               <div
                 key={b.id}
-                className={`bg-[#03000D]/80 border ${
-                  isCompletedOrEnded
+                className={`bg-[#03000D]/80 border ${isCompletedOrEnded
                     ? "border-emerald-500/25 hover:border-emerald-500/40"
                     : "border-white/10 hover:border-purple-500/30"
-                } rounded-3xl p-6 space-y-4 transition shadow-lg`}
+                  } rounded-3xl p-6 space-y-4 transition shadow-lg`}
               >
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/10 pb-4">
                   <div>
@@ -924,9 +922,8 @@ export const UserMyBookingsPage: React.FC = () => {
               <button
                 onClick={executeRespondToReschedule}
                 disabled={responding}
-                className={`px-5 py-2.5 rounded-xl font-bold text-xs text-white transition cursor-pointer shadow-lg ${
-                  confirmModal.action === "ACCEPT" ? "bg-emerald-600 hover:bg-emerald-500 shadow-emerald-600/30" : "bg-rose-600 hover:bg-rose-500 shadow-rose-600/30"
-                }`}
+                className={`px-5 py-2.5 rounded-xl font-bold text-xs text-white transition cursor-pointer shadow-lg ${confirmModal.action === "ACCEPT" ? "bg-emerald-600 hover:bg-emerald-500 shadow-emerald-600/30" : "bg-rose-600 hover:bg-rose-500 shadow-rose-600/30"
+                  }`}
               >
                 {responding ? "Processing..." : confirmModal.action === "ACCEPT" ? "Yes, Accept New Time" : "Yes, Decline Request"}
               </button>

@@ -1,5 +1,6 @@
 import { NotificationItem } from "@/features/notification/types/notification.types";
 import { VideoSession } from "@/features/video-session/types/video-session-socket.types";
+import { ChatMessage } from "@/features/chat/types/chat.types";
 
 export interface SocketProviderProps {
   isAuthenticated: boolean;
@@ -58,6 +59,21 @@ export interface ServerToClientEvents {
     videoSessionId: string;
     session?: VideoSession;
   }) => void;
+
+  "chat:message": (message: ChatMessage) => void;
+  "chat:sent": (message: ChatMessage) => void;
+  "chat:joined": (data: { conversationId: string }) => void;
+  "chat:left": (data: { conversationId: string }) => void;
+  "chat:notification": (data: {
+    conversationId: string;
+    message: ChatMessage;
+  }) => void;
+  "chat:seen": (data: {
+    conversationId: string;
+    readerId: string;
+    readAt: string;
+  }) => void;
+  "chat:error": (data: { event?: string; message: string }) => void;
 }
 
 export interface ClientToServerEvents {
@@ -79,4 +95,13 @@ export interface ClientToServerEvents {
     videoSessionId: string,
     candidate: RTCIceCandidateInit,
   ) => void;
+
+  "chat:join": (conversationId: string) => void;
+  "chat:leave": (conversationId: string) => void;
+  "chat:read": (conversationId: string) => void;
+  "chat:send": (payload: {
+    conversationId: string;
+    content: string;
+    messageType: string;
+  }) => void;
 }

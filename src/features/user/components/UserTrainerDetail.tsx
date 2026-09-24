@@ -3,6 +3,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
 import { trainerService } from "@/features/trainer/services/trainer.service";
 import { subscriptionService } from "@/features/subscription/services/subscription.service";
+import { chatService } from "@/features/chat/services/chat.service";
+import { parseApiError } from "@/infrastructure/api/api-error";
 import { USER_UI_ROUTES } from "@/constants/routes/user.routes";
 import { TrainerDetail } from "@/features/trainer/types/trainer.types";
 import {
@@ -17,6 +19,7 @@ import {
   CalendarDays,
   UserCheck,
   ChevronRight,
+  MessageSquare,
 } from "lucide-react";
 
 const UserTrainerDetails = () => {
@@ -26,6 +29,7 @@ const UserTrainerDetails = () => {
   const [trainer, setTrainer] = useState<TrainerDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [checkingSub, setCheckingSub] = useState(false);
+  const [startingChat, setStartingChat] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -72,6 +76,29 @@ const UserTrainerDetails = () => {
       navigate(USER_UI_ROUTES.USER_SUBSCRIPTIONS);
     } finally {
       setCheckingSub(false);
+    }
+  };
+
+  const handleStartChat = async () => {
+    if (!trainer) return;
+    const targetTrainerId = trainer.userId || trainer._id || id;
+    if (!targetTrainerId) return;
+
+    setStartingChat(true);
+    try {
+      const conversation = await chatService.getOrCreateConversation(targetTrainerId);
+      navigate(`${USER_UI_ROUTES.USER_MESSAGES}?conversationId=${conversation.id}`);
+    } catch (err: unknown) {
+      const parsed = parseApiError(err);
+      toast.error(parsed.message || "Failed to start chat session.");
+      if (
+        parsed.statusCode === 403 ||
+        parsed.message.toLowerCase().includes("subscription")
+      ) {
+        navigate(USER_UI_ROUTES.USER_SUBSCRIPTIONS);
+      }
+    } finally {
+      setStartingChat(false);
     }
   };
 
@@ -159,17 +186,30 @@ const UserTrainerDetails = () => {
                   </div>
                 </div>
 
-                {/* Primary CTA Button */}
-                <div className="w-full md:w-auto">
+                {/* Action CTA Buttons */}
+                <div className="w-full md:w-auto flex flex-col sm:flex-row items-center gap-3">
+                  <button
+                    onClick={handleStartChat}
+                    disabled={startingChat || checkingSub}
+                    className="w-full sm:w-auto bg-purple-500/15 hover:bg-purple-500/25 border border-purple-500/35 hover:border-purple-500/60 text-purple-200 hover:text-white font-bold text-sm sm:text-base px-6 py-4 rounded-2xl shadow-lg transition-all cursor-pointer flex items-center justify-center gap-2.5 active:scale-95 disabled:opacity-50"
+                  >
+                    {startingChat ? (
+                      <Loader2 size={18} className="animate-spin" />
+                    ) : (
+                      <MessageSquare size={18} />
+                    )}
+                    <span>Chat with Coach</span>
+                  </button>
+
                   <button
                     onClick={handleBookSession}
-                    disabled={checkingSub}
-                    className="w-full md:w-auto bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-600 hover:from-purple-500 hover:to-indigo-500 disabled:opacity-50 text-white font-extrabold text-base px-8 py-4 rounded-2xl shadow-xl shadow-purple-600/30 hover:shadow-purple-600/50 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer flex items-center justify-center gap-3"
+                    disabled={checkingSub || startingChat}
+                    className="w-full sm:w-auto bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-600 hover:from-purple-500 hover:to-indigo-500 disabled:opacity-50 text-white font-extrabold text-sm sm:text-base px-8 py-4 rounded-2xl shadow-xl shadow-purple-600/30 hover:shadow-purple-600/50 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer flex items-center justify-center gap-2.5"
                   >
                     {checkingSub ? (
-                      <Loader2 size={20} className="animate-spin" />
+                      <Loader2 size={18} className="animate-spin" />
                     ) : (
-                      <CalendarDays size={20} />
+                      <CalendarDays size={18} />
                     )}
                     <span>Book Coaching Session</span>
                   </button>
