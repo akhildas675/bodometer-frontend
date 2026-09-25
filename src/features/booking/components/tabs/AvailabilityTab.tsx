@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import { trainerAvailabilityService } from "@/features/booking/services/trainer-availability.service";
@@ -91,13 +91,17 @@ export const AvailabilityTab: React.FC = () => {
     setUnavailabilities((prev) => prev.filter((_, i) => i !== index));
   };
 
+  const isFetchingRef = useRef(false);
+
   useEffect(() => {
+    if (isFetchingRef.current) return;
+    isFetchingRef.current = true;
+
     Promise.all([
       trainerAvailabilityService.getScheduleSetup().catch(() => null),
-      trainerAvailabilityService.getAvailability().catch(() => null),
       coachingService.getCoachingServices().catch(() => null),
       trainerAvailabilityService.getUnavailabilities().catch(() => null),
-    ]).then(([setupRes, availRes, svcRes, leavesRes]) => {
+    ]).then(([setupRes, svcRes, leavesRes]) => {
       if (setupRes?.data) {
         const setup = setupRes.data;
         if (setup.availability) {
@@ -151,14 +155,7 @@ export const AvailabilityTab: React.FC = () => {
 
       let list: TrainerAvailability[] = [];
 
-      if (availRes?.data && Array.isArray(availRes.data)) {
-        list = availRes.data.map((a: TrainerAvailability) => ({
-          ...a,
-          weeklySchedule: normalizeWeeklySchedule(a.weeklySchedule),
-        }));
-      }
-
-      if (list.length === 0 && setupRes?.data?.availability) {
+      if (setupRes?.data?.availability) {
         const setupAvail = setupRes.data.availability;
         list = [
           {
@@ -179,6 +176,8 @@ export const AvailabilityTab: React.FC = () => {
         setAvailableServices(svcRes.data);
       }
       setLoading(false);
+    }).finally(() => {
+      isFetchingRef.current = false;
     });
   }, []);
 

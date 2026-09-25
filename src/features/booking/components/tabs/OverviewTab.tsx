@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Plus } from "lucide-react";
 import { trainerAvailabilityService } from "@/features/booking/services/trainer-availability.service";
 import { TrainerAvailability, TrainerBookingSettingsForm } from "@/features/booking/types/trainer-availability.types";
@@ -13,23 +13,19 @@ export const OverviewTab: React.FC = () => {
   const [offeredServiceIds, setOfferedServiceIds] = useState<string[]>([]);
   const [bookingSettings, setBookingSettings] = useState<TrainerBookingSettingsForm | null>(null);
   const [loading, setLoading] = useState(true);
+  const isFetchingRef = useRef(false);
 
   useEffect(() => {
+    if (isFetchingRef.current) return;
+    isFetchingRef.current = true;
+
     Promise.all([
       trainerAvailabilityService.getScheduleSetup().catch(() => null),
-      trainerAvailabilityService.getAvailability().catch(() => null),
       coachingService.getCoachingServices().catch(() => null),
-    ]).then(([setupRes, availRes, svcRes]) => {
+    ]).then(([setupRes, svcRes]) => {
       let list: TrainerAvailability[] = [];
 
-      if (availRes?.data && Array.isArray(availRes.data)) {
-        list = availRes.data.map((a: TrainerAvailability) => ({
-          ...a,
-          weeklySchedule: normalizeWeeklySchedule(a.weeklySchedule),
-        }));
-      }
-
-      if (list.length === 0 && setupRes?.data?.availability) {
+      if (setupRes?.data?.availability) {
         const setupAvail = setupRes.data.availability;
         list = [
           {
@@ -55,6 +51,8 @@ export const OverviewTab: React.FC = () => {
         setAvailableServices(svcRes.data);
       }
       setLoading(false);
+    }).finally(() => {
+      isFetchingRef.current = false;
     });
   }, []);
 

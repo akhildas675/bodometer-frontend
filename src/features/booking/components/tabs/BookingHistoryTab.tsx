@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { History, Calendar, Clock, User, XCircle, CheckCircle2, AlertCircle, RefreshCw } from "lucide-react";
 import { clientBookingService, BookingResponseData } from "@/features/booking/services/client-booking.service";
 import { videoSessionService } from "@/features/video-session/services/video-session.service";
@@ -23,23 +23,31 @@ export const BookingHistoryTab: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(4);
 
-  const fetchHistory = () => {
+  const isFetchingRef = useRef(false);
+
+  const fetchHistory = useCallback(async () => {
+    if (isFetchingRef.current) return;
+    isFetchingRef.current = true;
     setLoading(true);
-    Promise.all([
-      clientBookingService.getTrainerBookings("history"),
-      videoSessionService.getVideoSessionHistory({ limit: 50 }).catch(() => null),
-    ])
-      .then(([bookingsData, vsData]) => {
-        setHistorySessions(bookingsData);
-        if (vsData?.sessions) setVideoSessions(vsData.sessions);
-      })
-      .catch(() => toast.error("Failed to load booking history."))
-      .finally(() => setLoading(false));
-  };
+
+    try {
+      const [bookingsData, vsData] = await Promise.all([
+        clientBookingService.getTrainerBookings("history"),
+        videoSessionService.getVideoSessionHistory({ limit: 50 }).catch(() => null),
+      ]);
+      setHistorySessions(bookingsData);
+      if (vsData?.sessions) setVideoSessions(vsData.sessions);
+    } catch {
+      toast.error("Failed to load booking history.");
+    } finally {
+      setLoading(false);
+      isFetchingRef.current = false;
+    }
+  }, []);
 
   useEffect(() => {
     fetchHistory();
-  }, []);
+  }, [fetchHistory]);
 
   const getStatusBadge = (b: BookingResponseData) => {
     switch (b.status.toUpperCase()) {

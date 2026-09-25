@@ -25,17 +25,15 @@ export function SocketProvider({
       console.log("Socket disconnected:", reason);
     };
 
-   
-  socket.on("connect", handleConnect);
-socket.on("disconnect", handleDisconnect);
+    socket.on("connect", handleConnect);
+    socket.on("disconnect", handleDisconnect);
 
-const cleanupNotificationListener =
-  initializeNotificationSocket();
+    const cleanupNotificationListener = initializeNotificationSocket();
+    const cleanupVideoCallListener = initializeVideoCallSocket();
 
-const cleanupVideoCallListener =
-  initializeVideoCallSocket();
-
-socket.connect();
+    if (!socket.connected) {
+      socket.connect();
+    }
 
     return () => {
       socket.off("connect", handleConnect);
@@ -43,6 +41,7 @@ socket.connect();
 
       cleanupNotificationListener();
       cleanupVideoCallListener();
+      socket.disconnect();
     };
   }, [isAuthenticated]);
 

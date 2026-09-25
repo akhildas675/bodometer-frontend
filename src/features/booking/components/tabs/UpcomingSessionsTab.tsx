@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   CalendarClock,
@@ -177,52 +177,54 @@ export const UpcomingSessionsTab: React.FC = () => {
   const [rescheduleReason, setRescheduleReason] = useState("");
   const [proposing, setProposing] = useState(false);
 
-  const fetchUpcoming = () => {
+  const isFetchingRef = useRef(false);
+
+  const fetchUpcoming = useCallback(async () => {
+    if (isFetchingRef.current) return;
+    isFetchingRef.current = true;
     setLoading(true);
-    clientBookingService
-      .getTrainerBookings("upcoming")
-      .then((data) => {
-        setSessions(data);
 
-        // Check active video sessions for confirmed bookings within session window
-        const now = Date.now();
-        const inWindowBookings = data.filter((b) => {
-          const start = new Date(b.startTime).getTime();
-          const end = new Date(b.endTime).getTime();
-          return (
-            b.status.toUpperCase() === "CONFIRMED" &&
-            now >= start - 10 * 60 * 1000 &&
-            now <= end + 10 * 60 * 1000
-          );
+    try {
+      const data = await clientBookingService.getTrainerBookings("upcoming");
+      setSessions(data);
+
+      // Check active video sessions for confirmed bookings within session window
+      const now = Date.now();
+      const inWindowBookings = data.filter((b) => {
+        const start = new Date(b.startTime).getTime();
+        const end = new Date(b.endTime).getTime();
+        return (
+          b.status.toUpperCase() === "CONFIRMED" &&
+          now >= start - 10 * 60 * 1000 &&
+          now <= end + 10 * 60 * 1000
+        );
+      });
+
+      if (inWindowBookings.length > 0) {
+        const fetches = inWindowBookings.map((b) =>
+          videoSessionService
+            .getVideoSessionByBookingId(b.id)
+            .then((vs) => ({ bookingId: b.id, videoSessionId: vs?.id ?? null }))
+            .catch(() => ({ bookingId: b.id, videoSessionId: null }))
+        );
+        const results = await Promise.all(fetches);
+        const map: Record<string, string | null> = {};
+        results.forEach(({ bookingId, videoSessionId }) => {
+          map[bookingId] = videoSessionId;
         });
-
-        if (inWindowBookings.length > 0) {
-          const fetches = inWindowBookings.map((b) =>
-            videoSessionService
-              .getVideoSessionByBookingId(b.id)
-              .then((vs) => ({ bookingId: b.id, videoSessionId: vs?.id ?? null }))
-              .catch(() => ({ bookingId: b.id, videoSessionId: null }))
-          );
-          Promise.all(fetches).then((results) => {
-            const map: Record<string, string | null> = {};
-            results.forEach(({ bookingId, videoSessionId }) => {
-              map[bookingId] = videoSessionId;
-            });
-            setActiveSessions((prev) => ({ ...prev, ...map }));
-          });
-        }
-      })
-      .catch(() => toast.error("Failed to load upcoming sessions."))
-      .finally(() => setLoading(false));
-  };
+        setActiveSessions((prev) => ({ ...prev, ...map }));
+      }
+    } catch {
+      toast.error("Failed to load upcoming sessions.");
+    } finally {
+      setLoading(false);
+      isFetchingRef.current = false;
+    }
+  }, []);
 
   useEffect(() => {
     fetchUpcoming();
-    const interval = setInterval(() => {
-      fetchUpcoming();
-    }, 15000);
-    return () => clearInterval(interval);
-  }, []);
+  }, [fetchUpcoming]);
 
   const navigate = useNavigate();
 
