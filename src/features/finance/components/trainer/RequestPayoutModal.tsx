@@ -1,7 +1,16 @@
 import React, { useState } from "react";
-import { X, DollarSign, AlertCircle, Loader2 } from "lucide-react";
+import {
+  X,
+  DollarSign,
+  AlertCircle,
+  Loader2,
+  Building2,
+  ChevronDown,
+  ChevronUp,
+} from "lucide-react";
 import { toast } from "sonner";
 import { financeService } from "../../services/finance.service";
+import { PayoutBankDetails } from "../../types/finance.types";
 
 interface Props {
   isOpen: boolean;
@@ -17,12 +26,20 @@ export const RequestPayoutModal: React.FC<Props> = ({
   onSuccess,
 }) => {
   const [amount, setAmount] = useState<string>("");
+  const [showBankDetails, setShowBankDetails] = useState<boolean>(false);
+  const [bankDetails, setBankDetails] = useState<PayoutBankDetails>({
+    accountHolderName: "",
+    accountNumber: "",
+    ifscCode: "",
+    bankName: "",
+    upiId: "",
+  });
   const [submitting, setSubmitting] = useState<boolean>(false);
 
   if (!isOpen) return null;
 
   const numericAmount = parseFloat(amount) || 0;
-  const isTooLow = numericAmount < 1000;
+  const isTooLow = numericAmount < 100;
   const isTooHigh = numericAmount > availableBalance;
   const isValid = !isTooLow && !isTooHigh && numericAmount > 0;
 
@@ -36,7 +53,18 @@ export const RequestPayoutModal: React.FC<Props> = ({
 
     try {
       setSubmitting(true);
-      await financeService.requestPayout(numericAmount);
+      const safeBankDetails =
+        bankDetails.accountNumber?.trim() || bankDetails.upiId?.trim()
+          ? {
+              accountHolderName: bankDetails.accountHolderName?.trim() || undefined,
+              accountNumber: bankDetails.accountNumber?.trim() || undefined,
+              ifscCode: bankDetails.ifscCode?.trim() || undefined,
+              bankName: bankDetails.bankName?.trim() || undefined,
+              upiId: bankDetails.upiId?.trim() || undefined,
+            }
+          : undefined;
+
+      await financeService.requestPayout(numericAmount, safeBankDetails);
       toast.success("Payout request submitted successfully!", {
         description: `₹${numericAmount.toLocaleString("en-IN")} is now queued for administrator review.`,
       });
@@ -53,9 +81,9 @@ export const RequestPayoutModal: React.FC<Props> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="relative w-full max-w-md overflow-hidden rounded-2xl bg-neutral-900 border border-neutral-800 shadow-2xl">
+      <div className="relative w-full max-w-lg overflow-hidden rounded-2xl bg-neutral-900 border border-neutral-800 shadow-2xl max-h-[90vh] flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-neutral-800/80 px-6 py-5">
+        <div className="flex items-center justify-between border-b border-neutral-800/80 px-6 py-5 shrink-0">
           <div className="flex items-center gap-2.5">
             <div className="w-9 h-9 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
               <DollarSign size={18} />
@@ -72,14 +100,14 @@ export const RequestPayoutModal: React.FC<Props> = ({
           <button
             onClick={onClose}
             disabled={submitting}
-            className="p-1 rounded-lg text-neutral-400 hover:text-white hover:bg-neutral-800 transition-colors"
+            className="p-1 rounded-lg text-neutral-400 hover:text-white hover:bg-neutral-800 transition-colors cursor-pointer"
           >
             <X size={18} />
           </button>
         </div>
 
         {/* Content */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-5">
+        <form onSubmit={handleSubmit} className="p-6 space-y-5 overflow-y-auto">
           {/* Balance info box */}
           <div className="flex items-center justify-between bg-neutral-950/60 border border-neutral-800 rounded-xl p-3.5">
             <span className="text-xs text-neutral-400 font-medium">
@@ -93,7 +121,7 @@ export const RequestPayoutModal: React.FC<Props> = ({
           {/* Amount input */}
           <div>
             <label className="block text-xs font-medium text-neutral-300 mb-1.5">
-              Payout Amount (₹)
+              Payout Amount (₹) *
             </label>
             <div className="relative">
               <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-500 font-medium text-sm">
@@ -102,7 +130,7 @@ export const RequestPayoutModal: React.FC<Props> = ({
               <input
                 type="number"
                 step="0.01"
-                min="1000"
+                min="100"
                 max={availableBalance}
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
@@ -133,11 +161,122 @@ export const RequestPayoutModal: React.FC<Props> = ({
             )}
           </div>
 
+          {/* Bank details collapsible toggle */}
+          <div className="border border-neutral-800 rounded-xl overflow-hidden bg-neutral-950/40">
+            <button
+              type="button"
+              onClick={() => setShowBankDetails((prev) => !prev)}
+              className="w-full flex items-center justify-between p-3.5 text-xs text-neutral-300 hover:text-white transition-colors cursor-pointer"
+            >
+              <div className="flex items-center gap-2">
+                <Building2 size={15} className="text-emerald-400" />
+                <span className="font-medium">Bank Account / UPI Details (Optional)</span>
+              </div>
+              {showBankDetails ? <ChevronUp size={15} /> : <ChevronDown size={15} />}
+            </button>
+
+            {showBankDetails && (
+              <div className="p-4 pt-1 space-y-3 border-t border-neutral-800/60 bg-neutral-950/60">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-[11px] text-neutral-400 mb-1">
+                      Account Holder Name
+                    </label>
+                    <input
+                      type="text"
+                      value={bankDetails.accountHolderName}
+                      onChange={(e) =>
+                        setBankDetails((prev) => ({
+                          ...prev,
+                          accountHolderName: e.target.value,
+                        }))
+                      }
+                      placeholder="John Doe"
+                      className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-emerald-500/50"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] text-neutral-400 mb-1">
+                      Bank Name
+                    </label>
+                    <input
+                      type="text"
+                      value={bankDetails.bankName}
+                      onChange={(e) =>
+                        setBankDetails((prev) => ({
+                          ...prev,
+                          bankName: e.target.value,
+                        }))
+                      }
+                      placeholder="e.g. HDFC Bank"
+                      className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-emerald-500/50"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-[11px] text-neutral-400 mb-1">
+                      Account Number
+                    </label>
+                    <input
+                      type="text"
+                      value={bankDetails.accountNumber}
+                      onChange={(e) =>
+                        setBankDetails((prev) => ({
+                          ...prev,
+                          accountNumber: e.target.value,
+                        }))
+                      }
+                      placeholder="XXXXXXXXXXXX"
+                      className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-emerald-500/50"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] text-neutral-400 mb-1">
+                      IFSC Code
+                    </label>
+                    <input
+                      type="text"
+                      value={bankDetails.ifscCode}
+                      onChange={(e) =>
+                        setBankDetails((prev) => ({
+                          ...prev,
+                          ifscCode: e.target.value.toUpperCase(),
+                        }))
+                      }
+                      placeholder="HDFC0001234"
+                      className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-2.5 py-1.5 text-xs text-white uppercase focus:outline-none focus:border-emerald-500/50"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-[11px] text-neutral-400 mb-1">
+                    Or UPI ID
+                  </label>
+                  <input
+                    type="text"
+                    value={bankDetails.upiId}
+                    onChange={(e) =>
+                      setBankDetails((prev) => ({
+                        ...prev,
+                        upiId: e.target.value,
+                      }))
+                    }
+                    placeholder="username@okhdfcbank"
+                    className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-emerald-500/50"
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+
           {/* Summary notes */}
           <div className="space-y-2 border-t border-neutral-800/60 pt-4 text-xs text-neutral-400">
             <div className="flex justify-between">
               <span>Transfer Method</span>
-              <span className="text-neutral-300 font-medium">Bank Account (IMPS/NEFT)</span>
+              <span className="text-neutral-300 font-medium">Bank Account (IMPS/NEFT/UPI)</span>
             </div>
             <div className="flex justify-between">
               <span>Platform Processing Fee</span>

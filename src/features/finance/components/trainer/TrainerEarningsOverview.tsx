@@ -20,7 +20,7 @@ export const TrainerEarningsOverview: React.FC<Props> = ({
   const totalPaidOut = summary?.totalPaidOut ?? 0;
   const pendingPayout = summary?.pendingPayout ?? 0;
 
-  const canRequestPayout = availableBalance >= 1000 && !activePayout;
+  const canRequestPayout = availableBalance >= 100 && !activePayout;
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">

@@ -117,10 +117,20 @@ class FinanceService {
     return response.data?.data ?? null;
   }
 
-  async requestPayout(amount: number): Promise<PayoutRequest> {
+  async getPayoutDetails(payoutId: string): Promise<PayoutRequest> {
+    const response = await api.get<ApiResponse<PayoutRequest>>(
+      `/finance/admin/payouts/${payoutId}`,
+    );
+    return response.data?.data;
+  }
+
+  async requestPayout(
+    amount: number,
+    bankDetails?: import("../types/finance.types").PayoutBankDetails,
+  ): Promise<PayoutRequest> {
     const response = await api.post<ApiResponse<PayoutRequest>>(
       "/finance/trainer/payouts",
-      { amount },
+      { amount, bankDetails },
     );
     return response.data?.data;
   }
@@ -214,21 +224,35 @@ class FinanceService {
   async processPayout(
     payoutId: string,
     providerPayoutId?: string,
+    adminNote?: string,
   ): Promise<PayoutRequest> {
     const response = await api.patch<ApiResponse<PayoutRequest>>(
       `/finance/admin/payouts/${payoutId}/process`,
-      { providerPayoutId },
+      { providerPayoutId, adminNote },
     );
     return response.data?.data;
   }
 
   async completePayout(
     payoutId: string,
-    providerPayoutId?: string,
+    payload:
+      | string
+      | {
+          bankTransferReference: string;
+          transferredAt?: string;
+          adminNote?: string;
+          payoutMethod?: string;
+          providerPayoutId?: string;
+        },
   ): Promise<PayoutRequest> {
+    const body =
+      typeof payload === "string"
+        ? { bankTransferReference: payload, providerPayoutId: payload }
+        : payload;
+
     const response = await api.patch<ApiResponse<PayoutRequest>>(
       `/finance/admin/payouts/${payoutId}/complete`,
-      { providerPayoutId },
+      body,
     );
     return response.data?.data;
   }
@@ -237,6 +261,17 @@ class FinanceService {
     const response = await api.patch<ApiResponse<PayoutRequest>>(
       `/finance/admin/payouts/${payoutId}/fail`,
       { reason },
+    );
+    return response.data?.data;
+  }
+
+  /**
+   * One-click: Admin approves and immediately pays the trainer via Stripe.
+   * The payout is moved directly to PAID status with a Stripe payout ID.
+   */
+  async stripePayPayout(payoutId: string): Promise<PayoutRequest> {
+    const response = await api.patch<ApiResponse<PayoutRequest>>(
+      `/finance/admin/payouts/${payoutId}/stripe-pay`,
     );
     return response.data?.data;
   }

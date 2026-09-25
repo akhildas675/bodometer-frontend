@@ -63,6 +63,14 @@ export interface FinancialTransaction {
   updatedAt?: string;
 }
 
+export interface PayoutBankDetails {
+  accountHolderName?: string;
+  accountNumber?: string;
+  ifscCode?: string;
+  bankName?: string;
+  upiId?: string;
+}
+
 export interface PayoutRequest {
   id: string;
   trainerId: string;
@@ -70,6 +78,12 @@ export interface PayoutRequest {
   reservedAmount: number;
   currency: string;
   status: PayoutStatus;
+  payoutMethod?: string;
+  bankTransferReference?: string;
+  transferredAt?: string;
+  processedBy?: string;
+  adminNote?: string;
+  bankDetails?: PayoutBankDetails;
   providerPayoutId?: string;
   rejectionReason?: string;
   failureReason?: string;
@@ -77,6 +91,8 @@ export interface PayoutRequest {
   approvedAt?: string;
   processedAt?: string;
   completedAt?: string;
+  rejectedAt?: string;
+  failedAt?: string;
   createdAt: string;
   updatedAt?: string;
 }
