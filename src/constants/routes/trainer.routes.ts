@@ -17,4 +17,5 @@ export const TRAiNER_UI_ROUTES = {
     TRAINER_VIDEO_CALL: "/trainer/video-call/:bookingId",
     TRAINER_VIDEO_CALL_SESSION: "/trainer/video-call/:videoSessionId",
     TRAINER_MESSAGES: "/trainer/messages",
+    TRAINER_EARNINGS: "/trainer/earnings",
 } as const;

@@ -59,6 +59,7 @@ const iconMap: Record<string, React.ReactNode> = {
   "/admin/equipment": <DumbbellIcon size={20} />,
   "/admin/target-muscles": <PersonStanding size={20} />,
   "/admin/notifications": <Bell size={20} />,
+  "/admin/finance": <DollarSign size={20} />,
 
   "/trainer": <LayoutDashboard size={20} />,
   "/trainer/availability": <Calendar size={20} />,

@@ -30,6 +30,7 @@ const AdminTargetMuscleListPage = lazy(() => import("@/features/admin/target-mus
 const AdminTargetMuscleFormPage = lazy(() => import("@/features/admin/target-muscles/pages/AdminTargetMuscleFormPage"));
 const AdminExerciseListPage = lazy(() => import("@/features/admin/exercises/pages/AdminExerciseListPage"));
 const AdminExerciseFormPage = lazy(() => import("@/features/admin/exercises/pages/AdminExerciseFormPage"));
+const AdminFinancePage = lazy(() => import("@/features/finance/pages/AdminFinancePage"));
 
 export const adminRoutes = (
   <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
@@ -77,6 +78,7 @@ export const adminRoutes = (
       <Route path={ADMIN_UI_ROUTES.MEAL_CATEGORY_FORM} element={<AdminMealCategoryFormPage/>} />
 
       <Route path={ADMIN_UI_ROUTES.NOTIFICATIONS} element={<AdminNotificationPage />} />
+      <Route path={ADMIN_UI_ROUTES.FINANCE} element={<AdminFinancePage />} />
     </Route>
   </Route>
 );

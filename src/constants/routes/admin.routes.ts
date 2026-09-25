@@ -58,4 +58,5 @@ export const ADMIN_UI_ROUTES = {
 
   BOOKINGS: "/admin/bookings",
   NOTIFICATIONS: "/admin/notifications",
+  FINANCE: "/admin/finance",
 } as const;

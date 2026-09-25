@@ -15,6 +15,7 @@ export const sidebarConfig: Record<SidebarRole, SidebarItem[]> = {
     { label: "Trainers", path: "/admin/trainers" },
     { label: "Trainer Appointment", path: "/admin/appointments" },
     { label: "Notifications", path: "/admin/notifications" },
+    { label: "Finance & Payouts", path: "/admin/finance" },
     // { label: "Bookings", path: "/admin/bookings" },
   
     {

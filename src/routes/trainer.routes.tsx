@@ -25,6 +25,9 @@ const TrainerBookingSetupPage = lazy(
 const TrainerBookingManagementPage = lazy(
   () => import("@/features/booking/pages/TrainerBookingManagementPage")
 );
+const TrainerEarningsPage = lazy(
+  () => import("@/features/finance/pages/TrainerEarningsPage")
+);
 
 export const trainerRoutes = (
   <Route element={<ProtectedRoute allowedRoles={["trainer"]} />}>
@@ -52,6 +55,7 @@ export const trainerRoutes = (
         <Route path={TRAiNER_UI_ROUTES.TRAINER_NOTIFICATIONS} element={<TrainerNotificationPage />} />
         <Route path={TRAiNER_UI_ROUTES.TRAINER_VIDEO_CALL_SESSION} element={<VideoSessionPage />} />
         <Route path={TRAiNER_UI_ROUTES.TRAINER_MESSAGES} element={<TrainerChatPage />} />
+        <Route path={TRAiNER_UI_ROUTES.TRAINER_EARNINGS} element={<TrainerEarningsPage />} />
 
         {/* Legacy redirect: /trainer/availability → /trainer/booking */}
         <Route
