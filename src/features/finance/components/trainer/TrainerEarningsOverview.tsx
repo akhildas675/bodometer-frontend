@@ -69,7 +69,7 @@ export const TrainerEarningsOverview: React.FC<Props> = ({
       <div className="rounded-2xl bg-neutral-900/80 border border-neutral-800 p-6 backdrop-blur-sm">
         <div className="flex items-center justify-between mb-4">
           <span className="text-xs font-semibold uppercase tracking-wider text-neutral-400">
-            Net Earnings (70%)
+            Net Earnings
           </span>
           <div className="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400">
             <CheckCircle2 size={20} />

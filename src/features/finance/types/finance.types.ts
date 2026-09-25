@@ -58,6 +58,7 @@ export interface FinancialTransaction {
   referenceKey: string;
   relatedTransactionId?: string;
   note?: string;
+  serviceName?: string;
   createdAt: string;
   updatedAt?: string;
 }

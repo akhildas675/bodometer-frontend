@@ -14,6 +14,7 @@ import {
   PhoneOff,
   AlertTriangle,
   User,
+  Star,
 } from "lucide-react";
 import {
   clientBookingService,
@@ -28,6 +29,8 @@ import SearchBar from "@/components/ui/SearchInput";
 import SortDropdown, { SortConfig } from "@/components/ui/SortControl";
 import Pagination from "@/components/ui/Pagination";
 import { toast } from "sonner";
+import { ReviewModal } from "@/features/review/components/ReviewModal";
+import { reviewService } from "@/features/review/services/review.service";
 
 export const UserMyBookings: React.FC = () => {
   const [bookings, setBookings] = useState<BookingResponseData[]>([]);
@@ -71,6 +74,14 @@ export const UserMyBookings: React.FC = () => {
     videoSessionId: string;
   } | null>(null);
   const [disconnecting, setDisconnecting] = useState(false);
+
+  // Review Modal State
+  const [reviewModalTarget, setReviewModalTarget] = useState<{
+    bookingId: string;
+    videoSessionId?: string;
+    trainerName?: string;
+  } | null>(null);
+  const [reviewedBookingIds, setReviewedBookingIds] = useState<Set<string>>(new Set());
 
   const isFetchingRef = useRef(false);
 
@@ -119,6 +130,33 @@ export const UserMyBookings: React.FC = () => {
           map[bookingId] = videoSessionId;
         });
         setActiveSessions((prev) => ({ ...prev, ...map }));
+      }
+
+      // Check review status for completed bookings
+      const completedList = bookingsData.filter((b) => {
+        const matchingVs = historyData?.sessions?.find((s: VideoSession) => String(s.bookingId) === String(b.id));
+        return (
+          b.status.toUpperCase() === "COMPLETED" ||
+          matchingVs?.status === "COMPLETED" ||
+          (b.status.toUpperCase() === "CONFIRMED" && new Date(b.endTime).getTime() < now)
+        );
+      });
+
+      if (completedList.length > 0) {
+        Promise.all(
+          completedList.map((b) =>
+            reviewService
+              .checkEligibility(b.id)
+              .then((res) => ({ bookingId: b.id, isReviewed: !res.eligible && !!res.existingReviewId }))
+              .catch(() => ({ bookingId: b.id, isReviewed: false }))
+          )
+        ).then((results) => {
+          const reviewed = new Set<string>();
+          results.forEach((r) => {
+            if (r.isReviewed) reviewed.add(r.bookingId);
+          });
+          setReviewedBookingIds(reviewed);
+        });
       }
     } catch {
       toast.error("Failed to load your booking sessions.");
@@ -772,12 +810,34 @@ export const UserMyBookings: React.FC = () => {
                           </div>
                         </div>
 
-                        <a
-                          href="/trainers"
-                          className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-bold text-white border border-white/10 hover:border-purple-500/40 transition flex items-center gap-1.5 self-start sm:self-auto shrink-0"
-                        >
-                          <Sparkles size={13} className="text-purple-400" /> Book Again
-                        </a>
+                        <div className="flex items-center gap-2 flex-wrap self-start sm:self-auto shrink-0">
+                          {reviewedBookingIds.has(b.id) ? (
+                            <span className="px-3.5 py-2 rounded-xl bg-amber-500/10 text-amber-300 border border-amber-500/30 text-xs font-bold flex items-center gap-1.5">
+                              <Star size={13} className="fill-amber-400 text-amber-400" />
+                              Reviewed
+                            </span>
+                          ) : (
+                            <button
+                              onClick={() =>
+                                setReviewModalTarget({
+                                  bookingId: b.id,
+                                  videoSessionId: vs?.id,
+                                  trainerName: trainerDisplayName,
+                                })
+                              }
+                              className="px-4 py-2 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-xs font-bold text-amber-300 border border-amber-500/40 hover:border-amber-500/60 transition flex items-center gap-1.5 cursor-pointer shadow-lg shadow-amber-500/10"
+                            >
+                              <Star size={14} className="fill-amber-400 text-amber-400" />
+                              Rate & Review
+                            </button>
+                          )}
+                          <a
+                            href="/trainers"
+                            className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-bold text-white border border-white/10 hover:border-purple-500/40 transition flex items-center gap-1.5"
+                          >
+                            <Sparkles size={13} className="text-purple-400" /> Book Again
+                          </a>
+                        </div>
                       </div>
                     )}
                   </div>
@@ -1017,6 +1077,21 @@ export const UserMyBookings: React.FC = () => {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Review & Rating Modal */}
+      {reviewModalTarget && (
+        <ReviewModal
+          isOpen={Boolean(reviewModalTarget)}
+          bookingId={reviewModalTarget.bookingId}
+          videoSessionId={reviewModalTarget.videoSessionId}
+          trainerName={reviewModalTarget.trainerName}
+          onClose={() => setReviewModalTarget(null)}
+          onSuccess={(_review) => {
+            setReviewedBookingIds((prev) => new Set([...prev, reviewModalTarget.bookingId]));
+            setReviewModalTarget(null);
+          }}
+        />
       )}
     </div>
   );

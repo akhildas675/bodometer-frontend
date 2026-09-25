@@ -21,6 +21,8 @@ import {
   ChevronRight,
   MessageSquare,
 } from "lucide-react";
+import { TrainerRatingWidget } from "@/features/review/components/TrainerRatingWidget";
+import { TrainerReviewsList } from "@/features/review/components/TrainerReviewsList";
 
 const UserTrainerDetails = () => {
   const { id } = useParams<{ id: string }>();
@@ -257,6 +259,12 @@ const UserTrainerDetails = () => {
                   </div>
                 </div>
               )}
+
+              {/* Rating & Reviews Breakdown */}
+              <div className="space-y-6">
+                <TrainerRatingWidget trainerId={trainer.userId || trainer._id || id || ""} />
+                <TrainerReviewsList trainerId={trainer.userId || trainer._id || id || ""} />
+              </div>
             </div>
 
             {/* Sidebar Column: Highlights */}

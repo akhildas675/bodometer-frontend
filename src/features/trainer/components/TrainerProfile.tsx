@@ -33,6 +33,8 @@ import { ProfileUpdatePayload } from "@/features/user/types/user.types";
 import { CategoryListItem } from "@/features/admin/categories/types/category.types";
 import { categoryService } from "@/features/admin/categories/services/category.service";
 import { trainerService } from "@/features/trainer/services/trainer.service";
+import { TrainerRatingWidget } from "@/features/review/components/TrainerRatingWidget";
+import { TrainerReviewsList } from "@/features/review/components/TrainerReviewsList";
 
 const GENDER_LABELS: Record<string, string> = {
   [GENDER.MALE]: "Male",
@@ -856,6 +858,22 @@ const TrainerProfile = () => {
                           : 'No certifications or documents uploaded yet.'}
                       </div>
                     )}
+                  </div>
+                </div>
+
+                {/* Trainer Reviews & Rating Breakdown */}
+                <div className="space-y-6 pt-6 border-t border-purple-900/30">
+                  <h3 className="text-base font-bold text-white flex items-center gap-2">
+                    <Sparkles className="text-amber-400" size={18} />
+                    My Reviews & Rating Performance
+                  </h3>
+                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div className="lg:col-span-1">
+                      <TrainerRatingWidget isOwnTrainer={true} />
+                    </div>
+                    <div className="lg:col-span-2">
+                      <TrainerReviewsList isOwnTrainer={true} />
+                    </div>
                   </div>
                 </div>
 

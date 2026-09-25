@@ -144,22 +144,21 @@ export const TrainerTransactionsTable: React.FC<Props> = ({
               <tr>
                 <th className="py-3.5 px-6">Date</th>
                 <th className="py-3.5 px-6">Session Ref</th>
-                <th className="py-3.5 px-6">Session Fee</th>
-                <th className="py-3.5 px-6">Platform (30%)</th>
-                <th className="py-3.5 px-6">Your Share (70%)</th>
+                <th className="py-3.5 px-6">Service</th>
+                <th className="py-3.5 px-6">Your Share</th>
                 <th className="py-3.5 px-6">Status</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-neutral-800/60 text-neutral-300">
               {loading ? (
                 <tr>
-                  <td colSpan={6} className="py-12 text-center text-neutral-500">
+                  <td colSpan={5} className="py-12 text-center text-neutral-500">
                     Loading transactions...
                   </td>
                 </tr>
               ) : transactions.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="py-12 text-center text-neutral-500">
+                  <td colSpan={5} className="py-12 text-center text-neutral-500">
                     No earning transactions recorded yet. Complete video coaching sessions to start earning!
                   </td>
                 </tr>
@@ -173,10 +172,7 @@ export const TrainerTransactionsTable: React.FC<Props> = ({
                       {t.bookingId ? `Booking #${t.bookingId.slice(-6)}` : t.referenceKey}
                     </td>
                     <td className="py-3.5 px-6 font-medium text-white">
-                      ₹{t.grossAmount.toLocaleString("en-IN", { minimumFractionDigits: 2 })}
-                    </td>
-                    <td className="py-3.5 px-6 text-neutral-400">
-                      -₹{t.platformAmount.toLocaleString("en-IN", { minimumFractionDigits: 2 })}
+                      {t.serviceName || "1-on-1 Coaching Session"}
                     </td>
                     <td className="py-3.5 px-6 font-semibold text-emerald-400">
                       +₹{t.trainerAmount.toLocaleString("en-IN", { minimumFractionDigits: 2 })}

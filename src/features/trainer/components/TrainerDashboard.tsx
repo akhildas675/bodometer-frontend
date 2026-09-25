@@ -187,7 +187,7 @@ const TrainerDashboard = () => {
         <div className="rounded-2xl bg-neutral-900/80 border border-neutral-800 p-5 backdrop-blur-sm">
           <div className="flex items-center justify-between mb-3">
             <span className="text-xs font-semibold uppercase tracking-wider text-neutral-400">
-              Total Earned (70%)
+              Total Earned
             </span>
             <div className="w-8 h-8 rounded-lg bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400">
               <CheckCircle2 size={16} />
@@ -307,7 +307,7 @@ const TrainerDashboard = () => {
                         +₹{tx.trainerAmount.toLocaleString("en-IN", { minimumFractionDigits: 2 })}
                       </p>
                       <p className="text-[10px] text-neutral-500">
-                        Fee: ₹{tx.grossAmount} (70% share)
+                        {tx.serviceName || "1-on-1 Coaching Session"}
                       </p>
                     </div>
                   </div>

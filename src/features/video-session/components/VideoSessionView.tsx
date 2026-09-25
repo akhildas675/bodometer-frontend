@@ -38,10 +38,15 @@ import {
   AlertTriangle,
   CheckCircle2,
   ArrowLeft,
+  Star,
 } from "lucide-react";
 import { toast } from "sonner";
 import LocalVideo from "@/features/video-session/components/LocalVideo";
 import RemoteVideo from "@/features/video-session/components/RemoteVideo";
+import { useAuthStore } from "@/stores/auth.store";
+import { ROLES } from "@/constants/roles.constants";
+import { ReviewModal } from "@/features/review/components/ReviewModal";
+import { reviewService } from "@/features/review/services/review.service";
 
 interface VideoSessionProps {
   videoSessionId: string;
@@ -73,6 +78,12 @@ function VideoSession({ videoSessionId }: VideoSessionProps) {
   const isEndingRef = useRef(false);
   const hasEndedToastShownRef = useRef(false);
   const [showEndCallConfirm, setShowEndCallConfirm] = useState(false);
+
+  // Review & Rating State
+  const { user } = useAuthStore();
+  const [showReviewModal, setShowReviewModal] = useState(false);
+  const [isSessionReviewed, setIsSessionReviewed] = useState(false);
+  const hasAutoOpenedReviewRef = useRef(false);
 
   // Refs for stable access inside socket callbacks (avoids stale closures)
   const pcRef = useRef<RTCPeerConnection | null>(null);
@@ -114,9 +125,13 @@ function VideoSession({ videoSessionId }: VideoSessionProps) {
       const endedSession = await videoSessionService.endSession(videoSessionId);
       if (endedSession) {
         setSessionDetails(endedSession);
+        const isClient =
+          user?.role === ROLES.USER || user?.id === endedSession.userId;
         if (endedSession.status === "INCOMPLETE") {
           setEndedReason(
-            `Session ended early (${endedSession.actualDurationMinutes ?? 0} mins conducted). Eligible for a full refund.`
+            isClient
+              ? `Session ended early (${endedSession.actualDurationMinutes ?? 0} mins conducted). Eligible for a full refund.`
+              : `Session ended early (${endedSession.actualDurationMinutes ?? 0} mins conducted).`
           );
         } else {
           setEndedReason("You ended the call session.");
@@ -171,6 +186,28 @@ function VideoSession({ videoSessionId }: VideoSessionProps) {
     }
   };
 
+  useEffect(() => {
+    if (
+      isSessionEnded &&
+      sessionDetails &&
+      !hasAutoOpenedReviewRef.current &&
+      (user?.role === ROLES.USER || user?.id === sessionDetails.userId) &&
+      sessionDetails.bookingId &&
+      sessionDetails.status !== "INCOMPLETE" &&
+      !sessionDetails.refundEligible &&
+      !isSessionReviewed
+    ) {
+      hasAutoOpenedReviewRef.current = true;
+      setShowReviewModal(true);
+    }
+  }, [
+    isSessionEnded,
+    sessionDetails,
+    user?.role,
+    user?.id,
+    isSessionReviewed,
+  ]);
+
   // ─── Timer Countdown ─────────────────────────────────────────────────────
   // The session countdown timer starts running when the user accepts
   useEffect(() => {
@@ -218,6 +255,23 @@ function VideoSession({ videoSessionId }: VideoSessionProps) {
     sessionDetails?.status,
     isSessionEnded,
   ]);
+
+  // Check review status when call ends
+  useEffect(() => {
+    if (isSessionEnded && sessionDetails?.bookingId) {
+      const isClient = user?.role === ROLES.USER || user?.id === sessionDetails.userId;
+      if (isClient) {
+        reviewService
+          .checkEligibility(sessionDetails.bookingId)
+          .then((res) => {
+            if (!res.eligible && res.existingReviewId) {
+              setIsSessionReviewed(true);
+            }
+          })
+          .catch(() => {});
+      }
+    }
+  }, [isSessionEnded, sessionDetails?.bookingId, sessionDetails?.userId, user?.role, user?.id]);
 
   const formatTimeRemaining = (seconds: number | null): string => {
     if (seconds === null) return "--:--";
@@ -385,9 +439,13 @@ function VideoSession({ videoSessionId }: VideoSessionProps) {
         setIsSessionEnded(true);
         if (data.session) {
           setSessionDetails(data.session);
+          const isClient =
+            user?.role === ROLES.USER || user?.id === data.session.userId;
           if (data.session.status === "INCOMPLETE") {
             setEndedReason(
-              `Session ended early (${data.session.actualDurationMinutes ?? 0} mins conducted). Eligible for a full refund.`
+              isClient
+                ? `Session ended early (${data.session.actualDurationMinutes ?? 0} mins conducted). Eligible for a full refund.`
+                : `Session ended early (${data.session.actualDurationMinutes ?? 0} mins conducted).`
             );
           } else {
             setEndedReason("The video call was ended.");
@@ -420,8 +478,19 @@ function VideoSession({ videoSessionId }: VideoSessionProps) {
         if (destroyed) return;
 
         if (session.status === "COMPLETED" || session.status === "INCOMPLETE" || session.status === "CANCELLED" || session.status === "EXPIRED") {
+          setSessionDetails(session);
           setIsSessionEnded(true);
-          setEndedReason(`This session has ended (${session.status.toLowerCase()}).`);
+          const isClient =
+            user?.role === ROLES.USER || user?.id === session.userId;
+          if (session.status === "INCOMPLETE") {
+            setEndedReason(
+              isClient
+                ? `Session ended early (${session.actualDurationMinutes ?? 0} mins conducted). Eligible for a full refund.`
+                : `Session ended early (${session.actualDurationMinutes ?? 0} mins conducted).`
+            );
+          } else {
+            setEndedReason(`This session has ended (${session.status.toLowerCase()}).`);
+          }
           return;
         }
 
@@ -1209,8 +1278,8 @@ function VideoSession({ videoSessionId }: VideoSessionProps) {
             )}
           </div>
 
-          {/* If refund is eligible and not yet claimed */}
-          {sessionDetails?.refundEligible &&
+          {(user?.role === ROLES.USER || user?.id === sessionDetails?.userId) &&
+            sessionDetails?.refundEligible &&
             sessionDetails?.refundStatus === "ELIGIBLE" && (
               <div
                 style={{
@@ -1286,21 +1355,90 @@ function VideoSession({ videoSessionId }: VideoSessionProps) {
               </div>
             )}
 
-          {sessionDetails?.refundStatus === "COMPLETED" && (
-            <div
-              style={{
-                background: "rgba(16, 185, 129, 0.1)",
-                border: "1px solid rgba(16, 185, 129, 0.3)",
-                borderRadius: "0.75rem",
-                padding: "0.6rem 1.25rem",
-                color: "#34d399",
-                fontSize: "0.8rem",
-                fontWeight: 700,
-              }}
-            >
-              ✓ Full refund credited to your Bodometer Wallet
-            </div>
-          )}
+          {(user?.role === ROLES.USER || user?.id === sessionDetails?.userId) &&
+            sessionDetails?.refundStatus === "COMPLETED" && (
+              <div
+                style={{
+                  background: "rgba(16, 185, 129, 0.1)",
+                  border: "1px solid rgba(16, 185, 129, 0.3)",
+                  borderRadius: "0.75rem",
+                  padding: "0.6rem 1.25rem",
+                  color: "#34d399",
+                  fontSize: "0.8rem",
+                  fontWeight: 700,
+                }}
+              >
+                ✓ Full refund credited to your Bodometer Wallet
+              </div>
+            )}
+
+          {(user?.role === ROLES.USER || user?.id === sessionDetails?.userId) &&
+            sessionDetails?.bookingId &&
+            sessionDetails.status !== "INCOMPLETE" &&
+            !sessionDetails.refundEligible && (
+              <div
+                style={{
+                  background: "rgba(245, 158, 11, 0.08)",
+                  border: "1px solid rgba(245, 158, 11, 0.3)",
+                  borderRadius: "1rem",
+                  padding: "1rem 1.5rem",
+                  maxWidth: "420px",
+                  width: "100%",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "0.6rem",
+                  alignItems: "center",
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
+                  <Star size={18} className="fill-amber-400 text-amber-400" />
+                  <span style={{ fontSize: "0.9rem", color: "#fbbf24", fontWeight: 700 }}>
+                    {isSessionReviewed ? "Session Reviewed" : "Rate Your Coaching Session"}
+                  </span>
+                </div>
+                <p style={{ fontSize: "0.75rem", color: "rgba(255, 255, 255, 0.7)", textAlign: "center" }}>
+                  {isSessionReviewed
+                    ? "Thank you! Your rating and feedback help your coach and the community."
+                    : `How was your coaching session with ${sessionDetails.otherParticipantName || "your trainer"}? Your feedback is valuable.`}
+                </p>
+                {isSessionReviewed ? (
+                  <div
+                    style={{
+                      background: "rgba(16, 185, 129, 0.15)",
+                      border: "1px solid rgba(16, 185, 129, 0.3)",
+                      borderRadius: "0.5rem",
+                      padding: "0.4rem 0.9rem",
+                      color: "#34d399",
+                      fontSize: "0.75rem",
+                      fontWeight: 700,
+                    }}
+                  >
+                    ✓ Review Submitted
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => setShowReviewModal(true)}
+                    style={{
+                      padding: "0.55rem 1.4rem",
+                      borderRadius: "0.75rem",
+                      background: "linear-gradient(135deg, #f59e0b, #d97706)",
+                      color: "#000",
+                      fontWeight: 800,
+                      fontSize: "0.825rem",
+                      border: "none",
+                      cursor: "pointer",
+                      boxShadow: "0 4px 15px rgba(245, 158, 11, 0.4)",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "0.4rem",
+                    }}
+                  >
+                    <Star size={14} className="fill-black text-black" />
+                    Leave Rating & Review
+                  </button>
+                )}
+              </div>
+            )}
 
           <button
             onClick={() => window.history.back()}
@@ -1329,6 +1467,21 @@ function VideoSession({ videoSessionId }: VideoSessionProps) {
           50% { transform: scale(1.08); opacity: 0.7; }
         }
       `}</style>
+
+      {/* Post-Session Review Modal */}
+      {showReviewModal && sessionDetails?.bookingId && (
+        <ReviewModal
+          isOpen={showReviewModal}
+          bookingId={sessionDetails.bookingId}
+          videoSessionId={videoSessionId}
+          trainerName={sessionDetails.otherParticipantName || "your coach"}
+          onClose={() => setShowReviewModal(false)}
+          onSuccess={() => {
+            setIsSessionReviewed(true);
+            setShowReviewModal(false);
+          }}
+        />
+      )}
     </div>
   );
 }
