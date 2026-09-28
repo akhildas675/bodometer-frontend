@@ -25,3 +25,4 @@ dist-ssr
 demo.ts
 z.text.txt
 z.features
+.env
