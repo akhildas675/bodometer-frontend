@@ -8,6 +8,9 @@ import UserTrainersPage from "@/features/user/pages/UserTrainersPage";
 import UserCategoriesPage from "@/features/workout/pages/UserCategoriesPage";
 import { USER_UI_ROUTES } from "@/constants/routes/user.routes";
 import { useAuthStore } from "@/stores/auth.store";
+import AboutPage from "@/features/public/pages/AboutPage";
+import PrivacyPolicyPage from "@/features/public/pages/PrivacyPolicyPage";
+import TermsOfServicePage from "@/features/public/pages/TermsOfServicePage";
 
 const DynamicPublicLayout = () => {
   const { isAuthenticated, user } = useAuthStore();
@@ -25,5 +28,9 @@ export const publicRoutes = (
       <Route path={USER_UI_ROUTES.USER_TRAINERS} element={<UserTrainersPage />} />
       <Route path={USER_UI_ROUTES.USER_CATEGORIES} element={<UserCategoriesPage />} />
     </Route>
+    {/* Footer Pages - No Layout (Full Pages) */}
+    <Route path="/about" element={<AboutPage />} />
+    <Route path="/privacy" element={<PrivacyPolicyPage />} />
+    <Route path="/terms" element={<TermsOfServicePage />} />
   </Route>
 );

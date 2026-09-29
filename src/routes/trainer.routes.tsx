@@ -14,6 +14,8 @@ import { TRAiNER_UI_ROUTES } from "@/constants/routes/trainer.routes";
 import TrainerOnboardingIntroPage from "@/features/onboarding/pages/TrainerOnboardingIntroPage";
 import TrainerOnboardingProfilePage from "@/features/onboarding/pages/TrainerOnboardingExperiencePage";
 import MainLayouts from "@/components/layout/MainLayout";
+import ChatLayout from "@/components/layout/ChatLayout";
+import VideoCallLayout from "@/components/layout/VideoCallLayout";
 import TrainerOnboardingSkillPage from "@/features/onboarding/pages/TrainerOnboardingCategoryPage";
 import TrainerNotificationPage from "@/features/notification/pages/TrainerNotificationPage";
 import VideoSessionPage from "@/features/video-session/pages/VideoSessionPage";
@@ -53,16 +55,24 @@ export const trainerRoutes = (
         <Route path={TRAiNER_UI_ROUTES.TRAINER_BOOKING_SETUP} element={<TrainerBookingSetupPage />} />
         <Route path={TRAiNER_UI_ROUTES.TRAINER_BOOKING_MANAGEMENT} element={<TrainerBookingManagementPage />} />
         <Route path={TRAiNER_UI_ROUTES.TRAINER_NOTIFICATIONS} element={<TrainerNotificationPage />} />
-        <Route path={TRAiNER_UI_ROUTES.TRAINER_VIDEO_CALL_SESSION} element={<VideoSessionPage />} />
-        <Route path={TRAiNER_UI_ROUTES.TRAINER_MESSAGES} element={<TrainerChatPage />} />
         <Route path={TRAiNER_UI_ROUTES.TRAINER_EARNINGS} element={<TrainerEarningsPage />} />
-
-        {/* Legacy redirect: /trainer/availability → /trainer/booking */}
-        <Route
-          path={TRAiNER_UI_ROUTES.TRAINER_AVAILABILITY}
-          element={<Navigate to={TRAiNER_UI_ROUTES.TRAINER_BOOKING_MANAGEMENT} replace />}
-        />
       </Route>
     </Route>
+
+    {/* Chat - Dedicated Full-Screen Layout */}
+    <Route element={<ChatLayout />}>
+      <Route path={TRAiNER_UI_ROUTES.TRAINER_MESSAGES} element={<TrainerChatPage />} />
+    </Route>
+
+    {/* Video Call - Dedicated Full-Screen Layout */}
+    <Route element={<VideoCallLayout />}>
+      <Route path={TRAiNER_UI_ROUTES.TRAINER_VIDEO_CALL_SESSION} element={<VideoSessionPage />} />
+    </Route>
+
+    {/* Legacy redirect: /trainer/availability → /trainer/booking */}
+    <Route
+      path={TRAiNER_UI_ROUTES.TRAINER_AVAILABILITY}
+      element={<Navigate to={TRAiNER_UI_ROUTES.TRAINER_BOOKING_MANAGEMENT} replace />}
+    />
   </Route>
 );

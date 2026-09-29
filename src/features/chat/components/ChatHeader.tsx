@@ -32,7 +32,8 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
         {showBackButton && (
           <button
             onClick={onBack}
-            className="md:hidden p-2 rounded-xl text-purple-400 hover:text-white hover:bg-purple-500/10 transition cursor-pointer"
+            className="p-2 rounded-xl text-purple-400 hover:text-white hover:bg-purple-500/10 transition cursor-pointer"
+            title="Back to conversations"
           >
             <ArrowLeft size={18} />
           </button>

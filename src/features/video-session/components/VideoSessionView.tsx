@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   joinVideoSession,
   leaveVideoSession,
@@ -47,6 +48,7 @@ import { useAuthStore } from "@/stores/auth.store";
 import { ROLES } from "@/constants/roles.constants";
 import { ReviewModal } from "@/features/review/components/ReviewModal";
 import { reviewService } from "@/features/review/services/review.service";
+import ConfirmationModal from "@/components/ui/ConfirmDialog";
 
 interface VideoSessionProps {
   videoSessionId: string;
@@ -60,6 +62,7 @@ type ConnectionPhase =
   | "error";
 
 function VideoSession({ videoSessionId }: VideoSessionProps) {
+  const navigate = useNavigate();
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
   const [mediaError, setMediaError] = useState<string | null>(null);
@@ -67,6 +70,7 @@ function VideoSession({ videoSessionId }: VideoSessionProps) {
   const [socketError, setSocketError] = useState<string | null>(null);
   const [isMicOn, setIsMicOn] = useState(true);
   const [isCameraOn, setIsCameraOn] = useState(true);
+  const [showBackConfirm, setShowBackConfirm] = useState(false);
 
   // Remaining time and session state
   const [sessionDetails, setSessionDetails] = useState<VideoSessionType | null>(null);
@@ -672,19 +676,18 @@ function VideoSession({ videoSessionId }: VideoSessionProps) {
     };
   }, [videoSessionId]);
 
-  // ─── Error Screen 
+  // ─── Error Screen
   if (mediaError) {
     return (
       <div
         style={{
           width: "100%",
-          height: "calc(100vh - 8rem)",
+          height: "100vh",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
           background: "#03000D",
-          borderRadius: "1rem",
           gap: "1.5rem",
           padding: "2rem",
         }}
@@ -742,9 +745,8 @@ function VideoSession({ videoSessionId }: VideoSessionProps) {
       style={{
         position: "relative",
         width: "100%",
-        height: "calc(100vh - 8rem)",
+        height: "100vh",
         background: "#03000D",
-        borderRadius: "1rem",
         overflow: "hidden",
         fontFamily: "'Inter', system-ui, sans-serif",
         display: "flex",
@@ -765,21 +767,49 @@ function VideoSession({ videoSessionId }: VideoSessionProps) {
           pointerEvents: "none",
         }}
       >
-        {/* Left: Phase indicator */}
-        <div
-          style={{
-            pointerEvents: "auto",
-            display: "inline-flex",
-            alignItems: "center",
-            gap: "0.5rem",
-            background: "rgba(10, 5, 29, 0.8)",
-            backdropFilter: "blur(12px)",
-            border: "1px solid rgba(255, 255, 255, 0.12)",
-            padding: "0.4rem 0.9rem",
-            borderRadius: "9999px",
-            boxShadow: "0 4px 20px rgba(0, 0, 0, 0.5)",
-          }}
-        >
+        {/* Left: Back button & Phase indicator */}
+        <div style={{ display: "flex", alignItems: "center", gap: "1rem", pointerEvents: "auto" }}>
+          {!isSessionEnded && (
+            <button
+              onClick={() => setShowBackConfirm(true)}
+              style={{
+                padding: "0.5rem 1rem",
+                borderRadius: "0.5rem",
+                background: "rgba(255, 255, 255, 0.1)",
+                border: "1px solid rgba(255, 255, 255, 0.2)",
+                color: "white",
+                fontWeight: 600,
+                fontSize: "0.85rem",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                gap: "0.5rem",
+                transition: "all 0.2s ease",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = "rgba(255, 255, 255, 0.15)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = "rgba(255, 255, 255, 0.1)";
+              }}
+            >
+              <ArrowLeft size={16} />
+              Leave
+            </button>
+          )}
+          <div
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "0.5rem",
+              background: "rgba(10, 5, 29, 0.8)",
+              backdropFilter: "blur(12px)",
+              border: "1px solid rgba(255, 255, 255, 0.12)",
+              padding: "0.4rem 0.9rem",
+              borderRadius: "9999px",
+              boxShadow: "0 4px 20px rgba(0, 0, 0, 0.5)",
+            }}
+          >
           <span
             style={{
               width: "8px",
@@ -818,6 +848,7 @@ function VideoSession({ videoSessionId }: VideoSessionProps) {
                 ? "Connecting…"
                 : "Waiting"}
           </span>
+        </div>
         </div>
 
         {/* Center: Remaining Time Countdown */}
@@ -1482,6 +1513,23 @@ function VideoSession({ videoSessionId }: VideoSessionProps) {
           }}
         />
       )}
+
+      {/* Back/Leave Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={showBackConfirm}
+        onClose={() => setShowBackConfirm(false)}
+        onConfirm={() => {
+          setShowBackConfirm(false);
+          handleConfirmEndCall();
+          navigate(-1);
+        }}
+        title="Leave Call?"
+        message="Are you sure you want to leave this video call? This will end the session for all participants."
+        confirmText="Leave Call"
+        cancelText="Stay in Call"
+        variant="danger"
+        icon={<PhoneOff className="w-6 h-6 text-rose-400" />}
+      />
     </div>
   );
 }

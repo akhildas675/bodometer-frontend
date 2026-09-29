@@ -450,7 +450,7 @@ export const ChatView: React.FC = () => {
     : undefined;
 
   return (
-    <div className="h-[calc(100vh-5rem)] max-w-7xl mx-auto rounded-3xl overflow-hidden border border-white/10 shadow-2xl flex bg-[#06011a] text-white">
+    <div className="h-screen w-full flex bg-[#06011a] text-white">
       {/* Left Column: Conversations List */}
       <div
         className={`${
@@ -482,7 +482,7 @@ export const ChatView: React.FC = () => {
             />
 
             {/* Message Area */}
-            <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-2 chat-scroll-dark">
+            <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-2">
               {loadingMessages ? (
                 <div className="h-full flex items-center justify-center text-purple-400 gap-2">
                   <Loader2 className="animate-spin" size={24} />

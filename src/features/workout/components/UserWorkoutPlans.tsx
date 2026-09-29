@@ -438,12 +438,26 @@ const UserWorkoutPlans = () => {
       const response = await workoutPlanService.generateWorkout();
       if (response.success && response.data) {
         await fetchPlansFn();
+        toast.success("Workout plan generated successfully!");
       } else if (response.message) {
         toast.error(response.message);
       }
     } catch (error) {
-      console.error(error);
-      const err = error as { response?: { data?: { message?: string } } };
+      console.error("Workout generation error:", error);
+      const err = error as {
+  response?: { data?: { message?: string } };
+  code?: string;
+  message?: string;
+};
+      
+      // Handle timeout specifically
+      if (err?.code === "ECONNABORTED" || err?.message?.includes("timeout")) {
+        toast.error("Workout generation is taking longer than expected. Please try again or check your connection.");
+        // Don't set generating to false immediately - let user know it's a timeout
+        setGenerating(false);
+        return;
+      }
+      
       const errorMessage = err?.response?.data?.message || "Failed to generate workout plan";
       toast.error(errorMessage);
       

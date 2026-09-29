@@ -6,7 +6,11 @@ import { Timeframe } from "@/features/health/constants/fitness.constants";
 
 export const workoutPlanService = {
   async generateWorkout(): Promise<ApiResponse<WorkoutPlanResponse>> {
-    const response = await userApi.post<ApiResponse<WorkoutPlanResponse>>(WORKOUT_PLAN_API_ROUTES.GENERATE);
+    const response = await userApi.post<ApiResponse<WorkoutPlanResponse>>(
+      WORKOUT_PLAN_API_ROUTES.GENERATE,
+      {},
+      { timeout: 120000 } // 2 minute timeout for AI generation
+    );
     return response.data;
   },
 

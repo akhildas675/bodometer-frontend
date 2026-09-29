@@ -1,5 +1,7 @@
 import { Route } from "react-router-dom";
 import MainLayouts from "@/components/layout/MainLayout";
+import ChatLayout from "@/components/layout/ChatLayout";
+import VideoCallLayout from "@/components/layout/VideoCallLayout";
 import UserProfilePage from "@/features/user/pages/UserProfilePage";
 import ProtectedRoute from "@/routes/guards/ProtectedRoute";
 import SubscriptionRoute from "@/routes/guards/SubscriptionRoute";
@@ -65,10 +67,6 @@ export const userRoutes = (
         element={<UserNotificationPage />}
       />
       <Route
-        path={USER_UI_ROUTES.VIDEO_CALL_SESSION}
-        element={<VideoSessionPage />}
-      />
-      <Route
         path="/client/booking/success"
         element={<BookingSuccessPage />}
       />
@@ -95,8 +93,19 @@ export const userRoutes = (
         <Route path={USER_UI_ROUTES.USER_DIET_PLANS} element={<UserDietPlansPage />} />
         <Route path={USER_UI_ROUTES.USER_HEALTH_LOG} element={<UserHealthLogPage />} />
         <Route path={USER_UI_ROUTES.USER_HEALTH_PROGRESS} element={<UserHealthProgressionPage />} />
+      </Route>
+    </Route>
+
+    {/* Chat - Dedicated Full-Screen Layout */}
+    <Route element={<SubscriptionRoute />}>
+      <Route element={<ChatLayout />}>
         <Route path={USER_UI_ROUTES.USER_MESSAGES} element={<UserChatPage />} />
       </Route>
+    </Route>
+
+    {/* Video Call - Dedicated Full-Screen Layout */}
+    <Route element={<VideoCallLayout />}>
+      <Route path={USER_UI_ROUTES.VIDEO_CALL_SESSION} element={<VideoSessionPage />} />
     </Route>
 
     {/*  No Sidebar Layout No Navbar */}
