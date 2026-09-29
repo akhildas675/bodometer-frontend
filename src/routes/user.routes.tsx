@@ -1,6 +1,5 @@
 import { Route } from "react-router-dom";
 import MainLayouts from "@/components/layout/MainLayout";
-import ChatLayout from "@/components/layout/ChatLayout";
 import VideoCallLayout from "@/components/layout/VideoCallLayout";
 import UserProfilePage from "@/features/user/pages/UserProfilePage";
 import ProtectedRoute from "@/routes/guards/ProtectedRoute";
@@ -98,9 +97,9 @@ export const userRoutes = (
 
     {/* Chat - Dedicated Full-Screen Layout */}
     <Route element={<SubscriptionRoute />}>
-      <Route element={<ChatLayout />}>
+     
         <Route path={USER_UI_ROUTES.USER_MESSAGES} element={<UserChatPage />} />
-      </Route>
+
     </Route>
 
     {/* Video Call - Dedicated Full-Screen Layout */}
