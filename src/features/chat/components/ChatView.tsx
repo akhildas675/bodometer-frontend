@@ -51,7 +51,7 @@ export const ChatView: React.FC = () => {
   const [loadingConversations, setLoadingConversations] = useState(true);
   const [loadingMessages, setLoadingMessages] = useState(false);
 
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
   const activeConversationRef = useRef<Conversation | null>(null);
 
   useEffect(() => {
@@ -59,9 +59,13 @@ export const ChatView: React.FC = () => {
   }, [activeConversation]);
 
   const scrollToBottom = useCallback((smooth = true) => {
-    messagesEndRef.current?.scrollIntoView({
-      behavior: smooth ? "smooth" : "auto",
-    });
+    const container = messagesContainerRef.current;
+    if (container) {
+      container.scrollTo({
+        top: container.scrollHeight,
+        behavior: smooth ? "smooth" : "auto",
+      });
+    }
   }, []);
 
   const sortConversationsByRecent = useCallback((list: Conversation[]) => {
@@ -138,7 +142,7 @@ export const ChatView: React.FC = () => {
       .then((data) => {
         if (!isMounted) return;
         setMessages(data);
-        setTimeout(() => scrollToBottom(false), 50);
+        scrollToBottom(false);
         // Mark conversation messages as seen
         markChatAsRead(conversationId);
       })
@@ -167,7 +171,7 @@ export const ChatView: React.FC = () => {
           if (prev.some((m) => m.id === incomingMsg.id)) return prev;
           return [...prev, incomingMsg];
         });
-        setTimeout(() => scrollToBottom(), 50);
+        scrollToBottom();
         // Active viewer reads incoming message immediately
         markChatAsRead(currentActive.id);
       }
@@ -346,7 +350,7 @@ export const ChatView: React.FC = () => {
 
       // Instantly append optimistic message to UI
       setMessages((prev) => [...prev, optimisticMessage]);
-      setTimeout(() => scrollToBottom(), 20);
+      scrollToBottom();
 
       try {
         // Send via real-time WebSocket
@@ -401,7 +405,7 @@ export const ChatView: React.FC = () => {
         };
 
         setMessages((prev) => [...prev, optimisticMessage]);
-        setTimeout(() => scrollToBottom(), 20);
+        scrollToBottom();
 
         try {
           sendChatSocketMessage(
@@ -450,7 +454,7 @@ export const ChatView: React.FC = () => {
     : undefined;
 
   return (
-    <div className="h-screen w-full flex bg-[#06011a] text-white">
+    <div className="h-full w-full flex bg-[#06011a] text-white">
       {/* Left Column: Conversations List */}
       <div
         className={`${
@@ -482,7 +486,10 @@ export const ChatView: React.FC = () => {
             />
 
             {/* Message Area */}
-            <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-2">
+            <div
+              ref={messagesContainerRef}
+              className="flex-1 min-h-0 overflow-y-auto p-4 sm:p-6 space-y-2"
+            >
               {loadingMessages ? (
                 <div className="h-full flex items-center justify-center text-purple-400 gap-2">
                   <Loader2 className="animate-spin" size={24} />
@@ -511,7 +518,6 @@ export const ChatView: React.FC = () => {
                   />
                 ))
               )}
-              <div ref={messagesEndRef} />
             </div>
 
             {/* Input Bar */}

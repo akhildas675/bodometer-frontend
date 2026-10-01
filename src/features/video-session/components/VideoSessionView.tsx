@@ -79,6 +79,8 @@ function VideoSession({ videoSessionId }: VideoSessionProps) {
   const [endedReason, setEndedReason] = useState<string | null>(null);
   const [isEnding, setIsEnding] = useState(false);
   const [isRequestingRefund, setIsRequestingRefund] = useState(false);
+  const [cleanupComplete, setCleanupComplete] = useState(false);
+  const [shouldNavigateAfterCleanup, setShouldNavigateAfterCleanup] = useState(false);
   const isEndingRef = useRef(false);
   const hasEndedToastShownRef = useRef(false);
   const [showEndCallConfirm, setShowEndCallConfirm] = useState(false);
@@ -148,6 +150,7 @@ function VideoSession({ videoSessionId }: VideoSessionProps) {
       toast.success("Call ended successfully.", { id: "session-ended" });
       streamRef.current?.getTracks().forEach((t) => t.stop());
       pcRef.current?.close();
+      setCleanupComplete(true);
     }
   };
 
@@ -170,6 +173,7 @@ function VideoSession({ videoSessionId }: VideoSessionProps) {
       toast.info("Session time expired. The call has ended automatically.", { id: "session-ended" });
       streamRef.current?.getTracks().forEach((t) => t.stop());
       pcRef.current?.close();
+      setCleanupComplete(true);
     }
   };
 
@@ -276,6 +280,13 @@ function VideoSession({ videoSessionId }: VideoSessionProps) {
       }
     }
   }, [isSessionEnded, sessionDetails?.bookingId, sessionDetails?.userId, user?.role, user?.id]);
+
+  // Navigate after cleanup is complete
+  useEffect(() => {
+    if (cleanupComplete && shouldNavigateAfterCleanup) {
+      navigate(-1);
+    }
+  }, [cleanupComplete, shouldNavigateAfterCleanup, navigate]);
 
   const formatTimeRemaining = (seconds: number | null): string => {
     if (seconds === null) return "--:--";
@@ -673,6 +684,7 @@ function VideoSession({ videoSessionId }: VideoSessionProps) {
 
       setRemoteStream(null);
       setLocalStream(null);
+      setCleanupComplete(true);
     };
   }, [videoSessionId]);
 
@@ -1520,8 +1532,8 @@ function VideoSession({ videoSessionId }: VideoSessionProps) {
         onClose={() => setShowBackConfirm(false)}
         onConfirm={() => {
           setShowBackConfirm(false);
+          setShouldNavigateAfterCleanup(true);
           handleConfirmEndCall();
-          navigate(-1);
         }}
         title="Leave Call?"
         message="Are you sure you want to leave this video call? This will end the session for all participants."

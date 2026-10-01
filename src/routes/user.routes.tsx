@@ -1,6 +1,7 @@
 import { Route } from "react-router-dom";
 
 import MainLayouts from "@/components/layout/MainLayout";
+import MessagesLayout from "@/components/layout/MessagesLayout";
 import VideoCallLayout from "@/components/layout/VideoCallLayout";
 
 import ProtectedRoute from "@/routes/guards/ProtectedRoute";
@@ -153,14 +154,18 @@ export const userRoutes = (
           element={<UserHealthProgressionPage />}
         />
 
-        {/* Messages */}
+      </Route>
+
+    </Route>
+
+    {/* Messages - Dedicated Layout with Navbar/Sidebar, no Footer */}
+    <Route element={<SubscriptionRoute />}>
+      <Route element={<MessagesLayout />}>
         <Route
           path={USER_UI_ROUTES.USER_MESSAGES}
           element={<UserChatPage />}
         />
-
       </Route>
-
     </Route>
 
 

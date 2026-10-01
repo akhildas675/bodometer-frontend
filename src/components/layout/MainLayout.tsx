@@ -5,9 +5,9 @@ import { useAuthStore } from "@/stores/auth.store";
 import type { SidebarRole } from "@/config/sidebar.config";
 import SidebarLayout from "@/components/layout/SidebarLayout";
 
-
 const MainLayouts = () => {
   const user = useAuthStore((state) => state.user);
+
   const isUser = user?.role === "user";
 
   return (
@@ -15,8 +15,11 @@ const MainLayouts = () => {
       {/* Fixed top navbar */}
       {isUser && <Navbar />}
 
-      {/* pt-[88px] clears the fixed navbar on desktop, less on mobile */}
-      <div className={`flex flex-1 ${isUser ? "pt-[88px] md:pt-[88px]" : ""}`}>
+      <div
+        className={`flex flex-1 min-h-0 ${
+          isUser ? "pt-[88px] md:pt-[88px]" : ""
+        }`}
+      >
         <SidebarLayout role={(user?.role as SidebarRole) || "user"}>
           <Outlet />
         </SidebarLayout>
@@ -28,4 +31,3 @@ const MainLayouts = () => {
 };
 
 export default MainLayouts;
- 

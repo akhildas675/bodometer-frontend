@@ -14,12 +14,12 @@ import { TRAiNER_UI_ROUTES } from "@/constants/routes/trainer.routes";
 import TrainerOnboardingIntroPage from "@/features/onboarding/pages/TrainerOnboardingIntroPage";
 import TrainerOnboardingProfilePage from "@/features/onboarding/pages/TrainerOnboardingExperiencePage";
 import MainLayouts from "@/components/layout/MainLayout";
-import ChatLayout from "@/components/layout/ChatLayout";
 import VideoCallLayout from "@/components/layout/VideoCallLayout";
 import TrainerOnboardingSkillPage from "@/features/onboarding/pages/TrainerOnboardingCategoryPage";
 import TrainerNotificationPage from "@/features/notification/pages/TrainerNotificationPage";
 import VideoSessionPage from "@/features/video-session/pages/VideoSessionPage";
 import TrainerChatPage from "@/features/chat/pages/TrainerChatPage";
+import MessagesLayout from "@/components/layout/MessagesLayout";
 
 const TrainerBookingSetupPage = lazy(
   () => import("@/features/booking/pages/TrainerBookingSetupPage")
@@ -59,8 +59,8 @@ export const trainerRoutes = (
       </Route>
     </Route>
 
-    {/* Chat - Dedicated Full-Screen Layout */}
-    <Route element={<ChatLayout />}>
+    {/* Chat - Dedicated Layout with Navbar/Sidebar, no Footer */}
+    <Route element={<MessagesLayout />}>
       <Route path={TRAiNER_UI_ROUTES.TRAINER_MESSAGES} element={<TrainerChatPage />} />
     </Route>
 
