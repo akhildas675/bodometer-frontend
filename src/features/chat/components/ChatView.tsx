@@ -58,14 +58,30 @@ export const ChatView: React.FC = () => {
     activeConversationRef.current = activeConversation;
   }, [activeConversation]);
 
-  const scrollToBottom = useCallback((smooth = true) => {
+  const isNearBottom = useCallback(() => {
     const container = messagesContainerRef.current;
-    if (container) {
-      container.scrollTo({
-        top: container.scrollHeight,
-        behavior: smooth ? "smooth" : "auto",
-      });
-    }
+    if (!container) return true;
+    const threshold = 150;
+    return (
+      container.scrollHeight - container.scrollTop - container.clientHeight <=
+      threshold
+    );
+  }, []);
+
+  const scrollToBottom = useCallback((smooth = true) => {
+    requestAnimationFrame(() => {
+      const container = messagesContainerRef.current;
+      if (container) {
+        if (smooth) {
+          container.scrollTo({
+            top: container.scrollHeight,
+            behavior: "smooth",
+          });
+        } else {
+          container.scrollTop = container.scrollHeight;
+        }
+      }
+    });
   }, []);
 
   const sortConversationsByRecent = useCallback((list: Conversation[]) => {
@@ -121,7 +137,7 @@ export const ChatView: React.FC = () => {
     return () => {
       isMounted = false;
     };
-  }, [queryConversationId, isTrainer, navigate]);
+  }, [queryConversationId, isTrainer, navigate, sortConversationsByRecent]);
 
   // 2. Load messages whenever active conversation changes
   useEffect(() => {
@@ -151,7 +167,10 @@ export const ChatView: React.FC = () => {
         toast.error("Failed to load chat messages.");
       })
       .finally(() => {
-        if (isMounted) setLoadingMessages(false);
+        if (isMounted) {
+          setLoadingMessages(false);
+          scrollToBottom(false);
+        }
       });
 
     return () => {
@@ -167,11 +186,14 @@ export const ChatView: React.FC = () => {
       const currentActive = activeConversationRef.current;
 
       if (currentActive && incomingMsg.conversationId === currentActive.id) {
+        const wasNearBottom = isNearBottom();
         setMessages((prev) => {
           if (prev.some((m) => m.id === incomingMsg.id)) return prev;
           return [...prev, incomingMsg];
         });
-        scrollToBottom();
+        if (wasNearBottom) {
+          scrollToBottom(true);
+        }
         // Active viewer reads incoming message immediately
         markChatAsRead(currentActive.id);
       }
@@ -454,12 +476,12 @@ export const ChatView: React.FC = () => {
     : undefined;
 
   return (
-    <div className="h-full w-full flex bg-[#06011a] text-white">
+    <div className="h-full w-full flex bg-[#06011a] text-white overflow-hidden">
       {/* Left Column: Conversations List */}
       <div
         className={`${
           activeConversation ? "hidden md:flex" : "flex"
-        } w-full md:w-auto h-full shrink-0`}
+        } w-full md:w-80 lg:w-96 h-full shrink-0 min-h-0 overflow-hidden`}
       >
         <ChatConversationList
           conversations={conversations}
@@ -474,7 +496,7 @@ export const ChatView: React.FC = () => {
       <div
         className={`${
           !activeConversation ? "hidden md:flex" : "flex"
-        } flex-1 flex-col h-full bg-[#08021f]/90 relative min-w-0`}
+        } flex-1 flex-col h-full bg-[#08021f]/90 relative min-w-0 overflow-hidden`}
       >
         {activeConversation ? (
           <>

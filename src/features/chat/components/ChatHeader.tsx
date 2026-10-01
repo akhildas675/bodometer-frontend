@@ -27,7 +27,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
   const isTrainer = participant?.role === ROLES.TRAINER;
 
   return (
-    <div className="px-4 py-3 sm:px-6 bg-[#0c0728]/95 backdrop-blur-xl border-b border-white/10 flex items-center justify-between z-10">
+    <div className="px-4 py-3 sm:px-6 bg-[#0c0728]/95 backdrop-blur-xl border-b border-white/10 flex items-center justify-between z-10 shrink-0">
       <div className="flex items-center gap-3 min-w-0">
         {showBackButton && (
           <button

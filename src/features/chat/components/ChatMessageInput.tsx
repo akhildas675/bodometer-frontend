@@ -105,7 +105,7 @@ export const ChatMessageInput: React.FC<ChatMessageInputProps> = ({
   };
 
   return (
-    <div className="relative p-3 sm:p-4 bg-[#0a0520]/95 backdrop-blur-xl border-t border-white/10">
+    <div className="relative p-3 sm:p-4 bg-[#0a0520]/95 backdrop-blur-xl border-t border-white/10 shrink-0">
       {/* Quick emoji drawer */}
       {showEmojis && (
         <div

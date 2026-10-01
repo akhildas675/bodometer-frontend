@@ -141,9 +141,9 @@ export const ChatConversationList: React.FC<ChatConversationListProps> = ({
     });
 
   return (
-    <div className="w-full md:w-80 lg:w-96 flex flex-col h-full bg-[#0a0520]/95 backdrop-blur-xl border-r border-white/10 shrink-0 min-w-0">
+    <div className="w-full h-full flex flex-col bg-[#0a0520]/95 backdrop-blur-xl border-r border-white/10 shrink-0 min-w-0">
       {/* Search Header */}
-      <div className="p-4 border-b border-white/10 space-y-3">
+      <div className="p-4 border-b border-white/10 space-y-3 shrink-0">
         <div className="flex items-center justify-between">
           <h1 className="text-white font-extrabold text-lg flex items-center gap-2">
             <MessageSquare size={18} className="text-purple-400" />
@@ -170,7 +170,7 @@ export const ChatConversationList: React.FC<ChatConversationListProps> = ({
       </div>
 
       {/* Conversation list */}
-      <div className="flex-1 min-h-0 overflow-y-auto divide-y divide-white/5 chat-scroll-dark">
+      <div className="flex-1 min-h-0 overflow-y-auto divide-y divide-white/5">
         {loading ? (
           <div className="p-4 space-y-3">
             {[1, 2, 3, 4].map((i) => (

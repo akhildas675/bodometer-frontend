@@ -219,7 +219,7 @@ const Sidebar = ({ role }: Props) => {
     <aside
       className={`${
         isExpanded ? "w-64" : "w-20"
-      } min-h-screen bg-linear-to-b from-[#03000D] to-[#190473] p-4 text-white flex flex-col justify-between transition-all duration-300 ease-in-out relative group`}
+      } h-full min-h-0 shrink-0 bg-linear-to-b from-[#03000D] to-[#190473] p-4 text-white flex flex-col justify-between transition-all duration-300 ease-in-out relative group overflow-y-auto`}
       onMouseEnter={() => setIsExpanded(true)}
       onMouseLeave={() => setIsExpanded(false)}
     >
