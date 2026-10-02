@@ -8,17 +8,20 @@ const MessagesLayout = () => {
   const user = useAuthStore((state) => state.user);
   const isUser = user?.role === "user";
 
+  // Same structure as MainLayout — natural browser-edge scroll, no viewport locking.
+  // The chat card uses a viewport-relative height (calc(100dvh - ...)) so it fills
+  // nearly the full screen, and RecommendedTrainers scrolls into view below it.
   return (
-    <div className="h-screen max-h-screen flex flex-col bg-[#050017] overflow-hidden">
-      {/* Fixed top navbar */}
+    <div className="min-h-screen flex flex-col bg-[#050017]">
+      {/* Fixed top navbar (user only) */}
       {isUser && <Navbar />}
 
       <div
-        className={`flex flex-1 min-h-0 overflow-hidden ${
-          isUser ? "pt-[88px] md:pt-[88px]" : ""
+        className={`flex flex-1 min-h-0 ${
+          isUser ? "pt-[72px] sm:pt-[88px] md:pt-[88px]" : ""
         }`}
       >
-        <SidebarLayout role={(user?.role as SidebarRole) || "user"} noPadding>
+        <SidebarLayout role={(user?.role as SidebarRole) || "user"}>
           <Outlet />
         </SidebarLayout>
       </div>

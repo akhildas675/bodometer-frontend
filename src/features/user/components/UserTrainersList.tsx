@@ -158,9 +158,9 @@ const UserTrainers = () => {
           Trainers
         </h1>
 
-        <div className="flex items-center gap-3 ml-auto">
+        <div className="flex items-center gap-3 ml-auto flex-1 min-w-0 sm:flex-none">
           {/* Search Bar — debounced auto-search */}
-          <div className="flex items-center bg-[#1a1535] border border-purple-700/40 rounded-full px-4 py-2 gap-2 w-64">
+          <div className="flex items-center bg-[#1a1535] border border-purple-700/40 rounded-full px-4 py-2 gap-2 w-full sm:w-64">
             <input
               type="text"
               value={searchInput}

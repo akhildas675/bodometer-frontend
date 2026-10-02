@@ -13,29 +13,44 @@ const roleToRedirectPath: Record<Role, string> = {
   [ROLES.USER]: "/login",
 };
 
-let isRefreshing = false;
-let failedQueue: Array<{
+// ── Isolated refresh state for the generic `api` instance ────────────────────
+// BUG 1 FIX: each axios instance must own its own isRefreshing / failedQueue so
+// simultaneous 401s from different role instances cannot race against each other.
+let apiIsRefreshing = false;
+let apiFailedQueue: Array<{
   resolve: (value?: unknown) => void;
   reject: (reason?: unknown) => void;
 }> = [];
 
-const processQueue = (error: Error | null = null) => {
-  failedQueue.forEach((prom) => {
-    if (error) {
-      prom.reject(error);
-    } else {
-      prom.resolve();
-    }
+const processApiQueue = (error: Error | null = null) => {
+  apiFailedQueue.forEach((prom) => {
+    if (error) prom.reject(error);
+    else prom.resolve();
   });
-  failedQueue = [];
+  apiFailedQueue = [];
 };
 
-// ----------------------------------------------------
-// A. RESTORE ORIGINAL ROLE-SPECIFIC AXIOS INSTANCES
-// ----------------------------------------------------
+// ── Role-specific axios factory ───────────────────────────────────────────────
+// Each call to createProtectedAxios() returns an instance whose refresh state
+// (isRefreshing / failedQueue) lives inside the closure — fully isolated.
 export function createProtectedAxios(role: Role): AxiosInstance {
+  // BUG 1 FIX: closure-scoped — NOT shared across role instances
+  let isRefreshing = false;
+  let failedQueue: Array<{
+    resolve: (value?: unknown) => void;
+    reject: (reason?: unknown) => void;
+  }> = [];
+
+  const processQueue = (error: Error | null = null) => {
+    failedQueue.forEach((prom) => {
+      if (error) prom.reject(error);
+      else prom.resolve();
+    });
+    failedQueue = [];
+  };
+
   const instance = axios.create({
-    baseURL: `${baseUrl}/api/${role}`, // Keeps role-specific prefixes intact!
+    baseURL: `${baseUrl}/api/${role}`, // Keeps role-specific prefixes intact
     withCredentials: true,
   });
 
@@ -87,7 +102,8 @@ export function createProtectedAxios(role: Role): AxiosInstance {
           throw new Error("Token refresh failed");
         }
       } catch (refreshError: unknown) {
-        const errorToPropagate = refreshError instanceof Error ? refreshError : new Error("Unknown error occurred");
+        const errorToPropagate =
+          refreshError instanceof Error ? refreshError : new Error("Unknown error occurred");
         processQueue(errorToPropagate);
         useAuthStore.getState().clearAuth();
         window.location.href = `${roleToRedirectPath[role]}?expired=true`;
@@ -95,15 +111,15 @@ export function createProtectedAxios(role: Role): AxiosInstance {
       } finally {
         isRefreshing = false;
       }
-    }
+    },
   );
 
   return instance;
 }
 
-
+// ── Generic api instance (no role prefix) ────────────────────────────────────
 export const api = axios.create({
-  baseURL: `${baseUrl}/api`, // Prefixed with just /api
+  baseURL: `${baseUrl}/api`,
   withCredentials: true,
 });
 
@@ -131,9 +147,9 @@ api.interceptors.response.use(
       return Promise.reject(error);
     }
 
-    if (isRefreshing) {
+    if (apiIsRefreshing) {
       return new Promise((resolve, reject) => {
-        failedQueue.push({ resolve, reject });
+        apiFailedQueue.push({ resolve, reject });
       })
         .then(() => {
           const { accessToken } = useAuthStore.getState();
@@ -144,7 +160,7 @@ api.interceptors.response.use(
     }
 
     originalRequest._retry = true;
-    isRefreshing = true;
+    apiIsRefreshing = true;
 
     try {
       const response = await authInstance.post<ApiResponse<LoginResponseData>>("/refresh-token");
@@ -152,19 +168,20 @@ api.interceptors.response.use(
         const { accessToken, user: refreshedUser } = response.data.data;
         useAuthStore.getState().setAuth({ accessToken, user: refreshedUser });
         originalRequest.headers.Authorization = `Bearer ${accessToken}`;
-        processQueue(null);
+        processApiQueue(null);
         return api(originalRequest);
       } else {
         throw new Error("Token refresh failed");
       }
     } catch (refreshError: unknown) {
-      const errorToPropagate = refreshError instanceof Error ? refreshError : new Error("Unknown error occurred");
-      processQueue(errorToPropagate);
+      const errorToPropagate =
+        refreshError instanceof Error ? refreshError : new Error("Unknown error occurred");
+      processApiQueue(errorToPropagate);
       clearAuth();
       window.location.href = `${roleToRedirectPath[role]}?expired=true`;
       return Promise.reject(errorToPropagate);
     } finally {
-      isRefreshing = false;
+      apiIsRefreshing = false;
     }
-  }
+  },
 );

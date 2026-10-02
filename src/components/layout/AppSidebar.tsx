@@ -2,10 +2,9 @@ import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import { sidebarConfig, type SidebarRole, type SidebarItem } from "@/config/sidebar.config";
 import { useAuthStore } from "@/stores/auth.store";
 import authInitService from "@/features/auth/services/auth-init.service";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { parseApiError } from "@/infrastructure/api/api-error";
-import { useEffect } from "react";
 import {
   LayoutDashboard,
   Users,
@@ -33,6 +32,8 @@ import {
   BicepsFlexed,
   DumbbellIcon,
   Bell,
+  X,
+  Menu,
 } from "lucide-react";
 import { useNotificationStore } from "@/features/notification/stores/notification.store";
 
@@ -85,8 +86,8 @@ const iconMap: Record<string, React.ReactNode> = {
 };
 
 
-const CollapsedActiveDot = ({ show }: { show: boolean }) => {
-  if (!show) return null;
+const CollapsedActiveDot = ({ show, isMobileOpen }: { show: boolean; isMobileOpen: boolean }) => {
+  if (!show || isMobileOpen) return null;
   return (
     <div className="flex justify-center mt-1">
       <span className="w-1.5 h-1.5 rounded-full bg-purple-400" />
@@ -98,9 +99,11 @@ const CollapsedActiveDot = ({ show }: { show: boolean }) => {
 const NavGroup = ({
   item,
   isExpanded,
+  isMobileOpen,
 }: {
   item: SidebarItem;
   isExpanded: boolean;
+  isMobileOpen: boolean;
 }) => {
   const location = useLocation();
 
@@ -120,7 +123,7 @@ const NavGroup = ({
             ? "bg-purple-600/30 text-white"
             : "hover:bg-white/10 text-slate-300"
         }`}
-        title={!isExpanded ? item.label : ""}
+        title={(!isExpanded && !isMobileOpen) ? item.label : ""}
       >
         <span className="shrink-0">
           {iconMap[item.path] || <LayoutDashboard size={20} />}
@@ -166,7 +169,7 @@ const NavGroup = ({
       )}
 
       {/* collapsed hint — tiny dot when active */}
-      <CollapsedActiveDot show={!isExpanded && isChildActive} />
+      <CollapsedActiveDot show={!isExpanded && isChildActive} isMobileOpen={isMobileOpen} />
     </div>
   );
 };
@@ -177,6 +180,7 @@ const Sidebar = ({ role }: Props) => {
   const navigator = useNavigate();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
   const { user } = useAuthStore();
   const unreadCount = useNotificationStore((state) => state.unreadCount);
   const fetchUnreadCount = useNotificationStore((state) => state.fetchUnreadCount);
@@ -186,6 +190,12 @@ const Sidebar = ({ role }: Props) => {
       fetchUnreadCount();
     }
   }, [user, fetchUnreadCount]);
+
+  // Close mobile drawer on route change
+  const location = useLocation();
+  useEffect(() => {
+    setIsMobileOpen(false);
+  }, [location.pathname]);
 
   const handleLogout = async () => {
     try {
@@ -216,14 +226,45 @@ const Sidebar = ({ role }: Props) => {
   };
 
   return (
-    <aside
-      className={`${
-        isExpanded ? "w-64" : "w-20"
-      } h-full min-h-0 shrink-0 bg-linear-to-b from-[#03000D] to-[#190473] p-4 text-white flex flex-col justify-between transition-all duration-300 ease-in-out relative group overflow-y-auto`}
-      onMouseEnter={() => setIsExpanded(true)}
-      onMouseLeave={() => setIsExpanded(false)}
-    >
+    <>
+      {/* Mobile backdrop overlay */}
+      {isMobileOpen && (
+        <div
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 md:hidden"
+          onClick={() => setIsMobileOpen(false)}
+        />
+      )}
+
+      {/* Mobile toggle button - only visible on mobile when sidebar is closed */}
+      <button
+        type="button"
+        onClick={() => setIsMobileOpen(true)}
+        className="md:hidden fixed bottom-4 left-4 z-30 w-12 h-12 rounded-full bg-purple-600 text-white flex items-center justify-center shadow-lg hover:bg-purple-500 transition"
+        aria-label="Open sidebar"
+      >
+        <Menu size={20} />
+      </button>
+
+      <aside
+        className={`${
+          isMobileOpen ? "translate-x-0" : "-translate-x-full"
+        } md:translate-x-0 ${
+          isExpanded ? "w-64" : "w-20"
+        } fixed md:relative left-0 top-0 h-full min-h-0 shrink-0 bg-linear-to-b from-[#03000D] to-[#190473] p-4 text-white flex flex-col justify-between transition-all duration-300 ease-in-out z-50 overflow-y-auto`}
+        onMouseEnter={() => !isMobileOpen && setIsExpanded(true)}
+        onMouseLeave={() => !isMobileOpen && setIsExpanded(false)}
+      >
       <div>
+        {/* Mobile close button */}
+        <button
+          type="button"
+          onClick={() => setIsMobileOpen(false)}
+          className="md:hidden mb-4 w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition"
+          aria-label="Close sidebar"
+        >
+          <X size={16} />
+        </button>
+
         {/* LOGO */}
         <div className="mb-8 flex items-center justify-center h-12">
           {isExpanded ? (
@@ -266,14 +307,14 @@ const Sidebar = ({ role }: Props) => {
               item.label.toLowerCase() === "notifications";
 
             return item.children ? (
-              <NavGroup key={item.path} item={item} isExpanded={isExpanded} />
+              <NavGroup key={item.path} item={item} isExpanded={isExpanded} isMobileOpen={isMobileOpen} />
             ) : (
               <NavLink
                 key={item.path}
                 to={item.path}
                 end={item.path === "/admin" || item.path === "/" || item.path === "/trainer"}
                 className="w-full block"
-                title={!isExpanded ? item.label : ""}
+                title={(!isExpanded && !isMobileOpen) ? item.label : ""}
               >
                 {({ isActive }) => (
                   <div className="w-full">
@@ -302,7 +343,7 @@ const Sidebar = ({ role }: Props) => {
                       )}
                     </div>
                     {/* collapsed hint — tiny dot when active */}
-                    <CollapsedActiveDot show={!isExpanded && isActive} />
+                    <CollapsedActiveDot show={!isExpanded && isActive} isMobileOpen={isMobileOpen} />
                   </div>
                 )}
               </NavLink>
@@ -318,7 +359,7 @@ const Sidebar = ({ role }: Props) => {
         }`}
         onClick={handleLogout}
         disabled={isLoggingOut}
-        title={!isExpanded ? "Logout" : ""}
+        title={(!isExpanded && !isMobileOpen) ? "Logout" : ""}
       >
         <LogOut size={18} />
         {isExpanded && (
@@ -327,6 +368,7 @@ const Sidebar = ({ role }: Props) => {
       </button>
 
     </aside>
+    </>
   );
 };
 

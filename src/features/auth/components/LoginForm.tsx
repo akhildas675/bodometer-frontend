@@ -118,10 +118,10 @@ const AuthLoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen w-full bg-linear-to-b from-[#03000D] to-[#190473] flex items-center justify-center">
-      <div className="w-full max-w-6xl h-[600px] rounded-3xl overflow-hidden shadow-2xl flex bg-linear-to-b from-[#03000D] to-[#190473]">
+    <div className="min-h-screen w-full bg-linear-to-b from-[#03000D] to-[#190473] flex items-center justify-center p-4">
+      <div className="w-full max-w-6xl h-auto md:h-[600px] rounded-3xl overflow-hidden shadow-2xl flex flex-col md:flex-row bg-linear-to-b from-[#03000D] to-[#190473]">
         {/* Left image */}
-        <div className="w-1/2 hidden md:block relative">
+        <div className="w-full md:w-1/2 hidden md:block relative min-h-[200px]">
           <img
              src="https://bodometer-asset.s3.eu-north-1.amazonaws.com/banner/bodometer_register_page_img+(1).jpg"
             alt="Bodometer login"

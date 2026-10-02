@@ -1,5 +1,5 @@
 import React from "react";
-import { ArrowLeft, Shield, User } from "lucide-react";
+import { ArrowLeft, Shield, User, Phone, Video, MoreHorizontal } from "lucide-react";
 import { ChatParticipant } from "../types/chat.types";
 import { ROLES } from "@/constants/roles.constants";
 
@@ -32,7 +32,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
         {showBackButton && (
           <button
             onClick={onBack}
-            className="p-2 rounded-xl text-purple-400 hover:text-white hover:bg-purple-500/10 transition cursor-pointer"
+            className="p-2 rounded-xl text-purple-400 hover:text-white hover:bg-purple-500/10 transition cursor-pointer md:hidden"
             title="Back to conversations"
           >
             <ArrowLeft size={18} />
@@ -84,7 +84,31 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
         </div>
       </div>
 
-
+      {/* Right Header Actions */}
+      <div className="flex items-center gap-1 text-slate-300">
+        <button
+          type="button"
+          className="p-2 hover:bg-white/10 rounded-xl text-slate-300 hover:text-white transition cursor-pointer"
+          title="Voice Call"
+        >
+          <Phone size={18} />
+        </button>
+        <button
+          type="button"
+          className="p-2 hover:bg-white/10 rounded-xl text-slate-300 hover:text-white transition cursor-pointer"
+          title="Video Call"
+        >
+          <Video size={19} />
+        </button>
+        <button
+          type="button"
+          className="p-2 hover:bg-white/10 rounded-xl text-slate-300 hover:text-white transition cursor-pointer"
+          title="More options"
+        >
+          <MoreHorizontal size={19} />
+        </button>
+      </div>
     </div>
   );
 };
+

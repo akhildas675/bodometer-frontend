@@ -45,10 +45,23 @@ class AuthService {
     async login(data: LoginPayload): Promise<ApiResponse<LoginResponseData>> {
         const response = await authInstance.post<ApiResponse<LoginResponseData>>(AUTH_API_ROUTES.LOGIN, data);
         if (response.data.success && response.data.data) {
-            const { accessToken, user } = response.data.data;
-            useAuthStore.getState().setAuth({ accessToken, user });
-        }
+            // BUG 2 FIX: extract ALL flags from the login response, not just accessToken + user.
+            // onboardingComplete / hasActiveSubscription / trainerStatus were previously discarded,
+            // causing routing guards to see undefined values until the next page refresh.
+            const {
+                accessToken,
+                user,
+                onboardingComplete,
+                hasActiveSubscription,
+                trainerStatus,
+            } = response.data.data;
 
+            useAuthStore.getState().setAuth({
+                accessToken,
+                user: { ...user, onboardingComplete, hasActiveSubscription },
+                trainerStatus,
+            });
+        }
 
         return response.data;
     }
@@ -69,10 +82,22 @@ class AuthService {
     }
 
     async googleLogin(data: GoogleLoginPayload) {
-        const response = await authInstance.post<ApiResponse<GoogleLoginResponse>>(AUTH_API_ROUTES.GOOGLE_LOGIN, data)
+        const response = await authInstance.post<ApiResponse<GoogleLoginResponse>>(AUTH_API_ROUTES.GOOGLE_LOGIN, data);
         if (response.data.success && response.data.data) {
-            const { accessToken, user } = response.data.data;
-            useAuthStore.getState().setAuth({ accessToken, user });
+            // BUG 3 FIX: same as Bug 2 — extract all flags from the Google login response.
+            const {
+                accessToken,
+                user,
+                onboardingComplete,
+                hasActiveSubscription,
+                trainerStatus,
+            } = response.data.data;
+
+            useAuthStore.getState().setAuth({
+                accessToken,
+                user: { ...user, onboardingComplete, hasActiveSubscription },
+                trainerStatus,
+            });
         }
         return response.data;
     }

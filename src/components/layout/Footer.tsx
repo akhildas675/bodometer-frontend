@@ -15,7 +15,7 @@ const Footer = () => {
         </div>
 
         {/* Footer Columns */}
-        <div className="flex flex-col sm:flex-row gap-8 sm:gap-12 md:gap-16 lg:gap-28 w-full md:pl-[230px] flex-wrap">
+        <div className="flex flex-col sm:flex-row gap-8 sm:gap-12 md:gap-16 lg:gap-28 w-full md:pl-[200px] lg:pl-[250px] flex-wrap">
           {/* Details */}
           <div className="flex flex-col text-white min-w-[140px] sm:min-w-[170px]">
             <span className="font-semibold mb-4 sm:mb-6 text-sm sm:text-base">Details</span>

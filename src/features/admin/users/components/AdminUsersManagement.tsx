@@ -106,7 +106,7 @@ const AdminUsersManagement = () => {
       <div className="text-white">
         <h1 className="text-2xl font-semibold mb-6">User Management</h1>
 
-        <div className="mb-4 flex gap-4">
+        <div className="mb-4 flex flex-col sm:flex-row gap-4">
           <SearchBar
             value={searchQuery}
             onSearch={handleSearch}
@@ -120,7 +120,7 @@ const AdminUsersManagement = () => {
             value={sortConfig}
             onSortChange={handleSortChange}
             disabled={loading}
-            className="w-64"
+            className="w-full sm:w-64"
             placeholder="Sort by..."
           />
 

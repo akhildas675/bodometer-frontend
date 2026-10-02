@@ -7,6 +7,7 @@ import {
   CheckCheck,
   Image as ImageIcon,
   FileText,
+  SquarePen,
 } from "lucide-react";
 import { Conversation, ChatParticipant, CHAT_TYPE } from "../types/chat.types";
 import { ROLES } from "@/constants/roles.constants";
@@ -149,9 +150,18 @@ export const ChatConversationList: React.FC<ChatConversationListProps> = ({
             <MessageSquare size={18} className="text-purple-400" />
             Messages
           </h1>
-          <span className="text-[11px] font-bold bg-purple-500/15 text-purple-300 border border-purple-500/25 px-2.5 py-0.5 rounded-full">
-            {conversations.length}
-          </span>
+          <div className="flex items-center gap-2">
+            <span className="text-[11px] font-bold bg-purple-500/15 text-purple-300 border border-purple-500/25 px-2.5 py-0.5 rounded-full">
+              {conversations.length}
+            </span>
+            <button
+              type="button"
+              className="text-white/60 hover:text-white p-1 rounded-lg hover:bg-white/10 transition cursor-pointer"
+              title="New message"
+            >
+              <SquarePen size={18} />
+            </button>
+          </div>
         </div>
 
         <div className="relative">

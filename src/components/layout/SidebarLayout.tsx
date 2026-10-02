@@ -14,8 +14,8 @@ const SidebarLayout = ({ role, children, noPadding = false }: Props) => {
       <main
         className={`flex-1 min-h-0 ${
           noPadding
-            ? "p-0 h-full flex flex-col overflow-hidden"
-            : "p-10 overflow-y-auto"
+            ? "p-0 overflow-y-auto"
+            : "p-4 sm:p-6 lg:p-8 overflow-y-auto"
         }`}
       >
         {children}

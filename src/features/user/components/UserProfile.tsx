@@ -296,7 +296,7 @@ const UserProfile = () => {
                 className="space-y-4"
                 onSubmit={handleUpdate}
               >
-                <div className="grid grid-cols-2 gap-8 text-sm">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-8 text-sm">
                   <div className="flex flex-col gap-1">
                     <label className="text-xs text-slate-400">Name</label>
                     <input
