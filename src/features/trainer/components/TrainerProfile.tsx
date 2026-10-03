@@ -35,6 +35,7 @@ import { categoryService } from "@/features/admin/categories/services/category.s
 import { trainerService } from "@/features/trainer/services/trainer.service";
 import { TrainerRatingWidget } from "@/features/review/components/TrainerRatingWidget";
 import { TrainerReviewsList } from "@/features/review/components/TrainerReviewsList";
+import { userService } from "@/features/user/services/user.service";
 
 const GENDER_LABELS: Record<string, string> = {
   [GENDER.MALE]: "Male",
@@ -279,7 +280,7 @@ const TrainerProfile = () => {
         formData.append("file", selectedImage);
 
         const uploadResponse =
-          await trainerService.uploadProfilePicture(formData);
+          await userService.uploadProfilePicture(formData)
 
         if (uploadResponse.success && uploadResponse.data.url) {
           uploadedImageUrl = uploadResponse.data.url;
