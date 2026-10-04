@@ -20,7 +20,7 @@ export const TrainerEarningsOverview: React.FC<Props> = ({
   const totalPaidOut = summary?.totalPaidOut ?? 0;
   const pendingPayout = summary?.pendingPayout ?? 0;
 
-  const canRequestPayout = availableBalance >= 1000 && !activePayout;
+  const canRequestPayout = availableBalance >= 100 && !activePayout;
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
@@ -40,7 +40,7 @@ export const TrainerEarningsOverview: React.FC<Props> = ({
             {loading ? "..." : `₹${availableBalance.toLocaleString("en-IN", { minimumFractionDigits: 2 })}`}
           </div>
           <p className="text-xs text-neutral-400 mt-1">
-            Minimum threshold: ₹1,000.00
+            Minimum threshold: ₹100.00
           </p>
         </div>
 

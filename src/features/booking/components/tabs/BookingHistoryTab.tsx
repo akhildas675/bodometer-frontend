@@ -63,10 +63,16 @@ export const BookingHistoryTab: React.FC = () => {
             <XCircle size={12} /> Cancelled
           </span>
         );
+      case "NO_SHOW":
+        return (
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/30">
+            <AlertCircle size={12} /> No Show
+          </span>
+        );
       default:
         return (
           <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-purple-500/10 text-purple-300 border border-purple-500/30">
-            <AlertCircle size={12} /> {b.status}
+            <AlertCircle size={12} /> {b.status.replace("_", " ")}
           </span>
         );
     }
@@ -131,7 +137,7 @@ export const BookingHistoryTab: React.FC = () => {
       <div className="bg-[#03000D]/80 border border-white/10 rounded-2xl p-4 space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-3">
           <div className="flex items-center gap-2 bg-white/5 p-1 rounded-xl border border-white/10 overflow-x-auto">
-            {["ALL", "COMPLETED", "CANCELLED"].map((st) => (
+            {["ALL", "COMPLETED", "CANCELLED", "NO_SHOW"].map((st) => (
               <button
                 key={st}
                 onClick={() => { setStatusFilter(st); setCurrentPage(1); }}
@@ -139,7 +145,7 @@ export const BookingHistoryTab: React.FC = () => {
                   statusFilter === st ? "bg-purple-600 text-white shadow-md" : "text-white/60 hover:text-white"
                 }`}
               >
-                {st === "ALL" ? `All (${historySessions.length})` : st}
+                {st === "ALL" ? `All (${historySessions.length})` : st.replace("_", " ")}
               </button>
             ))}
           </div>
@@ -223,6 +229,18 @@ export const BookingHistoryTab: React.FC = () => {
                         <span>Refund: {b.cancellationDetails.refundPercentage}% (Rs.{b.cancellationDetails.refundAmount})</span>
                       </div>
                       <p className="text-[11px] text-rose-200/80">Reason: {b.cancellationDetails.reason}</p>
+                    </div>
+                  )}
+
+                  {b.status === "NO_SHOW" && (
+                    <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-3 text-xs space-y-1 text-amber-300">
+                      <div className="font-bold flex items-center justify-between">
+                        <span>Attendance: No Show</span>
+                        <span>{b.attendance?.status || "MISSED"}</span>
+                      </div>
+                      <p className="text-[11px] text-amber-200/80">
+                        Session was not attended within the scheduled time.
+                      </p>
                     </div>
                   )}
 

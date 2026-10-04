@@ -1,9 +1,100 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useVideoCallStore } from "@/features/video-session/stores/video-call.store";
 import { videoSessionService } from "@/features/video-session/services/video-session.service";
 import { USER_UI_ROUTES } from "@/constants/routes/user.routes";
-import { Video, PhoneOff } from "lucide-react";
+import { Video, PhoneOff, PhoneCall } from "lucide-react";
 import { toast } from "sonner";
+
+class IncomingCallRingtone {
+  private ctx: AudioContext | null = null;
+  private isPlaying = false;
+  private loopTimer: number | null = null;
+
+  start() {
+    if (this.isPlaying) return;
+    this.isPlaying = true;
+
+    try {
+      const AudioContextClass =
+        window.AudioContext ||
+        (window as unknown as { webkitAudioContext: typeof AudioContext })
+          .webkitAudioContext;
+      if (!AudioContextClass) return;
+      this.ctx = new AudioContextClass();
+    } catch {
+      return;
+    }
+
+    const ring = () => {
+      if (!this.isPlaying || !this.ctx) return;
+
+      if (this.ctx.state === "suspended") {
+        this.ctx.resume().catch(() => {});
+      }
+
+      try {
+        if ("vibrate" in navigator) {
+          navigator.vibrate([350, 150, 350, 150]);
+        }
+      } catch {}
+
+      const startTime = this.ctx.currentTime;
+      this.playChime(startTime);
+      this.playChime(startTime + 0.45);
+
+      this.loopTimer = window.setTimeout(ring, 2600);
+    };
+
+    ring();
+
+    const unlockAudio = () => {
+      if (this.ctx && this.ctx.state === "suspended") {
+        this.ctx.resume().catch(() => {});
+      }
+    };
+    window.addEventListener("click", unlockAudio, { once: true });
+    window.addEventListener("touchstart", unlockAudio, { once: true });
+  }
+
+  private playChime(startTime: number) {
+    if (!this.ctx) return;
+    try {
+      const freqs = [739.99, 1108.73];
+      freqs.forEach((freq) => {
+        if (!this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(freq, startTime);
+
+        gain.gain.setValueAtTime(0, startTime);
+        gain.gain.linearRampToValueAtTime(0.22, startTime + 0.03);
+        gain.gain.exponentialRampToValueAtTime(0.0001, startTime + 0.38);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+
+        osc.start(startTime);
+        osc.stop(startTime + 0.4);
+      });
+    } catch {}
+  }
+
+  stop() {
+    this.isPlaying = false;
+    if (this.loopTimer) {
+      clearTimeout(this.loopTimer);
+      this.loopTimer = null;
+    }
+    if (this.ctx) {
+      try {
+        this.ctx.close();
+      } catch {}
+      this.ctx = null;
+    }
+  }
+}
 
 function IncomingCallBanner() {
   const incomingVideoSessionId = useVideoCallStore(
@@ -11,6 +102,17 @@ function IncomingCallBanner() {
   );
   const clearIncomingCall = useVideoCallStore((state) => state.clearIncomingCall);
   const [accepting, setAccepting] = useState(false);
+
+  useEffect(() => {
+    if (!incomingVideoSessionId) return;
+
+    const ringtone = new IncomingCallRingtone();
+    ringtone.start();
+
+    return () => {
+      ringtone.stop();
+    };
+  }, [incomingVideoSessionId]);
 
   if (!incomingVideoSessionId) {
     return null;
@@ -82,7 +184,7 @@ function IncomingCallBanner() {
           flexShrink: 0,
         }}
       >
-        <Video size={20} className="text-purple-400 animate-pulse" />
+        <PhoneCall size={20} className="text-purple-400 animate-bounce" />
       </div>
       <span style={{ flex: 1, fontWeight: 600, fontSize: "0.9rem" }}>
         Your trainer is calling. Ready to join?

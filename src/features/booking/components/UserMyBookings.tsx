@@ -931,7 +931,7 @@ export const UserMyBookings: React.FC = () => {
                         </span>
                       )}
 
-                      {!isPastStartWindow && !activeSessions[b.id] && (
+                      {!isPastStartWindow && !activeSessions[b.id] && b.status.toUpperCase() !== "CANCELLED" && (
                         <button
                           onClick={() => setSelectedForCancel(b)}
                           className="px-3 py-1.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 font-semibold text-xs border border-rose-500/20 transition cursor-pointer flex items-center gap-1.5"

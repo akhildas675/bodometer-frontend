@@ -22,7 +22,7 @@ export const RequestPayoutModal: React.FC<Props> = ({
   if (!isOpen) return null;
 
   const numericAmount = parseFloat(amount) || 0;
-  const isTooLow = numericAmount < 1000;
+  const isTooLow = numericAmount < 100;
   const isTooHigh = numericAmount > availableBalance;
   const isValid = !isTooLow && !isTooHigh && numericAmount > 0;
 
@@ -102,11 +102,11 @@ export const RequestPayoutModal: React.FC<Props> = ({
               <input
                 type="number"
                 step="0.01"
-                min="1000"
+                min="100"
                 max={availableBalance}
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
-                placeholder="1000.00"
+                placeholder="100.00"
                 className="w-full bg-neutral-950 border border-neutral-800 focus:border-emerald-500/50 rounded-xl py-2.5 pl-8 pr-16 text-sm text-white focus:outline-none transition-colors"
               />
               <button
@@ -122,7 +122,7 @@ export const RequestPayoutModal: React.FC<Props> = ({
             {amount && isTooLow && (
               <p className="flex items-center gap-1.5 text-xs text-amber-400 mt-2">
                 <AlertCircle size={13} />
-                <span>Minimum payout amount is ₹1,000.00</span>
+                <span>Minimum payout amount is ₹100.00</span>
               </p>
             )}
             {amount && isTooHigh && (

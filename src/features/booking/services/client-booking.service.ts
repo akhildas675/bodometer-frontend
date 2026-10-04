@@ -75,6 +75,13 @@ export interface BookingResponseData {
   };
   cancellationDetails?: BookingCancellationDetails | null;
   rescheduleRequest?: BookingRescheduleRequestDetails | null;
+  attendance?: {
+    status: string;
+    markedAt?: string;
+    markedBy?: string;
+  };
+  sessionPhase?: string;
+  callAvailableAt?: string;
 }
 
 export interface CreateBookingResponse {
