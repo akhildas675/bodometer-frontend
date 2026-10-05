@@ -9,6 +9,7 @@ import { useOtpStore } from "@/features/auth/stores/otp.store";
 import { authService } from "@/features/auth/services/auth.service";
 import { parseApiError } from "@/infrastructure/api/api-error";
 import { STATUS } from "@/constants/status-codes.constants";
+import { registerLoginImage } from "@/assets/image-path";
 
 const ResetPassword = () => {
   const [password, setPassword] = useState("");
