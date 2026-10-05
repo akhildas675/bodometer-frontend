@@ -6,6 +6,7 @@ import { parseApiError } from "@/infrastructure/api/api-error";
 import PrimaryButton from "@/components/ui/PrimaryButton";
 import { useOtpStore } from "@/features/auth/stores/otp.store";
 import { authService } from "@/features/auth/services/auth.service";
+import { registerLoginImage } from "@/assets/image-path";
 
 const OTP_LENGTH = 6;
 
@@ -153,7 +154,7 @@ const AuthOtpPage: React.FC = () => {
         {/* LEFT IMAGE */}
         <div className="w-1/2 hidden md:block relative">
           <img
-            src="https://bodometer-asset.s3.eu-north-1.amazonaws.com/banner/bodometer_register_page_img+(1).jpg"
+            src={registerLoginImage}
             alt="OTP"
             className="h-full w-full object-cover"
           />

@@ -13,6 +13,7 @@ import PrimaryButton from "@/components/ui/PrimaryButton";
 import InputWithIcon from "@/components/ui/InputBox";
 import { authService } from "@/features/auth/services/auth.service";
 import { useOtpStore } from "@/features/auth/stores/otp.store";
+import { registerLoginImage, textLogo } from "@/assets/image-path";
 
 const AuthRegisterPage: React.FC<AuthRegisterPageProps> = ({ role }) => {
   const navigate = useNavigate();
@@ -77,14 +78,14 @@ const AuthRegisterPage: React.FC<AuthRegisterPageProps> = ({ role }) => {
         {/* Left image section */}
         <div className="w-1/2 hidden md:block relative">
           <img
-            src="https://bodometer-asset.s3.eu-north-1.amazonaws.com/banner/bodometer_register_page_img+(1).jpg"
+            src={registerLoginImage}
             alt="Bodometer registration"
             className="h-full w-full object-cover"
           />
 
           <div className="absolute top-6 left-6">
             <img
-              src="/public/Bodometer Logo corrected 1.png"
+              src={textLogo}
               alt="Bodometer Logo"
               className="h-8 w-auto object-contain drop-shadow-lg"
             />

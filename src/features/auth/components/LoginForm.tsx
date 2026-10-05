@@ -11,6 +11,7 @@ import { useAuthStore, type AuthUser } from "@/stores/auth.store";
 import { VERIFICATION_STATUS, type VerificationStatus } from "@/constants/verification-status.constants";
 import { parseApiError } from "@/infrastructure/api/api-error";
 import { STATUS } from "@/constants/status-codes.constants";
+import { registerLoginImage, textLogo } from "@/assets/image-path";
 
 const AuthLoginPage = () => {
   const [loading, setLoading] = useState(false);
@@ -123,13 +124,13 @@ const AuthLoginPage = () => {
         {/* Left image */}
         <div className="w-full md:w-1/2 hidden md:block relative min-h-[200px]">
           <img
-             src="https://bodometer-asset.s3.eu-north-1.amazonaws.com/logo/Bodometer+Logo+corrected+1.png"
+             src={registerLoginImage}
             alt="Bodometer login"
             className="h-full w-full object-cover"
           />
           <div className="absolute top-6 left-6">
             <img
-              src="/public/Bodometer Logo corrected 1.png"
+              src={textLogo}
               alt="Bodometer Logo"
               className="h-8 w-auto object-contain drop-shadow-lg"
             />

@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { FaFacebook, FaInstagram, FaQuestionCircle } from 'react-icons/fa';
+import { textLogo } from "@/assets/image-path";
 
 const Footer = () => {
   return (
@@ -8,7 +9,7 @@ const Footer = () => {
         {/* Logo */}
         <div className="flex flex-col mb-6 md:mb-0 md:absolute md:left-0 md:top-0">
           <img
-            src="https://bodometer-asset.s3.eu-north-1.amazonaws.com/logo/Bodometer+Logo+corrected+1.png"
+            src={textLogo}
             alt="bodometer logo"
             className="h-8 mb-2 ml-0 md:ml-2"
           />

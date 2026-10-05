@@ -64,7 +64,7 @@ const ResetPassword = () => {
         {/* LEFT IMAGE */}
         <div className="w-1/2 hidden md:block relative">
           <img
-             src="https://bodometer-asset.s3.eu-north-1.amazonaws.com/banner/bodometer_register_page_img+(1).jpg"
+             src={registerLoginImage}
             alt="Reset password"
             className="h-full w-full object-cover"
           />

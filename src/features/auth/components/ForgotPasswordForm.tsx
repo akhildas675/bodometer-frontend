@@ -10,6 +10,7 @@ import PrimaryButton from "@/components/ui/PrimaryButton";
 import type { ForgotPasswordPayload } from "@/features/auth/types/auth.types";
 import { authService } from "@/features/auth/services/auth.service";
 import { useOtpStore } from "@/features/auth/stores/otp.store";
+import { registerLoginImage } from "@/assets/image-path";
 
 const ForgetPassword = () => {
   const [loading, setLoading] = useState(false);
@@ -71,7 +72,7 @@ const ForgetPassword = () => {
         {/* LEFT IMAGE SECTION */}
         <div className="w-1/2 hidden md:block relative">
           <img
-            src="https://bodometer-asset.s3.eu-north-1.amazonaws.com/banner/bodometer_register_page_img+(1).jpg"
+            src={registerLoginImage}
             alt="Forgot password"
             className="h-full w-full object-cover"
           />
