@@ -41,71 +41,67 @@ const AuthOtpPage: React.FC = () => {
 
   const handleKeyDown = (
     index: number,
-    e: React.KeyboardEvent<HTMLInputElement>
+    e: React.KeyboardEvent<HTMLInputElement>,
   ) => {
     if (e.key === "Backspace" && !otp[index] && index > 0) {
       inputRefs.current[index - 1]?.focus();
     }
   };
 
-const handleVerifyOtp = async () => {
-  const otpValue = otp.join("");
+  const handleVerifyOtp = async () => {
+    const otpValue = otp.join("");
 
-  try {
-    setLoading(true);
+    try {
+      setLoading(true);
 
-    const verifyRes = await authService.verifyOtp({
-      email: email!,
-      otp: otpValue,
-      purpose: purpose!,
-    });
-
-    if (!verifyRes.success) {
-      toast.error(verifyRes.message || "OTP verification failed");
-      return;
-    }
-
-    if (purpose === "FORGET_PASSWORD") {
-      toast.success(verifyRes.message);
-      navigate("/reset-password", { replace: true });
-      return;
-    }
-
-    
-    const { registerData, role } = useOtpStore.getState();
-
-    if (!registerData || !role) {
-      toast.error("Registration session expired. Please register again.");
-      navigate(role === "trainer" ? "/register/trainer" : "/register", {
-        replace: true,
+      const verifyRes = await authService.verifyOtp({
+        email: email!,
+        otp: otpValue,
+        purpose: purpose!,
       });
-      return;
+
+      if (!verifyRes.success) {
+        toast.error(verifyRes.message || "OTP verification failed");
+        return;
+      }
+
+      if (purpose === "FORGET_PASSWORD") {
+        toast.success(verifyRes.message);
+        navigate("/reset-password", { replace: true });
+        return;
+      }
+
+      const { registerData, role } = useOtpStore.getState();
+
+      if (!registerData || !role) {
+        toast.error("Registration session expired. Please register again.");
+        navigate(role === "trainer" ? "/register/trainer" : "/register", {
+          replace: true,
+        });
+        return;
+      }
+
+      const completeRes = await authService.completeRegister({
+        ...registerData,
+        role,
+      });
+
+      toast.success(completeRes.message);
+      useOtpStore.getState().clearOtpContext();
+      navigate("/login", { replace: true });
+    } catch (error: unknown) {
+      const apiError = parseApiError(error);
+      toast.error(apiError.message);
+    } finally {
+      setLoading(false);
     }
-
-    const completeRes = await authService.completeRegister({
-      ...registerData,
-      role,
-    });
-
-    toast.success(completeRes.message);
-    useOtpStore.getState().clearOtpContext();
-    navigate("/login", { replace: true });
-
-  } catch (error: unknown) {
-    const apiError = parseApiError(error);
-    toast.error(apiError.message);
-  } finally {
-    setLoading(false);
-  }
-};
-
-
-
+  };
 
   const RESEND_TIME = 30;
 
   const [secondsLeft, setSecondsLeft] = useState(RESEND_TIME);
   const [canResend, setCanResend] = useState(false);
+  const [resendBlocked, setResendBlocked] = useState(false);
 
   useEffect(() => {
     if (secondsLeft <= 0) {
@@ -120,7 +116,9 @@ const handleVerifyOtp = async () => {
   }, [secondsLeft]);
 
   const handleResendOtp = async () => {
-    if (!canResend || !email || !purpose) return;
+    if (!canResend || resendBlocked || !email || !purpose) {
+      return;
+    }
 
     try {
       setCanResend(false);
@@ -134,6 +132,17 @@ const handleVerifyOtp = async () => {
       toast.success(resendRes.message);
     } catch (error: unknown) {
       const apiError = parseApiError(error);
+
+      if (apiError.statusCode === 429) {
+        setResendBlocked(true);
+        setCanResend(false);
+
+        toast.error("OTP resend limit reached. Please try again later.");
+
+        return;
+      }
+
+      setCanResend(true);
       toast.error(apiError.message);
     }
   };
@@ -182,8 +191,13 @@ const handleVerifyOtp = async () => {
             />
 
             <p className="mt-4 text-xs text-slate-400 text-center">
-              {canResend ? (
+              {resendBlocked ? (
+                <span className="text-red-400">
+                  Resend limit reached. Please try again later.
+                </span>
+              ) : canResend ? (
                 <button
+                  type="button"
                   onClick={handleResendOtp}
                   className="text-indigo-400 hover:underline"
                 >
@@ -195,10 +209,7 @@ const handleVerifyOtp = async () => {
             </p>
 
             <p className="mt-3 text-xs text-center">
-              <Link
-                to="/login"
-                className="text-indigo-400 hover:underline"
-              >
+              <Link to="/login" className="text-indigo-400 hover:underline">
                 Back to Login
               </Link>
             </p>

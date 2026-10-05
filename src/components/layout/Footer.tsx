@@ -8,7 +8,7 @@ const Footer = () => {
         {/* Logo */}
         <div className="flex flex-col mb-6 md:mb-0 md:absolute md:left-0 md:top-0">
           <img
-            src="@/public/Bodometer Logo corrected 1.png"
+            src="https://bodometer-asset.s3.eu-north-1.amazonaws.com/logo/Bodometer+Logo+corrected+1.png"
             alt="bodometer logo"
             className="h-8 mb-2 ml-0 md:ml-2"
           />
