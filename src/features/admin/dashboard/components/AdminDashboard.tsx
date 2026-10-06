@@ -96,31 +96,34 @@ const AdminDashboard = () => {
   const platformValues = chartData.map((d) => d.platformEarnings);
 
   const miniChartData = {
-    labels: chartLabels.length > 0 ? chartLabels.slice(-10) : ["No data"],
+    labels: chartLabels.length > 0 ? chartLabels.slice(-14) : ["No data"],
     datasets: [
       {
         label: "Gross",
-        data: grossValues.length > 0 ? grossValues.slice(-10) : [0],
+        data: grossValues.length > 0 ? grossValues.slice(-14) : [0],
         borderColor: "#a855f7",
         borderWidth: 2,
         tension: 0.35,
         pointRadius: 2.5,
+        showLine: true,
       },
       {
-        label: "Trainers (70%)",
-        data: trainerValues.length > 0 ? trainerValues.slice(-10) : [0],
+        label: "Trainers",
+        data: trainerValues.length > 0 ? trainerValues.slice(-14) : [0],
         borderColor: "#10b981",
         borderWidth: 2,
         tension: 0.35,
         pointRadius: 2.5,
+        showLine: true,
       },
       {
-        label: "Platform (30%)",
-        data: platformValues.length > 0 ? platformValues.slice(-10) : [0],
+        label: "Platform",
+        data: platformValues.length > 0 ? platformValues.slice(-14) : [0],
         borderColor: "#38bdf8",
         borderWidth: 2,
         tension: 0.35,
         pointRadius: 2.5,
+        showLine: true,
       },
     ],
   };

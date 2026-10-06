@@ -15,6 +15,8 @@ import {
   AlertTriangle,
   User,
   Star,
+  CreditCard,
+  ExternalLink,
 } from "lucide-react";
 import {
   clientBookingService,
@@ -82,6 +84,9 @@ export const UserMyBookings: React.FC = () => {
     trainerName?: string;
   } | null>(null);
   const [reviewedBookingIds, setReviewedBookingIds] = useState<Set<string>>(new Set());
+
+  // Retry Payment State
+  const [retryingPaymentId, setRetryingPaymentId] = useState<string | null>(null);
 
   const isFetchingRef = useRef(false);
 
@@ -195,6 +200,24 @@ export const UserMyBookings: React.FC = () => {
       toast.error(msg);
     } finally {
       setClaimingRefundBookingId(null);
+    }
+  };
+
+  const handleRetryPayment = async (bookingId: string) => {
+    try {
+      setRetryingPaymentId(bookingId);
+      const { checkoutUrl } = await clientBookingService.retryPayment(bookingId);
+      if (checkoutUrl) {
+        window.location.href = checkoutUrl;
+      } else {
+        toast.error("Failed to create payment session. Please try again.");
+      }
+    } catch (err: unknown) {
+      const msg =
+        (err as { response?: { data?: { message?: string } } })?.response?.data?.message ||
+        "Failed to initiate payment retry.";
+      toast.error(msg);
+      setRetryingPaymentId(null);
     }
   };
 
@@ -330,85 +353,99 @@ export const UserMyBookings: React.FC = () => {
 
   const isBookingCompletedOrEnded = (b: BookingResponseData) => {
     const vs = sessionHistory.find((s) => String(s.bookingId) === String(b.id));
+    const endMs = new Date(b.endTime).getTime();
     return (
       b.status.toUpperCase() === "COMPLETED" ||
       b.status.toUpperCase() === "INCOMPLETE" ||
       b.status.toUpperCase() === "EXPIRED" ||
+      b.status.toUpperCase() === "CANCELLED" ||
       vs?.status === "COMPLETED" ||
       vs?.status === "INCOMPLETE" ||
-      vs?.status === "EXPIRED"
+      vs?.status === "EXPIRED" ||
+      nowMs >= endMs
     );
   };
 
   const getStatusBadge = (b: BookingResponseData, vs?: VideoSession) => {
-    if (b.status.toUpperCase() === "EXPIRED" || vs?.status === "EXPIRED") {
+    const statusUpper = b.status.toUpperCase();
+    if (statusUpper === "CANCELLED") {
+      return (
+        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-rose-500/10 text-rose-400 border border-rose-500/30">
+          <XCircle size={13} /> Cancelled
+        </span>
+      );
+    }
+    if (statusUpper === "EXPIRED" || vs?.status === "EXPIRED") {
       return (
         <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-500/10 text-amber-400 border border-amber-500/30">
           <AlertTriangle size={13} /> Missed • Refunded
         </span>
       );
     }
-    if (vs?.status === "INCOMPLETE" || b.status.toUpperCase() === "INCOMPLETE") {
+    if (vs?.status === "INCOMPLETE" || statusUpper === "INCOMPLETE") {
       return (
         <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-500/10 text-amber-400 border border-amber-500/30">
           <AlertTriangle size={13} /> Ended Early (&lt; 20m)
         </span>
       );
     }
-    if (vs?.status === "COMPLETED" || b.status.toUpperCase() === "COMPLETED") {
+    if (vs?.status === "COMPLETED" || statusUpper === "COMPLETED") {
       return (
         <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
           <CheckCircle2 size={13} /> Completed
         </span>
       );
     }
-    const isPastStartWindow = Date.now() > new Date(b.startTime).getTime() + 10 * 60 * 1000;
-    switch (b.status.toUpperCase()) {
-      case "CONFIRMED":
-        if (isPastStartWindow && !activeSessions[b.id]) {
-          return (
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-rose-500/10 text-rose-400 border border-rose-500/30">
-              <AlertTriangle size={13} /> Missed by Trainer
-            </span>
-          );
-        }
-        return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-blue-500/10 text-blue-400 border border-blue-500/30">
-            <Clock size={13} /> Upcoming
-          </span>
-        );
-      case "RESCHEDULE_PENDING":
-        return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-500/10 text-amber-400 border border-amber-500/30">
-            <AlertCircle size={13} /> Reschedule Requested
-          </span>
-        );
-      case "PENDING_PAYMENT":
-      case "PENDING":
-        return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-500/10 text-amber-400 border border-amber-500/30">
-            <AlertCircle size={13} /> Pending Payment
-          </span>
-        );
-      case "CANCELLED":
-        return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-rose-500/10 text-rose-400 border border-rose-500/30">
-            <XCircle size={13} /> Cancelled
-          </span>
-        );
-      case "EXPIRED":
-        return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-500/10 text-amber-400 border border-amber-500/30">
-            <AlertTriangle size={13} /> Missed • Refunded
-          </span>
-        );
-      default:
-        return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-purple-500/10 text-purple-300 border border-purple-500/30">
-            {b.status}
-          </span>
-        );
+    if (statusUpper === "NO_SHOW") {
+      return (
+        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-500/10 text-amber-400 border border-amber-500/30">
+          <AlertCircle size={13} /> No Show
+        </span>
+      );
     }
+    if (statusUpper === "RESCHEDULE_PENDING") {
+      return (
+        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-500/10 text-amber-400 border border-amber-500/30">
+          <AlertCircle size={13} /> Reschedule Pending
+        </span>
+      );
+    }
+    if (statusUpper === "PENDING_PAYMENT" || statusUpper === "PENDING") {
+      return (
+        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-500/10 text-amber-400 border border-amber-500/30">
+          <AlertCircle size={13} /> Pending Payment
+        </span>
+      );
+    }
+    if (statusUpper === "CONFIRMED") {
+      const startMs = new Date(b.startTime).getTime();
+      const endMs = new Date(b.endTime).getTime();
+      const callAvailableMs = startMs - 5 * 60 * 1000;
+      if (nowMs >= endMs) {
+        return (
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-neutral-500/10 text-neutral-400 border border-neutral-500/30">
+            <Clock size={13} /> Ended
+          </span>
+        );
+      }
+      if (nowMs >= callAvailableMs) {
+        return (
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+            <Video size={13} /> Call Available
+          </span>
+        );
+      }
+      return (
+        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-blue-500/10 text-blue-400 border border-blue-500/30">
+          <Clock size={13} /> Confirmed
+        </span>
+      );
+    }
+    return (
+      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-purple-500/10 text-purple-300 border border-purple-500/30">
+        {b.status.replace("_", " ")}
+      </span>
+    );
   };
 
   const filterCounts = {
@@ -660,10 +697,11 @@ export const UserMyBookings: React.FC = () => {
             const timeStr = `${start.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })} - ${end.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })}`;
             const startMs = start.getTime();
             const endMs = end.getTime();
-            const deadlineMs = startMs + 10 * 60 * 1000;
+            const callAvailableMs = startMs - 5 * 60 * 1000;
+            const isJoinCallWindow = nowMs >= callAvailableMs && nowMs < endMs;
+            const isBeforeJoinWindow = nowMs < callAvailableMs;
             const isBeforeStart = nowMs < startMs;
-            const isPastStartWindow = nowMs > deadlineMs;
-            const isPastSession = nowMs > endMs;
+            const isPastSession = nowMs >= endMs;
             const trainerDisplayName = b.trainerName || vs?.otherParticipantName || "Assigned Trainer";
             const trainerDisplayEmail = b.trainerEmail || vs?.otherParticipantEmail;
 
@@ -720,6 +758,50 @@ export const UserMyBookings: React.FC = () => {
                     </div>
                   </div>
                 </div>
+
+                {/* Pending Payment Banner */}
+                {(b.status.toUpperCase() === "PENDING_PAYMENT" || b.status.toUpperCase() === "PENDING") && (
+                  <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 space-y-3">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0">
+                          <CreditCard size={20} />
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <p className="text-sm font-bold text-amber-300">Payment Incomplete</p>
+                            <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30">
+                              Action Required
+                            </span>
+                          </div>
+                          <p className="text-xs text-white/60 mt-0.5">
+                            Your booking is reserved but payment has not been completed. Complete payment of
+                            <span className="text-white font-semibold ml-1">Rs.{b.price}</span> to confirm your session.
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2 shrink-0 self-start sm:self-auto">
+                        <button
+                          onClick={() => handleRetryPayment(b.id)}
+                          disabled={retryingPaymentId === b.id}
+                          className="px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-black font-extrabold text-xs transition shadow-md shadow-amber-500/20 cursor-pointer flex items-center gap-1.5 disabled:opacity-60 disabled:cursor-not-allowed"
+                        >
+                          {retryingPaymentId === b.id ? (
+                            <><RefreshCw size={13} className="animate-spin" /> Redirecting…</>
+                          ) : (
+                            <><ExternalLink size={13} /> Complete Payment</>  
+                          )}
+                        </button>
+                        <button
+                          onClick={() => setSelectedForCancel(b)}
+                          className="px-3 py-2.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 font-semibold text-xs border border-rose-500/20 transition cursor-pointer flex items-center gap-1.5"
+                        >
+                          <XCircle size={13} /> Cancel
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 {/* Completed / Ended / Expired Session Display */}
                 {isCompletedOrEnded && (
@@ -843,8 +925,29 @@ export const UserMyBookings: React.FC = () => {
                   </div>
                 )}
 
-                {/* Expired Start Window - Trainer did not take call banner */}
-                {isConfirmed && isPastStartWindow && !activeSessions[b.id] && (
+                {/* Cancelled Session Display with backend refund & reason details */}
+                {b.status.toUpperCase() === "CANCELLED" && (
+                  <div className="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-xs space-y-1.5 text-rose-300">
+                    <div className="font-bold flex items-center justify-between">
+                      <span className="flex items-center gap-1.5 text-rose-400">
+                        <XCircle size={14} /> Cancelled {b.cancellationDetails?.cancelledBy ? `by ${b.cancellationDetails.cancelledBy}` : ""}
+                      </span>
+                      {b.cancellationDetails?.refundPercentage !== undefined ? (
+                        <span className="text-emerald-400 font-semibold">
+                          Refund: {b.cancellationDetails.refundPercentage}% (Rs.{b.cancellationDetails.refundAmount}) credited to Wallet
+                        </span>
+                      ) : (
+                        <span className="text-white/60">Refund credited to Wallet</span>
+                      )}
+                    </div>
+                    {b.cancellationDetails?.reason && (
+                      <p className="text-[11px] text-rose-200/80">Reason: {b.cancellationDetails.reason}</p>
+                    )}
+                  </div>
+                )}
+
+                {/* Expired Start Window - Trainer did not conduct session banner (only after full scheduled session endTime has passed) */}
+                {isConfirmed && isPastSession && !activeSessions[b.id] && !vs && (
                   <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 space-y-3">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                       <div className="flex items-center gap-3">
@@ -854,14 +957,14 @@ export const UserMyBookings: React.FC = () => {
                         <div>
                           <div className="flex items-center gap-2">
                             <p className="text-sm font-bold text-amber-300">
-                              Session Expired • Trainer Did Not Start Call
+                              Session Expired • Trainer Did Not Conduct Call
                             </p>
                             <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30">
                               100% Refund Guarantee
                             </span>
                           </div>
                           <p className="text-xs text-white/70 mt-0.5">
-                            The 10-minute start window elapsed without the trainer starting the session. You can claim an instant 100% refund of ₹{b.price} directly to your Bodometer Wallet.
+                            The scheduled session duration has concluded without the call being conducted. You can claim an instant 100% refund of ₹{b.price} directly to your Bodometer Wallet.
                           </p>
                         </div>
                       </div>
@@ -884,8 +987,8 @@ export const UserMyBookings: React.FC = () => {
                     </span>
 
                     <div className="flex items-center gap-2">
-                      {activeSessions[b.id] ? (
-                        // Active VideoSession exists → show Remaining Time, Rejoin and Disconnect buttons
+                      {activeSessions[b.id] && !isPastSession ? (
+                        // Active VideoSession exists within session duration → show Remaining Time, Rejoin and Disconnect
                         <div className="flex items-center gap-2 flex-wrap">
                           <span className="px-2.5 py-1 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 text-xs font-mono font-bold flex items-center gap-1.5 animate-pulse">
                             <Clock size={12} />
@@ -917,21 +1020,38 @@ export const UserMyBookings: React.FC = () => {
                             <PhoneOff size={13} /> Disconnect
                           </button>
                         </div>
-                      ) : isBeforeStart ? (
+                      ) : isBeforeJoinWindow ? (
+                        // Countdown to Join Window (startTime - 5 mins)
                         <span className="px-3 py-1.5 rounded-xl bg-white/5 text-white/40 font-semibold text-xs border border-white/10 flex items-center gap-1.5 cursor-not-allowed">
-                          <Clock size={13} /> Starts at {start.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                          <Clock size={13} />
+                          {(() => {
+                            const msToJoin = callAvailableMs - nowMs;
+                            const msToStart = startMs - nowMs;
+                            if (msToJoin <= 60 * 60 * 1000) {
+                              const mins = Math.max(1, Math.ceil(msToJoin / 60000));
+                              return `Join Call available in ${mins}m`;
+                            }
+                            const hrs = Math.floor(msToStart / 3600000);
+                            const mins = Math.floor((msToStart % 3600000) / 60000);
+                            return `Starts in ${hrs}h ${mins}m`;
+                          })()}
                         </span>
-                      ) : isPastSession || isPastStartWindow ? (
-                        <span className="px-3 py-1.5 rounded-xl bg-rose-500/10 text-rose-400 font-semibold text-xs border border-rose-500/20 flex items-center gap-1.5">
-                          <XCircle size={13} /> {isPastSession ? "Session Time Expired" : "Start Window Expired"}
+                      ) : isJoinCallWindow ? (
+                        // Within Join Call Window (startTime - 5min <= now < endTime)
+                        <span className="px-3 py-1.5 rounded-xl bg-emerald-500/10 text-emerald-400 font-semibold text-xs border border-emerald-500/30 flex items-center gap-1.5 animate-pulse">
+                          <Video size={13} />
+                          {isBeforeStart
+                            ? "Join Call available • Waiting for session"
+                            : "Session in progress • Waiting for trainer to connect"}
                         </span>
                       ) : (
-                        <span className="px-3 py-1.5 rounded-xl bg-emerald-500/10 text-emerald-400 font-semibold text-xs border border-emerald-500/30 flex items-center gap-1.5">
-                          <Video size={13} /> Waiting for trainer to call…
+                        <span className="px-3 py-1.5 rounded-xl bg-white/5 text-white/40 font-semibold text-xs border border-white/10 flex items-center gap-1.5">
+                          <Clock size={13} /> Session Ended
                         </span>
                       )}
 
-                      {!isPastStartWindow && !activeSessions[b.id] && b.status.toUpperCase() !== "CANCELLED" && (
+                      {/* Cancel Session button: ONLY allowed before session startTime for CONFIRMED bookings */}
+                      {isBeforeStart && (
                         <button
                           onClick={() => setSelectedForCancel(b)}
                           className="px-3 py-1.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 font-semibold text-xs border border-rose-500/20 transition cursor-pointer flex items-center gap-1.5"

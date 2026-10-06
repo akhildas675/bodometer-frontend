@@ -88,17 +88,18 @@ const TrainerDashboard = () => {
   const chartValues = chartData.map((d) => d.earnings);
 
   const miniChartData = {
-    labels: chartLabels.length > 0 ? chartLabels.slice(-10) : ["No data"],
+    labels: chartLabels.length > 0 ? chartLabels.slice(-14) : ["No data"],
     datasets: [
       {
         label: "Earnings",
-        data: chartValues.length > 0 ? chartValues.slice(-10) : [0],
+        data: chartValues.length > 0 ? chartValues.slice(-14) : [0],
         borderColor: "#10b981",
         backgroundColor: "rgba(16, 185, 129, 0.08)",
         borderWidth: 2,
         fill: true,
         tension: 0.35,
         pointRadius: 3,
+        showLine: true,
       },
     ],
   };

@@ -173,6 +173,13 @@ class ClientBookingService {
     );
     return response.data?.data || [];
   }
+
+  async retryPayment(bookingId: string): Promise<{ checkoutUrl: string; sessionId: string }> {
+    const response = await api.post<ApiResponse<{ checkoutUrl: string; sessionId: string }>>(
+      `/booking/${bookingId}/retry-payment`,
+    );
+    return response.data?.data;
+  }
 }
 
 export const clientBookingService = new ClientBookingService();

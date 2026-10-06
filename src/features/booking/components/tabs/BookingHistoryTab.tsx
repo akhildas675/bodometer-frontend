@@ -69,6 +69,12 @@ export const BookingHistoryTab: React.FC = () => {
             <AlertCircle size={12} /> No Show
           </span>
         );
+      case "CONFIRMED":
+        return (
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-neutral-500/10 text-neutral-400 border border-neutral-500/30">
+            <CheckCircle2 size={12} /> Ended
+          </span>
+        );
       default:
         return (
           <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-purple-500/10 text-purple-300 border border-purple-500/30">

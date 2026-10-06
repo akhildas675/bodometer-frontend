@@ -59,6 +59,7 @@ export const TrainerEarningsChart: React.FC<Props> = ({
         pointBorderWidth: 2,
         pointRadius: 4,
         pointHoverRadius: 6,
+        showLine: true,
       },
     ],
   };
@@ -124,6 +125,11 @@ export const TrainerEarningsChart: React.FC<Props> = ({
           <p className="text-xs text-neutral-400 mt-0.5">
             Your earned session share over time
           </p>
+          {totalInPeriod === 0 && !loading && (
+            <p className="text-xs text-neutral-500 mt-1">
+              No earnings recorded for this period.
+            </p>
+          )}
         </div>
 
         {/* Period Selector Tabs */}

@@ -40,6 +40,8 @@ export const AdminFinanceChart: React.FC<Props> = ({
   const trainerEarnings = data.map((d) => d.trainerEarnings);
   const platformEarnings = data.map((d) => d.platformEarnings);
 
+  const totalGross = grossRevenue.reduce((sum, val) => sum + val, 0);
+
   const chartData = {
     labels: labels.length > 0 ? labels : ["No data"],
     datasets: [
@@ -51,24 +53,27 @@ export const AdminFinanceChart: React.FC<Props> = ({
         borderWidth: 2,
         tension: 0.3,
         pointRadius: 3,
+        showLine: true,
       },
       {
-        label: "Trainer Share (70%)",
+        label: "Trainer Earnings",
         data: trainerEarnings.length > 0 ? trainerEarnings : [0],
         borderColor: "#10b981",
         backgroundColor: "rgba(16, 185, 129, 0.1)",
         borderWidth: 2,
         tension: 0.3,
         pointRadius: 3,
+        showLine: true,
       },
       {
-        label: "Platform Cut (30%)",
+        label: "Platform Earnings",
         data: platformEarnings.length > 0 ? platformEarnings : [0],
         borderColor: "#38bdf8",
         backgroundColor: "rgba(56, 189, 248, 0.1)",
         borderWidth: 2,
         tension: 0.3,
         pointRadius: 3,
+        showLine: true,
       },
     ],
   };
@@ -126,6 +131,11 @@ export const AdminFinanceChart: React.FC<Props> = ({
           <p className="text-xs text-neutral-400 mt-0.5">
             Gross revenue comparison against trainer disbursement and platform retainage
           </p>
+          {totalGross === 0 && !loading && (
+            <p className="text-xs text-neutral-500 mt-1">
+              No financial activity recorded for this period.
+            </p>
+          )}
         </div>
 
         {/* Period Selector Tabs */}

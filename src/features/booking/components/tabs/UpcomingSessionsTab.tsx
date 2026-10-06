@@ -482,7 +482,16 @@ export const UpcomingSessionsTab: React.FC = () => {
   };
 
   // Calculate Filter, Search, Sort, Pagination
-  let processedSessions = [...sessions];
+  // An active upcoming session remains while currentTime < endTime and not in terminal status
+  let processedSessions = sessions.filter((s) => {
+    const endMs = new Date(s.endTime).getTime();
+    const isTerminal =
+      s.status.toUpperCase() === "COMPLETED" ||
+      s.status.toUpperCase() === "CANCELLED" ||
+      s.status.toUpperCase() === "NO_SHOW" ||
+      s.status.toUpperCase() === "EXPIRED";
+    return currentTime < endMs && !isTerminal;
+  });
 
   if (statusFilter !== "ALL") {
     processedSessions = processedSessions.filter(
@@ -636,16 +645,22 @@ export const UpcomingSessionsTab: React.FC = () => {
                       className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold ${
                         b.status === "RESCHEDULE_PENDING"
                           ? "bg-amber-500/10 text-amber-400 border border-amber-500/30"
+                          : b.status === "CANCELLED"
+                          ? "bg-rose-500/10 text-rose-400 border border-rose-500/30"
                           : "bg-emerald-500/10 text-emerald-400 border border-emerald-500/30"
                       }`}
                     >
                       {b.status === "RESCHEDULE_PENDING" ? (
                         <AlertCircle size={12} />
+                      ) : b.status === "CANCELLED" ? (
+                        <XCircle size={12} />
                       ) : (
                         <CheckCircle2 size={12} />
                       )}
                       {b.status === "RESCHEDULE_PENDING"
                         ? "Reschedule Pending"
+                        : b.status === "CANCELLED"
+                        ? "Cancelled"
                         : "Confirmed"}
                     </span>
                   </div>
@@ -674,6 +689,14 @@ export const UpcomingSessionsTab: React.FC = () => {
                     <span className="text-white/40">Fee: Rs.{b.price}</span>
                     <div className="flex items-center gap-2">
                       {(() => {
+                        if (b.status === "CANCELLED") {
+                          return (
+                            <span className="px-3 py-1.5 rounded-xl bg-rose-500/10 text-rose-400 font-semibold text-xs border border-rose-500/20 flex items-center gap-1.5">
+                              <XCircle size={13} /> Cancelled
+                            </span>
+                          );
+                        }
+
                         if (b.status === "RESCHEDULE_PENDING") {
                           return (
                             <span className="px-3 py-1.5 rounded-xl bg-amber-500/10 text-amber-300 font-semibold text-xs border border-amber-500/30 flex items-center gap-1.5">
@@ -689,8 +712,7 @@ export const UpcomingSessionsTab: React.FC = () => {
                         const endMs = endDate.getTime();
                         const callAvailableMs = startMs - 5 * 60 * 1000;
                         const activeSessionId = activeSessions[b.id];
-                        const isCallAvailable = currentTime >= callAvailableMs && currentTime < startMs;
-                        const isInProgress = currentTime >= startMs && currentTime < endMs;
+                        const isJoinCallWindow = currentTime >= callAvailableMs && currentTime < endMs;
                         const isEnded = currentTime >= endMs;
 
                         if (activeSessionId && !isEnded) {
@@ -739,7 +761,9 @@ export const UpcomingSessionsTab: React.FC = () => {
                           );
                         }
 
-                        if (isInProgress) {
+                        // Join Call Window: startTime - 5 minutes <= currentTime < endTime
+                        // Trainer can join early (5 min before), on time, or late (until endTime)
+                        if (isJoinCallWindow) {
                           return (
                             <div className="flex items-center gap-2">
                               {startingCallBookingId === b.id ? (
@@ -758,33 +782,18 @@ export const UpcomingSessionsTab: React.FC = () => {
                           );
                         }
 
-                        if (isCallAvailable) {
-                          return (
-                            <div className="flex items-center gap-2">
-                              {startingCallBookingId === b.id ? (
-                                <span className="px-3 py-1.5 rounded-xl bg-emerald-500/10 text-emerald-300 font-semibold text-xs flex items-center gap-1.5 opacity-50 cursor-not-allowed">
-                                  <Video size={13} /> Starting...
-                                </span>
-                              ) : (
-                                <button
-                                  onClick={() => handleStartCall(b.id)}
-                                  className="px-3.5 py-1.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 font-semibold text-xs transition border border-emerald-500/30 flex items-center gap-1.5 cursor-pointer"
-                                >
-                                  <Video size={13} /> Start Call
-                                </button>
-                              )}
-                            </div>
-                          );
-                        }
+                        // Before Join Window: currentTime < startTime - 5 minutes
+                        const msToJoin = callAvailableMs - currentTime;
+                        const msToStart = startMs - currentTime;
+                        const countdownLabel =
+                          msToJoin <= 60 * 60 * 1000
+                            ? `Join Call in ${Math.max(1, Math.ceil(msToJoin / 60000))}m`
+                            : `Starts in ${Math.floor(msToStart / 3600000)}h ${Math.floor((msToStart % 3600000) / 60000)}m`;
 
                         return (
                           <div className="flex items-center gap-2">
                             <span className="px-3 py-1.5 rounded-xl bg-white/5 text-white/40 font-semibold text-xs border border-white/10 flex items-center gap-1.5">
-                              <Clock size={13} /> Starts at{" "}
-                              {startDate.toLocaleTimeString([], {
-                                hour: "2-digit",
-                                minute: "2-digit",
-                              })}
+                              <Clock size={13} /> {countdownLabel}
                             </span>
                             <button
                               onClick={() => {
