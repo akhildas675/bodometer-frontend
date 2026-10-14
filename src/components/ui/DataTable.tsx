@@ -21,12 +21,12 @@ export default function DataTable<T>({
             {columns.map((col) => (
               <th
                 key={String(col.key)}
-                className="px-4 py-3 font-semibold tracking-wide whitespace-nowrap"
+                className="px-4 py-3 font-semibold tracking-wide"
               >
                 {col.label}
               </th>
             ))}
-            {actions && <th className="px-4 py-3 font-semibold whitespace-nowrap">Actions</th>}
+            {actions && <th className="px-4 py-3 font-semibold">Actions</th>}
           </tr>
         </thead>
 
@@ -38,14 +38,14 @@ export default function DataTable<T>({
               className="border-t border-white/5 hover:bg-white/5 transition"
             >
               {columns.map((col) => (
-                <td key={String(col.key)} className="px-4 py-3 whitespace-nowrap">
+                <td key={String(col.key)} className="px-4 py-3 align-top min-w-[150px] max-w-[300px]">
                 {col.render ? col.render(row, i) : String(row[col.key as keyof T])}
                 </td>
               ))}
 
               {actions && (
-                <td className="px-4 py-3 whitespace-nowrap">
-                  <div className="flex gap-2">
+                <td className="px-4 py-3">
+                  <div className="flex gap-2 flex-wrap">
                     {actions
                       .filter((a) => (a.visible ? a.visible(row) : true))
                       .map((action, idx) => (
