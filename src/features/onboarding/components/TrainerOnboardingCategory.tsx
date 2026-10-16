@@ -10,6 +10,7 @@ import { useTrainerOnboardingStore } from "@/features/onboarding/stores/trainer-
 
 import { parseApiError } from "@/infrastructure/api/api-error";
 import { categoryService } from "@/features/admin/categories/services/category.service";
+import { textLogo } from "@/assets/image-path";
 
 const TrainerOnboardingSkills = () => {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -97,7 +98,7 @@ const TrainerOnboardingSkills = () => {
       {/* LOGO + LOGOUT ROW */}
       <div className="w-full max-w-6xl mb-6 flex items-center justify-between">
         <img
-          src="https://bodometer-assets.s3.eu-north-1.amazonaws.com/Bodometer+Logo+corrected+1.png"
+          src={textLogo}
           alt="Bodometer"
           className="h-10 object-contain"
         />

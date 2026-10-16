@@ -42,7 +42,7 @@ export const ChatEmptyState: React.FC<ChatEmptyStateProps> = ({
       {!hasConversations && !isTrainer && onBrowseTrainers && (
         <button
           onClick={onBrowseTrainers}
-          className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold text-sm px-6 py-3 rounded-2xl shadow-xl shadow-purple-600/30 hover:scale-105 active:scale-95 transition-all cursor-pointer"
+          className="inline-flex items-center gap-2 bg-linear-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold text-sm px-6 py-3 rounded-2xl shadow-xl shadow-purple-600/30 hover:scale-105 active:scale-95 transition-all cursor-pointer"
         >
           <ShieldCheck size={16} />
           <span>Browse Coaches</span>

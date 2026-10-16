@@ -385,7 +385,7 @@ export const BookingSetupForm: React.FC = () => {
                           type="button"
                           onClick={() => handleToggleDay(dayIdx)}
                           className={`relative w-12 h-7 rounded-full p-1 transition-colors cursor-pointer ${dayItem.isAvailable
-                              ? "bg-gradient-to-r from-purple-600 to-purple-500"
+                              ? "bg-linear-to-r from-purple-600 to-purple-500"
                               : "bg-white/10"
                             }`}
                         >
@@ -591,7 +591,7 @@ export const BookingSetupForm: React.FC = () => {
           </SectionCard>
 
           {/* ── Single CTA ── */}
-          <div className="bg-gradient-to-r from-purple-900/30 to-purple-800/10 border border-purple-500/30 rounded-[24px] p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="bg-linear-to-r from-purple-900/30 to-purple-800/10 border border-purple-500/30 rounded-[24px] p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
             <div>
               <h4 className="text-base font-bold text-white flex items-center gap-2">
                 <Rocket size={18} className="text-purple-400" />
@@ -605,7 +605,7 @@ export const BookingSetupForm: React.FC = () => {
               type="button"
               onClick={handleSubmit}
               disabled={isSubmitting}
-              className="shrink-0 px-8 py-3 rounded-2xl font-bold text-sm text-white bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-500 hover:to-violet-500 shadow-[0_0_30px_rgba(168,85,247,0.35)] transition flex items-center gap-2.5 disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer"
+              className="shrink-0 px-8 py-3 rounded-2xl font-bold text-sm text-white bg-linear-to-r from-purple-600 to-violet-600 hover:from-purple-500 hover:to-violet-500 shadow-[0_0_30px_rgba(168,85,247,0.35)] transition flex items-center gap-2.5 disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer"
             >
               {isSubmitting ? (
                 <>

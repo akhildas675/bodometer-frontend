@@ -10,7 +10,7 @@ import PrimaryButton from "@/components/ui/PrimaryButton";
 import type { ForgotPasswordPayload } from "@/features/auth/types/auth.types";
 import { authService } from "@/features/auth/services/auth.service";
 import { useOtpStore } from "@/features/auth/stores/otp.store";
-import { registerLoginImage } from "@/assets/image-path";
+import { registerLoginImage, textLogo } from "@/assets/image-path";
 
 const ForgetPassword = () => {
   const [loading, setLoading] = useState(false);
@@ -80,7 +80,7 @@ const ForgetPassword = () => {
           {/* LOGO */}
           <div className="absolute top-6 left-6">
             <img
-              src="/public/Bodometer Logo corrected 1.png"
+              src={textLogo}
               alt="Bodometer Logo"
               className="h-8 w-auto object-contain drop-shadow-lg"
             />

@@ -147,7 +147,7 @@ export default function GlassDatePicker({
                   disabled={!isCurrentMonth}
                   className={`w-9 h-9 md:w-10 md:h-10 rounded-xl text-xs font-medium flex items-center justify-center transition cursor-pointer ${
                     isSelected
-                      ? "bg-gradient-to-r from-[#7c3aed] to-[#a855f7] text-white shadow-[0_0_12px_rgba(124,58,237,0.5)] font-bold scale-105"
+                      ? "bg-linear-to-r from-[#7c3aed] to-[#a855f7] text-white shadow-[0_0_12px_rgba(124,58,237,0.5)] font-bold scale-105"
                       : isTodayDate
                       ? "border border-purple-400 text-purple-300 font-bold bg-purple-500/10"
                       : isCurrentMonth

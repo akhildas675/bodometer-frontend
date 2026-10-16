@@ -139,7 +139,7 @@ const UserTrainerDetails = () => {
                   className="w-full h-full object-cover"
                 />
               ) : (
-                <div className="w-full h-full bg-gradient-to-r from-purple-950 via-indigo-950 to-[#060214]" />
+                <div className="w-full h-full bg-linear-to-r from-purple-950 via-indigo-950 to-[#060214]" />
               )}
               <div className="absolute inset-0 bg-gradient-to-t from-[#09041a] via-[#09041a]/60 to-transparent" />
             </div>
@@ -206,7 +206,7 @@ const UserTrainerDetails = () => {
                   <button
                     onClick={handleBookSession}
                     disabled={checkingSub || startingChat}
-                    className="w-full sm:w-auto bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-600 hover:from-purple-500 hover:to-indigo-500 disabled:opacity-50 text-white font-extrabold text-sm sm:text-base px-8 py-4 rounded-2xl shadow-xl shadow-purple-600/30 hover:shadow-purple-600/50 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer flex items-center justify-center gap-2.5"
+                    className="w-full sm:w-auto bg-linear-to-r from-purple-600 via-indigo-600 to-purple-600 hover:from-purple-500 hover:to-indigo-500 disabled:opacity-50 text-white font-extrabold text-sm sm:text-base px-8 py-4 rounded-2xl shadow-xl shadow-purple-600/30 hover:shadow-purple-600/50 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer flex items-center justify-center gap-2.5"
                   >
                     {checkingSub ? (
                       <Loader2 size={18} className="animate-spin" />
@@ -246,7 +246,7 @@ const UserTrainerDetails = () => {
                     {trainer.specializations.map((spec) => (
                       <div
                         key={spec._id}
-                        className="flex items-center gap-3 p-3.5 bg-gradient-to-r from-purple-950/40 to-indigo-950/40 border border-purple-500/20 hover:border-purple-500/40 rounded-2xl transition duration-200"
+                        className="flex items-center gap-3 p-3.5 bg-linear-to-r from-purple-950/40 to-indigo-950/40 border border-purple-500/20 hover:border-purple-500/40 rounded-2xl transition duration-200"
                       >
                         <div className="w-9 h-9 rounded-xl bg-purple-500/20 flex items-center justify-center text-purple-300 shrink-0">
                           <Dumbbell size={16} />

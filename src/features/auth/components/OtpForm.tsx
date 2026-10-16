@@ -4,9 +4,9 @@ import { toast } from "sonner";
 import { parseApiError } from "@/infrastructure/api/api-error";
 
 import PrimaryButton from "@/components/ui/PrimaryButton";
-import { useOtpStore } from "@/features/auth/stores/otp.store";
 import { authService } from "@/features/auth/services/auth.service";
-import { registerLoginImage } from "@/assets/image-path";
+import { useOtpStore } from "@/features/auth/stores/otp.store";
+import { registerLoginImage, textLogo } from "@/assets/image-path";
 
 const OTP_LENGTH = 6;
 
@@ -158,11 +158,25 @@ const AuthOtpPage: React.FC = () => {
             alt="OTP"
             className="h-full w-full object-cover"
           />
+          <div className="absolute top-6 left-6">
+            <img
+              src={textLogo}
+              alt="Bodometer Logo"
+              className="h-8 w-auto object-contain drop-shadow-lg"
+            />
+          </div>
         </div>
 
         {/* RIGHT OTP BOX */}
         <div className="flex-1 flex items-center justify-center px-6">
           <div className="w-full max-w-sm bg-[#050017]/90 rounded-3xl px-8 py-10 shadow-xl">
+            <div className="flex justify-center mb-4 md:hidden">
+              <img
+                src={textLogo}
+                alt="Bodometer Logo"
+                className="h-7 w-auto object-contain drop-shadow-lg"
+              />
+            </div>
             <h2 className="text-center text-xl font-semibold text-white mb-6">
               VERIFY YOUR ACCOUNT
             </h2>

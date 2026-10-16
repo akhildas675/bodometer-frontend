@@ -130,7 +130,7 @@ const UserCategoryDetail = () => {
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-r from-purple-950 via-indigo-950 to-[#060214]">
+                    <div className="w-full h-full flex items-center justify-center bg-linear-to-r from-purple-950 via-indigo-950 to-[#060214]">
                       <Dumbbell size={80} className="text-purple-500/30" />
                     </div>
                   )}

@@ -165,7 +165,7 @@ const AdminTrainerAppointmentDetails = () => {
                 className="w-full h-full object-cover"
               />
             ) : (
-              <div className="w-full h-full bg-gradient-to-r from-[#1a0f3c] to-[#0a0624]" />
+              <div className="w-full h-full bg-linear-to-r from-[#1a0f3c] to-[#0a0624]" />
             )}
             <div className="absolute inset-0 bg-black/30" />
 

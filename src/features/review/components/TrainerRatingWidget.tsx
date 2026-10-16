@@ -134,7 +134,7 @@ export const TrainerRatingWidget: React.FC<TrainerRatingWidgetProps> = ({
               {/* Progress Bar Container */}
               <div className="flex-1 h-2 rounded-full bg-white/5 overflow-hidden border border-white/5">
                 <div
-                  className="h-full rounded-full bg-gradient-to-r from-amber-400 to-purple-500 transition-all duration-500"
+                  className="h-full rounded-full bg-linear-to-r from-amber-400 to-purple-500 transition-all duration-500"
                   style={{ width: `${percentage}%` }}
                 />
               </div>

@@ -166,7 +166,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
   return (
     <div className="w-full max-w-5xl mx-auto px-4 py-8 text-white">
       {/* Header Container */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 bg-gradient-to-r from-slate-900/90 via-purple-950/40 to-slate-900/90 p-6 rounded-3xl border border-purple-500/20 backdrop-blur-xl shadow-2xl">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 bg-linear-to-r from-slate-900/90 via-purple-950/40 to-slate-900/90 p-6 rounded-3xl border border-purple-500/20 backdrop-blur-xl shadow-2xl">
         <div className="flex items-center space-x-4">
           <div className="relative p-3.5 bg-gradient-to-tr from-purple-600 to-indigo-500 rounded-2xl shadow-lg shadow-purple-500/30">
             <Bell className="w-7 h-7 text-white" />
@@ -178,7 +178,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
           </div>
           <div>
             <div className="flex items-center space-x-3">
-              <h1 className="text-2xl md:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-white via-slate-100 to-purple-200">
+              <h1 className="text-2xl md:text-3xl font-extrabold text-transparent bg-clip-text bg-linear-to-r from-white via-slate-100 to-purple-200">
                 {title}
               </h1>
               <span className="px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wider rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30">
@@ -206,7 +206,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
             disabled={actionLoading || unreadCount === 0}
             className={`flex items-center space-x-2 px-4 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 ${
               unreadCount > 0
-                ? "bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white shadow-lg shadow-purple-600/25 border border-purple-400/30"
+                ? "bg-linear-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white shadow-lg shadow-purple-600/25 border border-purple-400/30"
                 : "bg-slate-800/50 text-slate-500 cursor-not-allowed border border-slate-800"
             }`}
           >
@@ -274,7 +274,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
               className={`group relative flex items-start space-x-4 p-5 rounded-2xl border transition-all duration-300 cursor-pointer ${
                 item.isRead
                   ? "bg-[#0A0518]/90 border-white/10 hover:border-purple-500/30 hover:bg-[#0F0824]/90"
-                  : "bg-gradient-to-r from-purple-950/40 via-[#0E0722]/90 to-[#0A0518]/90 border-purple-500/40 shadow-lg shadow-purple-950/30 hover:border-purple-400/60"
+                  : "bg-linear-to-r from-purple-950/40 via-[#0E0722]/90 to-[#0A0518]/90 border-purple-500/40 shadow-lg shadow-purple-950/30 hover:border-purple-400/60"
               }`}
             >
               {/* Unread indicator bar */}

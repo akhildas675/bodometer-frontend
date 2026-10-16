@@ -84,7 +84,7 @@ const AdminQuestionList = () => {
     <div className="text-white space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold bg-gradient-to-r from-white to-purple-400 bg-clip-text text-transparent">
+          <h1 className="text-2xl font-bold bg-linear-to-r from-white to-purple-400 bg-clip-text text-transparent">
             Questionnaire Builder
           </h1>
           <p className="text-sm text-gray-400">Add behavior specific logic queries.</p>

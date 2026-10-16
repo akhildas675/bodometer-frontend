@@ -296,10 +296,10 @@ export const TrainerAvailabilityEditor: React.FC<EditorProps> = ({
                     key={normDayName}
                     className={`border rounded-2xl p-4 transition-all ${
                       hasError
-                        ? "bg-red-500/[0.04] border-red-500/40"
+                        ? "bg-red-500/4 border-red-500/40"
                         : dayItem.isAvailable
-                        ? "bg-white/[0.02] border-purple-500/20"
-                        : "bg-white/[0.01] border-white/5 opacity-70"
+                        ? "bg-white/2 border-purple-500/20"
+                        : "bg-white/1 border-white/5 opacity-70"
                     }`}
                   >
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -309,7 +309,7 @@ export const TrainerAvailabilityEditor: React.FC<EditorProps> = ({
                           onClick={() => handleToggleDay(dayIdx)}
                           className={`relative w-12 h-7 rounded-full p-1 transition-colors cursor-pointer ${
                             dayItem.isAvailable
-                              ? "bg-gradient-to-r from-purple-600 to-purple-500"
+                              ? "bg-linear-to-r from-purple-600 to-purple-500"
                               : "bg-white/10"
                           }`}
                         >
@@ -414,7 +414,7 @@ export const TrainerAvailabilityEditor: React.FC<EditorProps> = ({
             </p>
 
             {availableServices.length === 0 ? (
-              <div className="p-4 rounded-xl bg-white/[0.02] border border-white/10 text-xs text-white/40 italic">
+              <div className="p-4 rounded-xl bg-white/2 border border-white/10 text-xs text-white/40 italic">
                 No coaching services found. Services will populate automatically when added by Admin.
               </div>
             ) : (
@@ -435,7 +435,7 @@ export const TrainerAvailabilityEditor: React.FC<EditorProps> = ({
                       className={`p-3.5 rounded-xl border cursor-pointer transition flex items-start gap-3 ${
                         isSelected
                           ? "bg-purple-500/10 border-purple-500/50 shadow-[0_0_15px_rgba(168,85,247,0.15)]"
-                          : "bg-white/[0.02] border-white/10 hover:border-white/20"
+                          : "bg-white/2 border-white/10 hover:border-white/20"
                       }`}
                     >
                       <input
@@ -569,7 +569,7 @@ export const TrainerAvailabilityEditor: React.FC<EditorProps> = ({
             <button
               type="button"
               onClick={onPublishAll}
-              className="px-6 py-2.5 rounded-xl font-bold text-xs text-white transition flex items-center gap-2 bg-gradient-to-r from-purple-600 to-purple-500 hover:from-purple-500 hover:to-purple-400 shadow-lg cursor-pointer"
+              className="px-6 py-2.5 rounded-xl font-bold text-xs text-white transition flex items-center gap-2 bg-linear-to-r from-purple-600 to-purple-500 hover:from-purple-500 hover:to-purple-400 shadow-lg cursor-pointer"
             >
               <Send size={15} />
               {editingId ? "Update Availability & Settings" : "Publish Availability & Settings"}

@@ -529,7 +529,7 @@ export const UserMyBookings: React.FC = () => {
           {/* Wallet Balance Card -> Links to /wallet */}
           <a
             href="/wallet"
-            className="bg-gradient-to-r from-purple-900/50 via-purple-900/30 to-purple-800/20 border border-purple-500/30 hover:border-purple-400/60 rounded-2xl px-4 py-2.5 flex items-center gap-3 shadow-lg transition group cursor-pointer"
+            className="bg-linear-to-r from-purple-900/50 via-purple-900/30 to-purple-800/20 border border-purple-500/30 hover:border-purple-400/60 rounded-2xl px-4 py-2.5 flex items-center gap-3 shadow-lg transition group cursor-pointer"
           >
             <div className="w-9 h-9 rounded-xl bg-purple-500/20 group-hover:bg-purple-500/30 text-purple-300 flex items-center justify-center transition">
               <Wallet size={20} />
@@ -573,7 +573,7 @@ export const UserMyBookings: React.FC = () => {
             return (
               <div
                 key={request.id}
-                className="bg-gradient-to-r from-amber-950/70 via-[#1A1005] to-[#0A0500] border border-amber-500/40 rounded-2xl p-5 space-y-4 shadow-xl"
+                className="bg-linear-to-r from-amber-950/70 via-[#1A1005] to-[#0A0500] border border-amber-500/40 rounded-2xl p-5 space-y-4 shadow-xl"
               >
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-amber-500/20 pb-3">
                   <div>

@@ -124,7 +124,7 @@ const Pagination = ({
               disabled={page === "..." || page === currentPage || disabled}
               className={`min-w-[34px] h-[34px] px-2 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 flex items-center justify-center ${
                 page === currentPage
-                  ? "bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-lg shadow-purple-600/30 border border-purple-400/40"
+                  ? "bg-linear-to-r from-purple-600 to-indigo-600 text-white shadow-lg shadow-purple-600/30 border border-purple-400/40"
                   : page === "..."
                   ? "bg-transparent text-slate-500 cursor-default"
                   : "bg-slate-800/60 border border-slate-700/60 text-slate-300 hover:text-white hover:bg-slate-700/80 cursor-pointer"

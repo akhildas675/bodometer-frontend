@@ -51,6 +51,8 @@ export interface TrainerListItem {
   coverPhoto: string | null;
   bio: string;
   specializations: { _id: string; name: string }[];
+  rating?: number;
+  totalReviews?: number;
 }
 
 export interface RelatedTrainer {

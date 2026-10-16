@@ -221,7 +221,7 @@ export const ChatConversationList: React.FC<ChatConversationListProps> = ({
                 onClick={() => onSelectConversation(conv)}
                 className={`w-full text-left p-3.5 sm:p-4 flex items-center gap-3 transition-all cursor-pointer ${
                   isSelected
-                    ? "bg-gradient-to-r from-purple-950/70 to-indigo-950/50 border-l-4 border-l-purple-500"
+                    ? "bg-linear-to-r from-purple-950/70 to-indigo-950/50 border-l-4 border-l-purple-500"
                     : "hover:bg-white/[0.04]"
                 }`}
               >

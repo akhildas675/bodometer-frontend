@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { LogOut, Sparkles, ArrowRight, Award, Activity } from "lucide-react";
 
 import { parseApiError } from "@/infrastructure/api/api-error";
+import { textLogo } from "@/assets/image-path";
 
 const TrainerOnboardingIntro = () => {
   const user = useAuthStore((state) => state.user);
@@ -51,7 +52,7 @@ const TrainerOnboardingIntro = () => {
       {/* TOP BAR */}
       <div className="w-full max-w-6xl mb-6 flex items-center justify-between">
         <img
-          src="https://bodometer-assets.s3.eu-north-1.amazonaws.com/Bodometer+Logo+corrected+1.png"
+          src={textLogo}
           alt="Bodometer"
           className="h-10 object-contain"
         />

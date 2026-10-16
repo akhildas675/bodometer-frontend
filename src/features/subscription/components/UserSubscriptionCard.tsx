@@ -42,7 +42,7 @@ const TIER_STYLES = [
     border: "border-amber-500/40 hover:border-amber-400",
     bg: "bg-amber-950/20",
     btnClass:
-      "bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-white",
+      "bg-linear-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-white",
     priceColor: "text-amber-300",
     badge: "Premium",
   },
@@ -427,7 +427,7 @@ const UserSubscription = () => {
                     isHigherTier ? (
                       <button
                         onClick={() => openUpgradeModal(subscriptionPlanId, name)}
-                        className="w-full py-2.5 rounded-xl text-sm font-bold bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white shadow-lg shadow-violet-600/30 transition-all duration-200 active:scale-[0.98]"
+                        className="w-full py-2.5 rounded-xl text-sm font-bold bg-linear-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white shadow-lg shadow-violet-600/30 transition-all duration-200 active:scale-[0.98]"
                       >
                         Upgrade to {name}
                       </button>

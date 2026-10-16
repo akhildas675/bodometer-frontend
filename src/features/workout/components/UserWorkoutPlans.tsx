@@ -1,4 +1,5 @@
 import { workoutPlanService } from "@/features/workout/services/workout-plan.service";
+import { onboardingService } from "@/features/onboarding/services/onboarding.service";
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useFetch } from "@/hooks/useFetch";
@@ -369,12 +370,31 @@ const UserWorkoutPlans = () => {
   const [isPremium, setIsPremium] = useState(user?.hasActiveSubscription ?? false);
   const [plans, setPlans] = useState<WorkoutPlanResponse[]>([]);
   const [completedHistory, setCompletedHistory] = useState<CompletedHistoryItem[]>([]);
+  const [isOnboarded, setIsOnboarded] = useState(false);
+  const [checkingOnboarding, setCheckingOnboarding] = useState(true);
 
   useEffect(() => {
     if (user?.hasActiveSubscription !== undefined) {
       setIsPremium(user.hasActiveSubscription);
     }
   }, [user?.hasActiveSubscription]);
+
+  useEffect(() => {
+    const checkOnboarding = async () => {
+      try {
+        const res = await onboardingService.getOnboardingStatus();
+        setIsOnboarded(res.data?.completed ?? false);
+        if (user && user.onboardingComplete !== res.data?.completed) {
+          useAuthStore.getState().updateUser({ onboardingComplete: res.data?.completed });
+        }
+      } catch (err) {
+        console.error("Failed to check onboarding status:", err);
+      } finally {
+        setCheckingOnboarding(false);
+      }
+    };
+    checkOnboarding();
+  }, [user]);
 
   const [generationStatus, setGenerationStatus] = useState<GetWorkoutPlansResponse["generationStatus"]>({
     canGenerate: false,
@@ -427,7 +447,7 @@ const UserWorkoutPlans = () => {
   const { loading } = useFetch(fetchPlansFn);
 
   const handleGenerate = async () => {
-    if (!user?.onboardingComplete) {
+    if (!isOnboarded) {
       toast.error("Please complete your fitness profile to generate a workout plan.");
       navigate(USER_UI_ROUTES.ONBOARDING_INTRO);
       return;
@@ -450,10 +470,8 @@ const UserWorkoutPlans = () => {
   message?: string;
 };
       
-      // Handle timeout specifically
       if (err?.code === "ECONNABORTED" || err?.message?.includes("timeout")) {
         toast.error("Workout generation is taking longer than expected. Please try again or check your connection.");
-        // Don't set generating to false immediately - let user know it's a timeout
         setGenerating(false);
         return;
       }
@@ -501,7 +519,7 @@ const UserWorkoutPlans = () => {
   const getCompletedDaysCount = (days: GenerateWorkoutDay[]) =>
     days.filter((d) => d.status === "COMPLETED").length;
 
-  if (loading) {
+  if (loading || checkingOnboarding) {
     return (
       <div className="min-h-[70vh] flex items-center justify-center">
         <div className="flex flex-col items-center gap-4 text-white/50">
@@ -547,7 +565,6 @@ const UserWorkoutPlans = () => {
         {(() => {
           if (plans.length === 0) return null;
           
-          // Pure backend-driven logic
           const { canGenerate, pendingDaysCount } = generationStatus;
 
           return (
@@ -864,7 +881,7 @@ const UserWorkoutPlans = () => {
           {/* Fix 5: Show upgrade CTA below the free plan list for non-premium users */}
           {plans.length > 0 && !isPremium && (
             <div className="relative overflow-hidden rounded-2xl border border-yellow-500/20 bg-gradient-to-br from-yellow-500/5 to-orange-500/5 p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-              <div className="absolute inset-0 bg-gradient-to-r from-yellow-500/3 to-transparent pointer-events-none" />
+              <div className="absolute inset-0 bg-linear-to-r from-yellow-500/3 to-transparent pointer-events-none" />
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 rounded-xl bg-yellow-500/10 border border-yellow-500/20 flex items-center justify-center shrink-0">
                   <Crown className="w-6 h-6 text-yellow-400" />
@@ -878,7 +895,7 @@ const UserWorkoutPlans = () => {
               </div>
               <button
                 onClick={() => navigate("/subscriptions")}
-                className="shrink-0 flex items-center gap-2 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-400 hover:to-orange-400 text-black font-bold text-sm px-5 py-2.5 rounded-full transition-all hover:scale-105 shadow-[0_0_20px_rgba(234,179,8,0.25)]"
+                className="shrink-0 flex items-center gap-2 bg-linear-to-r from-yellow-500 to-orange-500 hover:from-yellow-400 hover:to-orange-400 text-black font-bold text-sm px-5 py-2.5 rounded-full transition-all hover:scale-105 shadow-[0_0_20px_rgba(234,179,8,0.25)]"
               >
                 <Crown className="w-4 h-4" />
                 Upgrade to Premium

@@ -6,6 +6,8 @@ import { useOnboardingStore } from "@/features/onboarding/stores/onboarding.stor
 import { RefreshCw, Pencil } from "lucide-react";
 
 
+import { textLogo } from "@/assets/image-path";
+
 const UserOnboardingIntro = () => {
   const user = useAuthStore((state) => state.user);
   const navigate = useNavigate();
@@ -31,7 +33,7 @@ const UserOnboardingIntro = () => {
       {/* TOP BAR */}
       <div className="w-full max-w-6xl mb-6 flex items-center justify-between">
         <img
-          src="https://bodometer-assets.s3.eu-north-1.amazonaws.com/Bodometer+Logo+corrected+1.png"
+          src={textLogo}
           alt="Bodometer"
           className="h-10 object-contain"
         />

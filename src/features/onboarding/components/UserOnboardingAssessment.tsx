@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import ConfirmationModal from '@/components/ui/ConfirmDialog';
 import { parseApiError } from '@/infrastructure/api/api-error';
 import { USER_UI_ROUTES } from '@/constants/routes/user.routes';
+import { textLogo } from '@/assets/image-path';
 
 const UserOnboardingAssessment = () => {
    const navigate = useNavigate();
@@ -149,7 +150,7 @@ const UserOnboardingAssessment = () => {
       {/*  Header */}
       <div className="w-full max-w-4xl mb-8 flex items-center justify-between">
         <img
-          src="https://bodometer-assets.s3.eu-north-1.amazonaws.com/Bodometer+Logo+corrected+1.png"
+          src={textLogo}
           alt="Bodometer"
           className="h-10 object-contain opacity-90"
         />

@@ -8,14 +8,14 @@ import PrimaryButton from "@/components/ui/PrimaryButton";
 import { useOtpStore } from "@/features/auth/stores/otp.store";
 import { authService } from "@/features/auth/services/auth.service";
 import { parseApiError } from "@/infrastructure/api/api-error";
+import { registerLoginImage, textLogo } from "@/assets/image-path";
 import { STATUS } from "@/constants/status-codes.constants";
-import { registerLoginImage } from "@/assets/image-path";
 
 const ResetPassword = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [loading,setLoading]=useState(false)
-  const navigate=useNavigate()
+  const [loading, setLoading] = useState(false)
+  const navigate = useNavigate()
 
   const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -65,14 +65,14 @@ const ResetPassword = () => {
         {/* LEFT IMAGE */}
         <div className="w-1/2 hidden md:block relative">
           <img
-             src={registerLoginImage}
+            src={registerLoginImage}
             alt="Reset password"
             className="h-full w-full object-cover"
           />
 
           <div className="absolute top-6 left-6">
             <img
-              src="/public/Bodometer Logo corrected 1.png"
+              src={textLogo}
               alt="Bodometer Logo"
               className="h-8 w-auto object-contain drop-shadow-lg"
             />

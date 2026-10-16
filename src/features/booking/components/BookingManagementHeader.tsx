@@ -100,7 +100,7 @@ export const BookingManagementHeader: React.FC<BookingManagementHeaderProps> = (
                 onClick={() => onTabChange(tab.id)}
                 className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition whitespace-nowrap cursor-pointer ${
                   isActive
-                    ? "bg-gradient-to-r from-purple-600 to-violet-600 text-white shadow-[0_2px_12px_rgba(168,85,247,0.35)]"
+                    ? "bg-linear-to-r from-purple-600 to-violet-600 text-white shadow-[0_2px_12px_rgba(168,85,247,0.35)]"
                     : "text-white/50 hover:text-white hover:bg-white/5"
                 }`}
               >

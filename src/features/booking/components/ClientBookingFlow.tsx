@@ -447,7 +447,7 @@ export const ClientBookingFlow: React.FC<ClientBookingFlowProps> = ({
               type="button"
               disabled={!selectedSlot || bookingInProgress}
               onClick={openConfirmationModal}
-              className="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-purple-600 to-purple-500 hover:from-purple-500 hover:to-purple-400 text-sm font-extrabold text-white shadow-xl transition flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+              className="w-full py-3.5 px-4 rounded-xl bg-linear-to-r from-purple-600 to-purple-500 hover:from-purple-500 hover:to-purple-400 text-sm font-extrabold text-white shadow-xl transition flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             >
               Proceed to Booking & Payment <ChevronRight size={16} />
             </button>
