@@ -17,6 +17,7 @@
     "chart.js": "^4.5.1",
     "countries-and-timezones": "^3.9.0",
     "date-fns": "^4.4.0",
+    "emoji-picker-react": "^5.1.4",
     "lucide-react": "^1.16.0",
     "luxon": "^3.7.2",
     "react": "^19.2.0",

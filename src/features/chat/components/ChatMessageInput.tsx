@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Send, Smile, Paperclip, Loader2 } from "lucide-react";
+import { Send, Smile, Paperclip, Loader2, X } from "lucide-react";
 import { toast } from "sonner";
+import Picker from "emoji-picker-react";
 
 interface ChatMessageInputProps {
   onSendMessage: (content: string) => Promise<void> | void;
@@ -9,7 +10,6 @@ interface ChatMessageInputProps {
   placeholder?: string;
 }
 
-const QUICK_EMOJIS = ["💪", "🔥", "👍", "👏", "🎯", "🙌", "🥗", "🏋️"];
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 
 export const ChatMessageInput: React.FC<ChatMessageInputProps> = ({
@@ -51,6 +51,11 @@ export const ChatMessageInput: React.FC<ChatMessageInputProps> = ({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  const handleEmojiClick = (emojiObject: any) => {
+    setContent((prev) => prev + emojiObject.emoji);
+    textareaRef.current?.focus();
+  };
+
   const handleSend = async () => {
     const trimmed = content.trim();
     if (!trimmed || isSending || disabled) return;
@@ -74,11 +79,6 @@ export const ChatMessageInput: React.FC<ChatMessageInputProps> = ({
       e.preventDefault();
       void handleSend();
     }
-  };
-
-  const addEmoji = (emoji: string) => {
-    setContent((prev) => prev + emoji);
-    textareaRef.current?.focus();
   };
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -106,22 +106,25 @@ export const ChatMessageInput: React.FC<ChatMessageInputProps> = ({
 
   return (
     <div className="relative p-3 sm:p-4 bg-[#0a0520]/95 backdrop-blur-xl border-t border-white/10 shrink-0">
-      {/* Quick emoji drawer */}
+      {/* Emoji Picker */}
       {showEmojis && (
         <div
           ref={emojiRef}
-          className="absolute bottom-full left-4 mb-2 p-2.5 bg-[#140e34] border border-purple-500/30 rounded-2xl shadow-2xl backdrop-blur-xl flex items-center gap-1.5 z-20 animate-fadeIn"
+          className="absolute bottom-full left-4 mb-2 z-20 animate-fadeIn"
         >
-          {QUICK_EMOJIS.map((emoji) => (
+          <div className="flex items-center justify-between p-2 bg-[#140e34] border border-purple-500/30 rounded-t-2xl">
+            <span className="text-xs text-purple-300 font-semibold px-2">Emoji Picker</span>
             <button
-              key={emoji}
-              type="button"
-              onClick={() => addEmoji(emoji)}
-              className="text-lg hover:scale-125 transition-transform p-1.5 rounded-lg hover:bg-white/10 cursor-pointer"
+              onClick={() => setShowEmojis(false)}
+              className="p-1 text-white/60 hover:text-white rounded-lg hover:bg-white/10 transition cursor-pointer"
             >
-              {emoji}
+              <X size={16} />
             </button>
-          ))}
+          </div>
+          <Picker
+            onEmojiClick={handleEmojiClick}
+            theme="dark"
+          />
         </div>
       )}
 
