@@ -36,7 +36,9 @@ class IncomingCallRingtone {
         if ("vibrate" in navigator) {
           navigator.vibrate([350, 150, 350, 150]);
         }
-      } catch {}
+      } catch {
+        // Vibration not supported, continue without it
+      }
 
       const startTime = this.ctx.currentTime;
       this.playChime(startTime);
@@ -78,7 +80,9 @@ class IncomingCallRingtone {
         osc.start(startTime);
         osc.stop(startTime + 0.4);
       });
-    } catch {}
+    } catch {
+      // Audio context error, continue without chime
+    }
   }
 
   stop() {
@@ -90,7 +94,9 @@ class IncomingCallRingtone {
     if (this.ctx) {
       try {
         this.ctx.close();
-      } catch {}
+      } catch {
+        // Audio context already closed, ignore error
+      }
       this.ctx = null;
     }
   }

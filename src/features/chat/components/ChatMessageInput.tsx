@@ -51,7 +51,7 @@ export const ChatMessageInput: React.FC<ChatMessageInputProps> = ({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleEmojiClick = (emojiObject: any) => {
+  const handleEmojiClick = (emojiObject: { emoji: string }) => {
     setContent((prev) => prev + emojiObject.emoji);
     textareaRef.current?.focus();
   };

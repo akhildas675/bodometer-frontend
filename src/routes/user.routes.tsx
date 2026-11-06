@@ -1,6 +1,7 @@
-import { Route, lazy, Suspense } from "react-router-dom";
+import { lazy, Suspense } from "react";
+import { Route } from "react-router-dom";
 
-import MainLayouts from "@/components/layout/MainLayouts";
+import MainLayouts from "@/components/layout/MainLayout";
 import MessagesLayout from "@/components/layout/MessagesLayout";
 import VideoCallLayout from "@/components/layout/VideoCallLayout";
 
@@ -27,7 +28,7 @@ const UserExerciseDetailPage = lazy(() => import("@/features/workout/pages/UserE
 const UserWorkoutPlansPage = lazy(() => import("@/features/workout/pages/UserWorkoutPlansPage"));
 const UserWorkoutProgressionPage = lazy(() => import("@/features/workout/pages/UserWorkoutProgressionPage"));
 
-const { UserDietPlansPage } = lazy(() => import("@/features/diet/pages/UserDietPlansPage"));
+const UserDietPlansPage = lazy(() => import("@/features/diet/pages/UserDietPlansPage").then(module => ({ default: module.UserDietPlansPage })));
 
 const UserFitnessProfilePage = lazy(() => import("@/features/onboarding/pages/UserFitnessProfilePage"));
 const UserOnboardingIntroPage = lazy(() => import("@/features/onboarding/pages/UserOnboardingIntroPage"));
@@ -38,7 +39,7 @@ const UserHealthProgressionPage = lazy(() => import("@/features/health/pages/Use
 
 const UserBookTrainerPage = lazy(() => import("@/features/booking/pages/BookTrainerPage"));
 const UserMyBookingsPage = lazy(() => import("@/features/booking/pages/MyBookingsPage"));
-const { BookingSuccessPage } = lazy(() => import("@/features/booking/pages/BookingSuccessPage"));
+const BookingSuccessPage = lazy(() => import("@/features/booking/pages/BookingSuccessPage").then(module => ({ default: module.BookingSuccessPage })));
 
 const VideoSessionPage = lazy(() => import("@/features/video-session/pages/VideoSessionPage"));
 const UserChatPage = lazy(() => import("@/features/chat/pages/UserChatPage"));
