@@ -1,7 +1,7 @@
 import { trainerService } from "@/features/trainer/services/trainer.service";
 import { categoryService } from "@/features/admin/categories/services/category.service";
 import { CategoryListItem } from "@/features/admin/categories/types/category.types";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, memo } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { PaginationMeta } from "@/types/common.types";
 import { TrainerListItem } from "@/features/trainer/types/trainer.types";
@@ -51,7 +51,7 @@ const TrainerCardSkeleton = () => (
   </div>
 );
 
-const TrainerCard = ({ trainer }: { trainer: TrainerListItem }) => {
+const TrainerCard = memo(({ trainer }: { trainer: TrainerListItem }) => {
   const navigate = useNavigate();
 
   return (
@@ -111,7 +111,15 @@ const TrainerCard = ({ trainer }: { trainer: TrainerListItem }) => {
       </div>
     </div>
   );
-};
+}, (prevProps, nextProps) => {
+  // Custom comparison function to prevent unnecessary re-renders
+  return prevProps.trainer._id === nextProps.trainer._id &&
+         prevProps.trainer.name === nextProps.trainer.name &&
+         prevProps.trainer.profilePic === nextProps.trainer.profilePic &&
+         prevProps.trainer.experienceInYears === nextProps.trainer.experienceInYears &&
+         prevProps.trainer.rating === nextProps.trainer.rating &&
+         prevProps.trainer.totalReviews === nextProps.trainer.totalReviews;
+});
 
 const parseExperienceFilter = (filter: string): { minExperience?: number; maxExperience?: number } => {
   if (!filter) return {};
