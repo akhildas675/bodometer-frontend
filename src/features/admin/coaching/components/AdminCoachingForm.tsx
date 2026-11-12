@@ -20,7 +20,6 @@ const EMPTY_FORM: CoachingForm = {
   durationMinutes: COACHING_DURATION.THIRTY,
   price: 0,
   bookingMode: BOOKING_MODE.ONLINE,
-  maxParticipants: 1,
 };
 
 const AdminCoachingForm = () => {
@@ -44,7 +43,6 @@ const AdminCoachingForm = () => {
         durationMinutes: response.data.durationMinutes || 30,
         price: response.data.price || 0,
         bookingMode: response.data.bookingMode || "Online",
-        maxParticipants: response.data.maxParticipants || 1,
       });
     }
   }, [response, isEdit]);
@@ -60,10 +58,6 @@ const AdminCoachingForm = () => {
     }
     if (form.price < 0) {
       toast.error("Price must be a positive number");
-      return;
-    }
-    if (!form.maxParticipants || form.maxParticipants < 1 || form.maxParticipants > 100) {
-      toast.error("Max participants must be between 1 and 100");
       return;
     }
 
@@ -157,30 +151,6 @@ const AdminCoachingForm = () => {
                 className="w-full bg-indigo-800/50 border border-purple-600 rounded-lg px-4 py-2.5 text-white placeholder-purple-300/60 focus:outline-none focus:border-purple-400 transition"
               />
             </div>
-          </div>
-
-          {/* Max Participants */}
-          <div>
-            <label className="text-purple-200 text-sm block mb-2 font-medium">
-              Max Participants per Slot
-            </label>
-            <input
-              type="number"
-              min="1"
-              max="100"
-              value={form.maxParticipants ?? 1}
-              onChange={(e) =>
-                setForm({
-                  ...form,
-                  maxParticipants: e.target.value === "" ? 1 : Number(e.target.value),
-                })
-              }
-              placeholder="1"
-              className="w-full bg-indigo-800/50 border border-purple-600 rounded-lg px-4 py-2.5 text-white placeholder-purple-300/60 focus:outline-none focus:border-purple-400 transition"
-            />
-            <p className="text-purple-300/60 text-xs mt-1">
-              1 = private session. Higher values allow multiple users to book the same slot.
-            </p>
           </div>
 
           {/* Booking Mode */}

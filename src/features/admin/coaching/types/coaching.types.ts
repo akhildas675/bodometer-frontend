@@ -8,7 +8,6 @@ export interface CoachingForm {
   price: number;
   bookingMode: BookingMode;
   isActive?: boolean;
-  maxParticipants?: number;
 }
 
 export interface CreateCoachingDto {
@@ -18,7 +17,6 @@ export interface CreateCoachingDto {
   price: number;
   bookingMode: BookingMode;
   isActive?: boolean;
-  maxParticipants?: number;
 }
 
 export interface UpdateCoaching {
@@ -32,7 +30,6 @@ export interface UpdateCoaching {
   price: number;
   bookingMode: BookingMode;
   isActive: boolean;
-  maxParticipants?: number;
   createdAt?: string;
 }
 

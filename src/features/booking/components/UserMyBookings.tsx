@@ -778,6 +778,11 @@ export const UserMyBookings: React.FC = () => {
                             Your booking is reserved but payment has not been completed. Complete payment of
                             <span className="text-white font-semibold ml-1">Rs.{b.price}</span> to confirm your session.
                           </p>
+                          {b.holdExpiresAt && (
+                            <p className="text-[11px] text-amber-200/70 mt-1">
+                              Slot hold expires at {new Date(b.holdExpiresAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}. Unpaid holds are released automatically.
+                            </p>
+                          )}
                         </div>
                       </div>
                       <div className="flex items-center gap-2 shrink-0 self-start sm:self-auto">
