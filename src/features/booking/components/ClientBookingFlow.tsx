@@ -1,5 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
-import { toast } from "sonner";
+import React, { useState } from "react";
 import {
   Clock,
   CreditCard,
@@ -12,210 +11,51 @@ import {
   XCircle,
   ShieldCheck,
 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { USER_UI_ROUTES } from "@/constants/routes/user.routes";
-import { subscriptionService } from "@/features/subscription/services/subscription.service";
-import { CoachingListItem } from "@/features/admin/coaching/types/coaching.types";
-import { coachingService } from "@/features/admin/coaching/services/coaching.service";
-import {
-  clientBookingService,
-  AvailableSlot,
-  AvailableDateOverview,
-} from "@/features/booking/services/client-booking.service";
-import { walletService, UserWalletData } from "@/features/user/services/wallet.service";
 import { BookingCalendar } from "@/features/booking/components/BookingCalendar";
+import { useSubscriptionCheck } from "../hooks/useSubscriptionCheck";
+import { useCoachingServices } from "../hooks/useCoachingServices";
+import { useBookingSlots } from "../hooks/useBookingSlots";
+import { useBookingPayment } from "../hooks/useBookingPayment";
 
 interface ClientBookingFlowProps {
   trainerId: string;
   trainerName?: string;
 }
 
-function getCurrentMonth(): string {
-  const now = new Date();
-  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
-}
-
 export const ClientBookingFlow: React.FC<ClientBookingFlowProps> = ({
   trainerId,
   trainerName = "Trainer",
 }) => {
-  const navigate = useNavigate();
-  const [checkingSubscription, setCheckingSubscription] = useState(true);
-  const [hasSubscription, setHasSubscription] = useState(false);
-
-  const [services, setServices] = useState<CoachingListItem[]>([]);
-  const [selectedService, setSelectedService] = useState<CoachingListItem | null>(null);
-
-  const [activeMonth, setActiveMonth] = useState<string>(getCurrentMonth);
-  const [availableDates, setAvailableDates] = useState<AvailableDateOverview[]>([]);
-  const [loadingDates, setLoadingDates] = useState(false);
-
-  const [selectedDate, setSelectedDate] = useState<string>("");
-  const [availableSlots, setAvailableSlots] = useState<AvailableSlot[]>([]);
-  const [selectedSlot, setSelectedSlot] = useState<AvailableSlot | null>(null);
-  const [loadingSlots, setLoadingSlots] = useState(false);
-  const [loadingServices, setLoadingServices] = useState(true);
-  const [bookingInProgress, setBookingInProgress] = useState(false);
-
-  // 0. Check active subscription
-  useEffect(() => {
-    subscriptionService
-      .getActiveSubscription()
-      .then((res) => {
-        if (res?.data) {
-          setHasSubscription(true);
-        } else {
-          toast.error("Active subscription required to book a session. Redirecting to plans...");
-          navigate(USER_UI_ROUTES.USER_SUBSCRIPTIONS, { replace: true });
-        }
-      })
-      .catch(() => {
-        toast.error("Active subscription required to book a session. Redirecting to plans...");
-        navigate(USER_UI_ROUTES.USER_SUBSCRIPTIONS, { replace: true });
-      })
-      .finally(() => {
-        setCheckingSubscription(false);
-      });
-  }, [navigate]);
-
-  // 1. Fetch active coaching services
-  useEffect(() => {
-    coachingService
-      .getCoachingServices()
-      .then((res) => {
-        if (res?.data && Array.isArray(res.data)) {
-          setServices(res.data);
-          if (res.data.length > 0) setSelectedService(res.data[0]);
-        }
-      })
-      .catch(() => toast.error("Failed to load coaching services."))
-      .finally(() => setLoadingServices(false));
-  }, []);
-
-  // 2. Fetch available-dates overview when service or month changes
-  const fetchMonthOverview = useCallback(() => {
-    if (!trainerId || !selectedService) return;
-    const svcId =
-      selectedService._id ||
-      selectedService.coachingId ||
-      selectedService.serviceId ||
-      selectedService.serviceType;
-
-    setLoadingDates(true);
-    setAvailableDates([]);
-    setSelectedDate("");
-    setAvailableSlots([]);
-    setSelectedSlot(null);
-
-    clientBookingService
-      .getAvailableDates(trainerId, svcId, activeMonth)
-      .then((dates) => {
-        setAvailableDates(dates);
-        const first = dates.find((d) => d.isAvailable && d.status === "AVAILABLE");
-        if (first) setSelectedDate(first.date);
-      })
-      .catch(() => toast.error("Could not load available dates for this month."))
-      .finally(() => setLoadingDates(false));
-  }, [trainerId, selectedService, activeMonth]);
-
-  useEffect(() => {
-    fetchMonthOverview();
-  }, [fetchMonthOverview]);
-
-  // 3. Fetch time slots whenever date changes
-  useEffect(() => {
-    if (!trainerId || !selectedService || !selectedDate) {
-      setAvailableSlots([]);
-      return;
-    }
-    const svcId =
-      selectedService._id ||
-      selectedService.coachingId ||
-      selectedService.serviceId ||
-      selectedService.serviceType;
-
-    setLoadingSlots(true);
-    setSelectedSlot(null);
-
-    clientBookingService
-      .getAvailableSlots(trainerId, svcId, selectedDate)
-      .then((slots) => setAvailableSlots(slots))
-      .catch(() => {
-        setAvailableSlots([]);
-        toast.error("Could not calculate available slots for selected date.");
-      })
-      .finally(() => setLoadingSlots(false));
-  }, [trainerId, selectedService, selectedDate]);
-
-  // State for Wallet & Payment Modal
-  const [wallet, setWallet] = useState<UserWalletData | null>(null);
-  const [showConfirmModal, setShowConfirmModal] = useState(false);
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<"WALLET" | "ONLINE" | "SPLIT">("WALLET");
-
-  // Fetch wallet balance
-  useEffect(() => {
-    walletService.getWalletBalance().then(setWallet).catch(() => null);
-  }, []);
-
-  const openConfirmationModal = () => {
-    if (!selectedService || !selectedSlot) {
-      toast.error("Please select a service and an available time slot.");
-      return;
-    }
-    const balance = wallet?.balance || 0;
-    const price = selectedService.price || 0;
-
-    if (balance >= price) {
-      setSelectedPaymentMethod("WALLET");
-    } else if (balance > 0) {
-      setSelectedPaymentMethod("SPLIT");
-    } else {
-      setSelectedPaymentMethod("ONLINE");
-    }
-    setShowConfirmModal(true);
-  };
-
-  const handleExecuteBooking = async () => {
-    if (!selectedService || !selectedSlot) return;
-    const svcId =
-      selectedService.id ||
-      selectedService.coachingId ||
-      selectedService._id ||
-      selectedService.serviceId ||
-      selectedService.serviceType;
-
-    setBookingInProgress(true);
-    try {
-      const response = await clientBookingService.createBooking({
-        trainerId,
-        serviceId: svcId,
-        bookingDate: selectedDate,
-        startTime: selectedSlot.startTime,
-        endTime: selectedSlot.endTime,
-        bufferEndTime: selectedSlot.bufferEndTime,
-        paymentMethod: selectedPaymentMethod,
-      });
-
-      setShowConfirmModal(false);
-
-      if (response.checkoutUrl) {
-        toast.success("Redirecting to secure payment checkout...");
-        window.location.href = response.checkoutUrl;
-      } else {
-        toast.success("Session booked successfully!");
-        window.location.href = `/client/booking/success?bookingId=${response.booking.id}`;
-      }
-    } catch (error: unknown) {
-      const err = error as { response?: { data?: { message?: string } }; message?: string };
-      toast.error(
-        err.response?.data?.message ||
-          err.message ||
-          "Failed to complete booking. Slot may have been taken.",
-      );
-    } finally {
-      setBookingInProgress(false);
-    }
-  };
+  // Custom hooks for different concerns
+  const { checkingSubscription, hasSubscription } = useSubscriptionCheck();
+  const {
+    services,
+    selectedService,
+    setSelectedService,
+    loadingServices,
+  } = useCoachingServices();
+  const {
+    activeMonth,
+    setActiveMonth,
+    availableDates,
+    loadingDates,
+    selectedDate,
+    setSelectedDate,
+    availableSlots,
+    selectedSlot,
+    setSelectedSlot,
+    loadingSlots,
+  } = useBookingSlots(trainerId, selectedService);
+  const {
+    wallet,
+    showConfirmModal,
+    setShowConfirmModal,
+    selectedPaymentMethod,
+    setSelectedPaymentMethod,
+    bookingInProgress,
+    openConfirmationModal,
+    handleExecuteBooking,
+  } = useBookingPayment(trainerId, selectedService, selectedDate, selectedSlot);
 
   if (checkingSubscription || loadingServices) {
     return (
