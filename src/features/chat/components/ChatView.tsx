@@ -6,34 +6,18 @@ import { ROLES } from "@/constants/roles.constants";
 import { USER_UI_ROUTES } from "@/constants/routes/user.routes";
 import {
   Conversation,
-  ChatMessage,
   ChatParticipant,
-  CHAT_TYPE,
 } from "../types/chat.types";
-import { chatService } from "../services/chat.service";
-import {
-  joinChatConversation,
-  leaveChatConversation,
-  sendChatSocketMessage,
-  onChatMessage,
-  offChatMessage,
-  onChatSent,
-  offChatSent,
-  onChatNotification,
-  offChatNotification,
-  onChatError,
-  offChatError,
-  markChatAsRead,
-  onChatSeen,
-  offChatSeen,
-} from "../sockets/chat.socket";
-import { parseApiError } from "@/infrastructure/api/api-error";
 import { ChatConversationList } from "./ChatConversationList";
 import { ChatHeader } from "./ChatHeader";
 import { ChatMessageBubble } from "./ChatMessageBubble";
 import { ChatMessageInput } from "./ChatMessageInput";
 import { ChatEmptyState } from "./ChatEmptyState";
 import { Loader2 } from "lucide-react";
+import { useChatConversations } from "../hooks/useChatConversations";
+import { useChatMessages } from "../hooks/useChatMessages";
+import { useChatSocket } from "../hooks/useChatSocket";
+import { useChatActions } from "../hooks/useChatActions";
 
 export const ChatView: React.FC = () => {
   const navigate = useNavigate();
@@ -44,12 +28,8 @@ export const ChatView: React.FC = () => {
   const currentUserId = user?.id || (user as { _id?: string })?._id || "";
   const isTrainer = user?.role === ROLES.TRAINER;
 
-  const [conversations, setConversations] = useState<Conversation[]>([]);
   const [activeConversation, setActiveConversation] =
     useState<Conversation | null>(null);
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [loadingConversations, setLoadingConversations] = useState(true);
-  const [loadingMessages, setLoadingMessages] = useState(false);
 
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const activeConversationRef = useRef<Conversation | null>(null);
@@ -58,16 +38,19 @@ export const ChatView: React.FC = () => {
     activeConversationRef.current = activeConversation;
   }, [activeConversation]);
 
-  const isNearBottom = useCallback(() => {
-    const container = messagesContainerRef.current;
-    if (!container) return true;
-    const threshold = 150;
-    return (
-      container.scrollHeight - container.scrollTop - container.clientHeight <=
-      threshold
-    );
-  }, []);
+  // Refs for scroll functions
+  const scrollToBottomRef = useRef<(smooth?: boolean) => void>(() => {});
+  const isNearBottomRef = useRef<() => boolean>(() => true);
 
+  // Custom hooks
+  const {
+    conversations,
+    setConversations,
+    loadingConversations,
+    sortConversationsByRecent,
+  } = useChatConversations(queryConversationId);
+
+  // Set up scroll functions in refs for hooks to use
   const scrollToBottom = useCallback((smooth = true) => {
     requestAnimationFrame(() => {
       const container = messagesContainerRef.current;
@@ -84,253 +67,40 @@ export const ChatView: React.FC = () => {
     });
   }, []);
 
-  const sortConversationsByRecent = useCallback((list: Conversation[]) => {
-    return [...list].sort((a, b) => {
-      const timeA = new Date(
-        a.lastMessageAt || a.lastMessage?.createdAt || a.updatedAt || a.createdAt || 0,
-      ).getTime();
-      const timeB = new Date(
-        b.lastMessageAt || b.lastMessage?.createdAt || b.updatedAt || b.createdAt || 0,
-      ).getTime();
-      return timeB - timeA;
-    });
+  const isNearBottom = useCallback(() => {
+    const container = messagesContainerRef.current;
+    if (!container) return true;
+    const threshold = 150;
+    return (
+      container.scrollHeight - container.scrollTop - container.clientHeight <=
+      threshold
+    );
   }, []);
 
-  // 1. Load initial conversations list
   useEffect(() => {
-    let isMounted = true;
-    setLoadingConversations(true);
+    scrollToBottomRef.current = scrollToBottom;
+    isNearBottomRef.current = isNearBottom;
+  }, [scrollToBottom, isNearBottom]);
 
-    chatService
-      .getConversations()
-      .then((data) => {
-        if (!isMounted) return;
-        const sorted = sortConversationsByRecent(data);
-        setConversations(sorted);
+  const {
+    messages,
+    setMessages,
+    loadingMessages,
+  } = useChatMessages(
+    activeConversation,
+    scrollToBottomRef.current,
+    messagesContainerRef,
+  );
 
-        // If URL contains conversationId, select it automatically
-        if (queryConversationId) {
-          const matched = sorted.find((c) => c.id === queryConversationId);
-          if (matched) {
-            setActiveConversation(matched);
-          }
-        }
-      })
-      .catch((err: unknown) => {
-        console.error("Failed to load conversations:", err);
-        const parsed = parseApiError(err);
-        if (
-          (parsed.statusCode === 403 ||
-            parsed.message.toLowerCase().includes("subscription required")) &&
-          !isTrainer
-        ) {
-          toast.error(
-            "Active subscription required to use chat. Redirecting to plans...",
-          );
-          navigate(USER_UI_ROUTES.USER_SUBSCRIPTIONS);
-        }
-      })
-      .finally(() => {
-        if (isMounted) setLoadingConversations(false);
-      });
-
-    return () => {
-      isMounted = false;
-    };
-  }, [queryConversationId, isTrainer, navigate, sortConversationsByRecent]);
-
-  // 2. Load messages whenever active conversation changes
-  useEffect(() => {
-    if (!activeConversation) {
-      setMessages([]);
-      return;
-    }
-
-    let isMounted = true;
-    const conversationId = activeConversation.id;
-
-    // Join socket room
-    joinChatConversation(conversationId);
-    setLoadingMessages(true);
-
-    chatService
-      .getConversationMessages(conversationId)
-      .then((data) => {
-        if (!isMounted) return;
-        setMessages(data);
-        scrollToBottom(false);
-        // Mark conversation messages as seen
-        markChatAsRead(conversationId);
-      })
-      .catch((err) => {
-        console.error("Failed to fetch messages:", err);
-        toast.error("Failed to load chat messages.");
-      })
-      .finally(() => {
-        if (isMounted) {
-          setLoadingMessages(false);
-          scrollToBottom(false);
-        }
-      });
-
-    return () => {
-      isMounted = false;
-      leaveChatConversation(conversationId);
-    };
-  }, [activeConversation, scrollToBottom]);
-
-  // 3. Socket event handlers
-  useEffect(() => {
-    // Other participant sent a message
-    const handleMessage = (incomingMsg: ChatMessage) => {
-      const currentActive = activeConversationRef.current;
-
-      if (currentActive && incomingMsg.conversationId === currentActive.id) {
-        const wasNearBottom = isNearBottom();
-        setMessages((prev) => {
-          if (prev.some((m) => m.id === incomingMsg.id)) return prev;
-          return [...prev, incomingMsg];
-        });
-        if (wasNearBottom) {
-          scrollToBottom(true);
-        }
-        // Active viewer reads incoming message immediately
-        markChatAsRead(currentActive.id);
-      }
-
-      // Update conversations list with latest message and move to top
-      setConversations((prev) => {
-        const index = prev.findIndex(
-          (c) => c.id === incomingMsg.conversationId,
-        );
-        if (index === -1) {
-          void chatService.getConversations().then((data) => {
-            setConversations(sortConversationsByRecent(data));
-          });
-          return prev;
-        }
-
-        const updated = [...prev];
-        const [conv] = updated.splice(index, 1);
-        const refreshed: Conversation = {
-          ...conv,
-          lastMessage: incomingMsg,
-          lastMessageAt: incomingMsg.createdAt,
-          updatedAt: incomingMsg.createdAt,
-        };
-
-        // Move to top of list
-        return [refreshed, ...updated];
-      });
-    };
-
-    // Server confirmed my sent message
-    const handleSent = (savedMsg: ChatMessage) => {
-      setMessages((prev) =>
-        prev.map((m) =>
-          m.isOptimistic && m.content === savedMsg.content ? savedMsg : m,
-        ),
-      );
-
-      // Update conversations list and move to top
-      setConversations((prev) => {
-        const index = prev.findIndex((c) => c.id === savedMsg.conversationId);
-        if (index === -1) return prev;
-
-        const updated = [...prev];
-        const [conv] = updated.splice(index, 1);
-        const refreshed: Conversation = {
-          ...conv,
-          lastMessage: savedMsg,
-          lastMessageAt: savedMsg.createdAt,
-          updatedAt: savedMsg.createdAt,
-        };
-
-        // Move to top of list
-        return [refreshed, ...updated];
-      });
-    };
-
-    // Push notification for a message in another thread
-    const handleNotification = (data: {
-      conversationId: string;
-      message: ChatMessage;
-    }) => {
-      const currentActive = activeConversationRef.current;
-      if (!currentActive || currentActive.id !== data.conversationId) {
-        const preview =
-          data.message.messageType === CHAT_TYPE.IMAGE
-            ? "📷 Sent a photo"
-            : data.message.messageType === CHAT_TYPE.DOCUMENT
-              ? "📄 Sent a document"
-              : `${data.message.content.slice(0, 40)}...`;
-        toast.info(`New message: ${preview}`);
-      }
-    };
-
-    // Other participant viewed the conversation -> show blue ticks for messages sent by me
-    const handleSeen = (data: {
-      conversationId: string;
-      readerId: string;
-      readAt: string;
-    }) => {
-      const currentActive = activeConversationRef.current;
-      if (currentActive && currentActive.id === data.conversationId) {
-        setMessages((prev) =>
-          prev.map((m) =>
-            m.senderId === currentUserId
-              ? { ...m, isRead: true, readAt: data.readAt }
-              : m,
-          ),
-        );
-      }
-
-      setConversations((prev) =>
-        prev.map((c) => {
-          if (
-            c.id === data.conversationId &&
-            c.lastMessage &&
-            c.lastMessage.senderId === currentUserId
-          ) {
-            return {
-              ...c,
-              lastMessage: {
-                ...c.lastMessage,
-                isRead: true,
-                readAt: data.readAt,
-              },
-            };
-          }
-          return c;
-        }),
-      );
-    };
-
-    // Socket error
-    const handleError = (data: { event?: string; message: string }) => {
-      toast.error(data.message || "Chat socket error");
-      if (
-        data.message?.toLowerCase().includes("subscription required") &&
-        !isTrainer
-      ) {
-        navigate(USER_UI_ROUTES.USER_SUBSCRIPTIONS);
-      }
-    };
-
-    onChatMessage(handleMessage);
-    onChatSent(handleSent);
-    onChatNotification(handleNotification);
-    onChatError(handleError);
-    onChatSeen(handleSeen);
-
-    return () => {
-      offChatMessage(handleMessage);
-      offChatSent(handleSent);
-      offChatNotification(handleNotification);
-      offChatError(handleError);
-      offChatSeen(handleSeen);
-    };
-  }, [scrollToBottom, isTrainer, navigate, currentUserId]);
+  useChatSocket(
+    activeConversation,
+    activeConversationRef,
+    setMessages,
+    setConversations,
+    scrollToBottomRef.current,
+    isNearBottomRef.current,
+    sortConversationsByRecent,
+  );
 
   const getOtherParticipant = useCallback(
     (conv: Conversation): ChatParticipant | undefined => {
@@ -349,116 +119,11 @@ export const ChatView: React.FC = () => {
     [currentUserId],
   );
 
-  // 4. Send Message Action
-  const handleSendMessage = useCallback(
-    async (content: string) => {
-      if (!activeConversation) return;
-
-      const conversationId = activeConversation.id;
-      const otherParticipant = getOtherParticipant(activeConversation);
-      const receiverId = otherParticipant?.id || "";
-
-      const optimisticMessage: ChatMessage = {
-        id: `temp-${Date.now()}`,
-        conversationId,
-        senderId: currentUserId,
-        receiverId,
-        content,
-        messageType: CHAT_TYPE.TEXT,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        isOptimistic: true,
-      };
-
-      // Instantly append optimistic message to UI
-      setMessages((prev) => [...prev, optimisticMessage]);
-      scrollToBottom();
-
-      try {
-        // Send via real-time WebSocket
-        sendChatSocketMessage(conversationId, content, CHAT_TYPE.TEXT);
-      } catch {
-        // Fallback to REST API if socket send fails
-        try {
-          const saved = await chatService.sendMessage(
-            conversationId,
-            content,
-            CHAT_TYPE.TEXT,
-          );
-          setMessages((prev) =>
-            prev.map((m) => (m.id === optimisticMessage.id ? saved : m)),
-          );
-        } catch (err: unknown) {
-          const parsed = parseApiError(err);
-          toast.error(parsed.message || "Failed to send message.");
-          setMessages((prev) =>
-            prev.filter((m) => m.id !== optimisticMessage.id),
-          );
-        }
-      }
-    },
-    [activeConversation, currentUserId, getOtherParticipant, scrollToBottom],
-  );
-
-  // 5. Send File (Image or Document) Action
-  const handleSendFile = useCallback(
-    async (file: File) => {
-      if (!activeConversation) return;
-
-      const conversationId = activeConversation.id;
-      const otherParticipant = getOtherParticipant(activeConversation);
-      const receiverId = otherParticipant?.id || "";
-
-      try {
-        // Upload to S3 via backend
-        const attachment = await chatService.uploadAttachment(file);
-        const fileContent = `${attachment.fileUrl}?filename=${encodeURIComponent(attachment.fileName)}`;
-
-        const optimisticMessage: ChatMessage = {
-          id: `temp-${Date.now()}`,
-          conversationId,
-          senderId: currentUserId,
-          receiverId,
-          content: fileContent,
-          messageType: attachment.messageType,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-          isOptimistic: true,
-        };
-
-        setMessages((prev) => [...prev, optimisticMessage]);
-        scrollToBottom();
-
-        try {
-          sendChatSocketMessage(
-            conversationId,
-            fileContent,
-            attachment.messageType,
-          );
-        } catch {
-          try {
-            const saved = await chatService.sendMessage(
-              conversationId,
-              fileContent,
-              attachment.messageType,
-            );
-            setMessages((prev) =>
-              prev.map((m) => (m.id === optimisticMessage.id ? saved : m)),
-            );
-          } catch (err: unknown) {
-            const parsed = parseApiError(err);
-            toast.error(parsed.message || "Failed to send file.");
-            setMessages((prev) =>
-              prev.filter((m) => m.id !== optimisticMessage.id),
-            );
-          }
-        }
-      } catch (err: unknown) {
-        const parsed = parseApiError(err);
-        toast.error(parsed.message || "Failed to upload file to S3.");
-      }
-    },
-    [activeConversation, currentUserId, getOtherParticipant, scrollToBottom],
+  const { handleSendMessage, handleSendFile } = useChatActions(
+    activeConversation,
+    setMessages,
+    scrollToBottom,
+    getOtherParticipant,
   );
 
   const handleSelectConversation = (conv: Conversation) => {
