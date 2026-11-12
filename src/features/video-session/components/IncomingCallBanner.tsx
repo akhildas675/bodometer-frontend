@@ -36,7 +36,9 @@ class IncomingCallRingtone {
         if ("vibrate" in navigator) {
           navigator.vibrate([350, 150, 350, 150]);
         }
-      } catch {}
+      } catch {
+        // Vibration may not be supported on all devices
+      }
 
       const startTime = this.ctx.currentTime;
       this.playChime(startTime);
@@ -49,7 +51,9 @@ class IncomingCallRingtone {
 
     const unlockAudio = () => {
       if (this.ctx && this.ctx.state === "suspended") {
-        this.ctx.resume().catch(() => {});
+        this.ctx.resume().catch(() => {
+          // Audio context resume may fail if not user-initiated
+        });
       }
     };
     window.addEventListener("click", unlockAudio, { once: true });
@@ -78,7 +82,9 @@ class IncomingCallRingtone {
         osc.start(startTime);
         osc.stop(startTime + 0.4);
       });
-    } catch {}
+    } catch {
+      // Audio playback may fail if context is closed or unsupported
+    }
   }
 
   stop() {
@@ -90,7 +96,9 @@ class IncomingCallRingtone {
     if (this.ctx) {
       try {
         this.ctx.close();
-      } catch {}
+      } catch {
+        // Audio context close may fail if already closed
+      }
       this.ctx = null;
     }
   }

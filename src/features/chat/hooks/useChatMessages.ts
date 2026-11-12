@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { toast } from "sonner";
 import { Conversation, ChatMessage } from "../types/chat.types";
 import { chatService } from "../services/chat.service";

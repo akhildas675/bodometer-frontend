@@ -17,10 +17,6 @@ import {
   Moon,
   Zap,
   FastForward,
-  Brain,
-  Activity,
-  Target,
-  ListChecks,
   Lock,
   Crown,
   ArrowRight,
@@ -33,22 +29,6 @@ import { toast } from "sonner";
 import { WorkoutGeneratingModal } from "./WorkoutGeneratingModal";
 
 
-
-const PREMIUM_STEPS = [
-  { icon: Brain,      label: "Analyzing your fitness profile…"    },
-  { icon: Activity,   label: "Building your weekly structure…"     },
-  { icon: Target,     label: "Selecting optimal exercises…"        },
-  { icon: ListChecks, label: "Finalizing sets, reps & rest times…" },
-  { icon: Sparkles,   label: "Polishing your personalized plan…"   },
-];
-
-const FREE_STEPS = [
-  { icon: Activity,   label: "Selecting standard exercises…"       },
-  { icon: Target,     label: "Building a basic weekly routine…"    },
-  { icon: ListChecks, label: "Organizing your daily workout…"      },
-  { icon: Dumbbell,   label: "Setting up your fitness plan…"       },
-  { icon: Sparkles,   label: "Finalizing your free plan…"          },
-];
 
 const ExerciseItem = ({
   ex,

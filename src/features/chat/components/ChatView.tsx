@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import { toast } from "sonner";
 import { useAuthStore } from "@/stores/auth.store";
 import { ROLES } from "@/constants/roles.constants";
 import { USER_UI_ROUTES } from "@/constants/routes/user.routes";
@@ -38,10 +37,6 @@ export const ChatView: React.FC = () => {
     activeConversationRef.current = activeConversation;
   }, [activeConversation]);
 
-  // Refs for scroll functions
-  const scrollToBottomRef = useRef<(smooth?: boolean) => void>(() => {});
-  const isNearBottomRef = useRef<() => boolean>(() => true);
-
   // Custom hooks
   const {
     conversations,
@@ -50,7 +45,6 @@ export const ChatView: React.FC = () => {
     sortConversationsByRecent,
   } = useChatConversations(queryConversationId);
 
-  // Set up scroll functions in refs for hooks to use
   const scrollToBottom = useCallback((smooth = true) => {
     requestAnimationFrame(() => {
       const container = messagesContainerRef.current;
@@ -77,18 +71,13 @@ export const ChatView: React.FC = () => {
     );
   }, []);
 
-  useEffect(() => {
-    scrollToBottomRef.current = scrollToBottom;
-    isNearBottomRef.current = isNearBottom;
-  }, [scrollToBottom, isNearBottom]);
-
   const {
     messages,
     setMessages,
     loadingMessages,
   } = useChatMessages(
     activeConversation,
-    scrollToBottomRef.current,
+    scrollToBottom,
     messagesContainerRef,
   );
 
@@ -97,8 +86,8 @@ export const ChatView: React.FC = () => {
     activeConversationRef,
     setMessages,
     setConversations,
-    scrollToBottomRef.current,
-    isNearBottomRef.current,
+    scrollToBottom,
+    isNearBottom,
     sortConversationsByRecent,
   );
 

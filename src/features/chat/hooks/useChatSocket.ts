@@ -1,10 +1,10 @@
-import { useEffect, useCallback } from "react";
+import { useEffect } from "react";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/stores/auth.store";
 import { ROLES } from "@/constants/roles.constants";
 import { USER_UI_ROUTES } from "@/constants/routes/user.routes";
-import { Conversation, ChatMessage, CHAT_TYPE, ChatParticipant } from "../types/chat.types";
+import { Conversation, ChatMessage, CHAT_TYPE } from "../types/chat.types";
 import {
   sendChatSocketMessage,
   onChatMessage,
@@ -20,7 +20,6 @@ import {
   markChatAsRead,
 } from "../sockets/chat.socket";
 import { chatService } from "../services/chat.service";
-import { parseApiError } from "@/infrastructure/api/api-error";
 
 export const useChatSocket = (
   activeConversation: Conversation | null,

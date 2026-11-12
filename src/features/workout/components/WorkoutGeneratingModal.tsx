@@ -2,24 +2,11 @@ import { useState, useEffect } from "react";
 import {
   Sparkles,
   Loader2,
-  CalendarDays,
-  CheckCircle2,
-  Circle,
-  Dumbbell,
-  Clock,
-  ChevronDown,
-  ChevronUp,
-  History,
-  Moon,
-  Zap,
-  FastForward,
   Brain,
   Activity,
   Target,
   ListChecks,
-  Lock,
-  Crown,
-  ArrowRight,
+  Dumbbell,
 } from "lucide-react";
 
 const PREMIUM_STEPS = [
