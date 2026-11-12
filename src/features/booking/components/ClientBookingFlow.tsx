@@ -230,6 +230,11 @@ export const ClientBookingFlow: React.FC<ClientBookingFlowProps> = ({
                       >
                         <Clock size={14} />
                         {slot.formattedTime}
+                        {slot.spotsRemaining !== undefined && slot.spotsRemaining > 1 && (
+                          <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
+                            {slot.spotsRemaining} left
+                          </span>
+                        )}
                       </button>
                     );
                   })}

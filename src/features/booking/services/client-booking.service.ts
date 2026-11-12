@@ -8,6 +8,7 @@ export interface AvailableSlot {
   formattedTime: string;
   startMinute: number;
   endMinute: number;
+  spotsRemaining?: number;
 }
 
 export interface AvailableDateOverview {
