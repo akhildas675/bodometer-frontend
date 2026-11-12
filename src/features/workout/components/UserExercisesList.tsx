@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, memo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTableFetch } from "@/hooks/useTableFetch";
 import { exerciseService } from "@/features/workout/services/exercise.service";
@@ -52,7 +52,7 @@ const ExerciseCardSkeleton = () => (
 // ---------------------------------------------------------------------------
 // Card
 // ---------------------------------------------------------------------------
-const ExerciseCard = ({ exercise }: { exercise: ExerciseRow }) => {
+const ExerciseCard = memo(({ exercise }: { exercise: ExerciseRow }) => {
   const navigate = useNavigate();
   const badge = DIFFICULTY_BADGE[exercise.difficulty] ?? DIFFICULTY_BADGE.beginner;
 
@@ -115,7 +115,15 @@ const ExerciseCard = ({ exercise }: { exercise: ExerciseRow }) => {
       </div>
     </div>
   );
-};
+}, (prevProps, nextProps) => {
+  // Custom comparison function to prevent unnecessary re-renders
+  return prevProps.exercise.exerciseId === nextProps.exercise.exerciseId &&
+         prevProps.exercise.key === nextProps.exercise.key &&
+         prevProps.exercise.title === nextProps.exercise.title &&
+         prevProps.exercise.media?.image === nextProps.exercise.media?.image &&
+         prevProps.exercise.difficulty === nextProps.exercise.difficulty &&
+         prevProps.exercise.description === nextProps.exercise.description;
+});
 
 // ---------------------------------------------------------------------------
 // Page

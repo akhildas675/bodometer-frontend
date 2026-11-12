@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, memo } from "react";
 import { useNavigate } from "react-router-dom";
 import { PaginationMeta } from "@/types/common.types";
 import { CategoryListItem } from "@/features/admin/categories/types/category.types";
@@ -37,7 +37,7 @@ const CategoryCardSkeleton = () => (
 // ---------------------------------------------------------------------------
 // Card
 // ---------------------------------------------------------------------------
-const CategoryCard = ({ category }: { category: CategoryListItem }) => {
+const CategoryCard = memo(({ category }: { category: CategoryListItem }) => {
   const navigate = useNavigate();
   const imgSrc = resolveImage(category);
 
@@ -88,7 +88,13 @@ const CategoryCard = ({ category }: { category: CategoryListItem }) => {
       </div>
     </div>
   );
-};
+}, (prevProps, nextProps) => {
+  // Custom comparison function to prevent unnecessary re-renders
+  return prevProps.category._id === nextProps.category._id &&
+         prevProps.category.name === nextProps.category.name &&
+         prevProps.category.media?.image?.url === nextProps.category.media?.image?.url &&
+         prevProps.category.description === nextProps.category.description;
+});
 
 // ---------------------------------------------------------------------------
 // Page
