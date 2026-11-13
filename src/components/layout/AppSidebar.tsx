@@ -183,6 +183,20 @@ const Sidebar = ({ role }: Props) => {
     setIsOpen(false);
   }, [location.pathname]);
 
+  // Lock page scroll while drawer is open (scroll lives in <main>, not body)
+  useEffect(() => {
+    if (!isOpen) return;
+    const mains = Array.from(document.querySelectorAll("main")) as HTMLElement[];
+    const prevOverflow = mains.map((m) => m.style.overflow);
+    const prevBodyOverflow = document.body.style.overflow;
+    mains.forEach((m) => (m.style.overflow = "hidden"));
+    document.body.style.overflow = "hidden";
+    return () => {
+      mains.forEach((m, i) => (m.style.overflow = prevOverflow[i]));
+      document.body.style.overflow = prevBodyOverflow;
+    };
+  }, [isOpen]);
+
   const handleLogout = async () => {
     try {
       setIsLoggingOut(true);

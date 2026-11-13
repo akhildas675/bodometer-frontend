@@ -1,5 +1,6 @@
 import Footer from "@/components/layout/Footer";
 import { Outlet } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import Navbar from "@/components/layout/Navbar";
 import { useAuthStore } from "@/stores/auth.store";
 import type { SidebarRole } from "@/config/sidebar.config";
@@ -10,6 +11,9 @@ const MainLayouts = () => {
 
   const isUser = user?.role === "user";
   const showNavbar = !user || isUser;
+  const { pathname } = useLocation();
+  // Home hero is full-bleed — navbar floats over it, no top offset
+  const isHome = pathname === "/";
 
   return (
     <div className="min-h-screen flex flex-col bg-[#050017]">
@@ -18,7 +22,7 @@ const MainLayouts = () => {
 
       <div
         className={`flex flex-1 min-h-0 ${
-          showNavbar ? "pt-[72px] sm:pt-[88px] md:pt-[88px]" : ""
+          showNavbar && !isHome ? "pt-[72px] sm:pt-[88px] md:pt-[88px]" : ""
         }`}
       >
         <SidebarLayout role={(user?.role as SidebarRole) || "user"}>
