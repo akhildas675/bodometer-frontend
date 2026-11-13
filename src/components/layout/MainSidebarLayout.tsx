@@ -11,11 +11,11 @@ const MainSidebarLayout = () => {
       {/* Fixed top navbar */}
     
  
-      <div className="flex flex-1">
-        <Sidebar role={(user?.role as SidebarRole)} />
+      <div className="flex flex-1 relative">
         <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
           <Outlet />
         </main>
+        <Sidebar role={(user?.role as SidebarRole) || "user"} />
       </div>
  
       <Footer />

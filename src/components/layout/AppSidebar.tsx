@@ -37,7 +37,6 @@ import {
   ClipboardList,
   Calculator,
   X,
-  Menu,
 } from "lucide-react";
 import { useNotificationStore } from "@/features/notification/stores/notification.store";
 import { logoIcon, textLogo } from "@/assets/image-path";
@@ -69,8 +68,8 @@ const iconMap: Record<string, React.ReactNode> = {
 
   "/trainer": <LayoutDashboard size={18} />,
   "/trainer/availability": <Calendar size={18} />,
-  "/trainer/clients": <Users size={18} />,
   "/trainer/messages": <MessageSquare size={18} />,
+  "/trainer/clients": <Users size={18} />,
   "/trainer/slots": <Clock size={18} />,
   "/trainer/earnings": <DollarSign size={18} />,
   "/trainer/notifications": <Bell size={18} />,
@@ -94,25 +93,7 @@ const iconMap: Record<string, React.ReactNode> = {
 };
 
 
-const CollapsedActiveDot = ({ show, isMobileOpen }: { show: boolean; isMobileOpen: boolean }) => {
-  if (!show || isMobileOpen) return null;
-  return (
-    <div className="flex justify-center mt-1">
-      <span className="w-1.5 h-1.5 rounded-full bg-fuchsia-400 shadow-[0_0_6px_rgba(232,121,249,0.8)]" />
-    </div>
-  );
-};
-
-
-const NavGroup = ({
-  item,
-  isExpanded,
-  isMobileOpen,
-}: {
-  item: SidebarItem;
-  isExpanded: boolean;
-  isMobileOpen: boolean;
-}) => {
+const NavGroup = ({ item }: { item: SidebarItem }) => {
   const location = useLocation();
 
   const isChildActive = !!item.children?.some((c) =>
@@ -131,7 +112,6 @@ const NavGroup = ({
             ? "bg-purple-500/15 text-white"
             : "text-slate-400 hover:bg-white/5 hover:text-white"
         }`}
-        title={(!isExpanded && !isMobileOpen) ? item.label : ""}
       >
         <span
           className={`shrink-0 flex items-center justify-center w-8 h-8 rounded-lg transition-colors ${
@@ -143,23 +123,19 @@ const NavGroup = ({
           {iconMap[item.path] || <LayoutDashboard size={18} />}
         </span>
 
-        {isExpanded && (
-          <>
-            <span className="flex-1 text-left whitespace-nowrap text-sm font-medium">
-              {item.label}
-            </span>
-            <ChevronRight
-              size={15}
-              className={`shrink-0 text-slate-500 transition-transform duration-200 ${
-                open ? "rotate-90 text-purple-300" : ""
-              }`}
-            />
-          </>
-        )}
+        <span className="flex-1 text-left whitespace-nowrap text-sm font-medium">
+          {item.label}
+        </span>
+        <ChevronRight
+          size={15}
+          className={`shrink-0 text-slate-500 transition-transform duration-200 ${
+            open ? "rotate-90 text-purple-300" : ""
+          }`}
+        />
       </button>
 
-      {/* children — visible when sidebar expanded AND group open */}
-      {isExpanded && open && (
+      {/* children */}
+      {open && (
         <div className="mt-1 ml-6 pl-3 border-l border-purple-500/20 flex flex-col gap-1">
           {item.children!.map((child) => (
             <NavLink
@@ -181,9 +157,6 @@ const NavGroup = ({
           ))}
         </div>
       )}
-
-      {/* collapsed hint — tiny dot when active */}
-      <CollapsedActiveDot show={!isExpanded && isChildActive} isMobileOpen={isMobileOpen} />
     </div>
   );
 };
@@ -192,9 +165,8 @@ const NavGroup = ({
 const Sidebar = ({ role }: Props) => {
   const menuItems = sidebarConfig[role];
   const navigator = useNavigate();
+  const [isOpen, setIsOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
-  const [isExpanded, setIsExpanded] = useState(false);
-  const [isMobileOpen, setIsMobileOpen] = useState(false);
   const { user, isAuthenticated } = useAuthStore();
   const unreadCount = useNotificationStore((state) => state.unreadCount);
   const fetchUnreadCount = useNotificationStore((state) => state.fetchUnreadCount);
@@ -205,10 +177,10 @@ const Sidebar = ({ role }: Props) => {
     }
   }, [user, fetchUnreadCount]);
 
-  // Close mobile drawer on route change
+  // Close drawer on route change
   const location = useLocation();
   useEffect(() => {
-    setIsMobileOpen(false);
+    setIsOpen(false);
   }, [location.pathname]);
 
   const handleLogout = async () => {
@@ -244,190 +216,164 @@ const Sidebar = ({ role }: Props) => {
 
   return (
     <>
-      {/* Mobile backdrop overlay */}
-      {isMobileOpen && (
+      {/* Floating logo trigger — overlaid on every page */}
+      <button
+        type="button"
+        onClick={() => setIsOpen(true)}
+        className="fixed left-4 bottom-4 z-40 w-12 h-12 rounded-full bg-[#0b0616]/90 backdrop-blur-md border border-purple-500/40 shadow-[0_0_20px_rgba(147,51,234,0.35)] hover:scale-110 hover:shadow-[0_0_28px_rgba(217,70,239,0.55)] transition-all duration-300 flex items-center justify-center overflow-hidden"
+        aria-label="Open menu"
+      >
+        <img
+          src={logoIcon}
+          alt="Bodometer"
+          className="w-8 h-8 object-contain"
+        />
+        {isAuthenticated && unreadCount > 0 && (
+          <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 rounded-full bg-rose-500 text-[10px] font-bold flex items-center justify-center border-2 border-[#050017]">
+            {unreadCount > 9 ? "9+" : unreadCount}
+          </span>
+        )}
+      </button>
+
+      {/* Backdrop */}
+      {isOpen && (
         <div
-          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 md:hidden"
-          onClick={() => setIsMobileOpen(false)}
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[55]"
+          onClick={() => setIsOpen(false)}
         />
       )}
 
-      {/* Mobile toggle button - only visible on mobile when sidebar is closed */}
-      <button
-        type="button"
-        onClick={() => setIsMobileOpen(true)}
-        className="md:hidden fixed bottom-4 left-4 z-30 w-12 h-12 rounded-full bg-gradient-to-br from-purple-600 to-fuchsia-600 text-white flex items-center justify-center shadow-lg shadow-purple-900/50 hover:scale-105 transition"
-        aria-label="Open sidebar"
-      >
-        <Menu size={20} />
-      </button>
-
+      {/* Drawer */}
       <aside
-        className={`${
-          isMobileOpen ? "translate-x-0" : "-translate-x-full"
-        } md:translate-x-0 ${
-          isExpanded ? "w-64" : "w-20"
-        } fixed md:relative left-0 top-0 h-full min-h-0 shrink-0 bg-[#0b0616]/95 backdrop-blur-xl border-r border-purple-500/10 p-4 text-white flex flex-col transition-all duration-300 ease-in-out z-50 overflow-y-auto`}
-        onMouseEnter={() => !isMobileOpen && setIsExpanded(true)}
-        onMouseLeave={() => !isMobileOpen && setIsExpanded(false)}
+        className={`fixed left-0 top-0 z-[60] h-dvh w-72 max-w-[85vw] bg-[#0b0616]/95 backdrop-blur-xl border-r border-purple-500/10 p-4 text-white flex flex-col gap-4 transform transition-transform duration-300 ease-in-out ${
+          isOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
       >
-      <div>
-        {/* Mobile close button */}
-        <button
-          type="button"
-          onClick={() => setIsMobileOpen(false)}
-          className="md:hidden mb-4 w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition"
-          aria-label="Close sidebar"
-        >
-          <X size={16} />
-        </button>
-
-        {/* LOGO */}
-        <div className="mb-6 flex items-center justify-center h-12">
-          {isExpanded ? (
-            <img
-              src={textLogo}
-              alt="Bodometer Logo"
-              className="h-8 w-auto object-contain drop-shadow-lg transition-opacity duration-300"
-            />
-          ) : (
-           <img
-              src={logoIcon}
-              alt="Bodometer Logo"
-              className="h-8 w-auto object-contain drop-shadow-lg transition-opacity duration-300"
-            />
-          )}
+        {/* Header */}
+        <div className="flex items-center justify-between h-12">
+          <img
+            src={textLogo}
+            alt="Bodometer Logo"
+            className="h-8 w-auto object-contain drop-shadow-lg"
+          />
+          <button
+            type="button"
+            onClick={() => setIsOpen(false)}
+            className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition"
+            aria-label="Close menu"
+          >
+            <X size={16} />
+          </button>
         </div>
 
         {/* PROFILE */}
-        <div className="flex flex-col items-center mb-6">
-          <div className="relative">
-            <div className="h-12 w-12 rounded-full bg-gradient-to-br from-purple-600 via-fuchsia-600 to-purple-700 flex items-center justify-center text-lg font-bold ring-2 ring-purple-500/40 shadow-[0_0_16px_rgba(147,51,234,0.4)]">
+        <div className="flex items-center gap-3 p-3 rounded-2xl bg-white/5 border border-purple-500/10">
+          <div className="relative shrink-0">
+            <div className="h-11 w-11 rounded-full bg-gradient-to-br from-purple-600 via-fuchsia-600 to-purple-700 flex items-center justify-center text-base font-bold ring-2 ring-purple-500/40 shadow-[0_0_16px_rgba(147,51,234,0.4)]">
               {displayName.charAt(0).toUpperCase()}
             </div>
             {isAuthenticated && unreadCount > 0 && (
-              <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-rose-500 text-[10px] font-bold flex items-center justify-center shadow">
+              <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-rose-500 text-[10px] font-bold flex items-center justify-center">
                 {unreadCount > 9 ? "9+" : unreadCount}
               </span>
             )}
           </div>
-          {isExpanded && (
-            <div className="mt-3 text-center transition-all duration-300">
-              <h3 className="font-semibold text-sm truncate max-w-[200px]">
-                {displayName}
-              </h3>
-              <p className="text-xs text-slate-400 truncate max-w-[200px]">
-                {displayEmail}
+          <div className="min-w-0 flex-1">
+            <h3 className="font-semibold text-sm truncate">
+              {displayName}
+            </h3>
+            <p className="text-xs text-slate-400 truncate">
+              {displayEmail || "Not signed in"}
+            </p>
+            {!isAuthenticated && (
+              <p className="text-[10px] uppercase tracking-wider text-fuchsia-400/80 mt-0.5">
+                Guest session
               </p>
-              {!isAuthenticated && (
-                <p className="text-[10px] uppercase tracking-wider text-fuchsia-400/80 mt-1">
-                  Guest session
-                </p>
-              )}
-            </div>
-          )}
+            )}
+          </div>
         </div>
 
-        <div className="border-t border-purple-500/10 mb-4" />
+        <div className="border-t border-purple-500/10" />
 
         {/* NAVIGATION */}
-        <nav className="space-y-1">
-          {isExpanded && (
-            <p className="px-3 pb-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-500">
-              Menu
-            </p>
-          )}
+        <nav className="flex-1 space-y-1 overflow-y-auto">
+          <p className="px-3 pb-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-500">
+            Menu
+          </p>
           {menuItems.map((item) => {
             const isNotifItem =
               item.path.includes("notifications") ||
               item.label.toLowerCase() === "notifications";
 
             return item.children ? (
-              <NavGroup key={item.path} item={item} isExpanded={isExpanded} isMobileOpen={isMobileOpen} />
+              <NavGroup key={item.path} item={item} />
             ) : (
               <NavLink
                 key={item.path}
                 to={item.path}
                 end={item.path === "/admin" || item.path === "/" || item.path === "/trainer"}
                 className="w-full block"
-                title={(!isExpanded && !isMobileOpen) ? item.label : ""}
               >
                 {({ isActive }) => (
-                  <div className="w-full">
-                    <div
-                      className={`group flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 relative ${
+                  <div
+                    className={`group flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 relative ${
+                      isActive
+                        ? "bg-gradient-to-r from-purple-600 to-fuchsia-600 text-white shadow-[0_6px_18px_rgba(147,51,234,0.4)]"
+                        : "text-slate-400 hover:bg-white/5 hover:text-white"
+                    }`}
+                  >
+                    {isActive && (
+                      <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 rounded-r-full bg-white/90" />
+                    )}
+                    <span
+                      className={`shrink-0 flex items-center justify-center w-8 h-8 rounded-lg transition-colors ${
                         isActive
-                          ? "bg-gradient-to-r from-purple-600 to-fuchsia-600 text-white shadow-[0_6px_18px_rgba(147,51,234,0.4)]"
-                          : "text-slate-400 hover:bg-white/5 hover:text-white"
+                          ? "bg-white/15 text-white"
+                          : "text-slate-500 group-hover:text-purple-300"
                       }`}
                     >
-                      {isActive && (
-                        <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 rounded-r-full bg-white/90" />
+                      {iconMap[item.path] || <LayoutDashboard size={18} />}
+                      {isNotifItem && unreadCount > 0 && (
+                        <span className="absolute -top-1.5 -right-1.5 min-w-[16px] h-4 px-0.5 rounded-full bg-rose-500 text-[9px] font-bold flex items-center justify-center">
+                          {unreadCount > 9 ? "9+" : unreadCount}
+                        </span>
                       )}
-                      <span
-                        className={`shrink-0 flex items-center justify-center w-8 h-8 rounded-lg transition-colors ${
-                          isActive
-                            ? "bg-white/15 text-white"
-                            : "text-slate-500 group-hover:text-purple-300"
-                        }`}
-                      >
-                        {iconMap[item.path] || <LayoutDashboard size={18} />}
-                        {isNotifItem && unreadCount > 0 && (
-                          <span className="absolute -top-1.5 -right-1.5 min-w-[16px] h-4 px-0.5 rounded-full bg-rose-500 text-[9px] font-bold flex items-center justify-center">
-                            {unreadCount > 9 ? "9+" : unreadCount}
-                          </span>
-                        )}
+                    </span>
+                    <div className="flex items-center justify-between w-full min-w-0">
+                      <span className="whitespace-nowrap text-sm font-medium">
+                        {item.label}
                       </span>
-                      {isExpanded && (
-                        <div className="flex items-center justify-between w-full min-w-0">
-                          <span className="whitespace-nowrap text-sm font-medium transition-opacity duration-300">
-                            {item.label}
-                          </span>
-                          {isNotifItem && unreadCount > 0 && (
-                            <span className="w-2 h-2 rounded-full bg-rose-400 animate-pulse ml-2" />
-                          )}
-                        </div>
+                      {isNotifItem && unreadCount > 0 && (
+                        <span className="w-2 h-2 rounded-full bg-rose-400 animate-pulse ml-2" />
                       )}
                     </div>
-                    {/* collapsed hint — tiny dot when active */}
-                    <CollapsedActiveDot show={!isExpanded && isActive} isMobileOpen={isMobileOpen} />
                   </div>
                 )}
               </NavLink>
             );
           })}
         </nav>
-      </div>
 
-      {/* BOTTOM ACTION */}
-      {isAuthenticated ? (
-        <button
-          className={`w-full py-2.5 rounded-xl border border-red-500/30 bg-red-500/10 hover:bg-red-500/20 hover:border-red-500/50 transition-all duration-200 text-sm font-semibold text-red-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 ${
-            isExpanded ? "" : "px-0"
-          }`}
-          onClick={handleLogout}
-          disabled={isLoggingOut}
-          title={(!isExpanded && !isMobileOpen) ? "Logout" : ""}
-        >
-          <LogOut size={16} />
-          {isExpanded && (
+        {/* BOTTOM ACTION */}
+        {isAuthenticated ? (
+          <button
+            className="w-full py-2.5 rounded-xl border border-red-500/30 bg-red-500/10 hover:bg-red-500/20 hover:border-red-500/50 transition-all duration-200 text-sm font-semibold text-red-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            onClick={handleLogout}
+            disabled={isLoggingOut}
+          >
+            <LogOut size={16} />
             <span>{isLoggingOut ? "Logging out..." : "Logout"}</span>
-          )}
-        </button>
-      ) : (
-        <button
-          className={`w-full py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-500 hover:to-fuchsia-500 transition-all duration-200 text-sm font-semibold text-white shadow-[0_6px_18px_rgba(147,51,234,0.4)] hover:shadow-[0_6px_24px_rgba(217,70,239,0.5)] flex items-center justify-center gap-2 ${
-            isExpanded ? "" : "px-0"
-          }`}
-          onClick={() => navigator("/login")}
-          title={(!isExpanded && !isMobileOpen) ? "Login" : ""}
-        >
-          <LogIn size={16} />
-          {isExpanded && <span>Login</span>}
-        </button>
-      )}
-
-    </aside>
+          </button>
+        ) : (
+          <button
+            className="w-full py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-500 hover:to-fuchsia-500 transition-all duration-200 text-sm font-semibold text-white shadow-[0_6px_18px_rgba(147,51,234,0.4)] hover:shadow-[0_6px_24px_rgba(217,70,239,0.5)] flex items-center justify-center gap-2"
+            onClick={() => navigator("/login")}
+          >
+            <LogIn size={16} />
+            <span>Login</span>
+          </button>
+        )}
+      </aside>
     </>
   );
 };

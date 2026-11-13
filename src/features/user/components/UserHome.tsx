@@ -275,7 +275,7 @@ const UserHome = () => {
 
   return (
     <div
-      className="min-h-screen w-full text-white"
+      className="-m-4 sm:-m-6 lg:-m-8 min-h-screen w-full text-white"
       style={{ background: "linear-gradient(to bottom, #190473 0%, #03000D 60%, #03000D 100%)" }}
     >
 
