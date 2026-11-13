@@ -1,7 +1,6 @@
 import { Route } from "react-router-dom";
 import UserHomePage from "@/features/user/pages/UserHomePage";
 import PublicGuard from "@/routes/guards/PublicGuardRoute";
-import MainLayoutsNoSidebar from "@/components/layout/MainLayoutNoSidebar";
 import MainLayouts from "@/components/layout/MainLayout";
 import UserBmiPage from "@/features/user/pages/UserBmiPage";
 import UserTrainersPage from "@/features/user/pages/UserTrainersPage";
@@ -20,10 +19,8 @@ const DynamicPublicLayout = () => <MainLayouts />;
 
 export const publicRoutes = (
   <Route element={<PublicGuard />}>
-    <Route element={<MainLayoutsNoSidebar />}>
-      <Route path="/" element={<UserHomePage />} />
-    </Route>
     <Route element={<DynamicPublicLayout />}>
+      <Route path="/" element={<UserHomePage />} />
       <Route path={USER_UI_ROUTES.USER_BMI} element={<UserBmiPage />} />
       <Route path={USER_UI_ROUTES.USER_TRAINERS} element={<UserTrainersPage />} />
       <Route path={USER_UI_ROUTES.USER_TRAINER_DETAILS} element={<UserTrainerDetailPage />} />

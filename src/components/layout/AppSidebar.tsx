@@ -17,6 +17,7 @@ import {
   Apple,
   TrendingUp,
   LogOut,
+  LogIn,
   ChevronRight,
   Layers,
   Tag,
@@ -32,6 +33,9 @@ import {
   BicepsFlexed,
   DumbbellIcon,
   Bell,
+  Salad,
+  ClipboardList,
+  Calculator,
   X,
   Menu,
 } from "lucide-react";
@@ -43,47 +47,50 @@ type Props = {
 };
 
 const iconMap: Record<string, React.ReactNode> = {
-  "/admin": <LayoutDashboard size={20} />,
-  "/admin/users": <Users size={20} />,
-  "/admin/trainers": <UserCheck size={20} />,
-  "/admin/appointments": <Calendar size={20} />,
-  // "/admin/bookings": <Calendar size={20} />,
-  "/admin/category": <Tag size={20} />,
-  "/admin/subscription": <CreditCard size={20} />,
-  "/admin/subscription/plans": <CreditCard size={20} />,
-  "/admin/subscription/features": <Sparkles size={20} />,
-  "/admin/subscription/transactions": <Receipt size={20} />,
-  "/admin/questions": <MessageCircleQuestion size={20} />,
-  "/admin/questions/groups": <Layers size={20} />,
-  "/admin/questions/list": <List size={20} />,
-  "/admin/workouts": <Activity size={20} />,
-  "/admin/exercises": <BicepsFlexed size={20} />,
-  "/admin/equipment": <DumbbellIcon size={20} />,
-  "/admin/target-muscles": <PersonStanding size={20} />,
-  "/admin/notifications": <Bell size={20} />,
-  "/admin/finance": <DollarSign size={20} />,
+  "/admin": <LayoutDashboard size={18} />,
+  "/admin/users": <Users size={18} />,
+  "/admin/trainers": <UserCheck size={18} />,
+  "/admin/appointments": <Calendar size={18} />,
+  // "/admin/bookings": <Calendar size={18} />,
+  "/admin/category": <Tag size={18} />,
+  "/admin/subscription": <CreditCard size={18} />,
+  "/admin/subscription/plans": <CreditCard size={18} />,
+  "/admin/subscription/features": <Sparkles size={18} />,
+  "/admin/subscription/transactions": <Receipt size={18} />,
+  "/admin/questions": <MessageCircleQuestion size={18} />,
+  "/admin/questions/groups": <Layers size={18} />,
+  "/admin/questions/list": <List size={18} />,
+  "/admin/workouts": <Activity size={18} />,
+  "/admin/exercises": <BicepsFlexed size={18} />,
+  "/admin/equipment": <DumbbellIcon size={18} />,
+  "/admin/target-muscles": <PersonStanding size={18} />,
+  "/admin/notifications": <Bell size={18} />,
+  "/admin/finance": <DollarSign size={18} />,
 
-  "/trainer": <LayoutDashboard size={20} />,
-  "/trainer/availability": <Calendar size={20} />,
-  "/trainer/clients": <Users size={20} />,
-  "/trainer/messages": <MessageSquare size={20} />,
-  "/trainer/slots": <Clock size={20} />,
-  "/trainer/earnings": <DollarSign size={20} />,
-  "/trainer/notifications": <Bell size={20} />,
-  "/trainer/profile": <UserCircle size={20} />,
+  "/trainer": <LayoutDashboard size={18} />,
+  "/trainer/availability": <Calendar size={18} />,
+  "/trainer/clients": <Users size={18} />,
+  "/trainer/messages": <MessageSquare size={18} />,
+  "/trainer/slots": <Clock size={18} />,
+  "/trainer/earnings": <DollarSign size={18} />,
+  "/trainer/notifications": <Bell size={18} />,
+  "/trainer/profile": <UserCircle size={18} />,
 
-  "/": <LayoutDashboard size={20} />,
-  "/fitness-profile": <Heart size={20} />,
-  "/exercises": <Dumbbell size={20} />,
-  "/generate-workout": <Sparkles size={20} />,
-  "/trainers": <Users size={20} />,
-  "/messages": <MessageSquare size={20} />,
-  "/my-bookings": <Calendar size={20} />,
-  "/food-log": <Apple size={20} />,
-  "/health-progress": <Activity size={20} />,
-  "/progress": <TrendingUp size={20} />,
-  "/notifications": <Bell size={20} />,
-  "/profile": <UserCircle size={20} />,
+  "/": <LayoutDashboard size={18} />,
+  "/fitness-profile": <Heart size={18} />,
+  "/exercises": <Dumbbell size={18} />,
+  "/generate-workout": <Sparkles size={18} />,
+  "/workout-plans": <ClipboardList size={18} />,
+  "/diet-plans": <Salad size={18} />,
+  "/trainers": <Users size={18} />,
+  "/messages": <MessageSquare size={18} />,
+  "/my-bookings": <Calendar size={18} />,
+  "/bmi": <Calculator size={18} />,
+  "/food-log": <Apple size={18} />,
+  "/health-progress": <Activity size={18} />,
+  "/progress": <TrendingUp size={18} />,
+  "/notifications": <Bell size={18} />,
+  "/profile": <UserCircle size={18} />,
 };
 
 
@@ -91,7 +98,7 @@ const CollapsedActiveDot = ({ show, isMobileOpen }: { show: boolean; isMobileOpe
   if (!show || isMobileOpen) return null;
   return (
     <div className="flex justify-center mt-1">
-      <span className="w-1.5 h-1.5 rounded-full bg-purple-400" />
+      <span className="w-1.5 h-1.5 rounded-full bg-fuchsia-400 shadow-[0_0_6px_rgba(232,121,249,0.8)]" />
     </div>
   );
 };
@@ -119,26 +126,32 @@ const NavGroup = ({
       {/* parent row */}
       <button
         onClick={() => setOpen((prev) => !prev)}
-        className={`w-full flex items-center gap-3 px-3 py-3 rounded-lg transition-all duration-200 ${
+        className={`group w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 ${
           isChildActive
-            ? "bg-purple-600/30 text-white"
-            : "hover:bg-white/10 text-slate-300"
+            ? "bg-purple-500/15 text-white"
+            : "text-slate-400 hover:bg-white/5 hover:text-white"
         }`}
         title={(!isExpanded && !isMobileOpen) ? item.label : ""}
       >
-        <span className="shrink-0">
-          {iconMap[item.path] || <LayoutDashboard size={20} />}
+        <span
+          className={`shrink-0 flex items-center justify-center w-8 h-8 rounded-lg transition-colors ${
+            isChildActive
+              ? "bg-purple-600/30 text-purple-300"
+              : "text-slate-500 group-hover:text-purple-300"
+          }`}
+        >
+          {iconMap[item.path] || <LayoutDashboard size={18} />}
         </span>
 
         {isExpanded && (
           <>
-            <span className="flex-1 text-left whitespace-nowrap text-sm">
+            <span className="flex-1 text-left whitespace-nowrap text-sm font-medium">
               {item.label}
             </span>
             <ChevronRight
               size={15}
-              className={`shrink-0 transition-transform duration-200 ${
-                open ? "rotate-90" : ""
+              className={`shrink-0 text-slate-500 transition-transform duration-200 ${
+                open ? "rotate-90 text-purple-300" : ""
               }`}
             />
           </>
@@ -147,16 +160,16 @@ const NavGroup = ({
 
       {/* children — visible when sidebar expanded AND group open */}
       {isExpanded && open && (
-        <div className="mt-1 ml-3 pl-3 border-l border-purple-700/50 flex flex-col gap-1">
+        <div className="mt-1 ml-6 pl-3 border-l border-purple-500/20 flex flex-col gap-1">
           {item.children!.map((child) => (
             <NavLink
               key={child.path}
               to={child.path}
               className={({ isActive }) =>
-                `flex items-center gap-2.5 px-3 py-2.5 rounded-lg transition-all duration-200 text-sm ${
+                `flex items-center gap-2.5 px-3 py-2 rounded-lg transition-all duration-200 text-sm ${
                   isActive
-                    ? "bg-purple-600 text-white"
-                    : "hover:bg-white/10 text-slate-400 hover:text-slate-200"
+                    ? "bg-gradient-to-r from-purple-600 to-fuchsia-600 text-white shadow-[0_4px_14px_rgba(147,51,234,0.35)]"
+                    : "text-slate-400 hover:bg-white/5 hover:text-slate-200"
                 }`
               }
             >
@@ -226,6 +239,9 @@ const Sidebar = ({ role }: Props) => {
     }
   };
 
+  const displayName = user?.name || (isAuthenticated ? role : "Guest");
+  const displayEmail = user?.email || "";
+
   return (
     <>
       {/* Mobile backdrop overlay */}
@@ -240,7 +256,7 @@ const Sidebar = ({ role }: Props) => {
       <button
         type="button"
         onClick={() => setIsMobileOpen(true)}
-        className="md:hidden fixed bottom-4 left-4 z-30 w-12 h-12 rounded-full bg-purple-600 text-white flex items-center justify-center shadow-lg hover:bg-purple-500 transition"
+        className="md:hidden fixed bottom-4 left-4 z-30 w-12 h-12 rounded-full bg-gradient-to-br from-purple-600 to-fuchsia-600 text-white flex items-center justify-center shadow-lg shadow-purple-900/50 hover:scale-105 transition"
         aria-label="Open sidebar"
       >
         <Menu size={20} />
@@ -251,7 +267,7 @@ const Sidebar = ({ role }: Props) => {
           isMobileOpen ? "translate-x-0" : "-translate-x-full"
         } md:translate-x-0 ${
           isExpanded ? "w-64" : "w-20"
-        } fixed md:relative left-0 top-0 h-full min-h-0 shrink-0 bg-linear-to-b from-[#03000D] to-[#190473] p-4 text-white flex flex-col justify-between transition-all duration-300 ease-in-out z-50 overflow-y-auto`}
+        } fixed md:relative left-0 top-0 h-full min-h-0 shrink-0 bg-[#0b0616]/95 backdrop-blur-xl border-r border-purple-500/10 p-4 text-white flex flex-col transition-all duration-300 ease-in-out z-50 overflow-y-auto`}
         onMouseEnter={() => !isMobileOpen && setIsExpanded(true)}
         onMouseLeave={() => !isMobileOpen && setIsExpanded(false)}
       >
@@ -267,7 +283,7 @@ const Sidebar = ({ role }: Props) => {
         </button>
 
         {/* LOGO */}
-        <div className="mb-8 flex items-center justify-center h-12">
+        <div className="mb-6 flex items-center justify-center h-12">
           {isExpanded ? (
             <img
               src={textLogo}
@@ -284,24 +300,43 @@ const Sidebar = ({ role }: Props) => {
         </div>
 
         {/* PROFILE */}
-        <div className="flex flex-col items-center mb-8 overflow-hidden">
-          <div className="h-12 w-12 rounded-full bg-purple-600 flex items-center justify-center text-lg font-bold shrink-0">
-            {(user?.name || (isAuthenticated ? role : "Guest")).charAt(0).toUpperCase()}
+        <div className="flex flex-col items-center mb-6">
+          <div className="relative">
+            <div className="h-12 w-12 rounded-full bg-gradient-to-br from-purple-600 via-fuchsia-600 to-purple-700 flex items-center justify-center text-lg font-bold ring-2 ring-purple-500/40 shadow-[0_0_16px_rgba(147,51,234,0.4)]">
+              {displayName.charAt(0).toUpperCase()}
+            </div>
+            {isAuthenticated && unreadCount > 0 && (
+              <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-rose-500 text-[10px] font-bold flex items-center justify-center shadow">
+                {unreadCount > 9 ? "9+" : unreadCount}
+              </span>
+            )}
           </div>
           {isExpanded && (
-            <div className="mt-2 text-center transition-all duration-300">
+            <div className="mt-3 text-center transition-all duration-300">
               <h3 className="font-semibold text-sm truncate max-w-[200px]">
-                {user?.name || (isAuthenticated ? role : "Guest")}
+                {displayName}
               </h3>
               <p className="text-xs text-slate-400 truncate max-w-[200px]">
-                {user?.email || ""}
+                {displayEmail}
               </p>
+              {!isAuthenticated && (
+                <p className="text-[10px] uppercase tracking-wider text-fuchsia-400/80 mt-1">
+                  Guest session
+                </p>
+              )}
             </div>
           )}
         </div>
 
+        <div className="border-t border-purple-500/10 mb-4" />
+
         {/* NAVIGATION */}
-        <nav className="space-y-1 text-sm">
+        <nav className="space-y-1">
+          {isExpanded && (
+            <p className="px-3 pb-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-500">
+              Menu
+            </p>
+          )}
           {menuItems.map((item) => {
             const isNotifItem =
               item.path.includes("notifications") ||
@@ -320,25 +355,36 @@ const Sidebar = ({ role }: Props) => {
                 {({ isActive }) => (
                   <div className="w-full">
                     <div
-                      className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-all duration-200 ${
+                      className={`group flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 relative ${
                         isActive
-                          ? "bg-purple-600 text-white"
-                          : "hover:bg-white/10 text-slate-300"
+                          ? "bg-gradient-to-r from-purple-600 to-fuchsia-600 text-white shadow-[0_6px_18px_rgba(147,51,234,0.4)]"
+                          : "text-slate-400 hover:bg-white/5 hover:text-white"
                       }`}
                     >
-                      <span className="shrink-0 relative">
-                        {iconMap[item.path] || <LayoutDashboard size={20} />}
+                      {isActive && (
+                        <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 rounded-r-full bg-white/90" />
+                      )}
+                      <span
+                        className={`shrink-0 flex items-center justify-center w-8 h-8 rounded-lg transition-colors ${
+                          isActive
+                            ? "bg-white/15 text-white"
+                            : "text-slate-500 group-hover:text-purple-300"
+                        }`}
+                      >
+                        {iconMap[item.path] || <LayoutDashboard size={18} />}
                         {isNotifItem && unreadCount > 0 && (
-                          <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-rose-500 rounded-full animate-pulse shadow-xs shadow-rose-500/80" />
+                          <span className="absolute -top-1.5 -right-1.5 min-w-[16px] h-4 px-0.5 rounded-full bg-rose-500 text-[9px] font-bold flex items-center justify-center">
+                            {unreadCount > 9 ? "9+" : unreadCount}
+                          </span>
                         )}
                       </span>
                       {isExpanded && (
                         <div className="flex items-center justify-between w-full min-w-0">
-                          <span className="whitespace-nowrap transition-opacity duration-300">
+                          <span className="whitespace-nowrap text-sm font-medium transition-opacity duration-300">
                             {item.label}
                           </span>
                           {isNotifItem && unreadCount > 0 && (
-                            <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse ml-2" />
+                            <span className="w-2 h-2 rounded-full bg-rose-400 animate-pulse ml-2" />
                           )}
                         </div>
                       )}
@@ -353,21 +399,32 @@ const Sidebar = ({ role }: Props) => {
         </nav>
       </div>
 
-      {/* LOGOUT */}
-      {isAuthenticated && (
-      <button
-        className={`w-full py-3 rounded-lg bg-red-600/80 hover:bg-red-600 transition-all duration-200 text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 ${
-          isExpanded ? "" : "px-0"
-        }`}
-        onClick={handleLogout}
-        disabled={isLoggingOut}
-        title={(!isExpanded && !isMobileOpen) ? "Logout" : ""}
-      >
-        <LogOut size={18} />
-        {isExpanded && (
-          <span>{isLoggingOut ? "Logging out..." : "Logout"}</span>
-        )}
-      </button>
+      {/* BOTTOM ACTION */}
+      {isAuthenticated ? (
+        <button
+          className={`w-full py-2.5 rounded-xl border border-red-500/30 bg-red-500/10 hover:bg-red-500/20 hover:border-red-500/50 transition-all duration-200 text-sm font-semibold text-red-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 ${
+            isExpanded ? "" : "px-0"
+          }`}
+          onClick={handleLogout}
+          disabled={isLoggingOut}
+          title={(!isExpanded && !isMobileOpen) ? "Logout" : ""}
+        >
+          <LogOut size={16} />
+          {isExpanded && (
+            <span>{isLoggingOut ? "Logging out..." : "Logout"}</span>
+          )}
+        </button>
+      ) : (
+        <button
+          className={`w-full py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-500 hover:to-fuchsia-500 transition-all duration-200 text-sm font-semibold text-white shadow-[0_6px_18px_rgba(147,51,234,0.4)] hover:shadow-[0_6px_24px_rgba(217,70,239,0.5)] flex items-center justify-center gap-2 ${
+            isExpanded ? "" : "px-0"
+          }`}
+          onClick={() => navigator("/login")}
+          title={(!isExpanded && !isMobileOpen) ? "Login" : ""}
+        >
+          <LogIn size={16} />
+          {isExpanded && <span>Login</span>}
+        </button>
       )}
 
     </aside>
