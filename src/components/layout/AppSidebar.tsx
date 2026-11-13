@@ -182,7 +182,7 @@ const Sidebar = ({ role }: Props) => {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
-  const { user } = useAuthStore();
+  const { user, isAuthenticated } = useAuthStore();
   const unreadCount = useNotificationStore((state) => state.unreadCount);
   const fetchUnreadCount = useNotificationStore((state) => state.fetchUnreadCount);
 
@@ -286,12 +286,12 @@ const Sidebar = ({ role }: Props) => {
         {/* PROFILE */}
         <div className="flex flex-col items-center mb-8 overflow-hidden">
           <div className="h-12 w-12 rounded-full bg-purple-600 flex items-center justify-center text-lg font-bold shrink-0">
-            {user?.name?.charAt(0).toUpperCase() || role.charAt(0).toUpperCase()}
+            {(user?.name || (isAuthenticated ? role : "Guest")).charAt(0).toUpperCase()}
           </div>
           {isExpanded && (
             <div className="mt-2 text-center transition-all duration-300">
               <h3 className="font-semibold text-sm truncate max-w-[200px]">
-                {user?.name || role}
+                {user?.name || (isAuthenticated ? role : "Guest")}
               </h3>
               <p className="text-xs text-slate-400 truncate max-w-[200px]">
                 {user?.email || ""}
@@ -354,6 +354,7 @@ const Sidebar = ({ role }: Props) => {
       </div>
 
       {/* LOGOUT */}
+      {isAuthenticated && (
       <button
         className={`w-full py-3 rounded-lg bg-red-600/80 hover:bg-red-600 transition-all duration-200 text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 ${
           isExpanded ? "" : "px-0"
@@ -367,6 +368,7 @@ const Sidebar = ({ role }: Props) => {
           <span>{isLoggingOut ? "Logging out..." : "Logout"}</span>
         )}
       </button>
+      )}
 
     </aside>
     </>

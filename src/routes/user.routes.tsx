@@ -12,7 +12,6 @@ import { USER_UI_ROUTES } from "@/constants/routes/user.routes";
 
 import UserProfilePage from "@/features/user/pages/UserProfilePage";
 import UserChangePasswordPage from "@/features/user/pages/UserChangePasswordPage";
-import UserTrainerDetailPage from "@/features/user/pages/UserTrainerDetailPage";
 import UserWalletPage from "@/features/user/pages/UserWalletPage";
 import UserNotificationPage from "@/features/notification/pages/UserNotificationPage";
 
@@ -20,9 +19,6 @@ import UserSubscriptionPage from "@/features/subscription/pages/UserSubscription
 import UserSubscriptionSuccessPage from "@/features/subscription/pages/UserSubscriptionSuccessPage";
 import UserSubscriptionCancelPage from "@/features/subscription/pages/UserSubscriptionCancelPage";
 
-import UserCategoryDetailPage from "@/features/workout/pages/UserCategoryDetailPage";
-import UserExercisesPage from "@/features/workout/pages/UserExercisesPage";
-import UserExerciseDetailPage from "@/features/workout/pages/UserExerciseDetailPage";
 import UserWorkoutPlansPage from "@/features/workout/pages/UserWorkoutPlansPage";
 import UserWorkoutProgressionPage from "@/features/workout/pages/UserWorkoutProgressionPage";
 
@@ -75,21 +71,6 @@ export const userRoutes = (
       />
 
       <Route
-        path={USER_UI_ROUTES.USER_TRAINER_DETAILS}
-        element={<UserTrainerDetailPage />}
-      />
-
-      <Route
-        path={USER_UI_ROUTES.USER_EXERCISES}
-        element={<UserExercisesPage />}
-      />
-
-      <Route
-        path={USER_UI_ROUTES.USER_EXERCISE_DETAIL}
-        element={<UserExerciseDetailPage />}
-      />
-
-      <Route
         path={USER_UI_ROUTES.USER_WALLET}
         element={<UserWalletPage />}
       />
@@ -102,11 +83,6 @@ export const userRoutes = (
       <Route
         path="/client/booking/success"
         element={<BookingSuccessPage />}
-      />
-
-      <Route
-        path={USER_UI_ROUTES.USER_CATEGORY_DETAILS}
-        element={<UserCategoryDetailPage />}
       />
 
       {/* Free workout plans */}

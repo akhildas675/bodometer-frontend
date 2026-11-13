@@ -5,17 +5,17 @@ import MainLayoutsNoSidebar from "@/components/layout/MainLayoutNoSidebar";
 import MainLayouts from "@/components/layout/MainLayout";
 import UserBmiPage from "@/features/user/pages/UserBmiPage";
 import UserTrainersPage from "@/features/user/pages/UserTrainersPage";
+import UserTrainerDetailPage from "@/features/user/pages/UserTrainerDetailPage";
 import UserCategoriesPage from "@/features/workout/pages/UserCategoriesPage";
+import UserCategoryDetailPage from "@/features/workout/pages/UserCategoryDetailPage";
+import UserExercisesPage from "@/features/workout/pages/UserExercisesPage";
+import UserExerciseDetailPage from "@/features/workout/pages/UserExerciseDetailPage";
 import { USER_UI_ROUTES } from "@/constants/routes/user.routes";
-import { useAuthStore } from "@/stores/auth.store";
 import AboutPage from "@/features/public/pages/AboutPage";
 import PrivacyPolicyPage from "@/features/public/pages/PrivacyPolicyPage";
 import TermsOfServicePage from "@/features/public/pages/TermsOfServicePage";
 
-const DynamicPublicLayout = () => {
-  const { isAuthenticated, user } = useAuthStore();
-  return isAuthenticated && user?.role === "user" ? <MainLayouts /> : <MainLayoutsNoSidebar padded />;
-};
+const DynamicPublicLayout = () => <MainLayouts />;
 
 
 export const publicRoutes = (
@@ -26,7 +26,11 @@ export const publicRoutes = (
     <Route element={<DynamicPublicLayout />}>
       <Route path={USER_UI_ROUTES.USER_BMI} element={<UserBmiPage />} />
       <Route path={USER_UI_ROUTES.USER_TRAINERS} element={<UserTrainersPage />} />
+      <Route path={USER_UI_ROUTES.USER_TRAINER_DETAILS} element={<UserTrainerDetailPage />} />
       <Route path={USER_UI_ROUTES.USER_CATEGORIES} element={<UserCategoriesPage />} />
+      <Route path={USER_UI_ROUTES.USER_CATEGORY_DETAILS} element={<UserCategoryDetailPage />} />
+      <Route path={USER_UI_ROUTES.USER_EXERCISES} element={<UserExercisesPage />} />
+      <Route path={USER_UI_ROUTES.USER_EXERCISE_DETAIL} element={<UserExerciseDetailPage />} />
     </Route>
     {/* Footer Pages - No Layout (Full Pages) */}
     <Route path="/about" element={<AboutPage />} />

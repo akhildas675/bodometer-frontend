@@ -5,6 +5,7 @@ import { trainerService } from "@/features/trainer/services/trainer.service";
 import { subscriptionService } from "@/features/subscription/services/subscription.service";
 import { chatService } from "@/features/chat/services/chat.service";
 import { parseApiError } from "@/infrastructure/api/api-error";
+import { useAuthStore } from "@/stores/auth.store";
 import { USER_UI_ROUTES } from "@/constants/routes/user.routes";
 import { TrainerDetail } from "@/features/trainer/types/trainer.types";
 import {
@@ -32,6 +33,7 @@ const UserTrainerDetails = () => {
   const [loading, setLoading] = useState(true);
   const [checkingSub, setCheckingSub] = useState(false);
   const [startingChat, setStartingChat] = useState(false);
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
 
   useEffect(() => {
     if (!id) return;
@@ -63,6 +65,10 @@ const UserTrainerDetails = () => {
 
   const handleBookSession = async () => {
     if (!trainer) return;
+    if (!isAuthenticated) {
+      navigate("/login");
+      return;
+    }
     setCheckingSub(true);
     try {
       const res = await subscriptionService.getActiveSubscription();
@@ -83,6 +89,10 @@ const UserTrainerDetails = () => {
 
   const handleStartChat = async () => {
     if (!trainer) return;
+    if (!isAuthenticated) {
+      navigate("/login");
+      return;
+    }
     const targetTrainerId = trainer.userId || trainer._id || id;
     if (!targetTrainerId) return;
 

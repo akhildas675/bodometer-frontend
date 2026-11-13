@@ -9,15 +9,16 @@ const MainLayouts = () => {
   const user = useAuthStore((state) => state.user);
 
   const isUser = user?.role === "user";
+  const showNavbar = !user || isUser;
 
   return (
     <div className="min-h-screen flex flex-col bg-[#050017]">
       {/* Fixed top navbar */}
-      {isUser && <Navbar />}
+      {showNavbar && <Navbar />}
 
       <div
         className={`flex flex-1 min-h-0 ${
-          isUser ? "pt-[72px] sm:pt-[88px] md:pt-[88px]" : ""
+          showNavbar ? "pt-[72px] sm:pt-[88px] md:pt-[88px]" : ""
         }`}
       >
         <SidebarLayout role={(user?.role as SidebarRole) || "user"}>
