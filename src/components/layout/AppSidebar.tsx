@@ -245,7 +245,7 @@ const Sidebar = ({ role }: Props) => {
 
       {/* Drawer */}
       <aside
-        className={`fixed left-0 top-0 z-[60] h-dvh w-72 max-w-[85vw] bg-[#0b0616]/95 backdrop-blur-xl border-r border-purple-500/10 p-4 text-white flex flex-col gap-4 transform transition-transform duration-300 ease-in-out ${
+        className={`fixed left-0 top-0 z-[60] h-dvh w-72 max-w-[85vw] bg-[#0b0616]/95 backdrop-blur-xl border-r border-purple-500/10 p-4 text-white flex flex-col gap-4 transform transition-transform duration-300 ease-in-out overflow-hidden [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${
           isOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
@@ -296,7 +296,7 @@ const Sidebar = ({ role }: Props) => {
         <div className="border-t border-purple-500/10" />
 
         {/* NAVIGATION */}
-        <nav className="flex-1 space-y-1 overflow-y-auto">
+        <nav className="flex-1 min-h-0 space-y-1 overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           <p className="px-3 pb-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-500">
             Menu
           </p>
