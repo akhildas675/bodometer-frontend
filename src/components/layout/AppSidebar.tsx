@@ -217,6 +217,24 @@ const Sidebar = ({ role }: Props) => {
     if (closeTimer.current) clearTimeout(closeTimer.current);
   }, []);
 
+  // Close peek when cursor leaves the browser window or Escape is pressed
+  useEffect(() => {
+    if (!peek) return;
+    const close = () => {
+      setPeek(false);
+      setPeekFull(false);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") close();
+    };
+    document.documentElement.addEventListener("mouseleave", close);
+    window.addEventListener("keydown", onKey);
+    return () => {
+      document.documentElement.removeEventListener("mouseleave", close);
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [peek]);
+
   const handleLogout = async () => {
     try {
       setIsLoggingOut(true);

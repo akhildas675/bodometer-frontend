@@ -18,6 +18,7 @@ const App = () => {
           expand={false}
           duration={3000}
           theme="dark"
+          style={{ zIndex: 100 }}
           toastOptions={{
             style: {
               background: '#13112c',
