@@ -2,7 +2,7 @@ import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import { sidebarConfig, type SidebarRole, type SidebarItem } from "@/config/sidebar.config";
 import { useAuthStore } from "@/stores/auth.store";
 import authInitService from "@/features/auth/services/auth-init.service";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { toast } from "sonner";
 import { parseApiError } from "@/infrastructure/api/api-error";
 import {
@@ -167,6 +167,9 @@ const Sidebar = ({ role }: Props) => {
   const navigator = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [peek, setPeek] = useState(false);
+  const [peekFull, setPeekFull] = useState(false);
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const { user, isAuthenticated } = useAuthStore();
   const unreadCount = useNotificationStore((state) => state.unreadCount);
   const fetchUnreadCount = useNotificationStore((state) => state.fetchUnreadCount);
@@ -181,6 +184,8 @@ const Sidebar = ({ role }: Props) => {
   const location = useLocation();
   useEffect(() => {
     setIsOpen(false);
+    setPeek(false);
+    setPeekFull(false);
   }, [location.pathname]);
 
   // Lock page scroll while drawer is open (scroll lives in <main>, not body)
@@ -196,6 +201,21 @@ const Sidebar = ({ role }: Props) => {
       document.body.style.overflow = prevBodyOverflow;
     };
   }, [isOpen]);
+
+  // Hover-peek: slim bar first, expands to full labels on hover
+  const cancelClose = () => {
+    if (closeTimer.current) clearTimeout(closeTimer.current);
+  };
+  const scheduleClose = () => {
+    cancelClose();
+    closeTimer.current = setTimeout(() => {
+      setPeek(false);
+      setPeekFull(false);
+    }, 250);
+  };
+  useEffect(() => () => {
+    if (closeTimer.current) clearTimeout(closeTimer.current);
+  }, []);
 
   const handleLogout = async () => {
     try {
@@ -228,13 +248,30 @@ const Sidebar = ({ role }: Props) => {
   const displayName = user?.name || (isAuthenticated ? role : "Guest");
   const displayEmail = user?.email || "";
 
+  // Flattened leaf items for the slim peek bar (group children included)
+  const peekItems = menuItems.flatMap((item) =>
+    item.children ? item.children : [item],
+  );
+
   return (
     <>
       {/* Floating logo trigger — overlaid on every page */}
       <button
         type="button"
-        onClick={() => setIsOpen(true)}
-        className="fixed left-4 bottom-4 z-40 w-12 h-12 rounded-full bg-[#0b0616]/90 backdrop-blur-md border border-purple-500/40 shadow-[0_0_20px_rgba(147,51,234,0.35)] hover:scale-110 hover:shadow-[0_0_28px_rgba(217,70,239,0.55)] transition-all duration-300 flex items-center justify-center overflow-hidden"
+        onMouseEnter={() => {
+          if (!isOpen) {
+            cancelClose();
+            setPeek(true);
+            setPeekFull(false);
+          }
+        }}
+        onMouseLeave={scheduleClose}
+        onClick={() => {
+          setPeek(false);
+          setPeekFull(false);
+          setIsOpen(true);
+        }}
+        className="fixed left-4 bottom-4 z-50 w-12 h-12 rounded-full bg-[#0b0616]/90 backdrop-blur-md border border-purple-500/40 shadow-[0_0_20px_rgba(147,51,234,0.35)] hover:scale-110 hover:shadow-[0_0_28px_rgba(217,70,239,0.55)] transition-all duration-300 flex items-center justify-center overflow-hidden"
         aria-label="Open menu"
       >
         <img
@@ -248,6 +285,106 @@ const Sidebar = ({ role }: Props) => {
           </span>
         )}
       </button>
+
+      {/* Hover-peek bar — slim icons first, expands to full labels on hover */}
+      {!isOpen && (
+        <aside
+          onMouseEnter={() => {
+            cancelClose();
+            setPeekFull(true);
+          }}
+          onMouseLeave={scheduleClose}
+          className={`fixed left-0 top-0 z-40 h-dvh bg-[#0b0616]/95 backdrop-blur-xl border-r border-purple-500/10 flex flex-col transition-all duration-300 ease-in-out overflow-hidden [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${
+            peek ? "translate-x-0" : "-translate-x-full"
+          } ${peekFull ? "w-72 px-4 py-4 gap-4 items-stretch" : "w-[76px] px-2 py-4 gap-1 items-center"}`}
+        >
+          <img
+            src={peekFull ? textLogo : logoIcon}
+            alt="Bodometer"
+            className={peekFull ? "h-8 w-auto object-contain drop-shadow-lg" : "h-9 w-9 object-contain shrink-0"}
+          />
+          <div className="border-t border-purple-500/10 w-full shrink-0" />
+
+          <nav className="flex-1 min-h-0 flex flex-col gap-1 overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden w-full">
+            {peekItems.map((p) => {
+              const isNotif = p.path.includes("notifications");
+              return (
+                <NavLink
+                  key={p.path}
+                  to={p.path}
+                  end={p.path === "/" || p.path === "/admin" || p.path === "/trainer"}
+                  className="w-full block"
+                  title={p.label}
+                >
+                  {({ isActive }) => (
+                    <div
+                      className={`flex items-center rounded-xl transition-all duration-200 relative ${
+                        isActive
+                          ? "bg-gradient-to-r from-purple-600 to-fuchsia-600 text-white shadow-[0_4px_14px_rgba(147,51,234,0.35)]"
+                          : "text-slate-400 hover:bg-white/5 hover:text-white"
+                      } ${peekFull ? "gap-3 px-3 py-2.5" : "justify-center py-2.5 mx-auto w-11"}`}
+                    >
+                      {isActive && !peekFull && (
+                        <span className="absolute right-1 top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-white" />
+                      )}
+                      <span
+                        className={`shrink-0 flex items-center justify-center w-8 h-8 rounded-lg transition-colors relative ${
+                          isActive
+                            ? "bg-white/15 text-white"
+                            : "text-slate-500"
+                        }`}
+                      >
+                        {iconMap[p.path] || <LayoutDashboard size={18} />}
+                        {isNotif && unreadCount > 0 && (
+                          <span className="absolute -top-1 -right-1 min-w-[14px] h-3.5 px-0.5 rounded-full bg-rose-500 text-[8px] font-bold flex items-center justify-center">
+                            {unreadCount > 9 ? "9+" : unreadCount}
+                          </span>
+                        )}
+                      </span>
+                      <span
+                        className={`whitespace-nowrap text-sm font-medium overflow-hidden transition-all duration-300 ${
+                          peekFull ? "opacity-100 max-w-[160px]" : "opacity-0 max-w-0"
+                        }`}
+                      >
+                        {p.label}
+                      </span>
+                    </div>
+                  )}
+                </NavLink>
+              );
+            })}
+          </nav>
+
+          {isAuthenticated ? (
+            <button
+              onClick={handleLogout}
+              disabled={isLoggingOut}
+              title="Logout"
+              className={`rounded-xl border border-red-500/30 bg-red-500/10 hover:bg-red-500/20 text-red-300 transition-all duration-200 flex items-center justify-center gap-2 ${
+                peekFull ? "px-3 py-2.5 w-full" : "w-11 h-10 mx-auto"
+              }`}
+            >
+              <LogOut size={16} className="shrink-0" />
+              {peekFull && (
+                <span className="text-sm font-semibold whitespace-nowrap">
+                  {isLoggingOut ? "Logging out..." : "Logout"}
+                </span>
+              )}
+            </button>
+          ) : (
+            <button
+              onClick={() => navigator("/login")}
+              title="Login"
+              className={`rounded-xl bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-500 hover:to-fuchsia-500 text-white transition-all duration-200 flex items-center justify-center gap-2 shadow-[0_4px_14px_rgba(147,51,234,0.4)] ${
+                peekFull ? "px-3 py-2.5 w-full" : "w-11 h-10 mx-auto"
+              }`}
+            >
+              <LogIn size={16} className="shrink-0" />
+              {peekFull && <span className="text-sm font-semibold whitespace-nowrap">Login</span>}
+            </button>
+          )}
+        </aside>
+      )}
 
       {/* Backdrop */}
       {isOpen && (
