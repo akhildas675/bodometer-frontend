@@ -17,7 +17,7 @@ const MainLayouts = () => {
 
       <div
         className={`flex flex-1 min-h-0 ${
-          isUser ? "pt-[80px] sm:pt-[96px] md:pt-[104px]" : ""
+          isUser ? "pt-[72px] sm:pt-[88px] md:pt-[88px]" : ""
         }`}
       >
         <SidebarLayout role={(user?.role as SidebarRole) || "user"}>

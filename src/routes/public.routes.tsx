@@ -14,7 +14,7 @@ import TermsOfServicePage from "@/features/public/pages/TermsOfServicePage";
 
 const DynamicPublicLayout = () => {
   const { isAuthenticated, user } = useAuthStore();
-  return isAuthenticated && user?.role === "user" ? <MainLayouts /> : <MainLayoutsNoSidebar />;
+  return isAuthenticated && user?.role === "user" ? <MainLayouts /> : <MainLayoutsNoSidebar padded />;
 };
 
 

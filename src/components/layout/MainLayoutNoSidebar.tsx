@@ -2,11 +2,11 @@ import { Outlet } from "react-router-dom";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
  
-const MainLayoutsNoSidebar = () => {
+const MainLayoutsNoSidebar = ({ padded = false }: { padded?: boolean }) => {
   return (
     <div className="min-h-screen flex flex-col bg-[#050017]">
       <Navbar />
-      <main className="flex-1 pt-[76px] sm:pt-[92px] md:pt-[100px]">
+      <main className={`flex-1${padded ? " pt-[76px] sm:pt-[92px] md:pt-[100px]" : ""}`}>
         <Outlet />
       </main>
       <Footer />
